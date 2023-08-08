@@ -1,8 +1,8 @@
 /* eslint-disable no-console */
 import { readdir, readFile } from 'fs/promises';
-import { PutObjectCommand, DeleteObjectCommand, HeadBucketCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import * as fs from 'fs';
 import { promisify } from 'util';
+import { PutObjectCommand, DeleteObjectCommand, HeadBucketCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import s3Client from './aws-config';
 
 export const checkBucket = async (bucketName: string) => {

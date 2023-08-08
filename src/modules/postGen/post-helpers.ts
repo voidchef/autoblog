@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
-import * as dotenv from 'dotenv';
 import { readFile as rd } from 'fs';
 import { promisify } from 'util';
+import { log } from 'console';
+import * as dotenv from 'dotenv';
 import { ChatGPTUnofficialProxyAPI, ChatGPTError, ChatMessage, SendMessageOptions } from 'chatgpt';
 import pRetry, { AbortError, FailedAttemptError } from 'p-retry';
-import { log } from 'console';
 import {
   extractJsonArray,
   extractCodeBlock,
