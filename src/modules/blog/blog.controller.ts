@@ -1,0 +1,49 @@
+import httpStatus from 'http-status';
+import { Request, Response } from 'express';
+import mongoose from 'mongoose';
+import catchAsync from '../utils/catchAsync';
+import ApiError from '../errors/ApiError';
+import pick from '../utils/pick';
+import { IOptions } from '../paginate/paginate';
+import * as blogService from './blog.service';
+
+export const generateBlog = catchAsync(async (req: Request, res: Response) => {
+  const blog = await blogService.generateBlog(req.body, req.user._id);
+  res.status(httpStatus.CREATED).send(blog);
+});
+
+export const createBlog = catchAsync(async (req: Request, res: Response) => {
+  const blog = await blogService.createBlog(req.body);
+  res.status(httpStatus.CREATED).send(blog);
+});
+
+export const getBlogs = catchAsync(async (req: Request, res: Response) => {
+  const filter = pick(req.query, ['author', 'category', 'tags', 'isFeatured', 'isDraft']);
+  const options: IOptions = pick(req.query, ['sortBy', 'limit', 'page', 'projectBy', 'populate']);
+  const result = await blogService.queryBlogs(filter, options);
+  res.send(result);
+});
+
+export const getBlog = catchAsync(async (req: Request, res: Response) => {
+  if (typeof req.params['blogId'] === 'string') {
+    const blog = await blogService.getBlogById(new mongoose.Types.ObjectId(req.params['blogId']));
+    if (!blog) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
+    }
+    res.send(blog);
+  }
+});
+
+export const updateBlog = catchAsync(async (req: Request, res: Response) => {
+  if (typeof req.params['blogId'] === 'string') {
+    const blog = await blogService.updateBlogById(new mongoose.Types.ObjectId(req.params['blogId']), req.body);
+    res.send(blog);
+  }
+});
+
+export const deleteBlog = catchAsync(async (req: Request, res: Response) => {
+  if (typeof req.params['blogId'] === 'string') {
+    await blogService.deleteBlogById(new mongoose.Types.ObjectId(req.params['blogId']));
+    res.status(httpStatus.NO_CONTENT).send();
+  }
+});
