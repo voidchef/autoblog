@@ -1,4 +1,4 @@
-# Material UI - Vite.js in Typescript example
+# Material UI - Create React App example in TypeScript
 
 ## How to use
 
@@ -6,30 +6,33 @@ Download the example [or clone the repo](https://github.com/mui/material-ui):
 
 <!-- #default-branch-switch -->
 
-```bash
-curl https://codeload.github.com/mui/material-ui/tar.gz/master | tar -xz --strip=2 material-ui-master/examples/material-vite-ts
-cd material-vite-ts
+```sh
+curl https://codeload.github.com/mui/material-ui/tar.gz/master | tar -xz --strip=2 material-ui-master/examples/material-cra-ts
+cd material-cra-ts
 ```
 
 Install it and run:
 
-```bash
+```sh
 npm install
-npm run dev
+npm start
 ```
 
 or:
 
 <!-- #default-branch-switch -->
 
-[![Edit on StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/mui/material-ui/tree/master/examples/material-vite-ts)
+[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/mui/material-ui/tree/master/examples/material-cra-ts)
 
-[![Edit on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/github/mui/material-ui/tree/master/examples/material-vite-ts)
+<!-- #default-branch-switch -->
+
+[![Edit on StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/mui/material-ui/tree/master/examples/material-cra-ts)
 
 ## The idea behind the example
 
-This example uses [Vite.js](https://github.com/vitejs/vite).
-It includes `@mui/material` with `@mui/icons-material` and their peer dependencies, including [Emotion](https://emotion.sh/docs/introduction), the default style engine in Material UI v5.
+This example demonstrates how you can use Material UI with [Create React App](https://github.com/facebookincubator/create-react-app) in [TypeScript](https://github.com/Microsoft/TypeScript).
+It includes `@mui/material` and its peer dependencies, including [Emotion](https://emotion.sh/docs/introduction), the default style engine in Material UI v5.
+If you prefer, you can [use styled-components instead](https://mui.com/material-ui/guides/interoperability/#styled-components).
 
 ## What's next?
 
