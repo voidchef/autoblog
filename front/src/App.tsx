@@ -1,20 +1,48 @@
 import * as React from 'react';
-import store from './store';
+import Home from './components/pages/Home';
+import SignInSide from './components/pages/SignInSide';
 import setAuthToken from './utils/setAuthToken';
+import store from './store';
 import { Provider } from 'react-redux';
-import { Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from '@emotion/react';
 import theme from './theme';
+import { ROUTES } from './utils/routing/routes';
+import PrivateRoute from './utils/routing/PrivateRoute';
 import { Box } from '@mui/material';
 import Loading from './components/elements/Loading/Loading';
+import ContactUs from './components/pages/ContactUs';
+import AboutUs from './components/pages/AboutUs';
+import Category from './components/pages/Category';
+import AllPosts from './components/pages/AllPosts';
+import CreatePost from './components/pages/CreatePost';
+import Blog from './components/pages/Blog';
 import Alerts from './components/elements/Common/Alerts';
+import { loadUser } from './actions/user';
 
 if (localStorage.tokens) {
   const tokens = JSON.parse(localStorage.getItem('tokens') || '');
+  console.log(tokens);
   setAuthToken(tokens.access.token);
 }
 
 export default function App() {
+  /* const isAuthenticated = store.getState().user.isAuthenticated;
+  React.useEffect(() => {
+    const handleTokenChange = (e: StorageEvent) => {
+      if (e.key === TOKEN_KEY && e.oldValue && !e.newValue) {
+        store.dispatch(logout());
+      }
+    };
+    window.addEventListener('storage', handleTokenChange);
+    return function cleanup() {
+      window.removeEventListener('storage', handleTokenChange);
+    };
+  }, []); */
+  React.useEffect(() => {
+    const userId = store.getState().auth.userId;
+    store.dispatch(loadUser(userId));
+  }, []);
   return (
     <ThemeProvider theme={theme}>
       <Provider store={store}>
@@ -38,7 +66,21 @@ export default function App() {
             <Alerts />
             <section>
               <Routes>
-                {/* To Add */}
+                <Route path={ROUTES.LOGIN} element={<SignInSide />} />
+                <Route path={ROUTES.ROOT} element={<Home />} />
+                <Route path={ROUTES.CONTACTUS} element={<ContactUs />} />
+                <Route path={ROUTES.ABOUTUS} element={<AboutUs />} />
+                <Route path={ROUTES.CATEGORY} element={<Category />} />
+                <Route path={ROUTES.ALLPOSTS} element={<AllPosts />} />
+                <Route path={`${ROUTES.BLOG}/:slug`} element={<Blog />} />
+                <Route
+                  path={ROUTES.CREATEPOST}
+                  element={
+                    <PrivateRoute>
+                      <CreatePost />
+                    </PrivateRoute>
+                  }
+                />
               </Routes>
             </section>
           </React.Fragment>
