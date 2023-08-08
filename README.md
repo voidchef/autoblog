@@ -1,7 +1,7 @@
 # RESTful API Node Typescript Server Boilerplate
 
-[![Node.js CI](https://github.com/voidchef/node-scaffold/actions/workflows/node.js.yml/badge.svg)](https://github.com/voidchef/node-scaffold/actions/workflows/node.js.yml)
-[![codecov](https://codecov.io/gh/voidchef/node-scaffold/branch/master/graph/badge.svg?token=UYJAL9KTMD)](https://codecov.io/gh/voidchef/node-scaffold)
+[![Node.js CI](https://github.com/voidchef/autoblog/actions/workflows/node.js.yml/badge.svg)](https://github.com/voidchef/autoblog/actions/workflows/node.js.yml)
+[![codecov](https://codecov.io/gh/voidchef/autoblog/branch/master/graph/badge.svg?token=UYJAL9KTMD)](https://codecov.io/gh/voidchef/autoblog)
 
 By running a single command, you will get a production-ready Node.js TypeScript app installed and fully configured on your machine. The app comes with many built-in features, such as authentication using JWT, request validation, unit and integration tests, continuous integration, docker support, API documentation, pagination, etc. For more details, check the features list below.
 
@@ -30,7 +30,7 @@ npm init nodejs-ts-app <project-name>
 Clone the repo:
 
 ```bash
-git clone --depth 1 https://github.com/voidchef/node-scaffold.git
+git clone --depth 1 https://github.com/voidchef/autoblog.git
 cd node-express-mongoose-typescript-boilerplate
 ```
 
@@ -206,7 +206,7 @@ The environment variables can be found and modified in the `.env` file. They com
 PORT=3000
 
 # URL of the Mongo DB
-MONGODB_URL=mongodb://127.0.0.1:27017/node-scaffold
+MONGODB_URL=mongodb://127.0.0.1:27017/autoblog
 
 # JWT
 # JWT secret key

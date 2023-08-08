@@ -41,7 +41,7 @@ if (process.argv.length < 3) {
 const ownPath = process.cwd();
 const folderName = process.argv[2];
 const appPath = path.join(ownPath, folderName);
-const repo = 'https://github.com/voidchef/node-scaffold.git';
+const repo = 'https://github.com/voidchef/autoblog.git';
 
 // Check if directory already exists
 try {

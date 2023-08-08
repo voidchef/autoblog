@@ -6,7 +6,7 @@ services:
       - ./data:/data/db
   
   app:
-    container_name: node-scaffold-dev
+    container_name: autoblog-dev
     command: yarn dev -L
 
 volumes:

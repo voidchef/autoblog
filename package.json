@@ -1,12 +1,12 @@
 {
-  "name": "node-scaffold",
+  "name": "autoblog",
   "version": "1.0.0",
-  "description": "Node express mongoose typescript boilerplate",
+  "description": "AI generated blogs with images",
   "main": "dist/index.js",
   "bin": "bin/createNodetsApp.cjs",
-  "repository": "https://github.com/voidchef/node-scaffold.git",
+  "repository": "https://github.com/voidchef/autoblog.git",
   "bugs": {
-    "url": "https://github.com/voidchef/node-scaffold/issues"
+    "url": "https://github.com/voidchef/autoblog/issues"
   },
   "author": "Neelutpal Saha <neelutpal.saha@s.amity.edu>",
   "license": "MIT",

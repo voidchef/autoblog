@@ -10,7 +10,7 @@ services:
     networks:
       - backend
   app:
-    container_name: node-scaffold
+    container_name: autoblog
     build: 
       context: .
       dockerfile: Dockerfile
@@ -22,7 +22,7 @@ services:
     ports:
       - ${PORT}:${PORT}
     environment: 
-      - MONGODB_URL=mongodb://mongo:27017/node-scaffold
+      - MONGODB_URL=mongodb://mongo:27017/autoblog
       - CLIENT_URL=${CLIENT_URL}
     links: 
       - mongo  

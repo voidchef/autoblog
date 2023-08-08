@@ -12,7 +12,7 @@ on:
 
 env:
   PORT: 3000
-  MONGODB_URL: mongodb://127.0.0.1:27017/node-scaffold
+  MONGODB_URL: mongodb://127.0.0.1:27017/autoblog
   JWT_SECRET: thisisasamplesecret
   JWT_ACCESS_EXPIRATION_MINUTES: 30
   JWT_REFRESH_EXPIRATION_DAYS: 30
