@@ -38,7 +38,7 @@ const toJSON = (schema: any) => {
       // eslint-disable-next-line no-param-reassign
       delete ret.__v;
       // eslint-disable-next-line no-param-reassign
-      delete ret.createdAt;
+      // delete ret.createdAt;
       // eslint-disable-next-line no-param-reassign
       delete ret.updatedAt;
       if (transform) {
