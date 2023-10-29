@@ -3,6 +3,11 @@ export const SET_ALERT = 'SET_ALERT';
 export const REMOVE_ALERT = 'REMOVE_ALERT';
 export const ALERT_CLEAR_TIME = 4000;
 
+// App Settings
+export const APP_SETTINGS_LOAD_SUCCESS = 'APP_SETTINGS_LOAD_SUCCESS';
+export const APP_SETTINGS_LOAD_FAIL = 'APP_SETTINGS_LOAD_FAIL';
+export const RESET_APP_SETTINGS = 'RESET_APP_SETTINGS';
+
 // AWS
 export const AWS_BASEURL = `https://${import.meta.env.VITE_AWS_BUCKET}.s3.${import.meta.env.VITE_AWS_REGION}.amazonaws.com`;
 

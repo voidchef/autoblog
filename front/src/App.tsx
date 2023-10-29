@@ -19,10 +19,10 @@ import CreatePost from './components/pages/CreatePost';
 import Blog from './components/pages/Blog';
 import Alerts from './components/elements/Common/Alerts';
 import { loadUser } from './actions/user';
+import { loadAppSettings } from './actions/appSettings';
 
 if (localStorage.tokens) {
   const tokens = JSON.parse(localStorage.getItem('tokens') || '');
-  console.log(tokens);
   setAuthToken(tokens.access.token);
 }
 
@@ -42,6 +42,7 @@ export default function App() {
   React.useEffect(() => {
     const userId = store.getState().auth.userId;
     store.dispatch(loadUser(userId));
+    store.dispatch(loadAppSettings());
   }, []);
   return (
     <ThemeProvider theme={theme}>

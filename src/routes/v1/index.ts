@@ -3,6 +3,7 @@ import authRoute from './auth.route';
 import docsRoute from './swagger.route';
 import userRoute from './user.route';
 import blogRoute from './blog.route';
+import appSettingsRoute from './appSettings.route';
 import config from '../../config/config';
 
 const router = express.Router();
@@ -24,6 +25,10 @@ const defaultIRoute: IRoute[] = [
   {
     path: '/blogs',
     route: blogRoute,
+  },
+  {
+    path: '/appSettings',
+    route: appSettingsRoute,
   },
 ];
 
