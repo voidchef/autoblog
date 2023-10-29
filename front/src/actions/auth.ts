@@ -3,6 +3,7 @@ import { setAlert } from './alert';
 import { REGISTER_SUCCESS, REGISTER_FAIL, LOGIN_SUCCESS, LOGIN_FAIL, Action, ALERT_TYPE } from '../utils/consts';
 import { Dispatch } from 'redux';
 import { loadUser } from './user';
+import setAuthToken from '../utils/setAuthToken';
 
 export interface RegisterData {
   name: string;
@@ -40,12 +41,12 @@ export const login = (loginData: LoginData, navigate: Function) => async (dispat
         'Content-Type': 'application/json',
       },
     });
+    setAuthToken(res.data.tokens.access.token);
     dispatch({
       type: LOGIN_SUCCESS,
       payload: res.data,
     });
-    navigate && navigate();
-    dispatch(loadUser(res.data.user.id));
+    dispatch(loadUser(res.data.user.id, navigate));
   } catch (err: any) {
     console.log(err);
     dispatch(setAlert(err.response.data.message, ALERT_TYPE.DANGER));
