@@ -144,7 +144,7 @@ export class ChatGptHelper implements GeneratorHelperInterface {
     }
 
     if (this.postPrompt.debug) {
-      console.log(`OpenAI API initialized with model : ${this.postPrompt.model}`);
+      console.log(`OpenAI API initialized with model : ${this.postPrompt.languageModel}`);
     }
 
     this.completionParams = {
@@ -363,10 +363,10 @@ export class ChatGptHelper implements GeneratorHelperInterface {
       }
       if (chatGPTError.statusCode === 404) {
         console.log(
-          `OpenAI API Error :  Invalid model for your OpenAI subscription. Check if you can use : ${this.postPrompt.model}.`,
+          `OpenAI API Error :  Invalid model for your OpenAI subscription. Check if you can use : ${this.postPrompt.languageModel}.`,
         );
         console.log(
-          this.postPrompt.model === 'gpt-4' || this.postPrompt.model === 'gpt-4-32k'
+          this.postPrompt.languageModel === 'gpt-4' || this.postPrompt.languageModel === 'gpt-4-32k'
             ? 'You need to join the waiting list to use the GPT-4 API : https://openai.com/waitlist/gpt-4-api'
             : '',
         );

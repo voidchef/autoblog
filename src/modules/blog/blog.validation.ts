@@ -8,7 +8,7 @@ export const generateBlog: Record<keyof IGenerateBlog, any> = {
   intent: Joi.string().optional(),
   audience: Joi.string().optional(),
   language: Joi.string().required(),
-  model: Joi.string().required(),
+  languageModel: Joi.string().required(),
   tone: Joi.string().optional(),
   category: Joi.string().required(),
   tags: Joi.array().optional(),

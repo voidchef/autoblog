@@ -82,7 +82,7 @@ const blogSchema = new mongoose.Schema<IBlogDoc, IBlogModel>(
       required: true,
       trim: true,
     },
-    model: {
+    languageModel: {
       type: String,
       required: true,
       trim: true,

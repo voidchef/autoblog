@@ -7,7 +7,7 @@ export interface IGenerateBlog {
   intent?: string;
   audience?: string;
   language: string;
-  model: 'gpt-4' | 'gpt-3.5-turbo';
+  languageModel: 'gpt-4' | 'gpt-3.5-turbo';
   tone: 'informative' | 'captivating';
   category: string;
   tags?: string;
