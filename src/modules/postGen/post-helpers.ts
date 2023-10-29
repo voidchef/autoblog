@@ -3,7 +3,7 @@ import { readFile as rd } from 'fs';
 import { promisify } from 'util';
 import { log } from 'console';
 import * as dotenv from 'dotenv';
-import { ChatGPTUnofficialProxyAPI, ChatGPTError, ChatMessage, SendMessageOptions } from 'chatgpt';
+import { ChatGPTAPI, ChatGPTError, ChatMessage, SendMessageOptions } from 'chatgpt';
 import pRetry, { AbortError, FailedAttemptError } from 'p-retry';
 import {
   extractJsonArray,
@@ -76,7 +76,7 @@ export interface GeneratorHelperInterface {
 export class ChatGptHelper implements GeneratorHelperInterface {
   private postPrompt: PostPrompt;
 
-  private api!: ChatGPTUnofficialProxyAPI;
+  private api!: ChatGPTAPI;
 
   // The parent message is either the previous one in the conversation (if a template is used)
   // or the generated outline (if we are in auto mode)
@@ -131,9 +131,12 @@ export class ChatGptHelper implements GeneratorHelperInterface {
         throw new Error('No api keys found');
       }
       this.systemMessage = systemMessage;
-      this.api = new ChatGPTUnofficialProxyAPI({
-        accessToken: appSettings.apiKeys.openAi.apiKey,
-        apiReverseProxyUrl: appSettings.apiKeys.openAi.reverseProxyUrl,
+      this.api = new ChatGPTAPI({
+        apiKey: appSettings.apiKeys.openAi.apiKey,
+        apiBaseUrl: appSettings.apiKeys.openAi.reverseProxyUrl,
+        completionParams: {
+          model: this.postPrompt.languageModel,
+        },
         debug: this.postPrompt.debugapi as boolean,
       });
     } catch (error) {
