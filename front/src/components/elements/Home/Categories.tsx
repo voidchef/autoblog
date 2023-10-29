@@ -51,7 +51,7 @@ const Categories = () => {
               <ChevronLeftIcon fontSize="large" />
             </IconButton>
             {categories.slice(visibleCardIndex, visibleCardIndex + cardsToDisplay).map((category: ICategory) => (
-              <Grid item xs={8.4} sm={6} md={4} lg={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Grid key={category._id} item xs={8.4} sm={6} md={4} lg={3} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Box
                   display={'flex'}
                   flexDirection={'column'}

@@ -18,9 +18,13 @@ export const createBlog = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const getBlogs = catchAsync(async (req: Request, res: Response) => {
-  const filter = pick(req.query, ['author', 'category', 'tags', 'isFeatured', 'isDraft']);
+  const filter = pick(req.query, ['author', 'category', 'tags', 'isFeatured', 'isPublished', 'isDraft']);
   const options: IOptions = pick(req.query, ['sortBy', 'limit', 'page', 'projectBy', 'populate']);
   const result = await blogService.queryBlogs(filter, options);
+  result.results.forEach((blog: any) => {
+    // eslint-disable-next-line no-param-reassign
+    blog.content = blog.content.split(' ').slice(0, 40).join(' ');
+  });
   res.send(result);
 });
 

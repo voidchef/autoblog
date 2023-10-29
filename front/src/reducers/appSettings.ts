@@ -1,6 +1,7 @@
 import { Action, APP_SETTINGS_LOAD_SUCCESS, RESET_APP_SETTINGS } from '../utils/consts';
 
 export interface ICategory {
+  _id: string;
   categoryName: string;
   categoryDescription: string;
   categoryPicUrl: string;

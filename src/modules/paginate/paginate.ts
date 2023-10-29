@@ -59,7 +59,7 @@ const paginate = <T extends Document, U extends Model<U>>(schema: Schema<T>): vo
       });
       project = projectionCriteria.join(' ');
     } else {
-      project = '-createdAt -updatedAt';
+      project = '-updatedAt';
     }
 
     const limit = options.limit && parseInt(options.limit.toString(), 10) > 0 ? parseInt(options.limit.toString(), 10) : 10;
