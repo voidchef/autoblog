@@ -6,7 +6,7 @@ export interface IApiKeys {
     apiKey: string;
     reverseProxyUrl: string;
   };
-  bingToken: string;
+  bingToken: string[];
   googleToken: string;
 }
 

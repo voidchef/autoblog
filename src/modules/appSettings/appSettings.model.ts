@@ -16,10 +16,12 @@ const appSettingsSchema = new mongoose.Schema<IAppSettingsDoc, IAppSettingsModel
           trim: true,
         },
       },
-      bingToken: {
-        type: String,
-        trim: true,
-      },
+      bingToken: [
+        {
+          type: String,
+          trim: true,
+        },
+      ],
       googleToken: {
         type: String,
         trim: true,
