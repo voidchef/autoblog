@@ -27,7 +27,7 @@ const AllPosts = () => {
   };
 
   React.useEffect(() => {
-    dispatch(getBlogs({ limit: rowsPerPage, page, populate: 'author' }, false));
+    dispatch(getBlogs({ limit: rowsPerPage, page, populate: 'author' }));
   }, []);
 
   const handleClick = (id: string, slug: string) => {

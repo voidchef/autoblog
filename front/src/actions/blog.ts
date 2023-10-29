@@ -5,6 +5,8 @@ import {
   GET_BLOGS_FAIL,
   GET_DRAFT_SUCCESS,
   GET_DRAFT_FAIL,
+  GET_FEATURED_BLOGS_SUCCESS,
+  GET_FEATURED_BLOGS_FAIL,
   GET_BLOG_SUCCESS,
   GET_BLOG_FAIL,
   GENERATE_BLOG_SUCCESS,
@@ -30,6 +32,7 @@ export interface IBlogData {
 
 export const generateBlog = (blogData: IBlogData) => async (dispatch: Dispatch<any>) => {
   try {
+    console.log(blogData)
     const res: AxiosResponse<any> = await axios.post(
       '/v1/blogs/',
       { ...blogData },
@@ -48,13 +51,20 @@ export const generateBlog = (blogData: IBlogData) => async (dispatch: Dispatch<a
   }
 };
 
-export const getBlogs = (getParams: any, isDraft: Boolean) => async (dispatch: Dispatch<any>) => {
+export const getBlogs = (getParams: any) => async (dispatch: Dispatch<any>) => {
   try {
     const res: AxiosResponse<any> = await axios.get('/v1/blogs/', { params: { ...getParams } });
-    dispatch({
-      type: isDraft ? GET_DRAFT_SUCCESS : GET_BLOGS_SUCCESS,
-      payload: res.data.results,
-    });
+    switch (true) {
+      case getParams.isDraft:
+        dispatch({ type: GET_DRAFT_SUCCESS, payload: res.data.results });
+        break;
+      case getParams.isFeatured:
+        dispatch({ type: GET_FEATURED_BLOGS_SUCCESS, payload: res.data.results });
+        break;
+      default:
+        dispatch({ type: GET_BLOGS_SUCCESS, payload: res.data.results });
+        break;
+    }
   } catch (err: any) {
     console.log(err);
   }

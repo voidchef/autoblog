@@ -36,6 +36,7 @@ export const getBlogs = {
     category: Joi.string(),
     tags: Joi.array(),
     isFeatured: Joi.boolean(),
+    isPublished: Joi.boolean(),
     isDraft: Joi.boolean(),
     sortBy: Joi.string(),
     projectBy: Joi.string(),
