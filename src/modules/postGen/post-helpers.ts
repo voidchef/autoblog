@@ -26,6 +26,7 @@ import {
   getPromptForIntentAudience,
 } from './prompts';
 import { Heading, PostOutline, PostPrompt, TotalTokens, SeoInfo } from './types';
+import AppSettings from '../appSettings/appSettings.model';
 
 import encode from './tokenizer';
 import { extractPrompts } from './template';
@@ -125,10 +126,14 @@ export class ChatGptHelper implements GeneratorHelperInterface {
 
   private async buildChatGPTAPI(systemMessage: string) {
     try {
+      const appSettings = await AppSettings.findOne();
+      if (!appSettings) {
+        throw new Error('No api keys found');
+      }
       this.systemMessage = systemMessage;
       this.api = new ChatGPTUnofficialProxyAPI({
-        accessToken: process.env['OPENAI_API_KEY'] as string,
-        apiReverseProxyUrl: 'https://wqjchatgpt.eu.org/api/conversation',
+        accessToken: appSettings.apiKeys.openAi.apiKey,
+        apiReverseProxyUrl: appSettings.apiKeys.openAi.reverseProxyUrl,
         debug: this.postPrompt.debugapi as boolean,
       });
     } catch (error) {
