@@ -1,38 +1,13 @@
 import { Box, Grid, IconButton, SvgIcon, Typography } from '@mui/material';
 import * as React from 'react';
-import { ReactComponent as SpaceShip } from '../../assets/spaceShip.svg';
+import SpaceShip from '../../assets/spaceShip.svg?react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-
-const categories = [
-  {
-    title: 'Technology',
-    description: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-    icon: SpaceShip,
-  },
-  {
-    title: 'Business',
-    description: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-    icon: SpaceShip,
-  },
-  {
-    title: 'Startup',
-    description: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-    icon: SpaceShip,
-  },
-  {
-    title: 'Economy',
-    description: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-    icon: SpaceShip,
-  },
-  {
-    title: 'Lifestyle',
-    description: 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit.',
-    icon: SpaceShip,
-  },
-];
+import { useAppSelector } from '../../../utils/reduxHooks';
+import { ICategory } from '../../../reducers/appSettings';
 
 const Categories = () => {
+  const categories = useAppSelector((state) => state.appSettings.categories);
   const [visibleCardIndex, setVisibleCardIndex] = React.useState(0);
   const [cardsToDisplay, setCardsToDisplay] = React.useState(4);
 
@@ -49,8 +24,7 @@ const Categories = () => {
       if (window.innerWidth <= 600) {
         setVisibleCardIndex(0);
         setCardsToDisplay(1);
-      }
-      else {
+      } else {
         setVisibleCardIndex(0);
         setCardsToDisplay(4);
       }
@@ -76,7 +50,7 @@ const Categories = () => {
             <IconButton aria-label="Previous" onClick={handleLeftArrowClick} disabled={visibleCardIndex === 0}>
               <ChevronLeftIcon fontSize="large" />
             </IconButton>
-            {categories.slice(visibleCardIndex, visibleCardIndex + cardsToDisplay).map((category) => (
+            {categories.slice(visibleCardIndex, visibleCardIndex + cardsToDisplay).map((category: ICategory) => (
               <Grid item xs={8.4} sm={6} md={4} lg={3} sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Box
                   display={'flex'}
@@ -85,15 +59,19 @@ const Categories = () => {
                   padding={'2rem'}
                   sx={{ gap: { xs: 0.2, sm: 1 }, border: '2px solid #555FAC' }}
                   width={'18.5rem'}
-                  height={{xs: '12rem'}}
+                  height={{ xs: '12rem' }}
                 >
                   <Box sx={{ textAlign: 'center' }}>
-                    <SvgIcon component={category.icon} inheritViewBox fontSize="large" />
+                    <SvgIcon
+                      /* component={category.categoryPicUrl} */ component={SpaceShip}
+                      inheritViewBox
+                      fontSize="large"
+                    />
                   </Box>
                   <Typography fontSize={{ xs: '1rem', sm: '1.5rem' }} fontWeight={450} color={'black'} textAlign={'center'}>
-                    {category.title}
+                    {category.categoryName}
                   </Typography>
-                  <Typography textAlign={'center'}>{category.description}</Typography>
+                  <Typography textAlign={'center'}>{category.categoryDescription}</Typography>
                 </Box>
               </Grid>
             ))}
