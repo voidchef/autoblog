@@ -60,13 +60,14 @@ export const getBlogs = (getParams: any, isDraft: Boolean) => async (dispatch: D
   }
 };
 
-export const getBlog = (blogId: string) => async (dispatch: Dispatch<any>) => {
+export const getBlog = (blogId: string, navigate: Function) => async (dispatch: Dispatch<any>) => {
   try {
     const res: AxiosResponse<any> = await axios.get(`/v1/blogs/${blogId}`);
     dispatch({
       type: GET_BLOG_SUCCESS,
       payload: res.data,
     });
+    navigate && navigate();
   } catch (err: any) {
     console.log(err);
   }

@@ -5,17 +5,12 @@ import Footer from '../elements/Common/Footer';
 import { Typography } from '@mui/material';
 import Title from '../elements/Blog/Title';
 import { marked } from 'marked';
-import { useAppDispatch, useAppSelector } from '../../utils/reduxHooks';
-import { getBlog } from '../../actions/blog';
+import { useAppSelector } from '../../utils/reduxHooks';
 import { Helmet } from 'react-helmet-async';
 import { AWS_BASEURL } from '../../utils/consts';
 
 export default function Blog() {
   const blogData = useAppSelector((state) => state.blog.blogData);
-  const dispatch = useAppDispatch();
-  React.useEffect(() => {
-    dispatch(getBlog(''));
-  }, []);
 
   return (
     <Box>

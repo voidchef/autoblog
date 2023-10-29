@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TablePagination from '@mui/material/TablePagination';
 import { useAppDispatch, useAppSelector } from '../../../utils/reduxHooks';
-import { getBlogs } from '../../../actions/blog';
+import { getBlog, getBlogs } from '../../../actions/blog';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { AWS_BASEURL } from '../../../utils/consts';
@@ -30,11 +30,15 @@ const AllPosts = () => {
     dispatch(getBlogs({ limit: rowsPerPage, page, populate: 'author' }, false));
   }, []);
 
+  const handleClick = (id: string, slug: string) => {
+    dispatch(getBlog(id, () => navigate(`${ROUTES.BLOG}/${slug}`)));
+  };
+
   return (
     <Box sx={{ flexGrow: 1, marginX: { xs: '1rem', sm: '7rem' } }}>
       <Grid container spacing={3}>
         {allBlogs.map((post: any, index: number) => (
-          <Grid item xs={12} sm={4} key={index} onClick={() => navigate(`${ROUTES.BLOG}/${post.slug}`)}>
+          <Grid item xs={12} sm={4} key={index} onClick={() => handleClick(post.id, post.slug)}>
             <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'}>
               <img
                 src={`${AWS_BASEURL}/blogs/${post.id}/1.img`}
