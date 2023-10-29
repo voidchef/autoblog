@@ -15,7 +15,7 @@ const languages = [
   },
 ];
 
-const models = [
+const languageModels = [
   {
     value: 'gpt-3.5-turbo',
     label: 'gpt-3.5-turbo',
@@ -52,7 +52,7 @@ export default function CreatePost() {
     intent: '',
     audience: '',
     language: 'english',
-    model: 'gpt-3.5-turbo',
+    languageModel: 'gpt-3.5-turbo',
     tone: 'informative',
     category: 'technology',
     tags: '',
@@ -65,7 +65,7 @@ export default function CreatePost() {
   const userId = localStorage.getItem('userId');
 
   React.useEffect(() => {
-    dispatch(getBlogs({ isDraft: true, author: userId }, true));
+    dispatch(getBlogs({ isDraft: true, author: userId }));
   }, []);
 
   React.useEffect(() => {
@@ -79,7 +79,7 @@ export default function CreatePost() {
         intent: fetchedBlogData ? fetchedBlogData.intent : '',
         audience: fetchedBlogData ? fetchedBlogData.audience : '',
         language: fetchedBlogData ? fetchedBlogData.language : '',
-        model: fetchedBlogData ? fetchedBlogData.model : '',
+        languageModel: fetchedBlogData ? fetchedBlogData.languageModel : '',
         tone: fetchedBlogData ? fetchedBlogData.tone : '',
         category: fetchedBlogData ? fetchedBlogData.category : '',
         tags: fetchedBlogData ? fetchedBlogData.tags : '',
@@ -206,15 +206,15 @@ export default function CreatePost() {
             <TextField
               required
               select
-              id="outlined-select-model"
-              label="model"
-              value={formData.model}
+              id="outlined-select-languageModel"
+              label="languageModel"
+              value={formData.languageModel}
               defaultValue="gpt-3.5-turbo"
-              helperText="Please select generation model"
-              onChange={handleFormDataChange('model')}
+              helperText="Please select generation languageModel"
+              onChange={handleFormDataChange('languageModel')}
               sx={{ width: { sm: '16rem' } }}
             >
-              {models.map((option) => (
+              {languageModels.map((option) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>

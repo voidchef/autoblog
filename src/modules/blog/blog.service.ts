@@ -26,10 +26,10 @@ export const createBlog = async (blogBody: NewCreatedBlog): Promise<IBlogDoc> =>
  * @returns {Promise<IBlogDoc>}
  */
 export const generateBlog = async (generateBlogData: IGenerateBlog, author: mongoose.Types.ObjectId): Promise<IBlogDoc> => {
-  const { category, tags, topic, ...prompt } = generateBlogData;
+  const { category, tags, ...prompt } = generateBlogData;
   const postGenerator = new OpenAIPostGenerator(prompt);
   const post: Post = await postGenerator.generate();
-  await imgGen(topic);
+  await imgGen(prompt.topic);
   const additionalData: { category: string; author: mongoose.Types.ObjectId; tags?: string[] } = { category, author };
   if (tags) {
     additionalData.tags = tags!.split(/\s*,\s*/).map((tag: string) => tag.trim());
