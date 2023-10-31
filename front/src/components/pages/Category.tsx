@@ -4,8 +4,28 @@ import NavBar from '../elements/Common/NavBar';
 import Posts from '../elements/Category/Posts';
 import Footer from '../elements/Common/Footer';
 import Title from '../elements/Category/Title';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../utils/reduxHooks';
+import { ROUTES } from '../../utils/routing/routes';
+import { ICategory } from '../../reducers/appSettings';
 
 export default function Category() {
+  const { categoryName } = useParams();
+
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const categories = useAppSelector((state) => state.appSettings.categories);
+  const category = categories.find(
+    (cat: ICategory) => cat.categoryName.toLocaleLowerCase() === categoryName?.toLocaleLowerCase(),
+  );
+
+  React.useEffect(() => {
+    if (!category) {
+      navigate(ROUTES.ROOT);
+    }
+  }, []);
+
   return (
     <Box>
       <Box
@@ -16,10 +36,10 @@ export default function Category() {
         bgcolor={'#E9EAF4'}
       >
         <NavBar />
-        <Title />
+        {category && <Title category={category} />}
       </Box>
       <Box sx={{ my: 4 }} />
-      <Posts />
+      {category && <Posts category={category.categoryName.toLocaleLowerCase()} />}
       <Footer />
     </Box>
   );

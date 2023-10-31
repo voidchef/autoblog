@@ -5,11 +5,14 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useAppSelector } from '../../../utils/reduxHooks';
 import { ICategory } from '../../../reducers/appSettings';
+import { useNavigate } from 'react-router-dom';
 
 const Categories = () => {
   const categories = useAppSelector((state) => state.appSettings.categories);
   const [visibleCardIndex, setVisibleCardIndex] = React.useState(0);
   const [cardsToDisplay, setCardsToDisplay] = React.useState(4);
+
+  const navigate = useNavigate();
 
   const handleLeftArrowClick = () => {
     setVisibleCardIndex((prevIndex) => Math.max(0, prevIndex - 1));
@@ -34,6 +37,10 @@ const Categories = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const handleClick = (categoryName: string) => {
+    navigate(`/category/${categoryName}`);
+  };
+
   return (
     <>
       <Box display="flex" flexDirection="column" alignItems="center" width={'100%'}>
@@ -51,7 +58,16 @@ const Categories = () => {
               <ChevronLeftIcon fontSize="large" />
             </IconButton>
             {categories.slice(visibleCardIndex, visibleCardIndex + cardsToDisplay).map((category: ICategory) => (
-              <Grid key={category._id} item xs={8.4} sm={6} md={4} lg={3} sx={{ display: 'flex', justifyContent: 'center' }}>
+              <Grid
+                key={category._id}
+                item
+                xs={8.4}
+                sm={6}
+                md={4}
+                lg={3}
+                sx={{ display: 'flex', justifyContent: 'center' }}
+                onClick={() => handleClick(category.categoryName.toLocaleLowerCase())}
+              >
                 <Box
                   display={'flex'}
                   flexDirection={'column'}

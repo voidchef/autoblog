@@ -71,7 +71,7 @@ export default function App() {
                 <Route path={ROUTES.ROOT} element={<Home />} />
                 <Route path={ROUTES.CONTACTUS} element={<ContactUs />} />
                 <Route path={ROUTES.ABOUTUS} element={<AboutUs />} />
-                <Route path={ROUTES.CATEGORY} element={<Category />} />
+                <Route path={`${ROUTES.CATEGORY}/:categoryName`} element={<Category />} />
                 <Route path={ROUTES.ALLPOSTS} element={<AllPosts />} />
                 <Route path={`${ROUTES.BLOG}/:slug`} element={<Blog />} />
                 <Route
