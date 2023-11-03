@@ -18,7 +18,7 @@ const Alerts = () => {
       right={0}
       position="fixed"
       zIndex={10000}
-      display={'flex'}
+      display={alerts.length > 0 ? 'flex' : 'none'}
       flexDirection={'column'}
       justifyContent={'flex-end'}
       padding={'2rem'}
