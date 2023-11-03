@@ -11,11 +11,12 @@ export const loadAppSettings = () => async (dispatch: Dispatch<any>) => {
       payload: res.data,
     });
   } catch (err: any) {
-    if (!err.response.data.errors) {
+    /* if (!err.response.data.errors) {
       dispatch(setAlert('Server Not Running', ALERT_TYPE.DANGER));
     } else {
       if (err.response.status === 401) return;
       dispatch(setAlert(err.response.data.errors.message, ALERT_TYPE.DANGER));
-    }
+    } */
+    dispatch(setAlert('Server Not Running', ALERT_TYPE.DANGER));
   }
 };

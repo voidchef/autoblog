@@ -13,7 +13,6 @@ import {
 import { Dispatch } from 'redux';
 
 export const loadUser = (userId: String, navigate?: Function) => async (dispatch: Dispatch<any>) => {
-  console.log(axios.defaults.headers.common);
   try {
     dispatch({ type: LOADING_USER });
     const res: AxiosResponse<any> = await axios.get(`/v1/users/${userId}`);
@@ -24,6 +23,7 @@ export const loadUser = (userId: String, navigate?: Function) => async (dispatch
     navigate && navigate();
   } catch (err: any) {
     console.log(err);
+    if (err.response.status === 401) return;
     dispatch(setAlert(err.response.data.message, ALERT_TYPE.DANGER));
   }
 };
