@@ -25,7 +25,7 @@ export default function DarkMode() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        bgcolor: 'background.default',
+        bgcolor: 'transparent',
         color: 'text.primary',
         borderRadius: 1,
       }}

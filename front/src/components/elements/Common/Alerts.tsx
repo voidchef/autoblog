@@ -7,9 +7,10 @@ import { Fragment } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import AlertTitle from '@mui/material/AlertTitle';
 import Slide from '@mui/material/Slide';
+import { useAppSelector } from '../../../utils/reduxHooks';
 
 const Alerts = () => {
-  const alerts = useSelector<RootState, AlertPayload[]>((state) => state.alert);
+  const alerts = useAppSelector((state) => state.alert);
   const dispatch = useDispatch();
 
   return (

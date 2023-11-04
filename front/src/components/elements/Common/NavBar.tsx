@@ -77,6 +77,7 @@ export default function DrawerAppBar(props: Props) {
             </ListItemButton>
           </ListItem>
         ))}
+        <DarkMode />
       </List>
     </Box>
   );

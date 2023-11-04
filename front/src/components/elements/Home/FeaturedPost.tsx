@@ -115,8 +115,8 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
             <Button variant="text">View All</Button>
           </Box>
           <Box display={'flex'} flexDirection={'column'} sx={{ gap: 2 }}>
-            {posts.map((post) => (
-              <Box display={'flex'} flexDirection={'column'} sx={{ gap: 1 }}>
+            {posts.map((post, index) => (
+              <Box key={index} display={'flex'} flexDirection={'column'} sx={{ gap: 1 }}>
                 <Typography fontSize={{ xs: 15 }} component="div" sx={{ flexGrow: 1 }}>
                   By <span style={{ color: '#555FAC' }}>{post.author}</span> | {post.date}
                 </Typography>
