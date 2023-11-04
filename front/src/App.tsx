@@ -1,15 +1,15 @@
 import * as React from 'react';
+import CssBaseline from '@mui/material/CssBaseline';
 import Home from './components/pages/Home';
 import SignInSide from './components/pages/SignInSide';
 import setAuthToken from './utils/setAuthToken';
 import store from './store';
-import { Provider } from 'react-redux';
 import { Route, Routes } from 'react-router-dom';
-import { ThemeProvider } from '@emotion/react';
-import theme from './theme';
+import { ThemeProvider } from '@mui/material/styles';
+import { lightTheme, darkTheme } from './theme';
 import { ROUTES } from './utils/routing/routes';
 import PrivateRoute from './utils/routing/PrivateRoute';
-import { Box } from '@mui/material';
+import Box from '@mui/material/Box';
 import Loading from './components/elements/Loading/Loading';
 import ContactUs from './components/pages/ContactUs';
 import AboutUs from './components/pages/AboutUs';
@@ -20,6 +20,7 @@ import Blog from './components/pages/Blog';
 import Alerts from './components/elements/Common/Alerts';
 import { loadUser } from './actions/user';
 import { loadAppSettings } from './actions/appSettings';
+import { useAppSelector } from './utils/reduxHooks';
 
 if (localStorage.tokens) {
   const tokens = JSON.parse(localStorage.getItem('tokens') || '');
@@ -27,6 +28,9 @@ if (localStorage.tokens) {
 }
 
 export default function App() {
+  const userId = useAppSelector((state) => state.auth.userId);
+  const themeMode = useAppSelector((state) => state.appSettings.themeMode);
+
   /* const isAuthenticated = store.getState().user.isAuthenticated;
   React.useEffect(() => {
     const handleTokenChange = (e: StorageEvent) => {
@@ -39,54 +43,56 @@ export default function App() {
       window.removeEventListener('storage', handleTokenChange);
     };
   }, []); */
+
   React.useEffect(() => {
-    const userId = store.getState().auth.userId;
-    store.dispatch(loadUser(userId));
-    store.dispatch(loadAppSettings());
-  }, []);
+    if (userId) {
+      store.dispatch(loadUser(userId));
+      store.dispatch(loadAppSettings());
+    }
+  }, [userId]);
+
   return (
-    <ThemeProvider theme={theme}>
-      <Provider store={store}>
-        <React.Suspense
-          fallback={
-            <Box height="100vh" display="flex" justifyContent="center" alignItems="center">
-              <Box
-                width={{
-                  xl: '55%',
-                  md: '50%',
-                  sm: '40%',
-                  xs: '60%',
-                }}
-              >
-                <Loading />
-              </Box>
+    <ThemeProvider theme={themeMode === 'light' ? lightTheme : darkTheme}>
+      <CssBaseline />
+      <React.Suspense
+        fallback={
+          <Box height="100vh" display="flex" justifyContent="center" alignItems="center">
+            <Box
+              width={{
+                xl: '55%',
+                md: '50%',
+                sm: '40%',
+                xs: '60%',
+              }}
+            >
+              <Loading />
             </Box>
-          }
-        >
-          <React.Fragment>
-            <Alerts />
-            <section>
-              <Routes>
-                <Route path={ROUTES.LOGIN} element={<SignInSide />} />
-                <Route path={ROUTES.ROOT} element={<Home />} />
-                <Route path={ROUTES.CONTACTUS} element={<ContactUs />} />
-                <Route path={ROUTES.ABOUTUS} element={<AboutUs />} />
-                <Route path={`${ROUTES.CATEGORY}/:categoryName`} element={<Category />} />
-                <Route path={ROUTES.ALLPOSTS} element={<AllPosts />} />
-                <Route path={`${ROUTES.BLOG}/:slug`} element={<Blog />} />
-                <Route
-                  path={ROUTES.CREATEPOST}
-                  element={
-                    <PrivateRoute>
-                      <CreatePost />
-                    </PrivateRoute>
-                  }
-                />
-              </Routes>
-            </section>
-          </React.Fragment>
-        </React.Suspense>
-      </Provider>
+          </Box>
+        }
+      >
+        <React.Fragment>
+          <Alerts />
+          <section>
+            <Routes>
+              <Route path={ROUTES.LOGIN} element={<SignInSide />} />
+              <Route path={ROUTES.ROOT} element={<Home />} />
+              <Route path={ROUTES.CONTACTUS} element={<ContactUs />} />
+              <Route path={ROUTES.ABOUTUS} element={<AboutUs />} />
+              <Route path={`${ROUTES.CATEGORY}/:categoryName`} element={<Category />} />
+              <Route path={ROUTES.ALLPOSTS} element={<AllPosts />} />
+              <Route path={`${ROUTES.BLOG}/:slug`} element={<Blog />} />
+              <Route
+                path={ROUTES.CREATEPOST}
+                element={
+                  <PrivateRoute>
+                    <CreatePost />
+                  </PrivateRoute>
+                }
+              />
+            </Routes>
+          </section>
+        </React.Fragment>
+      </React.Suspense>
     </ThemeProvider>
   );
 }

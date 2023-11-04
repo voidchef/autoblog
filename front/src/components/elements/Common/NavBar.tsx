@@ -16,6 +16,7 @@ import Account from './Account';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { useAppSelector } from '../../../utils/reduxHooks';
+import DarkMode from './DarkMode';
 
 interface Props {
   /**
@@ -112,6 +113,7 @@ export default function DrawerAppBar(props: Props) {
             AUTOBLOG
           </Typography>
           <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2 }}>
+            <DarkMode />
             {navItems.map((item) => (
               <Button key={item} variant={'text'} sx={{ color: '#320D9A' }} onClick={() => handleNavigation(item)}>
                 {item}

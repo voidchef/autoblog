@@ -11,9 +11,7 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import { ThemeProvider } from '@mui/material/styles';
 import { register, RegisterData, login, LoginData } from '../../actions/auth';
-import theme from '../../theme';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../utils/routing/routes';
 import { useAppDispatch } from '../../utils/reduxHooks';
@@ -56,9 +54,7 @@ export default function SignInSide() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: '100vh' }}>
-        <CssBaseline />
         <Grid
           item
           xs={false}
@@ -158,6 +154,5 @@ export default function SignInSide() {
           </Box>
         </Grid>
       </Grid>
-    </ThemeProvider>
   );
 }

@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { Dispatch } from 'react';
-import { APP_SETTINGS_LOAD_SUCCESS, APP_SETTINGS_LOAD_FAIL, ALERT_TYPE } from '../utils/consts';
+import { APP_SETTINGS_LOAD_SUCCESS, APP_SETTINGS_LOAD_FAIL, SET_THEME_MODE, ALERT_TYPE } from '../utils/consts';
 import { setAlert } from './alert';
 
 export const loadAppSettings = () => async (dispatch: Dispatch<any>) => {
@@ -18,5 +18,16 @@ export const loadAppSettings = () => async (dispatch: Dispatch<any>) => {
       dispatch(setAlert(err.response.data.errors.message, ALERT_TYPE.DANGER));
     } */
     dispatch(setAlert('Server Not Running', ALERT_TYPE.DANGER));
+  }
+};
+
+export const changeThemeMode = (themeMode: string) => async (dispatch: Dispatch<any>) => {
+  try {
+    dispatch({
+      type: SET_THEME_MODE,
+      payload: themeMode,
+    });
+  } catch (err: any) {
+    console.log(err);
   }
 };
