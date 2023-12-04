@@ -23,6 +23,7 @@ export const loadUser = (userId: String, navigate?: Function) => async (dispatch
     navigate && navigate();
   } catch (err: any) {
     console.log(err);
+    dispatch({ type: USER_LOAD_FAIL });
     if (err.response.status === 401) return;
     dispatch(setAlert(err.response.data.message, ALERT_TYPE.DANGER));
   }

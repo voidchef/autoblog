@@ -17,13 +17,13 @@ export type UserData = {
 };
 
 interface UserReducerState {
-  isAuthenticated: boolean;
+  isAuthenticated: boolean | null;
   userData: UserData;
   loading: boolean;
 }
 
 const initialState: UserReducerState = {
-  isAuthenticated: false,
+  isAuthenticated: null,
   userData: {},
   loading: false,
 };
@@ -39,6 +39,12 @@ const userReducer = (state = initialState, action: Action) => {
         isAuthenticated: true,
         loading: false,
       };
+    case USER_LOAD_FAIL:
+      return {
+        ...state,
+        isAuthenticated: false,
+        loading: false,
+      };
     case LOADING_USER:
       return { ...state, loading: true };
     case LOGOUT:
@@ -46,7 +52,7 @@ const userReducer = (state = initialState, action: Action) => {
       localStorage.removeItem('userId');
       return {
         ...initialState,
-        isAuthenticated: false,
+        isAuthenticated: null,
       };
     default:
       return state;
