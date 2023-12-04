@@ -17,12 +17,14 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { useAppSelector } from '../../../utils/reduxHooks';
 import DarkMode from './DarkMode';
+import useScrollTrigger from '@mui/material/useScrollTrigger';
 
 interface Props {
   /**
    * Injected by the documentation to work in an iframe.
    * You won't need it on your project.
    */
+  children?: any;
   window?: () => Window;
 }
 
@@ -63,6 +65,24 @@ export default function DrawerAppBar(props: Props) {
     }
   };
 
+  function ElevationScroll(props: Props) {
+    const { children, window } = props;
+    const trigger = useScrollTrigger({
+      disableHysteresis: true,
+      threshold: 0,
+      target: window ? window() : undefined,
+    });
+
+    return React.cloneElement(children, {
+      elevation: trigger ? 2 : 0,
+      sx: {
+        backgroundColor: trigger ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0)',
+        backdropFilter: trigger ? 'blur(5px)' : 'blur(0px)',
+        transition: '0.3s',
+      },
+    });
+  }
+
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
       <Typography variant="h6" sx={{ my: 2 }} onClick={() => navigate(ROUTES.ROOT)}>
@@ -85,55 +105,58 @@ export default function DrawerAppBar(props: Props) {
   const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: 'flex', my: 3 }}>
-      <AppBar component="nav" color="transparent" elevation={0}>
-        <Toolbar>
-          <Box width={'100%'} display={{ sm: 'none', xs: 'flex' }} justifyContent={'space-between'}>
-            <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2 }}>
-              <MenuIcon />
-            </IconButton>
-            {authenticated ? (
-              <Account />
-            ) : (
-              <Button
-                variant={'contained'}
-                sx={{ backgroundColor: '#320D9A', color: 'white' }}
-                onClick={() => handleNavigation('Log In')}
-              >
-                Log In
-              </Button>
-            )}
-          </Box>
-          <Typography
-            variant="h6"
-            component="div"
-            color={'primary'}
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
-            onClick={() => navigate(ROUTES.ROOT)}
-          >
-            AUTOBLOG
-          </Typography>
-          <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2 }}>
-            <DarkMode />
-            {navItems.map((item) => (
-              <Button key={item} variant={'text'} sx={{ color: '#320D9A' }} onClick={() => handleNavigation(item)}>
-                {item}
-              </Button>
-            ))}
-            {authenticated ? (
-              <Account />
-            ) : (
-              <Button
-                variant={'contained'}
-                sx={{ backgroundColor: '#320D9A', color: 'white' }}
-                onClick={() => handleNavigation('Log In')}
-              >
-                Log In
-              </Button>
-            )}
-          </Box>
-        </Toolbar>
-      </AppBar>
+    <Box sx={{ display: 'flex', my: 2 }}>
+      <ElevationScroll {...props}>
+        <AppBar component="nav" color="transparent" elevation={0}>
+          <Toolbar>
+            <Box width={'100%'} display={{ sm: 'none', xs: 'flex' }} justifyContent={'space-between'}>
+              <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2 }}>
+                <MenuIcon />
+              </IconButton>
+              {authenticated ? (
+                <Account />
+              ) : (
+                <Button
+                  variant={'contained'}
+                  sx={{ backgroundColor: '#320D9A', color: 'white' }}
+                  onClick={() => handleNavigation('Log In')}
+                >
+                  Log In
+                </Button>
+              )}
+            </Box>
+            <Typography
+              variant="h6"
+              component="div"
+              color={'primary'}
+              sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+              onClick={() => navigate(ROUTES.ROOT)}
+            >
+              AUTOBLOG
+            </Typography>
+            <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2 }}>
+              <DarkMode />
+              {navItems.map((item) => (
+                <Button key={item} variant={'text'} sx={{ color: '#320D9A' }} onClick={() => handleNavigation(item)}>
+                  {item}
+                </Button>
+              ))}
+              {authenticated ? (
+                <Account />
+              ) : (
+                <Button
+                  variant={'contained'}
+                  sx={{ backgroundColor: '#320D9A', color: 'white' }}
+                  onClick={() => handleNavigation('Log In')}
+                >
+                  Log In
+                </Button>
+              )}
+            </Box>
+          </Toolbar>
+        </AppBar>
+      </ElevationScroll>
+      <Toolbar />
       <Box component="nav">
         <Drawer
           container={container}
