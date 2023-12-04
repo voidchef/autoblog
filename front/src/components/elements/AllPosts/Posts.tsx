@@ -36,45 +36,55 @@ const AllPosts = () => {
 
   return (
     <Box sx={{ flexGrow: 1, marginX: { xs: '1rem', sm: '7rem' } }}>
-      <Grid container spacing={3}>
-        {allBlogs.map((post: any, index: number) => (
-          <Grid item xs={12} sm={4} key={index} onClick={() => handleClick(post.id, post.slug)}>
-            <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'}>
-              <img
-                src={`${AWS_BASEURL}/blogs/${post.id}/1.img`}
-                alt={post.topic}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </Box>
-            <Box display="flex" flexDirection="column" justifyContent="space-between">
-              <Typography fontSize={{ sm: 15 }} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
-                By <span style={{ color: '#555FAC' }}>{post.author.name}</span> |{' '}
-                {new Date(post.createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </Typography>
-              <Typography fontSize={{ sm: 22 }} fontWeight={500} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
-                {post.title}
-              </Typography>
-              <Typography fontSize={{ sm: 18 }} component="div" sx={{ flexGrow: 1 }}>
-                {`${post.content.slice(0, 255)}...`}
-              </Typography>
-            </Box>
+      {allBlogs.length === 0 ? (
+        <Box display={'flex'} justifyContent={'center'} margin={3}>
+          <Typography fontSize={{ sm: 22 }} fontWeight={500} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
+            No blogs found
+          </Typography>
+        </Box>
+      ) : (
+        <React.Fragment>
+          <Grid container spacing={3}>
+            {allBlogs.map((post: any, index: number) => (
+              <Grid item xs={12} sm={4} key={index} onClick={() => handleClick(post.id, post.slug)}>
+                <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'}>
+                  <img
+                    src={`${AWS_BASEURL}/blogs/${post.id}/1.img`}
+                    alt={post.topic}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </Box>
+                <Box display="flex" flexDirection="column" justifyContent="space-between">
+                  <Typography fontSize={{ sm: 15 }} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
+                    By <span style={{ color: '#555FAC' }}>{post.author.name}</span> |{' '}
+                    {new Date(post.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </Typography>
+                  <Typography fontSize={{ sm: 22 }} fontWeight={500} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
+                    {post.title}
+                  </Typography>
+                  <Typography fontSize={{ sm: 18 }} component="div" sx={{ flexGrow: 1 }}>
+                    {`${post.content.slice(0, 255)}...`}
+                  </Typography>
+                </Box>
+              </Grid>
+            ))}
           </Grid>
-        ))}
-      </Grid>
-      <Box display={'flex'} justifyContent={'center'} margin={3}>
-        <TablePagination
-          component="div"
-          count={100}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Box>
+          <Box display={'flex'} justifyContent={'center'} margin={3}>
+            <TablePagination
+              component="div"
+              count={100}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+            />
+          </Box>
+        </React.Fragment>
+      )}
     </Box>
   );
 };

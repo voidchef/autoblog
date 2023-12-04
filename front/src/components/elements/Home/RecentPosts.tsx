@@ -5,42 +5,16 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
+import { IBlog } from '../../../reducers/blog';
 
-const posts = [
-  {
-    author: 'James West',
-    title: 'Figma design systems that you can download for free today.',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc porta, nisi vel pulvinar tincidunt, arcu diam molestie metus, id viverra ante dolor ultrices nisl. Sed ut elit fringilla',
-    date: 'May 23, 2022',
-  },
-  {
-    author: 'James West',
-    title: '8 Figma design systems that you can download for free today.',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc porta, nisi vel pulvinar tincidunt, arcu diam molestie metus, id viverra ante dolor ultrices nisl. Sed ut elit fringilla',
-    date: 'May 23, 2022',
-  },
-  {
-    author: 'James West',
-    title: 'Figma design systems that you can download for free today.',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc porta, nisi vel pulvinar tincidunt, arcu diam molestie metus, id viverra ante dolor ultrices nisl. Sed ut elit fringilla',
-    date: 'May 23, 2022',
-  },
-  {
-    author: 'James West',
-    title: 'Figma design systems that you can download for free today.',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc porta, nisi vel pulvinar tincidunt, arcu diam molestie metus, id viverra ante dolor ultrices nisl. Sed ut elit fringilla',
-    date: 'May 23, 2022',
-  },
-];
+interface RecentPostProps {
+  recentBlogs: IBlog[];
+}
 
-const RecentPosts = () => {
-  const navigate = useNavigate()
+const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
+  const navigate = useNavigate();
   return (
-    <>
+    <React.Fragment>
       <Box display="flex" flexDirection="row" justifyContent="space-between">
         <Typography
           variant="h2"
@@ -52,7 +26,9 @@ const RecentPosts = () => {
         >
           Recent Posts
         </Typography>
-        <Button variant="text" onClick={() => navigate(ROUTES.ALLPOSTS) }>View All</Button>
+        <Button variant="text" onClick={() => navigate(ROUTES.ALLPOSTS)}>
+          View All
+        </Button>
       </Box>
       <Grid
         container
@@ -63,24 +39,31 @@ const RecentPosts = () => {
           padding: { xs: 2, sm: 5 },
         }}
       >
-        {posts.map((post, index) => (
-          <Grid item xs={12} sm={5.75} key={index}>
+        {recentBlogs.map((post, index) => (
+          <Grid item xs={12} sm={5.55} key={index}>
             <Box sx={{ p: 1, background: '#E9EAF4' }} height={{ xs: '15rem', sm: '18rem' }} marginBottom={4} />
             <Box display={'flex'} flexDirection={'column'} justifyContent={'space-between'}>
               <Typography fontSize={{ sm: 15 }} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
-                By <span style={{ color: '#555FAC' }}>{post.author}</span> | {post.date}
+                By <span style={{ color: '#555FAC' }}>{post.author.name}</span> |{' '}
+                <span style={{ color: '#6D6E76' }}>
+                  {new Date(post.createdAt).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </span>
               </Typography>
               <Typography fontSize={{ sm: 22 }} fontWeight={500} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
-                {post.title}
+                {post.topic}
               </Typography>
               <Typography fontSize={{ sm: 18 }} component="div" sx={{ flexGrow: 1 }}>
-                {post.description}
+                {`${post.content.slice(0, 255)}...`}
               </Typography>
             </Box>
           </Grid>
         ))}
       </Grid>
-    </>
+    </React.Fragment>
   );
 };
 

@@ -12,17 +12,17 @@ import { getBlogs } from '../../actions/blog';
 export default function Home() {
   const dispatch = useAppDispatch();
 
-  const allBlogs = useAppSelector((state) => state.blog.allBlogs);
+  const recentBlogs = useAppSelector((state) => state.blog.allBlogs);
   const featuredBlogs = useAppSelector((state) => state.blog.featuredBlogs);
 
   React.useEffect(() => {
-    dispatch(getBlogs({ limit: 10, populate: 'author', isFeatured: true, isPublished: true }));
-    dispatch(getBlogs({ limit: 10, populate: 'author', isPublished: true, sortBy: 'createdAt' }));
+    dispatch(getBlogs({ limit: 6, populate: 'author', isFeatured: true, isPublished: true }));
+    dispatch(getBlogs({ limit: 4, populate: 'author', isPublished: true, isFeatured: false, sortBy: 'createdAt' }));
   }, []);
 
   return (
     <Box>
-      <Box display={'flex'} flexDirection={'column'} justifyContent={'space-between'} sx={{ gap: { xs: 2, sm: 5 } }}>
+      <Box>
         <NavBar />
         <Headline />
       </Box>
@@ -51,7 +51,7 @@ export default function Home() {
         justifyContent={'space-between'}
         sx={{ marginX: { xs: '1rem', sm: '7rem' } }}
       >
-        <RecentPosts />
+        {recentBlogs.length > 0 && <RecentPosts recentBlogs={recentBlogs} />}
       </Box>
       <Box sx={{ my: 4 }} />
       <Footer />

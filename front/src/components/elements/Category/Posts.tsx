@@ -11,7 +11,7 @@ import { ROUTES } from '../../../utils/routing/routes';
 import { AWS_BASEURL } from '../../../utils/consts';
 
 const AllPosts = ({ category }: { category: String }) => {
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const allBlogs = useAppSelector((state) => state.blog.allBlogs);
 
@@ -21,7 +21,6 @@ const AllPosts = ({ category }: { category: String }) => {
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
   };
-  console.log('allBlogs', category);
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
@@ -37,12 +36,12 @@ const AllPosts = ({ category }: { category: String }) => {
   };
 
   return (
-    <>
-      {allBlogs.length > 0 && (
-        <Box sx={{ flexGrow: 1, marginX: { xs: '1rem', sm: '7rem' } }}>
-          <Grid container spacing={2}>
-            <Grid container item xs={12} sm={8} spacing={2}>
-              {allBlogs.map((post: any, index: number) => (
+    <React.Fragment>
+      <Box sx={{ flexGrow: 1, marginX: { xs: '1rem', sm: '7rem' } }}>
+        <Grid container spacing={2}>
+          <Grid container item xs={12} sm={8} spacing={2}>
+            {allBlogs.length > 0 ? (
+              allBlogs.map((post: any, index: number) => (
                 <Grid item xs={12} sm={6} key={index} onClick={() => handleClick(post.id, post.slug)}>
                   <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'} marginBottom={4}>
                     <img
@@ -68,15 +67,29 @@ const AllPosts = ({ category }: { category: String }) => {
                     </Typography>
                   </Box>
                 </Grid>
-              ))}
-            </Grid>
-            <Grid item xs={12} sm={4} sx={{ marginBottom: '2rem' }}>
-              <AllTags />
-            </Grid>
+              ))
+            ) : (
+              <Typography
+                variant="h5"
+                component="div"
+                sx={{
+                  flexGrow: 1,
+                  marginBottom: 1,
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                No posts found
+              </Typography>
+            )}
           </Grid>
-        </Box>
-      )}
-      <Box display={'flex'} justifyContent={'center'} margin={3}>
+          <Grid item xs={12} sm={4} sx={{ marginBottom: '2rem' }}>
+            <AllTags />
+          </Grid>
+        </Grid>
+      </Box>
+      <Box display={'flex'} justifyContent={'center'} alignItems={'center'} margin={3}>
         <TablePagination
           component="div"
           count={100}
@@ -86,7 +99,7 @@ const AllPosts = ({ category }: { category: String }) => {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Box>
-    </>
+    </React.Fragment>
   );
 };
 
