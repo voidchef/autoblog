@@ -5,14 +5,13 @@ import Posts from '../elements/Category/Posts';
 import Footer from '../elements/Common/Footer';
 import Title from '../elements/Category/Title';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../utils/reduxHooks';
+import { useAppSelector } from '../../utils/reduxHooks';
 import { ROUTES } from '../../utils/routing/routes';
 import { ICategory } from '../../reducers/appSettings';
 
 export default function Category() {
   const { categoryName } = useParams();
 
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const categories = useAppSelector((state) => state.appSettings.categories);

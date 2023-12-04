@@ -85,7 +85,6 @@ export default function AccountMenu() {
         id="account-menu"
         open={open}
         onClose={() => setAnchorEl(null)}
-        onClick={() => handleClose(ROUTES.CREATEPOST)}
         PaperProps={{
           elevation: 0,
           sx: {
@@ -133,9 +132,9 @@ export default function AccountMenu() {
           <ListItemIcon>
             <BookIcon fontSize="small" />
           </ListItemIcon>
-          Manage Blogs
+          New Post
         </MenuItem>
-        <MenuItem onClick={() => handleClose(ROUTES.CREATEPOST)}>
+        <MenuItem onClick={() => handleClose(ROUTES.DASHBOARD)}>
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
