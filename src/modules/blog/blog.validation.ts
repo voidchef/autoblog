@@ -38,6 +38,7 @@ export const getBlogs = {
     isFeatured: Joi.boolean(),
     isPublished: Joi.boolean(),
     isDraft: Joi.boolean(),
+    views: Joi.boolean(),
     sortBy: Joi.string(),
     projectBy: Joi.string(),
     limit: Joi.number().integer(),
@@ -49,6 +50,14 @@ export const getBlogs = {
 export const getBlog = {
   params: Joi.object().keys({
     blogId: Joi.string().custom(objectId),
+  }),
+};
+
+export const getViews = {
+  query: Joi.object().keys({
+    startDate: Joi.string().required(),
+    endDate: Joi.string().required(),
+    slug: Joi.string().required(),
   }),
 };
 

@@ -16,3 +16,6 @@ dist
 
 # docker volume
 data
+
+# google cloud credentials
+service-account.json

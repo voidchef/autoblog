@@ -7,6 +7,7 @@ import { IGenerateBlog, NewCreatedBlog, UpdateBlogBody, IBlogDoc } from './blog.
 import { OpenAIPostGenerator, Post } from '../postGen';
 import { imgGen } from '../imgGen';
 import { uploadFilesToBucket } from '../aws';
+import runReport, { IRunReportResponse } from '../utils/analytics';
 
 /**
  * Create a blog post
@@ -87,4 +88,19 @@ export const deleteBlogById = async (blogId: mongoose.Types.ObjectId): Promise<I
   }
   await blog.deleteOne();
   return blog;
+};
+
+/**
+ * Get Blog Views
+ * @param {string} slug
+ * @param {string} startDate
+ * @param {string} endDate
+ * @returns {Promise<IRunReportResponse | null>}
+ */
+export const getBlogViews = async (startDate: string, endDate: string, slug: string): Promise<IRunReportResponse | null> => {
+  const views = await runReport(startDate, endDate, slug);
+  if (!views) {
+    throw new Error('Error getting views');
+  }
+  return views;
 };

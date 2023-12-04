@@ -4,7 +4,7 @@ import Home from './components/pages/Home';
 import SignInSide from './components/pages/SignInSide';
 import setAuthToken from './utils/setAuthToken';
 import store from './store';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { lightTheme, darkTheme } from './theme';
 import { ROUTES } from './utils/routing/routes';
@@ -21,13 +21,18 @@ import Alerts from './components/elements/Common/Alerts';
 import { loadUser } from './actions/user';
 import { loadAppSettings } from './actions/appSettings';
 import { useAppSelector } from './utils/reduxHooks';
+import ReactGA from 'react-ga4';
 
 if (localStorage.tokens) {
   const tokens = JSON.parse(localStorage.getItem('tokens') || '');
   setAuthToken(tokens.access.token);
 }
 
+ReactGA.initialize(import.meta.env.VITE_GA_ID);
+
 export default function App() {
+  const location = useLocation();
+
   const userId = useAppSelector((state) => state.auth.userId);
   const themeMode = useAppSelector((state) => state.appSettings.themeMode);
 
@@ -43,6 +48,12 @@ export default function App() {
       window.removeEventListener('storage', handleTokenChange);
     };
   }, []); */
+
+  React.useEffect(() => {
+    if (location.pathname.startsWith('/blog/')) {
+      ReactGA.send({ hitType: 'pageview', page: window.location.pathname + window.location.search });
+    }
+  }, [location.pathname]);
 
   React.useEffect(() => {
     if (userId) {

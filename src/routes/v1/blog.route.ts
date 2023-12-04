@@ -10,6 +10,8 @@ router
   .post(auth('manageBlogs'), validate(blogValidation.generateBlog), blogController.generateBlog)
   .get(validate(blogValidation.getBlogs), blogController.getBlogs);
 
+router.route('/views').get(/* auth('manageBlogs'), */ validate(blogValidation.getViews), blogController.getViews);
+
 router
   .route('/:blogId')
   .get(validate(blogValidation.getBlog), blogController.getBlog)

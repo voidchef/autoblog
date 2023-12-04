@@ -18,7 +18,7 @@ export const createBlog = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const getBlogs = catchAsync(async (req: Request, res: Response) => {
-  const filter = pick(req.query, ['author', 'category', 'tags', 'isFeatured', 'isPublished', 'isDraft']);
+  const filter = pick(req.query, ['author', 'category', 'tags', 'isFeatured', 'isPublished', 'isDraft', 'views']);
   const options: IOptions = pick(req.query, ['sortBy', 'limit', 'page', 'projectBy', 'populate']);
   const result = await blogService.queryBlogs(filter, options);
   result.results.forEach((blog: any) => {
@@ -36,6 +36,12 @@ export const getBlog = catchAsync(async (req: Request, res: Response) => {
     }
     res.send(blog);
   }
+});
+
+export const getViews = catchAsync(async (req: Request, res: Response) => {
+  const { slug, startDate, endDate } = req.query;
+  const views = await blogService.getBlogViews(startDate as string, endDate as string, slug as string);
+  res.send(views);
 });
 
 export const updateBlog = catchAsync(async (req: Request, res: Response) => {
