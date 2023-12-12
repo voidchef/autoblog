@@ -1,44 +1,40 @@
-import { Box, Grid, IconButton, SvgIcon, Typography } from '@mui/material';
-import * as React from 'react';
-import SpaceShip from '../../assets/spaceShip.svg?react';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import React, { useState, useEffect, useMemo } from 'react';
+import Box from '@mui/material/Box';
+import { IconButton, Typography } from '@mui/material';
+import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import Slide from '@mui/material/Slide';
+import Stack from '@mui/material/Stack';
+import Card from './Card';
 import { useAppSelector } from '../../../utils/reduxHooks';
 import { ICategory } from '../../../reducers/appSettings';
-import { useNavigate } from 'react-router-dom';
 
-const Categories = () => {
+function Carousel() {
+  const [currentPage, setCurrentPage] = useState(0);
+  const [slideDirection, setSlideDirection] = useState<'right' | 'left' | undefined>('left');
+  const [cardsPerPage, setCardsPerPage] = useState(getInitialCardsPerPage());
+
   const categories = useAppSelector((state) => state.appSettings.categories);
-  const [visibleCardIndex, setVisibleCardIndex] = React.useState(0);
-  const [cardsToDisplay, setCardsToDisplay] = React.useState(4);
 
-  const navigate = useNavigate();
+  function getInitialCardsPerPage() {
+    return window.innerWidth < 600 ? 1 : 5;
+  }
 
-  const handleLeftArrowClick = () => {
-    setVisibleCardIndex((prevIndex) => Math.max(0, prevIndex - 1));
-  };
-
-  const handleRightArrowClick = () => {
-    setVisibleCardIndex((prevIndex) => Math.min(categories.length - 1, prevIndex + 1));
-  };
-
-  React.useEffect(() => {
+  useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth <= 600) {
-        setVisibleCardIndex(0);
-        setCardsToDisplay(1);
-      } else {
-        setVisibleCardIndex(0);
-        setCardsToDisplay(4);
-      }
+      setCardsPerPage(getInitialCardsPerPage());
     };
 
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
-  const handleClick = (categoryName: string) => {
-    navigate(`/category/${categoryName}`);
+  const handlePageChange = (direction: string) => {
+    const newDirection = direction === 'next' ? 'left' : 'right';
+    setSlideDirection(newDirection);
+    setCurrentPage((prevPage) => (direction === 'next' ? prevPage + 1 : prevPage - 1));
   };
 
   return (
@@ -51,52 +47,65 @@ const Categories = () => {
       >
         Choose a Category
       </Typography>
-      <Box style={{ overflowX: 'auto' }} width={'100%'}>
-        <Grid
-          container
-          style={{ display: 'flex', flexGrow: 1, justifyContent: 'space-between', alignItems: 'center' }}
-          wrap="nowrap"
-        >
-          <IconButton aria-label="Previous" onClick={handleLeftArrowClick} disabled={visibleCardIndex === 0}>
-            <ChevronLeftIcon fontSize="large" />
-          </IconButton>
-          {categories.slice(visibleCardIndex, visibleCardIndex + cardsToDisplay).map((category: ICategory) => (
-            <Grid
-              key={category._id}
-              item
-              sx={{ display: 'flex', justifyContent: 'center' }}
-              onClick={() => handleClick(category.categoryName.toLocaleLowerCase())}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          alignContent: 'center',
+          justifyContent: 'center',
+        }}
+        width={'100%'}
+      >
+        <IconButton onClick={() => handlePageChange('prev')} sx={{ margin: 1 }} disabled={currentPage === 0}>
+          <NavigateBeforeIcon />
+        </IconButton>
+        <Box>
+          {categories.map((category: ICategory, index: number) => (
+            <Box
+              key={`card-${index}`}
+              sx={{
+                width: '100%',
+                height: '100%',
+                display: currentPage === index ? 'block' : 'none',
+              }}
             >
-              <Box
-                display={'flex'}
-                flexDirection={'column'}
-                justifyContent={'space-between'}
-                padding={'2rem'}
-                sx={{ gap: { xs: 0.2, sm: 1 }, border: '2px solid #555FAC' }}
-                width={'18.5rem'}
-                height={{ xs: '12rem' }}
-              >
-                <Box sx={{ textAlign: 'center' }}>
-                  <SvgIcon /* component={category.categoryPicUrl} */ component={SpaceShip} inheritViewBox fontSize="large" />
-                </Box>
-                <Typography fontSize={{ xs: '1rem', sm: '1.5rem' }} fontWeight={450} color={'black'} textAlign={'center'}>
-                  {category.categoryName}
-                </Typography>
-                <Typography textAlign={'center'}>{category.categoryDescription}</Typography>
-              </Box>
-            </Grid>
+              <Slide direction={slideDirection} in={currentPage === index}>
+                <Stack
+                  spacing={5}
+                  direction="row"
+                  alignContent="center"
+                  justifyContent="center"
+                  sx={{ width: '100%', height: '100%' }}
+                >
+                  {categories
+                    .slice(currentPage * cardsPerPage, (currentPage + 1) * cardsPerPage)
+                    .map((category: ICategory, index: number) => (
+                      <Card
+                        key={`card-${index}`}
+                        categoryId={category._id}
+                        categoryIcon={category.categoryPicUrl}
+                        categoryName={category.categoryName}
+                        categoryDescription={category.categoryDescription}
+                      />
+                    ))}
+                </Stack>
+              </Slide>
+            </Box>
           ))}
-          <IconButton
-            aria-label="Next"
-            onClick={handleRightArrowClick}
-            disabled={visibleCardIndex + cardsToDisplay - 1 >= categories.length - 1}
-          >
-            <ChevronRightIcon fontSize="large" />
-          </IconButton>
-        </Grid>
+        </Box>
+        <IconButton
+          onClick={() => handlePageChange('next')}
+          sx={{
+            margin: 1,
+          }}
+          disabled={currentPage >= Math.ceil((categories.length || 0) / cardsPerPage) - 1}
+        >
+          <NavigateNextIcon />
+        </IconButton>
       </Box>
     </Box>
   );
-};
+}
 
-export default Categories;
+export default Carousel;
