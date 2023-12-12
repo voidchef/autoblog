@@ -49,7 +49,7 @@ export const getBlogs = {
 
 export const getBlog = {
   params: Joi.object().keys({
-    blogId: Joi.string().custom(objectId),
+    blogId: Joi.string(),
   }),
 };
 

@@ -7,10 +7,10 @@ const router: Router = express.Router();
 
 router
   .route('/')
-  .post(auth('manageBlogs'), validate(blogValidation.generateBlog), blogController.generateBlog)
+  .post(auth('generateBlogs'), validate(blogValidation.generateBlog), blogController.generateBlog)
   .get(validate(blogValidation.getBlogs), blogController.getBlogs);
 
-router.route('/views').get(/* auth('manageBlogs'), */ validate(blogValidation.getViews), blogController.getViews);
+router.route('/views').get(auth('getViews'), validate(blogValidation.getViews), blogController.getViews);
 
 router
   .route('/:blogId')

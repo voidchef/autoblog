@@ -6,6 +6,7 @@ import ApiError from '../errors/ApiError';
 import pick from '../utils/pick';
 import { IOptions } from '../paginate/paginate';
 import * as blogService from './blog.service';
+import { IBlogDoc } from './blog.interfaces';
 
 export const generateBlog = catchAsync(async (req: Request, res: Response) => {
   const blog = await blogService.generateBlog(req.body, req.user._id);
@@ -29,13 +30,16 @@ export const getBlogs = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const getBlog = catchAsync(async (req: Request, res: Response) => {
-  if (typeof req.params['blogId'] === 'string') {
-    const blog = await blogService.getBlogById(new mongoose.Types.ObjectId(req.params['blogId']));
-    if (!blog) {
-      throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
-    }
-    res.send(blog);
+  let blog: IBlogDoc | null = null;
+  if (mongoose.isValidObjectId(req.params['blogId'])) {
+    blog = await blogService.getBlogById(new mongoose.Types.ObjectId(req.params['blogId']));
+  } else if (typeof req.params['blogId'] === 'string') {
+    blog = await blogService.getBlogBySlug(req.params['blogId']);
   }
+  if (!blog) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
+  }
+  res.send(blog);
 });
 
 export const getViews = catchAsync(async (req: Request, res: Response) => {

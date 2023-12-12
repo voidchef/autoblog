@@ -58,6 +58,13 @@ export const getBlogById = async (id: mongoose.Types.ObjectId): Promise<IBlogDoc
   Blog.findById(id).populate('author');
 
 /**
+ * Get blog by slug
+ * @param {mongoose.Types.ObjectId} slug
+ * @returns {Promise<IBlogDoc | null>}
+ */
+export const getBlogBySlug = async (slug: string): Promise<IBlogDoc | null> => Blog.findOne({ slug }).populate('author');
+
+/**
  * Update blog by id
  * @param {mongoose.Types.ObjectId} blogId
  * @param {UpdateBlogBody} updateBody
