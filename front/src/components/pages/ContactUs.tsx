@@ -4,27 +4,12 @@ import TextField from '@mui/material/TextField';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
 import { Button, MenuItem, Typography } from '@mui/material';
-
-const queries = [
-  {
-    value: 'USD',
-    label: '$',
-  },
-  {
-    value: 'EUR',
-    label: '€',
-  },
-  {
-    value: 'BTC',
-    label: '฿',
-  },
-  {
-    value: 'JPY',
-    label: '¥',
-  },
-];
+import { useAppSelector } from '../../utils/reduxHooks';
+import { IFieldData } from '../../reducers/appSettings';
 
 export default function ContactUs() {
+  const queries = useAppSelector((state) => state.appSettings.queryType);
+
   return (
     <Box>
       <NavBar />
@@ -36,10 +21,7 @@ export default function ContactUs() {
         sx={{ marginX: { xs: '1rem', sm: '7rem' } }}
       >
         <Box maxWidth={{ sm: '35rem' }}>
-          <Box
-            textAlign={'center'}
-            sx={{ gap: { sm: 1 } }}
-          >
+          <Box textAlign={'center'} sx={{ gap: { sm: 1 } }}>
             <Typography component={'div'} fontSize={'2rem'} fontWeight={700}>
               Contact Us
             </Typography>
@@ -63,7 +45,7 @@ export default function ContactUs() {
               defaultValue="EUR"
               helperText="Please select your query"
             >
-              {queries.map((option) => (
+              {queries.map((option: IFieldData) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>

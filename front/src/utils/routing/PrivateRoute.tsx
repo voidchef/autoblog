@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Box, Container } from '@mui/material';
 import { Navigate } from 'react-router-dom';
 import { ROUTES } from './routes';
-import Loading from '../../components/elements/Loading/Loading';
+import Loading from '../../components/elements/Common/Loading';
 import { useAppSelector } from '../reduxHooks';
 
 type PrivateRouteProps = {

@@ -15,6 +15,7 @@ import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { AWS_BASEURL } from '../../../utils/consts';
+import { clearBlog } from '../../../actions/blog';
 
 export default function AccountMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -62,6 +63,11 @@ export default function AccountMenu() {
       },
       children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
     };
+  }
+
+  const handleCreatePost = () => {
+    dispatch(clearBlog(() => navigate(ROUTES.CREATEPOST)));
+    setAnchorEl(null);
   }
 
   return (
@@ -128,7 +134,7 @@ export default function AccountMenu() {
           </ListItemIcon>
           Profile
         </MenuItem>
-        <MenuItem onClick={() => handleClose(ROUTES.CREATEPOST)}>
+        <MenuItem onClick={handleCreatePost}>
           <ListItemIcon>
             <BookIcon fontSize="small" />
           </ListItemIcon>

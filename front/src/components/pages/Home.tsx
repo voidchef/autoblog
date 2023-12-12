@@ -13,7 +13,7 @@ export default function Home() {
   const dispatch = useAppDispatch();
 
   const recentBlogs = useAppSelector((state) => state.blog.allBlogs);
-  const featuredBlogs = useAppSelector((state) => state.blog.featuredBlogs);
+  const featuredBlogs = useAppSelector((state) => state.blog.featuredBlogs.results);
 
   React.useEffect(() => {
     dispatch(getBlogs({ limit: 6, populate: 'author', isFeatured: true, isPublished: true }));
@@ -35,7 +35,7 @@ export default function Home() {
       >
         <Categories />
       </Box>
-      <Box sx={{ my: 4 }} />
+      <Box sx={{ my: 8 }} />
       <Box
         display={'flex'}
         flexDirection={'column'}

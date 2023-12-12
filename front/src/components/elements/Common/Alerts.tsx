@@ -1,10 +1,8 @@
 import Box from '@mui/material/Box';
-import { AlertPayload } from '../../../reducers/alert';
-import { RootState } from '../../../store';
 import { REMOVE_ALERT } from '../../../utils/consts';
 import Alert from '@mui/material/Alert';
 import { Fragment } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import AlertTitle from '@mui/material/AlertTitle';
 import Slide from '@mui/material/Slide';
 import { useAppSelector } from '../../../utils/reduxHooks';
@@ -15,7 +13,7 @@ const Alerts = () => {
 
   return (
     <Box
-      width="50%"
+      width={{ xs: '80%', sm: '50%' }}
       right={0}
       position="fixed"
       zIndex={10000}
