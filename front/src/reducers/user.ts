@@ -2,8 +2,7 @@ import {
   USER_LOAD_SUCCESS,
   USER_LOAD_FAIL,
   USER_UPDATE_SUCCESS,
-  USER_UPDATE_FAIL,
-  LOADING_USER,
+  SET_USER_LOADING_STATUS,
   LOGOUT,
   Action,
 } from '../utils/consts';
@@ -45,7 +44,7 @@ const userReducer = (state = initialState, action: Action) => {
         isAuthenticated: false,
         loading: false,
       };
-    case LOADING_USER:
+    case SET_USER_LOADING_STATUS:
       return { ...state, loading: true };
     case LOGOUT:
       localStorage.removeItem('tokens');

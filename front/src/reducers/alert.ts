@@ -1,9 +1,9 @@
 import { SET_ALERT, REMOVE_ALERT, Action, ALERT_TYPE } from '../utils/consts';
 
 export interface AlertPayload {
+  alertId?: string;
+  alertType?: ALERT_TYPE;
   msg?: string;
-  alertType?: any;
-  alertId?: ALERT_TYPE;
 }
 
 const initialState: AlertPayload[] = [];

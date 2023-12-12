@@ -1,4 +1,4 @@
-import { Action, APP_SETTINGS_LOAD_SUCCESS, SET_THEME_MODE, RESET_APP_SETTINGS } from '../utils/consts';
+import { Action, APP_SETTINGS_LOAD_SUCCESS, SET_THEME_MODE, SET_APP_SETTINGS_LOADING_STATUS } from '../utils/consts';
 
 export interface ICategory {
   _id: string;
@@ -7,16 +7,29 @@ export interface ICategory {
   categoryPicUrl: string;
 }
 
+export interface IFieldData {
+  value: string;
+  label: string;
+}
+
 export interface IAppSettings {
   categories: ICategory[];
+  languages: IFieldData[];
+  languageModels: IFieldData[];
+  tones: IFieldData[];
+  queryType: IFieldData[];
   themeMode: string;
-  loading: boolean;
+  isLoading: boolean;
 }
 
 const initialState: IAppSettings = {
   categories: [],
+  languages: [],
+  languageModels: [],
+  tones: [],
+  queryType: [],
   themeMode: 'light',
-  loading: false,
+  isLoading: false,
 };
 
 const appSettingsReducer = (state = initialState, action: Action) => {
@@ -26,14 +39,17 @@ const appSettingsReducer = (state = initialState, action: Action) => {
       return {
         ...state,
         ...payload,
-        loading: false,
+        isLoading: false,
       };
-    case RESET_APP_SETTINGS:
-      return { ...initialState };
     case SET_THEME_MODE:
       return {
         ...state,
         themeMode: payload,
+      };
+    case SET_APP_SETTINGS_LOADING_STATUS:
+      return {
+        ...state,
+        isLoading: state.isLoading ? false : true,
       };
     default:
       return state;

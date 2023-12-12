@@ -4,8 +4,7 @@ import {
   USER_LOAD_SUCCESS,
   USER_LOAD_FAIL,
   USER_UPDATE_SUCCESS,
-  USER_UPDATE_FAIL,
-  LOADING_USER,
+  SET_AUTH_LOADING_STATUS,
   LOGOUT,
   Action,
   ALERT_TYPE,
@@ -14,7 +13,7 @@ import { Dispatch } from 'redux';
 
 export const loadUser = (userId: String, navigate?: Function) => async (dispatch: Dispatch<any>) => {
   try {
-    dispatch({ type: LOADING_USER });
+    dispatch({ type: SET_AUTH_LOADING_STATUS });
     const res: AxiosResponse<any> = await axios.get(`/v1/users/${userId}`);
     dispatch({
       type: USER_LOAD_SUCCESS,
