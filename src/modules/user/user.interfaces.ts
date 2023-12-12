@@ -8,6 +8,9 @@ export interface IUser {
   password: string;
   role: string;
   isEmailVerified: boolean;
+  openAiKey: string;
+  bingKey: string;
+  bardKey: string;
 }
 
 export interface IUserDoc extends IUser, Document {

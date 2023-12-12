@@ -46,6 +46,21 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
       type: Boolean,
       default: false,
     },
+    openAiKey: {
+      type: String,
+      unique: true,
+      trim: true,
+    },
+    bingKey: {
+      type: String,
+      unique: true,
+      trim: true,
+    },
+    bardKey: {
+      type: String,
+      unique: true,
+      trim: true,
+    },
   },
   {
     timestamps: true,

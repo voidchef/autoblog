@@ -48,6 +48,9 @@ describe('Auth routes', () => {
         name: faker.person.fullName(),
         email: faker.internet.email().toLowerCase(),
         password: 'password1',
+        openAiKey: faker.string.alphanumeric(32),
+        bingKey: faker.string.alphanumeric(32),
+        bardKey: faker.string.alphanumeric(32),
       };
     });
 

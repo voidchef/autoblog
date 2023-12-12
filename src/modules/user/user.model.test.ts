@@ -11,6 +11,9 @@ describe('User model', () => {
         email: faker.internet.email().toLowerCase(),
         password: 'password1',
         role: 'user',
+        openAiKey: faker.string.alphanumeric(32),
+        bingKey: faker.string.alphanumeric(32),
+        bardKey: faker.string.alphanumeric(32),
       };
     });
 
