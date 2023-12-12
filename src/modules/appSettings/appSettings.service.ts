@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
 import AppSettings from './appSettings.model';
 import ApiError from '../errors/ApiError';
-import { IApiKeys, ICategories, IAppSettingsDoc } from './appSettings.interfaces';
+import { IApiKeys, ICategories, IAppSettingsDoc, ISelectFields, UpdateSelectOptions } from './appSettings.interfaces';
 
 /**
  * Update Api Keys
@@ -59,4 +59,32 @@ export const deleteCategories = async (categoryNames: string[]): Promise<ICatego
   appSettings.categories = appSettings.categories.filter((category) => !categoryNames.includes(category.categoryName));
   await appSettings.save();
   return appSettings.categories;
+};
+
+/**
+ * Update Select Fields
+ * @param {UpdateSelectOptions} selectFields
+ * @returns {Promise<ISelectFields | null>}
+ */
+export const updateSelectFields = async (selectFields: UpdateSelectOptions): Promise<ISelectFields | null> => {
+  const { languages, languageModels, tones, queryType } = selectFields;
+  let appSettings = await AppSettings.findOne();
+  if (!appSettings) {
+    appSettings = new AppSettings({ ...selectFields });
+  } else {
+    if (languages) {
+      appSettings.languages = languages;
+    }
+    if (languageModels) {
+      appSettings.languageModels = languageModels;
+    }
+    if (tones) {
+      appSettings.tones = tones;
+    }
+    if (queryType) {
+      appSettings.queryType = queryType;
+    }
+  }
+  await appSettings.save();
+  return appSettings;
 };

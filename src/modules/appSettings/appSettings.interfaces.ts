@@ -16,7 +16,19 @@ export interface ICategories {
   categoryPicUrl: string;
 }
 
-export interface IAppSettings {
+export interface IFieldData {
+  value: string;
+  label: string;
+}
+
+export interface ISelectFields {
+  languages: IFieldData[];
+  languageModels: IFieldData[];
+  tones: IFieldData[];
+  queryType: IFieldData[];
+}
+
+export interface IAppSettings extends ISelectFields {
   apiKeys: IApiKeys;
   categories: ICategories[];
 }
@@ -30,3 +42,9 @@ export interface IAppSettingsModel extends Model<IAppSettingsDoc> {
 export type UpdateApiKeys = Partial<IApiKeys>;
 
 export type UpdateCategories = ICategories[];
+
+export type DeleteCategories = string[];
+
+export type UpdateSelectOptions = Partial<ISelectFields>;
+
+export type UpdateAppSettings = Partial<IAppSettings>;

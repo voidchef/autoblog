@@ -46,6 +46,62 @@ const appSettingsSchema = new mongoose.Schema<IAppSettingsDoc, IAppSettingsModel
         },
       },
     ],
+    languages: [
+      {
+        label: {
+          type: String,
+          trim: true,
+          required: true,
+        },
+        value: {
+          type: String,
+          trim: true,
+          required: true,
+        },
+      },
+    ],
+    languageModels: [
+      {
+        label: {
+          type: String,
+          trim: true,
+          required: true,
+        },
+        value: {
+          type: String,
+          trim: true,
+          required: true,
+        },
+      },
+    ],
+    tones: [
+      {
+        label: {
+          type: String,
+          trim: true,
+          required: true,
+        },
+        value: {
+          type: String,
+          trim: true,
+          required: true,
+        },
+      },
+    ],
+    queryType: [
+      {
+        label: {
+          type: String,
+          trim: true,
+          required: true,
+        },
+        value: {
+          type: String,
+          trim: true,
+          required: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
