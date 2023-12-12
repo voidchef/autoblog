@@ -51,7 +51,13 @@ const createFolderPathIfNotExists = async (bucketName: string, folderPath: strin
 
 const deleteFileAsync = promisify(fs.unlink);
 
-export const uploadFilesToBucket = async (bucketName: string, folderPath: string, uploadPath: string) => {
+export const uploadFilesToBucket = async (blogId: string, folderPath: string, uploadPath: string) => {
+  const bucketName = process.env['AWS_BUCKET'] as string;
+  const awsRegion = process.env['AWS_REGION'] as string;
+  const awsBaseUrl = `https://${bucketName}.s3.${awsRegion}.amazonaws.com/blogs/${blogId}`;
+
+  const imageUrls: string[] = [];
+
   try {
     await checkBucket(bucketName);
     await createFolderPathIfNotExists(bucketName, folderPath);
@@ -73,6 +79,9 @@ export const uploadFilesToBucket = async (bucketName: string, folderPath: string
           }),
         );
 
+        const imageUrl = `${awsBaseUrl}/${uploadKey}`;
+        imageUrls.push(imageUrl);
+
         await deleteFileAsync(filePath);
         console.log(`${uploadKey} uploaded successfully.`);
       } catch (error: any) {
@@ -80,6 +89,7 @@ export const uploadFilesToBucket = async (bucketName: string, folderPath: string
         throw error;
       }
     }
+    return imageUrls;
   } catch (error: any) {
     console.error(`Error uploading files: ${error.message}`);
     throw error;

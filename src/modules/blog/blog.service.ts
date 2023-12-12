@@ -16,7 +16,11 @@ import runReport, { IRunReportResponse } from '../utils/analytics';
  */
 export const createBlog = async (blogBody: NewCreatedBlog): Promise<IBlogDoc> => {
   const blog = await Blog.create(blogBody);
-  await uploadFilesToBucket('autoblogbucket', './src/modules/imgGen/images/', `blogs/${blog._id}`);
+  const imageUrls: string[] = await uploadFilesToBucket(blog.id, './src/modules/imgGen/images/', `blogs/${blog._id}`);
+  if (imageUrls.length > 0) {
+    blog.selectedImage = imageUrls[0] as string;
+  }
+  await blog.save();
   return blog;
 };
 

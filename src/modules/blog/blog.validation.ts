@@ -24,6 +24,7 @@ const createBlogBody: Record<keyof NewCreatedBlog, any> = {
   content: Joi.string().required(),
   category: Joi.string().required(),
   tags: Joi.array().optional(),
+  selectedImage: Joi.number().optional(),
 };
 
 export const createBlog = {
@@ -67,12 +68,14 @@ export const updateBlog = {
   }),
   body: Joi.object()
     .keys({
-      title: Joi.string().required(),
-      slug: Joi.string(),
-      seoTitle: Joi.string(),
-      seoDescription: Joi.string(),
+      title: Joi.string(),
       content: Joi.string(),
       category: Joi.string(),
+      tags: Joi.array(),
+      selectedImage: Joi.string(),
+      isFeatured: Joi.boolean(),
+      isPublished: Joi.boolean(),
+      isDraft: Joi.boolean(),
     })
     .min(1),
 };

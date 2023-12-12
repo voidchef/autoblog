@@ -24,6 +24,7 @@ export interface IBlog extends IGenerateBlog {
   isFeatured: boolean;
   isPublished: boolean;
   isDraft: boolean;
+  selectedImage?: string;
 }
 
 export interface IBlogDoc extends IBlog, Document {

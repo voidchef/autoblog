@@ -92,6 +92,9 @@ const blogSchema = new mongoose.Schema<IBlogDoc, IBlogModel>(
       required: true,
       trim: true,
     },
+    selectedImage: {
+      type: String,
+    },
   },
   {
     timestamps: true,
