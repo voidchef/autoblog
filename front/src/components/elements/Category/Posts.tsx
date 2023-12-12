@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid';
 import AllTags from './Tags';
 import TablePagination from '@mui/material/TablePagination';
 import { useAppDispatch, useAppSelector } from '../../../utils/reduxHooks';
-import { getBlog, getBlogs } from '../../../actions/blog';
+import { getBlogs } from '../../../actions/blog';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { AWS_BASEURL } from '../../../utils/consts';
@@ -28,26 +28,32 @@ const AllPosts = ({ category }: { category: String }) => {
   };
 
   React.useEffect(() => {
-    dispatch(getBlogs({ limit: rowsPerPage, page, populate: 'author', category }));
-  }, []);
+    dispatch(getBlogs({ limit: rowsPerPage, page, populate: 'author', category, isPublished: true }));
+  }, [rowsPerPage, page]);
 
-  const handleClick = (id: string, slug: string) => {
-    dispatch(getBlog(id, () => navigate(`${ROUTES.BLOG}/${slug}`)));
+  const handleClick = (slug: string) => {
+    navigate(`${ROUTES.BLOG}/${slug}`);
   };
 
   return (
-    <React.Fragment>
-      <Box sx={{ flexGrow: 1, marginX: { xs: '1rem', sm: '7rem' } }}>
+    <Box sx={{ flexGrow: 1, marginX: { xs: '1rem', sm: '7rem' } }}>
+      {allBlogs.results.length === 0 ? (
+        <Box display={'flex'} justifyContent={'center'} margin={3}>
+          <Typography fontSize={{ sm: 22 }} fontWeight={500} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
+            No blogs found
+          </Typography>
+        </Box>
+      ) : (
         <Grid container spacing={2}>
           <Grid container item xs={12} sm={8} spacing={2}>
-            {allBlogs.length > 0 ? (
-              allBlogs.map((post: any, index: number) => (
-                <Grid item xs={12} sm={6} key={index} onClick={() => handleClick(post.id, post.slug)}>
+            {allBlogs.results.length > 0 ? (
+              allBlogs.results.map((post: any, index: number) => (
+                <Grid item xs={12} sm={6} key={index} onClick={() => handleClick(post.slug)}>
                   <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'} marginBottom={4}>
                     <img
                       src={`${AWS_BASEURL}/blogs/${post.id}/1.img`}
                       alt={post.topic}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }}
                     />
                   </Box>
                   <Box display="flex" flexDirection="column" justifyContent="space-between">
@@ -88,18 +94,20 @@ const AllPosts = ({ category }: { category: String }) => {
             <AllTags />
           </Grid>
         </Grid>
-      </Box>
-      <Box display={'flex'} justifyContent={'center'} alignItems={'center'} margin={3}>
-        <TablePagination
-          component="div"
-          count={100}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Box>
-    </React.Fragment>
+      )}
+      {allBlogs.results.length >= 0 && (
+        <Box display={'flex'} justifyContent={'center'} margin={3}>
+          <TablePagination
+            component="div"
+            count={allBlogs.totalResults}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Box>
+      )}
+    </Box>
   );
 };
 

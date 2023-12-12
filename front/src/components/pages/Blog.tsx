@@ -5,11 +5,22 @@ import Footer from '../elements/Common/Footer';
 import { Typography } from '@mui/material';
 import Title from '../elements/Blog/Title';
 import { marked } from 'marked';
-import { useAppSelector } from '../../utils/reduxHooks';
+import { useAppDispatch, useAppSelector } from '../../utils/reduxHooks';
 import { Helmet } from 'react-helmet-async';
 import { AWS_BASEURL } from '../../utils/consts';
+import { useLocation, useParams } from 'react-router-dom';
+import { getBlog } from '../../actions/blog';
 
 export default function Blog() {
+  const dispatch = useAppDispatch();
+  const location = useLocation();
+  const { preview } = useParams();
+  const slug = location.pathname.split('/')[2];
+
+  React.useEffect(() => {
+    if (!preview) dispatch(getBlog(slug));
+  }, []);
+
   const blogData = useAppSelector((state) => state.blog.blogData);
 
   return (
@@ -66,7 +77,7 @@ export default function Blog() {
               <img
                 src={`${AWS_BASEURL}/blogs/${blogData.id}/1.img`}
                 alt={blogData.topic}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }}
               />
             </Box>
             <Typography component={'div'} fontSize={{ sx: '1rem', sm: '1.1rem' }} textAlign={'left'}>

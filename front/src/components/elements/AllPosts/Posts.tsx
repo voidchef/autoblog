@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TablePagination from '@mui/material/TablePagination';
 import { useAppDispatch, useAppSelector } from '../../../utils/reduxHooks';
-import { getBlog, getBlogs } from '../../../actions/blog';
+import { getBlogs } from '../../../actions/blog';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { AWS_BASEURL } from '../../../utils/consts';
@@ -27,16 +27,16 @@ const AllPosts = () => {
   };
 
   React.useEffect(() => {
-    dispatch(getBlogs({ limit: rowsPerPage, page, populate: 'author' }));
-  }, []);
+    dispatch(getBlogs({ limit: rowsPerPage, page, populate: 'author', isPublished: true }));
+  }, [page, rowsPerPage]);
 
-  const handleClick = (id: string, slug: string) => {
-    dispatch(getBlog(id, () => navigate(`${ROUTES.BLOG}/${slug}`)));
+  const handleClick = (slug: string) => {
+    navigate(`${ROUTES.BLOG}/${slug}`);
   };
 
   return (
     <Box sx={{ flexGrow: 1, marginX: { xs: '1rem', sm: '7rem' } }}>
-      {allBlogs.length === 0 ? (
+      {allBlogs.results.length === 0 ? (
         <Box display={'flex'} justifyContent={'center'} margin={3}>
           <Typography fontSize={{ sm: 22 }} fontWeight={500} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
             No blogs found
@@ -45,13 +45,13 @@ const AllPosts = () => {
       ) : (
         <React.Fragment>
           <Grid container spacing={3}>
-            {allBlogs.map((post: any, index: number) => (
-              <Grid item xs={12} sm={4} key={index} onClick={() => handleClick(post.id, post.slug)}>
+            {allBlogs.results.map((post: any, index: number) => (
+              <Grid item xs={12} sm={4} key={index} onClick={() => handleClick(post.slug)}>
                 <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'}>
                   <img
                     src={`${AWS_BASEURL}/blogs/${post.id}/1.img`}
                     alt={post.topic}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }}
                   />
                 </Box>
                 <Box display="flex" flexDirection="column" justifyContent="space-between">
@@ -73,16 +73,18 @@ const AllPosts = () => {
               </Grid>
             ))}
           </Grid>
-          <Box display={'flex'} justifyContent={'center'} margin={3}>
-            <TablePagination
-              component="div"
-              count={100}
-              page={page}
-              onPageChange={handleChangePage}
-              rowsPerPage={rowsPerPage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-          </Box>
+          {allBlogs.results.length >= 0 && (
+            <Box display={'flex'} justifyContent={'center'} margin={3}>
+              <TablePagination
+                component="div"
+                count={allBlogs.totalResults}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Box>
+          )}
         </React.Fragment>
       )}
     </Box>

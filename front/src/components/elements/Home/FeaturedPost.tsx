@@ -2,23 +2,20 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Button, Grid, useTheme } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '../../../utils/reduxHooks';
 import { AWS_BASEURL } from '../../../utils/consts';
 import { IBlog } from '../../../reducers/blog';
 import { ROUTES } from '../../../utils/routing/routes';
 import { useNavigate } from 'react-router-dom';
-import { getBlog } from '../../../actions/blog';
 
 interface FeaturedPostProps {
   featuredBlogs: IBlog[];
 }
 
 const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const handleClick = (id: string, slug: string) => {
-    dispatch(getBlog(id, () => navigate(`${ROUTES.BLOG}/${slug}`)));
+  const handleClick = (slug: string) => {
+    navigate(`${ROUTES.BLOG}/${slug}`);
   };
 
   return (
@@ -46,7 +43,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
               <img
                 src={`${AWS_BASEURL}/blogs/${featuredBlogs[0].id}/1.img`}
                 alt={featuredBlogs[0].topic}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }}
               />
             </Box>
             <Box sx={{ my: 4 }} />
@@ -61,7 +58,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
               </span>
             </Typography>
             <Typography fontSize={{ xs: '1.2rem', sm: '1.5rem' }} component="div" sx={{ flexGrow: 1, marginBottom: '1rem' }}>
-              {featuredBlogs[0].topic}
+              {featuredBlogs[0].title}
             </Typography>
             <Typography
               fontSize={{ xs: '1rem', sm: '1.2rem' }}
@@ -71,7 +68,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
             >
               {`${featuredBlogs[0].content.slice(0, 255)}...`}
             </Typography>
-            <Button variant="contained" onClick={() => handleClick(featuredBlogs[0].id, featuredBlogs[0].slug)}>
+            <Button variant="contained" onClick={() => handleClick(featuredBlogs[0].slug)}>
               Read More {'>'}
             </Button>
           </Box>
