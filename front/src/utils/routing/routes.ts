@@ -7,5 +7,7 @@ export enum ROUTES {
 	ALLPOSTS = '/allposts',
 	CREATEPOST = '/createpost',
 	BLOG = '/blog',
+	PREVIEW = '/preview',
+	DASHBOARD = '/dashboard',
 }
 
