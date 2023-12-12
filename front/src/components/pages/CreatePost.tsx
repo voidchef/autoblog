@@ -3,49 +3,57 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
-import { Button, MenuItem } from '@mui/material';
+import { Button, IconButton, InputAdornment, MenuItem, formControlLabelClasses } from '@mui/material';
 import Title from '../elements/CreatePost/Title';
 import { useAppDispatch, useAppSelector } from '../../utils/reduxHooks';
-import { IBlogData, generateBlog, getBlogs } from '../../actions/blog';
+import { IBlogData, clearBlog, generateBlog, getBlog, updateBlog } from '../../actions/blog';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import axios from 'axios';
+import ImagePicker from '../elements/CreatePost/ImagePicker';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { AWS_BASEURL } from '../../utils/consts';
+import { ROUTES } from '../../utils/routing/routes';
+import { IFieldData } from '../../reducers/appSettings';
 
-const languages = [
-  {
-    value: 'english',
-    label: 'english',
-  },
-];
+async function fetchImages(blogId: string) {
+  const newImages: string[] = [];
+  let index = 1;
 
-const languageModels = [
-  {
-    value: 'gpt-3.5-turbo',
-    label: 'gpt-3.5-turbo',
-  },
-];
+  while (true) {
+    const imageURL = `${AWS_BASEURL}/blogs/${blogId}/${index}.img`;
 
-const tones = [
-  {
-    value: 'informative',
-    label: 'informative',
-  },
-  {
-    value: 'captivating',
-    label: 'captivating',
-  },
-];
+    try {
+      const response = await axios.head(imageURL);
+      const exists = response.status === 200;
 
-const categories = [
-  {
-    value: 'business',
-    label: 'business',
-  },
-  {
-    value: 'technology',
-    label: 'technology',
-  },
-];
+      if (exists) {
+        newImages.push(imageURL);
+        index += 1;
+      } else {
+        break;
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  return newImages;
+}
 
 export default function CreatePost() {
+  const { state } = useLocation();
   const fetchedBlogData = useAppSelector((state) => state.blog.blogData);
+  const appSettings = useAppSelector((state) => state.appSettings);
+
+  React.useEffect(() => {
+    if (state && state.blogId) {
+      dispatch(getBlog(state.blogId));
+    } else {
+      dispatch(clearBlog());
+    }
+  }, []);
+
   const [formData, setFormData] = React.useState({
     topic: '',
     country: '',
@@ -57,20 +65,46 @@ export default function CreatePost() {
     category: 'technology',
     tags: '',
   });
-  const [blogTitle, setBlogTitle] = React.useState(fetchedBlogData ? fetchedBlogData.title : '');
-  const [blogContent, setBlogContent] = React.useState(fetchedBlogData ? fetchedBlogData.content : '');
+  const [blogTitle, setBlogTitle] = React.useState('');
+  const [open, setOpen] = React.useState(false);
+  const [blogContent, setBlogContent] = React.useState('');
+  const [images, setImages] = React.useState<string[]>([]);
+  const [blogImage, setBlogImage] = React.useState<string>('');
+  const [isPublished, setIsPublished] = React.useState(false);
+
+  const handleOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  function handleSelectImage(image: string) {
+    setBlogImage(image);
+    handleClose();
+  }
+
+  const handlePublishStatusChange = () => {
+    setIsPublished(!isPublished);
+  };
+
+  const [showHidden, setShowHidden] = React.useState(false);
+
+  const handleClickShowHidden = () => setShowHidden((show) => !show);
+
+  const handleMouseDownHidden = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
 
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
-  const userId = localStorage.getItem('userId');
-
-  React.useEffect(() => {
-    dispatch(getBlogs({ isDraft: true, author: userId }));
-  }, []);
-
-  React.useEffect(() => {
+  const initialFormData = () => {
     setBlogTitle(fetchedBlogData ? fetchedBlogData.title : '');
     setBlogContent(fetchedBlogData ? fetchedBlogData.content : '');
+    setBlogImage(fetchedBlogData ? fetchedBlogData.selectedImage : '');
+    setIsPublished(fetchedBlogData ? fetchedBlogData.isPublished : false);
     if (fetchedBlogData) {
       setFormData({
         ...formData,
@@ -85,6 +119,16 @@ export default function CreatePost() {
         tags: fetchedBlogData ? fetchedBlogData.tags : '',
       });
     }
+  };
+
+  React.useEffect(() => {
+    const fetchAndSetImages = async () => {
+      const images = await fetchImages(fetchedBlogData.id);
+      setImages(images);
+    };
+
+    if (fetchedBlogData && fetchedBlogData.id) fetchAndSetImages();
+    initialFormData();
   }, [fetchedBlogData]);
 
   const handleFormDataChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -113,7 +157,46 @@ export default function CreatePost() {
       return acc;
     }, {} as IBlogData);
 
-    dispatch(generateBlog(filteredData));
+    if (fetchedBlogData && fetchedBlogData.id) {
+      dispatch(
+        updateBlog(filteredData, true, null, () => navigate(`${ROUTES.PREVIEW}/${fetchedBlogData.slug}?preview=${true}`)),
+      );
+      return;
+    } else {
+      dispatch(generateBlog(filteredData));
+    }
+  };
+
+  const handleReset = () => {
+    initialFormData();
+  };
+
+  const handleUpdate = () => {
+    let updatedFields: any = {};
+
+    if (blogTitle !== fetchedBlogData.title) {
+      updatedFields.title = blogTitle;
+    }
+    if (blogContent !== fetchedBlogData.content) {
+      updatedFields.content = blogContent;
+    }
+    if (blogImage !== fetchedBlogData.selectedImage) {
+      updatedFields.selectedImage = blogImage;
+    }
+    if (isPublished !== fetchedBlogData.isPublished) {
+      updatedFields.isPublished = isPublished;
+    }
+    if (fetchedBlogData.isDraft && isPublished) {
+      updatedFields.isDraft = isPublished;
+    }
+    if (formData.category !== fetchedBlogData.category) {
+      updatedFields.category = formData.category;
+    }
+    if (formData.tags !== fetchedBlogData.tags) {
+      updatedFields.tags = formData.tags;
+    }
+
+    dispatch(updateBlog(updatedFields, false, fetchedBlogData.id));
   };
 
   return (
@@ -129,6 +212,15 @@ export default function CreatePost() {
         <Title />
       </Box>
       <Box sx={{ my: 4 }} />
+      {images.length > 0 && (
+        <ImagePicker
+          open={open}
+          handleClose={handleClose}
+          images={images}
+          blogImage={blogImage}
+          handleSelectImage={handleSelectImage}
+        />
+      )}
       <Box
         component="form"
         sx={{ flexGrow: 1, marginX: { xs: '1rem', sm: '7rem' } }}
@@ -140,8 +232,55 @@ export default function CreatePost() {
       >
         <Box width={{ sm: '60%' }} display={'flex'} flexDirection={'column'} sx={{ gap: { xs: 2, sm: 3 } }}>
           <TextField
+            //required
+            fullWidth
+            disabled={fetchedBlogData && fetchedBlogData.id ? true : false}
+            id="outlined-adornment-openai-apiKey"
+            label="OpenAI Api Key"
+            type={showHidden ? 'text' : 'password'}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle api key visibility"
+                    onClick={handleClickShowHidden}
+                    onMouseDown={handleMouseDownHidden}
+                    edge="end"
+                  >
+                    {showHidden ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            helperText="Please enter your openai api key"
+          />
+          <TextField
+            //required
+            fullWidth
+            disabled={fetchedBlogData && fetchedBlogData.id ? true : false}
+            id="outlined-adornment-bing-apiKey"
+            label="Bing Api Key"
+            type={showHidden ? 'text' : 'password'}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle api key visibility"
+                    onClick={handleClickShowHidden}
+                    onMouseDown={handleMouseDownHidden}
+                    edge="end"
+                  >
+                    {showHidden ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+            helperText="Please enter your bing api key"
+          />
+          <TextField
             required
             fullWidth
+            disabled={fetchedBlogData && fetchedBlogData.id ? true : false}
             id="post-topic-required"
             label="Post Topic"
             value={formData.topic}
@@ -156,26 +295,29 @@ export default function CreatePost() {
             gap={{ xs: 3, sm: 5 }}
           >
             <TextField
+              disabled={fetchedBlogData && fetchedBlogData.id ? true : false}
               id="country"
               label="Country"
               value={formData.country}
-              helperText="Please enter blog audience country"
+              helperText="Enter blog audience country"
               onChange={handleFormDataChange('country')}
               sx={{ width: { sm: '16rem' } }}
             />
             <TextField
+              disabled={fetchedBlogData && fetchedBlogData.id ? true : false}
               id="intent"
               label="Intent"
               value={formData.intent}
-              helperText="Please enter blog intent"
+              helperText="Enter blog intent"
               onChange={handleFormDataChange('intent')}
               sx={{ width: { sm: '16rem' } }}
             />
             <TextField
+              disabled={fetchedBlogData && fetchedBlogData.id ? true : false}
               id="audience"
               label="Audience"
               value={formData.audience}
-              helperText="Please enter intended audience"
+              helperText="Enter intended audience"
               onChange={handleFormDataChange('audience')}
               sx={{ width: { sm: '16rem' } }}
             />
@@ -189,6 +331,7 @@ export default function CreatePost() {
           >
             <TextField
               required
+              disabled={fetchedBlogData && fetchedBlogData.id ? true : false}
               select
               id="outlined-select-language"
               label="language"
@@ -197,7 +340,7 @@ export default function CreatePost() {
               onChange={handleFormDataChange('language')}
               sx={{ width: { sm: '16rem' } }}
             >
-              {languages.map((option) => (
+              {appSettings.languages.map((option: IFieldData) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
@@ -205,16 +348,17 @@ export default function CreatePost() {
             </TextField>
             <TextField
               required
+              disabled={fetchedBlogData && fetchedBlogData.id ? true : false}
               select
               id="outlined-select-languageModel"
-              label="languageModel"
+              label="language model"
               value={formData.languageModel}
               defaultValue="gpt-3.5-turbo"
-              helperText="Please select generation languageModel"
+              helperText="Please select language model"
               onChange={handleFormDataChange('languageModel')}
               sx={{ width: { sm: '16rem' } }}
             >
-              {languageModels.map((option) => (
+              {appSettings.languageModels.map((option: IFieldData) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
@@ -222,6 +366,8 @@ export default function CreatePost() {
             </TextField>
             <TextField
               select
+              disabled={fetchedBlogData && fetchedBlogData.id ? true : false}
+              required
               id="outlined-select-tone"
               label="tone"
               value={formData.tone}
@@ -230,7 +376,7 @@ export default function CreatePost() {
               onChange={handleFormDataChange('tone')}
               sx={{ width: { sm: '16rem' } }}
             >
-              {tones.map((option) => (
+              {appSettings.tones.map((option: IFieldData) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
@@ -246,6 +392,7 @@ export default function CreatePost() {
           >
             <TextField
               select
+              required
               id="outlined-select-category"
               label="category"
               value={formData.category}
@@ -254,7 +401,7 @@ export default function CreatePost() {
               onChange={handleFormDataChange('category')}
               sx={{ width: { sm: '16rem' } }}
             >
-              {categories.map((option) => (
+              {appSettings.categories.map((option: IFieldData) => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
@@ -278,20 +425,40 @@ export default function CreatePost() {
           alignItems={'center'}
           sx={{ gap: { xs: 2, sm: 3 } }}
         >
-          <Button type="submit" variant="contained" sx={{ width: '15rem' }}>
-            Generate
+          <Button type="submit" variant="contained" sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}>
+            {fetchedBlogData && fetchedBlogData.id ? 'Preview' : 'Generate'}
           </Button>
-          <Button variant="contained" sx={{ width: '15rem' }}>
+          <Button
+            variant="contained"
+            sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
+            disabled={!fetchedBlogData}
+            onClick={handleReset}
+          >
             Reset
           </Button>
-          <Button variant="contained" sx={{ width: '15rem' }}>
-            Save Draft
+          <Button
+            variant="contained"
+            sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
+            disabled={!fetchedBlogData}
+            onClick={handleUpdate}
+          >
+            Save
           </Button>
-          <Button variant="contained" sx={{ width: '15rem' }}>
-            Preview
+          <Button
+            variant="contained"
+            sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
+            disabled={!fetchedBlogData}
+            onClick={handleOpen}
+          >
+            Select Image
           </Button>
-          <Button variant="contained" sx={{ width: '15rem' }}>
-            Publish
+          <Button
+            variant="contained"
+            sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
+            disabled={!fetchedBlogData}
+            onClick={handlePublishStatusChange}
+          >
+            {isPublished ? 'UnPublish' : 'Publish'}
           </Button>
         </Box>
       </Box>
@@ -302,9 +469,8 @@ export default function CreatePost() {
           id="post-title-required"
           label="Post Title"
           value={blogTitle}
-          InputProps={{
-            readOnly: true,
-          }}
+          disabled={blogTitle !== '' ? false : true}
+          required={fetchedBlogData && fetchedBlogData.id ? true : false}
           onChange={handleBlogTitleChange}
         />
         <Box sx={{ my: 3 }} />
@@ -312,6 +478,8 @@ export default function CreatePost() {
           id="outlined-multiline-static"
           label="Blog Content"
           value={blogContent}
+          disabled={blogTitle !== '' ? false : true}
+          required={fetchedBlogData && fetchedBlogData.id ? true : false}
           multiline
           rows={30}
           placeholder="Start writing your blog here..."
