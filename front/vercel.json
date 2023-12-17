@@ -2,7 +2,7 @@
     "rewrites": [
         {
             "source": "/v1/(.*)",
-            "destination": "https://autoblog-api.onrender.com/"
+            "destination": "https://autoblog-api.onrender.com/v1/$1"
         },
         {
             "source": "/(.*)",
