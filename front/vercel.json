@@ -1,0 +1,12 @@
+{
+    "rewrites": [
+        {
+            "source": "/v1/(.*)",
+            "destination": "https://autoblog-api.onrender.com/"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/"
+        }
+    ]
+}
