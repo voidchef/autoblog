@@ -14,7 +14,7 @@ import ImagePicker from '../elements/CreatePost/ImagePicker';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AWS_BASEURL } from '../../utils/consts';
 import { ROUTES } from '../../utils/routing/routes';
-import { IFieldData } from '../../reducers/appSettings';
+import { ICategory, IFieldData } from '../../reducers/appSettings';
 
 async function fetchImages(blogId: string) {
   const newImages: string[] = [];
@@ -59,10 +59,10 @@ export default function CreatePost() {
     country: '',
     intent: '',
     audience: '',
-    language: 'english',
-    languageModel: 'gpt-3.5-turbo',
-    tone: 'informative',
-    category: 'technology',
+    language: '',
+    languageModel: '',
+    tone: '',
+    category: '',
     tags: '',
   });
   const [blogTitle, setBlogTitle] = React.useState('');
@@ -172,7 +172,7 @@ export default function CreatePost() {
   };
 
   const handleUpdate = () => {
-    let updatedFields: any = {};
+    let updatedFields: { [key: string]: string | boolean } = {};
 
     if (blogTitle !== fetchedBlogData.title) {
       updatedFields.title = blogTitle;
@@ -353,7 +353,6 @@ export default function CreatePost() {
               id="outlined-select-languageModel"
               label="language model"
               value={formData.languageModel}
-              defaultValue="gpt-3.5-turbo"
               helperText="Please select language model"
               onChange={handleFormDataChange('languageModel')}
               sx={{ width: { sm: '16rem' } }}
@@ -371,7 +370,6 @@ export default function CreatePost() {
               id="outlined-select-tone"
               label="tone"
               value={formData.tone}
-              defaultValue="informative"
               helperText="Please select tone of the blog"
               onChange={handleFormDataChange('tone')}
               sx={{ width: { sm: '16rem' } }}
@@ -396,14 +394,13 @@ export default function CreatePost() {
               id="outlined-select-category"
               label="category"
               value={formData.category}
-              defaultValue="technology"
               helperText="Please select category of the blog"
               onChange={handleFormDataChange('category')}
               sx={{ width: { sm: '16rem' } }}
             >
-              {appSettings.categories.map((option: IFieldData) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
+              {appSettings.categories.map((option: ICategory) => (
+                <MenuItem key={option.categoryName.toLowerCase()} value={option.categoryName.toLowerCase()}>
+                  {option.categoryName}
                 </MenuItem>
               ))}
             </TextField>
