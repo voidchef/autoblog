@@ -38,7 +38,7 @@ export default function Category() {
         {category && <Title category={category} />}
       </Box>
       <Box sx={{ my: 4 }} />
-      {category && <Posts category={category.categoryName.toLocaleLowerCase()} />}
+      {category && <Posts category={category.categoryName} />}
       <Footer />
     </Box>
   );

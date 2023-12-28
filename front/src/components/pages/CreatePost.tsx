@@ -195,9 +195,7 @@ export default function CreatePost() {
 
     if (preview) {
       dispatch(
-        updateBlog(updatedFields, true, fetchedBlogData.id, () =>
-          navigate(`${ROUTES.PREVIEW}/${fetchedBlogData.slug}`),
-        ),
+        updateBlog(updatedFields, true, fetchedBlogData.id, () => navigate(`${ROUTES.PREVIEW}/${fetchedBlogData.slug}`)),
       );
     } else {
       dispatch(updateBlog(updatedFields, false, fetchedBlogData.id));
@@ -404,7 +402,7 @@ export default function CreatePost() {
               sx={{ width: { sm: '16rem' } }}
             >
               {appSettings.categories.map((option: ICategory) => (
-                <MenuItem key={option.categoryName.toLowerCase()} value={option.categoryName.toLowerCase()}>
+                <MenuItem key={option.categoryName} value={option.categoryName}>
                   {option.categoryName}
                 </MenuItem>
               ))}

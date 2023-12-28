@@ -6,6 +6,7 @@ import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { IBlog } from '../../../reducers/blog';
+import { AWS_BASEURL } from '../../../utils/consts';
 
 interface RecentPostProps {
   recentBlogs: IBlog[];
@@ -13,6 +14,11 @@ interface RecentPostProps {
 
 const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
   const navigate = useNavigate();
+
+  const handleClick = (slug: string) => {
+    navigate(`${ROUTES.BLOG}/${slug}`);
+  };
+
   return (
     <React.Fragment>
       <Box display="flex" flexDirection="row" justifyContent="space-between">
@@ -40,8 +46,28 @@ const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
         }}
       >
         {recentBlogs.map((post, index) => (
-          <Grid item xs={12} sm={5.55} key={index}>
-            <Box sx={{ p: 1, background: '#E9EAF4' }} height={{ xs: '15rem', sm: '18rem' }} marginBottom={4} />
+          <Grid
+            item
+            xs={12}
+            sm={5.55}
+            key={index}
+            sx={{
+              cursor: 'pointer',
+              padding: '0.5rem',
+              '&:hover': {
+                backgroundColor: '#E9EAF4',
+              },
+              borderRadius: '0.5rem',
+            }}
+            onClick={() => handleClick(post.slug)}
+          >
+            <Box sx={{ p: 1 }} height={{ xs: '15rem', sm: '18rem' }} marginBottom={4}>
+              <img
+                src={`${AWS_BASEURL}/blogs/${post.id}/1.img`}
+                alt={post.topic}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }}
+              />
+            </Box>
             <Box display={'flex'} flexDirection={'column'} justifyContent={'space-between'}>
               <Typography fontSize={{ sm: 15 }} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
                 By <span style={{ color: '#555FAC' }}>{post.author.name}</span> |{' '}

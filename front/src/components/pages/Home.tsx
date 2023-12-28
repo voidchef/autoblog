@@ -12,7 +12,7 @@ import { getBlogs } from '../../actions/blog';
 export default function Home() {
   const dispatch = useAppDispatch();
 
-  const recentBlogs = useAppSelector((state) => state.blog.allBlogs);
+  const recentBlogs = useAppSelector((state) => state.blog.allBlogs.results);
   const featuredBlogs = useAppSelector((state) => state.blog.featuredBlogs.results);
 
   React.useEffect(() => {
