@@ -46,7 +46,7 @@ const AllPosts = () => {
         <React.Fragment>
           <Grid container spacing={3}>
             {allBlogs.results.map((post: any, index: number) => (
-              <Grid item xs={12} sm={4} key={index} onClick={() => handleClick(post.slug)}>
+              <Grid item xs={12} sm={4} key={index} sx={{ cursor: 'pointer' }} onClick={() => handleClick(post.slug)}>
                 <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'}>
                   <img
                     src={`${AWS_BASEURL}/blogs/${post.id}/1.img`}

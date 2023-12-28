@@ -48,7 +48,7 @@ const AllPosts = ({ category }: { category: String }) => {
           <Grid container item xs={12} sm={8} spacing={2}>
             {allBlogs.results.length > 0 ? (
               allBlogs.results.map((post: any, index: number) => (
-                <Grid item xs={12} sm={6} key={index} onClick={() => handleClick(post.slug)}>
+                <Grid item xs={12} sm={6} key={index} sx={{ cursor: 'pointer' }} onClick={() => handleClick(post.slug)}>
                   <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'} marginBottom={4}>
                     <img
                       src={`${AWS_BASEURL}/blogs/${post.id}/1.img`}
@@ -90,12 +90,12 @@ const AllPosts = ({ category }: { category: String }) => {
               </Typography>
             )}
           </Grid>
-          <Grid item xs={12} sm={4} sx={{ marginBottom: '2rem' }}>
+          <Grid item xs={12} sm={4} sx={{ marginBottom: '2rem' }} display={{ xs: 'none', sm: 'block' }}>
             <AllTags />
           </Grid>
         </Grid>
       )}
-      {allBlogs.results.length >= 0 && (
+      {allBlogs.results.length > 0 && (
         <Box display={'flex'} justifyContent={'center'} margin={3}>
           <TablePagination
             component="div"

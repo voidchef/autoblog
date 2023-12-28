@@ -19,7 +19,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
   };
 
   return (
-    <Grid container sx={{ justifyContent: featuredBlogs.length > 1? 'space-between' : 'center' }}>
+    <Grid container sx={{ justifyContent: featuredBlogs.length > 1 ? 'space-between' : 'center' }}>
       <Grid item xs={12} sm={6} container sx={{ p: { xs: 0, sm: 1 }, border: '2px solid #E0E0E0' }}>
         <Box sx={{ m: 2 }}>
           <Typography
@@ -96,7 +96,21 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
                 (post: IBlog, index: number) =>
                   //start from 1 because 0 is already displayed
                   index !== 0 && (
-                    <Box key={index} display={'flex'} flexDirection={'column'} sx={{ gap: 1 }}>
+                    <Box
+                      key={index}
+                      display={'flex'}
+                      flexDirection={'column'}
+                      padding={'0.5rem'}
+                      borderRadius={'0.5rem'}
+                      sx={{
+                        cursor: 'pointer',
+                        gap: 1,
+                        '&:hover': {
+                          backgroundColor: '#E9EAF4',
+                        },
+                      }}
+                      onClick={() => handleClick(post.slug)}
+                    >
                       <Typography fontSize={{ xs: 15 }} component="div" sx={{ flexGrow: 1 }}>
                         By <span style={{ color: '#555FAC' }}>{post.author.name}</span> |{' '}
                         <span style={{ color: '#6D6E76' }}>
@@ -109,6 +123,14 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
                       </Typography>
                       <Typography fontSize={{ xs: 18, sm: 20 }} component="div" sx={{ flexGrow: 1 }}>
                         {post.topic}
+                      </Typography>
+                      <Typography
+                        fontSize={{ xs: '0.8rem', sm: '1rem' }}
+                        color={'#6D6E76'}
+                        component="div"
+                        sx={{ flexGrow: 1 }}
+                      >
+                        {`${post.content.slice(0, 150)}...`}
                       </Typography>
                     </Box>
                   ),

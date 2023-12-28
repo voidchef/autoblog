@@ -60,7 +60,7 @@ export default function Blog() {
             <Box>
               <Typography component={'div'} fontSize={'1rem'} textAlign={'left'}>
                 <span style={{ color: '#6D6E76' }}>By </span>
-                <span style={{ color: '#555FAC', fontWeight: 700 }}>{'blogData.author.name'}</span>
+                <span style={{ color: '#555FAC', fontWeight: 700 }}>{blogData.author.name}</span>
                 <span style={{ color: '#6D6E76' }}> | </span>
                 <span style={{ color: '#6D6E76' }}>
                   {new Date(blogData.createdAt).toLocaleDateString('en-US', {

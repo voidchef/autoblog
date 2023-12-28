@@ -120,7 +120,7 @@ function EnhancedTable({
                     aria-checked={isItemSelected}
                     tabIndex={-1}
                     key={row.id as number}
-                    selected={isItemSelected}
+                    selected={isDraftTable ? false : isItemSelected}
                   >
                     {!isDraftTable && (
                       <TableCell padding="checkbox">
