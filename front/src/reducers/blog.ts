@@ -101,7 +101,7 @@ const blogReducer = (state = initialState, action: Action) => {
     case UPDATE_BLOG_SUCCESS:
       return {
         ...state,
-        blogData: payload,
+        blogData: {...state.blogData, ...payload},
       };
     case GET_BLOGS_SUCCESS:
       return {

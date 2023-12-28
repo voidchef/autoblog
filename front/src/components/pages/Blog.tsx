@@ -8,17 +8,17 @@ import { marked } from 'marked';
 import { useAppDispatch, useAppSelector } from '../../utils/reduxHooks';
 import { Helmet } from 'react-helmet-async';
 import { AWS_BASEURL } from '../../utils/consts';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { getBlog } from '../../actions/blog';
 
 export default function Blog() {
   const dispatch = useAppDispatch();
   const location = useLocation();
-  const { preview } = useParams();
+  const isPreview = location.pathname.split('/')[0];
   const slug = location.pathname.split('/')[2];
 
   React.useEffect(() => {
-    if (!preview) dispatch(getBlog(slug));
+    if (!isPreview) dispatch(getBlog(slug));
   }, []);
 
   const blogData = useAppSelector((state) => state.blog.blogData);
@@ -60,7 +60,7 @@ export default function Blog() {
             <Box>
               <Typography component={'div'} fontSize={'1rem'} textAlign={'left'}>
                 <span style={{ color: '#6D6E76' }}>By </span>
-                <span style={{ color: '#555FAC', fontWeight: 700 }}>{blogData.author.name}</span>
+                <span style={{ color: '#555FAC', fontWeight: 700 }}>{'blogData.author.name'}</span>
                 <span style={{ color: '#6D6E76' }}> | </span>
                 <span style={{ color: '#6D6E76' }}>
                   {new Date(blogData.createdAt).toLocaleDateString('en-US', {

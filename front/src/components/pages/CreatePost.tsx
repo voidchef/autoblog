@@ -158,10 +158,7 @@ export default function CreatePost() {
     }, {} as IBlogData);
 
     if (fetchedBlogData && fetchedBlogData.id) {
-      dispatch(
-        updateBlog(filteredData, true, null, () => navigate(`${ROUTES.PREVIEW}/${fetchedBlogData.slug}?preview=${true}`)),
-      );
-      return;
+      handleUpdate(true);
     } else {
       dispatch(generateBlog(filteredData));
     }
@@ -171,7 +168,7 @@ export default function CreatePost() {
     initialFormData();
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = (preview: boolean) => {
     let updatedFields: { [key: string]: string | boolean } = {};
 
     if (blogTitle !== fetchedBlogData.title) {
@@ -196,7 +193,15 @@ export default function CreatePost() {
       updatedFields.tags = formData.tags;
     }
 
-    dispatch(updateBlog(updatedFields, false, fetchedBlogData.id));
+    if (preview) {
+      dispatch(
+        updateBlog(updatedFields, true, fetchedBlogData.id, () =>
+          navigate(`${ROUTES.PREVIEW}/${fetchedBlogData.slug}`),
+        ),
+      );
+    } else {
+      dispatch(updateBlog(updatedFields, false, fetchedBlogData.id));
+    }
   };
 
   return (
@@ -437,7 +442,7 @@ export default function CreatePost() {
             variant="contained"
             sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
             disabled={!fetchedBlogData}
-            onClick={handleUpdate}
+            onClick={() => handleUpdate(false)}
           >
             Save
           </Button>
