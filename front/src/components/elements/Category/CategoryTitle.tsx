@@ -2,12 +2,10 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { ICategory } from '../../../reducers/appSettings';
+import { useAppSelector } from '../../../utils/reduxHooks';
 
-interface TitleProps {
-  category: ICategory;
-}
-
-const Headline = ({ category }: TitleProps) => {
+const Headline = ({ title }: { title: String }) => {
+  const category = useAppSelector((state) => state.appSettings.categories.find((category: ICategory) => category.categoryName === title));
   return (
     <Box
       display={'flex'}

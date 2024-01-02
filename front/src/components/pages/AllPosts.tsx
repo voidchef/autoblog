@@ -3,9 +3,11 @@ import Box from '@mui/material/Box';
 import NavBar from '../elements/Common/NavBar';
 import Posts from '../elements/AllPosts/Posts';
 import Footer from '../elements/Common/Footer';
-import Title from '../elements/AllPosts/Title';
+import Title from '../elements/Common/Title';
+import { useLocation } from 'react-router-dom';
 
 export default function Category() {
+  const { state } = useLocation();
   return (
     <Box>
       <Box
@@ -16,7 +18,7 @@ export default function Category() {
         bgcolor={'#E9EAF4'}
       >
         <NavBar />
-        <Title />
+        <Title title={state && state.title ? state.title : 'All Posts'} />
       </Box>
       <Box sx={{ my: 4 }} />
       <Posts />

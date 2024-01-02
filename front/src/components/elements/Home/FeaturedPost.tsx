@@ -87,7 +87,11 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
               >
                 All Featured Posts
               </Typography>
-              <Button variant="text" sx={{ whiteSpace: 'nowrap' }}>
+              <Button
+                variant="text"
+                sx={{ whiteSpace: 'nowrap' }}
+                onClick={() => navigate(ROUTES.ALLPOSTS, { state: { title: 'Featured Posts' } })}
+              >
                 View All
               </Button>
             </Box>

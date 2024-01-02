@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
 import { Button, IconButton, InputAdornment, MenuItem, formControlLabelClasses } from '@mui/material';
-import Title from '../elements/CreatePost/Title';
+import Title from '../elements/Common/Title';
 import { useAppDispatch, useAppSelector } from '../../utils/reduxHooks';
 import { IBlogData, clearBlog, generateBlog, getBlog, updateBlog } from '../../actions/blog';
 import Visibility from '@mui/icons-material/Visibility';
@@ -212,7 +212,7 @@ export default function CreatePost() {
         bgcolor={'#E9EAF4'}
       >
         <NavBar />
-        <Title />
+        <Title title={'Create Post'}/>
       </Box>
       <Box sx={{ my: 4 }} />
       {images.length > 0 && (

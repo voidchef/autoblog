@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import NavBar from '../elements/Common/NavBar';
 import Posts from '../elements/Category/Posts';
 import Footer from '../elements/Common/Footer';
-import Title from '../elements/Category/Title';
+import Title from '../elements/Category/CategoryTitle';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAppSelector } from '../../utils/reduxHooks';
 import { ROUTES } from '../../utils/routing/routes';
@@ -35,7 +35,7 @@ export default function Category() {
         bgcolor={'#E9EAF4'}
       >
         <NavBar />
-        {category && <Title category={category} />}
+        {category && <Title title={category.categoryName} />}
       </Box>
       <Box sx={{ my: 4 }} />
       {category && <Posts category={category.categoryName} />}

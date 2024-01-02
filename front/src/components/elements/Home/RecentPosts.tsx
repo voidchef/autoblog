@@ -32,7 +32,7 @@ const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
         >
           Recent Posts
         </Typography>
-        <Button variant="text" onClick={() => navigate(ROUTES.ALLPOSTS)}>
+        <Button variant="text" onClick={() => navigate(ROUTES.ALLPOSTS, { state: { title: 'Recent Posts' } })}>
           View All
         </Button>
       </Box>

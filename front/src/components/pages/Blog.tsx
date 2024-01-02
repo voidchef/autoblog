@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
 import { Typography } from '@mui/material';
-import Title from '../elements/Blog/Title';
+import Title from '../elements/Category/CategoryTitle';
 import { marked } from 'marked';
 import { useAppDispatch, useAppSelector } from '../../utils/reduxHooks';
 import { Helmet } from 'react-helmet-async';

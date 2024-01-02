@@ -2,7 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-const Headline = () => {
+const Headline = ({ title }: { title: string }) => {
   return (
     <Box
       display={'flex'}
@@ -19,7 +19,7 @@ const Headline = () => {
         sx={{ marginBottom: '1rem' }}
         color={'primary'}
       >
-        Create Post
+        {title}
       </Typography>
     </Box>
   );
