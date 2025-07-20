@@ -11,7 +11,7 @@ import app from '../../app';
 import setupTestDB from '../jest/setupTestDB';
 import User from '../user/user.model';
 import config from '../../config/config';
-import { NewRegisteredUser } from '../user/user.interfaces';
+import { IUserDoc, NewRegisteredUser } from '../user/user.interfaces';
 import * as tokenService from '../token/token.service';
 import tokenTypes from '../token/token.types';
 import Token from '../token/token.model';
@@ -432,10 +432,11 @@ describe('Auth middleware', () => {
     const req = httpMocks.createRequest({ headers: { Authorization: `Bearer ${userOneAccessToken}` } });
     const next = jest.fn();
 
-    await authMiddleware()(req, httpMocks.createResponse(), next);
+    await authMiddleware()(req, httpMocks.createResponse(), next); 
+    const user = req.user as IUserDoc;
 
     expect(next).toHaveBeenCalledWith();
-    expect(req.user._id).toEqual(userOne._id);
+    expect(user._id).toEqual(userOne._id);
   });
 
   test('should call next with unauthorized error if access token is not found in header', async () => {

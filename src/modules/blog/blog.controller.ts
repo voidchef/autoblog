@@ -7,9 +7,11 @@ import pick from '../utils/pick';
 import { IOptions } from '../paginate/paginate';
 import * as blogService from './blog.service';
 import { IBlogDoc } from './blog.interfaces';
+import { IUserDoc } from '../user/user.interfaces';
 
 export const generateBlog = catchAsync(async (req: Request, res: Response) => {
-  const blog = await blogService.generateBlog(req.body, req.user._id);
+  const user = req.user as IUserDoc;
+  const blog = await blogService.generateBlog(req.body, user._id as mongoose.Types.ObjectId);
   res.status(httpStatus.CREATED).send(blog);
 });
 

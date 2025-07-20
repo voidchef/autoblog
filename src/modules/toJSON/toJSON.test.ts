@@ -25,7 +25,7 @@ describe('toJSON plugin', () => {
     const SampleModel = connection.model<SampleSchemaDoc, SampleSchemaModel>('Model', schema);
     const doc = new SampleModel();
     expect(doc.toJSON()).not.toHaveProperty('_id');
-    expect(doc.toJSON()).toHaveProperty('id', doc._id.toString());
+    expect(doc.toJSON()).toHaveProperty('id', (doc._id as mongoose.Types.ObjectId).toString());
   });
 
   it('should remove __v', () => {

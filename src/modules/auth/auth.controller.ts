@@ -5,6 +5,7 @@ import { tokenService } from '../token';
 import { userService } from '../user';
 import * as authService from './auth.service';
 import { emailService } from '../email';
+import { IUserDoc } from '../user/user.interfaces';
 
 export const register = catchAsync(async (req: Request, res: Response) => {
   const user = await userService.registerUser(req.body);
@@ -41,8 +42,9 @@ export const resetPassword = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const sendVerificationEmail = catchAsync(async (req: Request, res: Response) => {
-  const verifyEmailToken = await tokenService.generateVerifyEmailToken(req.user);
-  await emailService.sendVerificationEmail(req.user.email, verifyEmailToken, req.user.name);
+  const user = req.user as IUserDoc;
+  const verifyEmailToken = await tokenService.generateVerifyEmailToken(user);
+  await emailService.sendVerificationEmail(user.email, verifyEmailToken, user.name);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
