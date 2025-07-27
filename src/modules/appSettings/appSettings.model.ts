@@ -5,28 +5,6 @@ import { IAppSettingsDoc, IAppSettingsModel } from './appSettings.interfaces';
 
 const appSettingsSchema = new mongoose.Schema<IAppSettingsDoc, IAppSettingsModel>(
   {
-    apiKeys: {
-      openAi: {
-        apiKey: {
-          type: String,
-          trim: true,
-        },
-        reverseProxyUrl: {
-          type: String,
-          trim: true,
-        },
-      },
-      bingToken: [
-        {
-          type: String,
-          trim: true,
-        },
-      ],
-      googleToken: {
-        type: String,
-        trim: true,
-      },
-    },
     categories: [
       {
         categoryName: {
@@ -61,20 +39,6 @@ const appSettingsSchema = new mongoose.Schema<IAppSettingsDoc, IAppSettingsModel
       },
     ],
     languageModels: [
-      {
-        label: {
-          type: String,
-          trim: true,
-          required: true,
-        },
-        value: {
-          type: String,
-          trim: true,
-          required: true,
-        },
-      },
-    ],
-    tones: [
       {
         label: {
           type: String,

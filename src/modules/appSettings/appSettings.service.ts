@@ -1,27 +1,7 @@
 import httpStatus from 'http-status';
 import AppSettings from './appSettings.model';
 import ApiError from '../errors/ApiError';
-import { IApiKeys, ICategories, IAppSettingsDoc, ISelectFields, UpdateSelectOptions } from './appSettings.interfaces';
-
-/**
- * Update Api Keys
- * @param {IApiKeys} apiKeys
- */
-export const updateApiKeys = async (apiKeys: IApiKeys) => {
-  let appSettings = await AppSettings.findOne();
-  if (!appSettings) {
-    appSettings = new AppSettings({ apiKeys });
-  } else {
-    Object.assign(appSettings.apiKeys, apiKeys);
-  }
-  await appSettings.save();
-};
-
-/**
- * Get Api Keys
- * @returns {Promise<Partial<IAppSettingsDoc> | null>}
- */
-export const getApiKeys = async (): Promise<Partial<IAppSettingsDoc> | null> => AppSettings.findOne().select('apiKeys');
+import { ICategories, IAppSettingsDoc, ISelectFields, UpdateSelectOptions } from './appSettings.interfaces';
 
 /**
  * Get App Settings
@@ -67,7 +47,7 @@ export const deleteCategories = async (categoryNames: string[]): Promise<ICatego
  * @returns {Promise<ISelectFields | null>}
  */
 export const updateSelectFields = async (selectFields: UpdateSelectOptions): Promise<ISelectFields | null> => {
-  const { languages, languageModels, tones, queryType } = selectFields;
+  const { languages, languageModels, queryType } = selectFields;
   let appSettings = await AppSettings.findOne();
   if (!appSettings) {
     appSettings = new AppSettings({ ...selectFields });
@@ -77,9 +57,6 @@ export const updateSelectFields = async (selectFields: UpdateSelectOptions): Pro
     }
     if (languageModels) {
       appSettings.languageModels = languageModels;
-    }
-    if (tones) {
-      appSettings.tones = tones;
     }
     if (queryType) {
       appSettings.queryType = queryType;
