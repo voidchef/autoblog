@@ -8,8 +8,7 @@ export const generateBlog: Record<keyof IGenerateBlog, any> = {
   intent: Joi.string().optional(),
   audience: Joi.string().optional(),
   language: Joi.string().required(),
-  languageModel: Joi.string().required(),
-  tone: Joi.string().optional(),
+  llmModel: Joi.string().required(),
   category: Joi.string().required(),
   tags: Joi.array().optional(),
 };
@@ -24,6 +23,7 @@ const createBlogBody: Record<keyof NewCreatedBlog, any> = {
   content: Joi.string().required(),
   category: Joi.string().required(),
   tags: Joi.array().optional(),
+  generatedImages: Joi.array().items(Joi.string()).optional(),
   selectedImage: Joi.number().optional(),
 };
 

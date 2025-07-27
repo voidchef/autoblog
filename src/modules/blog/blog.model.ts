@@ -33,7 +33,6 @@ const blogSchema = new mongoose.Schema<IBlogDoc, IBlogModel>(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      trim: true,
     },
     readingTime: {
       type: Number,
@@ -47,12 +46,10 @@ const blogSchema = new mongoose.Schema<IBlogDoc, IBlogModel>(
       required: true,
       trim: true,
     },
-    tags: [
-      {
-        type: String,
-        trim: true,
-      },
-    ],
+    tags: {
+      type: [String],
+      trim: true,
+    },
     isFeatured: {
       type: Boolean,
       default: false,
@@ -82,15 +79,13 @@ const blogSchema = new mongoose.Schema<IBlogDoc, IBlogModel>(
       required: true,
       trim: true,
     },
-    languageModel: {
+    llmModel: {
       type: String,
       required: true,
       trim: true,
     },
-    tone: {
-      type: String,
-      required: true,
-      trim: true,
+    generatedImages: {
+      type: [String],
     },
     selectedImage: {
       type: String,
@@ -110,7 +105,7 @@ blogSchema.plugin(paginate);
  * @param {string} content
  * @returns {number}
  */
-blogSchema.method('generateReadTime', function (content: string): number {
+blogSchema.method('generateReadTime', function (this: IBlogDoc, content: string): number {
   const wordsPerMinute = 200;
   const numberOfWords = content.split(/\s/g).length;
   const readingTime = Math.ceil(numberOfWords / wordsPerMinute);

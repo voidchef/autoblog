@@ -1,2 +1,2 @@
-export * from './post';
+export * from './post-generator';
 export * from './types';

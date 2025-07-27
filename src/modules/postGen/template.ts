@@ -1,20 +1,62 @@
-export function extractPrompts(template: string): string[] {
-  const regex = /{\d+:((?:.|\n)*?)}/g;
-  return Array.from(template.matchAll(regex)).map((match) => match[1]!.trim());
+import { TemplatePostPrompt, TemplatePrompt } from './types';
+
+export class Template {
+  private prompts: TemplatePrompt[] = [];
+
+  constructor(private template: string) {
+    this.prompts = this.extractPrompts(template);
+  }
+
+  public getSystemPrompt(): string {
+    const sysPrompts = this.prompts.filter((prompt) => prompt.type === 's');
+    if (sysPrompts.length > 0 && typeof sysPrompts[0]?.prompt === 'string') {
+      return sysPrompts[0].prompt;
+    }
+    return '';
+  }
+
+  public getPrompts(): TemplatePrompt[] {
+    return this.prompts.filter((prompt) => prompt.type !== 's');
+  }
+
+  public buildContent(contents: string[]): string {
+    const content = this.removeSystemPrompt(this.template);
+    return this.replaceAllContentPrompts(content, contents);
+  }
+
+  private extractPrompts(template: string): TemplatePrompt[] {
+    const regex = /{{(s|c|i):([\s\S]*?)}}/g;
+    const matches = Array.from(template.matchAll(regex));
+    return matches.map((match) => ({
+      type: (match[1]?.trim() ?? '') as 's' | 'c' | 'i',
+      prompt: match[2]?.trim() ?? '',
+    }));
+  }
+
+  private removeSystemPrompt(template: string): string {
+    const regex = /{{s:[\s\S]*?}}/g;
+    return template.replace(regex, '');
+  }
+
+  private replaceAllContentPrompts(template: string, contents: string[]): string {
+    let result = template;
+    contents.forEach((content) => {
+      const regex = /{{c:[\s\S]*?}}/;
+      result = result.replace(regex, content);
+    });
+    return result;
+  }
 }
 
-export function replacePrompt(template: string, index: number, content: string): string {
-  const regex = new RegExp(`{${index}:((?:.|\n)*?)}`);
-  return template.replace(regex, content);
+export function isHTML(prompt: TemplatePostPrompt): boolean {
+  return getFileExtension(prompt) === 'html';
 }
 
-export function replaceAllPrompts(template: string, contents: string[]): string {
-  // We are removing the first prompt because it is the system prompt
-  let tmpTemplate = replacePrompt(template, 0, '');
+export function isMarkdown(prompt: TemplatePostPrompt): boolean {
+  return getFileExtension(prompt) === 'md';
+}
 
-  contents.forEach((content, index) => {
-    tmpTemplate = replacePrompt(tmpTemplate, index + 1, content);
-  });
-
-  return tmpTemplate.trim();
+export function getFileExtension(prompt: TemplatePostPrompt): string {
+  const ext = prompt.templateFile.split('.').pop();
+  return ext ?? '';
 }

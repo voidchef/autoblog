@@ -1,5 +1,6 @@
 import { Model, Document, mongo } from 'mongoose';
 import { QueryResult } from '../paginate/paginate';
+import type { llm } from '../postGen/types';
 
 export interface IGenerateBlog {
   topic: string;
@@ -7,10 +8,9 @@ export interface IGenerateBlog {
   intent?: string;
   audience?: string;
   language: string;
-  languageModel: 'gpt-4' | 'gpt-3.5-turbo';
-  tone: 'informative' | 'captivating';
+  llmModel: llm;
   category: string;
-  tags?: string;
+  tags?: string[];
 }
 
 export interface IBlog extends IGenerateBlog {
@@ -24,6 +24,7 @@ export interface IBlog extends IGenerateBlog {
   isFeatured: boolean;
   isPublished: boolean;
   isDraft: boolean;
+  generatedImages?: string[];
   selectedImage?: string;
 }
 

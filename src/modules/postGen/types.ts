@@ -1,40 +1,73 @@
-export type CompletionParams = {
+export type llm =
+  | 'gpt-4o'
+  | 'gpt-4o-mini'
+  | 'o1-preview'
+  | 'o1-mini'
+  | 'mistral-small-latest'
+  | 'mistral-medium-latest'
+  | 'mistral-large-latest'
+  | 'claude'
+  | 'groq';
+
+export const DEFAULT_LLM: llm = 'gpt-4o';
+
+export function getLLMs(): llm[] {
+  return [
+    'gpt-4o',
+    'gpt-4o-mini',
+    'o1-preview',
+    'o1-mini',
+    'mistral-small-latest',
+    'mistral-medium-latest',
+    'mistral-large-latest',
+    'claude',
+    'groq',
+  ];
+}
+
+export type BasePostPrompt = {
+  model: llm;
   temperature?: number;
-  frequency_penalty?: number;
-  presence_penalty?: number;
-  logit_bias?: any;
+  frequencyPenalty?: number;
+  presencePenalty?: number;
+  debug?: boolean;
+  debugapi?: boolean;
+  apiKey?: string;
+  filename?: string;
+  promptFolder?: string;
 };
 
-export type TotalTokens = {
-  promptTokens: number;
-  completionTokens: number;
-  total: number;
-};
-
-export type PostPrompt = {
+// Prompt for a post based on a topic (automatic mode with no template)
+export type AutoPostPrompt = BasePostPrompt & {
   topic?: string;
   country?: string;
   intent?: string;
   audience?: string;
   language: string;
-  tone?: 'informative' | 'captivating';
   generate?: boolean; // generate the audience and intent
   withConclusion?: boolean;
-  languageModel: 'gpt-4' | 'gpt-4-32k' | 'gpt-3.5-turbo' | 'gpt-3.5-turbo-16k';
-  maxModelTokens?: 4000 | 8000;
-  temperature?: number;
-  frequencyPenalty?: number;
-  presencePenalty?: number;
-  logitBias?: number;
-  debug?: boolean;
-  debugapi?: boolean;
-  apiKey?: string;
-  filename?: string;
+  generateImages?: boolean; // generate images for headings
+  imagesPerHeading?: number; // number of images to generate per heading
+};
 
-  // The following attributes are only used for custom templates
-  templateFile?: string;
-  templateContent?: string;
-  prompts?: string[];
+// Prompt for a post based on a template
+export type TemplatePostPrompt = BasePostPrompt & {
+  //  The template file (path to the file)
+  templateFile: string;
+
+  // The input json used as inputs for the different sections/prompts in the template
+  // This json is a key value pair where the key is of one template parameter
+  input: any;
+  
+  // Image generation options
+  generateImages?: boolean;
+  imagesPerSection?: number;
+};
+
+export type TemplatePrompt = {
+  // s = system, c = content, i = image
+  type: 's' | 'c' | 'i';
+  prompt: string;
 };
 
 export type Heading = {
@@ -59,7 +92,18 @@ export type Post = {
   slug: string;
   categories?: number[];
   status?: string;
-  totalTokens: TotalTokens;
+  generatedImages?: string[]; // generated image URLs/paths
+};
+
+export type TemplatePost = {
+  title: string;
+  content: string;
+  seoTitle: string;
+  seoDescription: string;
+  slug: string;
+  categories?: number[];
+  status?: string;
+  generatedImages?: string[]; // generated image URLs/paths
 };
 
 export type SeoInfo = {

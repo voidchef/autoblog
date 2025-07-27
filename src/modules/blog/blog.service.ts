@@ -4,10 +4,9 @@ import Blog from './blog.model';
 import ApiError from '../errors/ApiError';
 import { IOptions, QueryResult } from '../paginate/paginate';
 import { IGenerateBlog, NewCreatedBlog, UpdateBlogBody, IBlogDoc } from './blog.interfaces';
-import { OpenAIPostGenerator, Post } from '../postGen';
-import { imgGen } from '../imgGen';
-import { uploadFilesToBucket } from '../aws';
+import { PostGenerator, Post } from '../postGen';
 import runReport, { IRunReportResponse } from '../utils/analytics';
+import S3Utils from '../aws/s3utils';
 
 /**
  * Create a blog post
@@ -16,9 +15,17 @@ import runReport, { IRunReportResponse } from '../utils/analytics';
  */
 export const createBlog = async (blogBody: NewCreatedBlog): Promise<IBlogDoc> => {
   const blog = await Blog.create(blogBody);
-  const imageUrls: string[] = await uploadFilesToBucket(blog.id, './src/modules/imgGen/images/', `blogs/${blog._id}`);
-  if (imageUrls.length > 0) {
-    blog.selectedImage = imageUrls[0] as string;
+  if (blog.generatedImages && blog.generatedImages.length > 0) {
+    // Upload generated images to S3
+    const uploadResult = await S3Utils.uploadFromUrlsOrFiles({
+      sources: blog.generatedImages,
+      blogId: blog.id,
+      uploadPath: `blogs/${blog._id}`,
+    });
+    if (uploadResult.uploadedUrls.length > 0) {
+      blog.generatedImages = uploadResult.uploadedUrls;
+      blog.selectedImage = uploadResult.uploadedUrls[0]!; // Set the first uploaded image
+    }
   }
   await blog.save();
   return blog;
@@ -32,12 +39,20 @@ export const createBlog = async (blogBody: NewCreatedBlog): Promise<IBlogDoc> =>
  */
 export const generateBlog = async (generateBlogData: IGenerateBlog, author: mongoose.Types.ObjectId): Promise<IBlogDoc> => {
   const { category, tags, ...prompt } = generateBlogData;
-  const postGenerator = new OpenAIPostGenerator(prompt);
+  // Ensure 'model' property is present for AutoPostPrompt
+  const postPrompt = {
+    ...prompt,
+    model: prompt.llmModel ?? 'gpt-4o', // Set default model if not provided
+  };
+  const postGenerator = new PostGenerator(postPrompt);
   const post: Post = await postGenerator.generate();
-  await imgGen(prompt.topic);
   const additionalData: { category: string; author: mongoose.Types.ObjectId; tags?: string[] } = { category, author };
   if (tags) {
-    additionalData.tags = tags!.split(/\s*,\s*/).map((tag: string) => tag.trim());
+    additionalData.tags = Array.isArray(tags)
+      ? tags.map((tag: string) => tag.trim())
+      : String(tags)
+          .split(/\s*,\s*/)
+          .map((tag: string) => tag.trim());
   }
   return createBlog({ ...post, ...generateBlogData, ...additionalData } as NewCreatedBlog);
 };

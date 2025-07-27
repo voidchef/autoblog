@@ -1,112 +1,266 @@
-/* eslint-disable no-console */
-import { readdir, readFile } from 'fs/promises';
-import * as fs from 'fs';
-import { promisify } from 'util';
+import { readFile, writeFile } from 'fs/promises';
+import * as path from 'path';
+import * as tmp from 'tmp';
 import { PutObjectCommand, DeleteObjectCommand, HeadBucketCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
 import s3Client from './aws-config';
+import { v4 as generateUUID } from 'uuid';
+import logger from '../logger/logger';
 
-export const checkBucket = async (bucketName: string) => {
-  const checkCommand = new HeadBucketCommand({ Bucket: bucketName });
-  try {
-    await s3Client.send(checkCommand);
-    console.log(`Bucket '${bucketName}' exists.`);
-  } catch (error: any) {
-    if (error.name === 'NotFound') {
-      console.log(`Bucket '${bucketName}' does not exist.`);
-    } else {
-      console.error(`Error checking bucket existence: ${error.message}`);
+export interface UploadDetails {
+  sources: string[];
+  blogId: string;
+  uploadPath: string;
+}
+
+export interface S3Config {
+  bucketName: string;
+  awsRegion: string;
+}
+
+export interface UploadResult {
+  uploadedUrls: string[];
+  errors: string[];
+}
+
+export class S3Utils {
+  private static readonly DEFAULT_EXTENSION = '.jpg';
+
+  private getS3Config(): S3Config {
+    const bucketName = process.env['AWS_BUCKET'];
+    const awsRegion = process.env['AWS_REGION'];
+
+    if (!bucketName || !awsRegion) {
+      throw new Error('AWS_BUCKET and AWS_REGION environment variables must be set');
     }
-    throw error;
+
+    return { bucketName, awsRegion };
   }
-};
 
-const createFolderPath = async (bucketName: string, folderPath: string) => {
-  const commandParams = {
-    Bucket: bucketName,
-    Key: folderPath,
-    Body: '',
-  };
-
-  try {
-    await s3Client.send(new PutObjectCommand(commandParams));
-  } catch (error: any) {
-    console.error(`Error creating folder path '${folderPath}' in bucket '${bucketName}': ${error.message}`);
-    throw error;
+  private isValidUrl(url: string): boolean {
+    return url.startsWith('http://') || url.startsWith('https://');
   }
-};
 
-const createFolderPathIfNotExists = async (bucketName: string, folderPath: string) => {
-  try {
-    await s3Client.send(new HeadObjectCommand({ Bucket: bucketName, Key: folderPath }));
-    return true;
-  } catch (error: any) {
-    if (error.name === 'NotFound') {
-      await createFolderPath(bucketName, folderPath);
-      return false;
+  private createTempFile(extension: string = ''): Promise<{ path: string; cleanup: () => void }> {
+    return new Promise((resolve, reject) => {
+      tmp.file({ postfix: extension, keep: false }, (err, filePath, _fd, cleanupCallback) => {
+        if (err) {
+          reject(new Error(`Failed to create temporary file: ${err.message}`));
+        } else {
+          resolve({
+            path: filePath,
+            cleanup: cleanupCallback,
+          });
+        }
+      });
+    });
+  }
+
+  async checkBucket(bucketName: string): Promise<boolean> {
+    const checkCommand = new HeadBucketCommand({ Bucket: bucketName });
+    try {
+      await s3Client.send(checkCommand);
+      logger.info(`Bucket '${bucketName}' exists.`);
+      return true;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      if ((error as any)?.name === 'NotFound') {
+        logger.info(`Bucket '${bucketName}' does not exist.`);
+      } else {
+        logger.error(`Error checking bucket existence: ${errorMessage}`);
+      }
+      throw error;
     }
-    console.error(`Error checking folder existence: ${error.message}`);
-    throw error;
   }
-};
 
-const deleteFileAsync = promisify(fs.unlink);
+  async createFolderPath(bucketName: string, folderPath: string): Promise<void> {
+    const commandParams = {
+      Bucket: bucketName,
+      Key: folderPath,
+      Body: '',
+    };
 
-export const uploadFilesToBucket = async (blogId: string, folderPath: string, uploadPath: string) => {
-  const bucketName = process.env['AWS_BUCKET'] as string;
-  const awsRegion = process.env['AWS_REGION'] as string;
-  const awsBaseUrl = `https://${bucketName}.s3.${awsRegion}.amazonaws.com/blogs/${blogId}`;
+    try {
+      await s3Client.send(new PutObjectCommand(commandParams));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error(`Error creating folder path '${folderPath}' in bucket '${bucketName}': ${errorMessage}`);
+      throw error;
+    }
+  }
 
-  const imageUrls: string[] = [];
+  async createFolderPathIfNotExists(bucketName: string, folderPath: string): Promise<boolean> {
+    try {
+      await s3Client.send(new HeadObjectCommand({ Bucket: bucketName, Key: folderPath }));
+      return true;
+    } catch (error) {
+      if ((error as any)?.name === 'NotFound') {
+        await this.createFolderPath(bucketName, folderPath);
+        return false;
+      }
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error(`Error checking folder existence: ${errorMessage}`);
+      throw error;
+    }
+  }
 
-  try {
-    await checkBucket(bucketName);
-    await createFolderPathIfNotExists(bucketName, folderPath);
-    console.log(`Uploading files from ${folderPath} to '${bucketName}/${uploadPath}'\n`);
+  async downloadFileFromUrl(url: string, filePath: string): Promise<void> {
+    if (!this.isValidUrl(url)) {
+      throw new Error(`Invalid URL: ${url}`);
+    }
 
-    const keys = await readdir(folderPath);
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const key of keys) {
-      const filePath = `${folderPath}/${key}`;
-      try {
-        const fileContent = await readFile(filePath);
-        const uploadKey = `${uploadPath}/${key}`;
+    try {
+      logger.info(`Downloading file from: ${url}`);
+      const response = await fetch(url);
 
-        await s3Client.send(
-          new PutObjectCommand({
-            Bucket: bucketName,
-            Body: fileContent,
-            Key: uploadKey,
-          }),
-        );
+      if (!response.ok) {
+        throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
+      }
 
-        const imageUrl = `${awsBaseUrl}/${uploadKey}`;
-        imageUrls.push(imageUrl);
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
 
-        await deleteFileAsync(filePath);
-        console.log(`${uploadKey} uploaded successfully.`);
-      } catch (error: any) {
-        console.error(`Error uploading file '${key}': ${error.message}`);
-        throw error;
+      await writeFile(filePath, buffer);
+      logger.info(`File downloaded successfully to: ${filePath}`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error(`Error downloading file from ${url}: ${errorMessage}`);
+      throw error;
+    }
+  }
+
+  private getFileExtensionFromUrl(url: string): string {
+    try {
+      const urlObj = new URL(url);
+      const pathName = urlObj.pathname;
+      const extension = path.extname(pathName).toLowerCase();
+
+      // If no extension found, try to guess from content-type or default to .jpg
+      if (!extension) {
+        const contentType = urlObj.searchParams.get('content-type');
+        if (contentType) {
+          if (contentType.includes('image/png')) return '.png';
+          if (contentType.includes('image/gif')) return '.gif';
+          if (contentType.includes('image/webp')) return '.webp';
+        }
+        return S3Utils.DEFAULT_EXTENSION;
+      }
+
+      return S3Utils.DEFAULT_EXTENSION;
+    } catch {
+      return S3Utils.DEFAULT_EXTENSION;
+    }
+  }
+
+  private async processSource(
+    source: string,
+    uploadPath: string,
+    bucketName: string,
+    awsBaseUrl: string,
+    uploadedUrls: string[],
+    errors: string[],
+  ): Promise<void> {
+    const isUrl = this.isValidUrl(source);
+    let tempFile: { path: string; cleanup: () => void } | null = null;
+    let fileName: string;
+    let filePath: string;
+
+    try {
+      if (isUrl) {
+        // Handle URL - create temporary file
+        const extension = this.getFileExtensionFromUrl(source);
+        fileName = generateUUID() + extension;
+        tempFile = await this.createTempFile(extension);
+        filePath = tempFile.path;
+        await this.downloadFileFromUrl(source, filePath);
+      } else {
+        // Handle local file
+        fileName = path.basename(source);
+        filePath = source;
+      }
+
+      const fileContent = await readFile(filePath);
+      const uploadKey = `${uploadPath}/${fileName}`;
+
+      await s3Client.send(
+        new PutObjectCommand({
+          Bucket: bucketName,
+          Body: fileContent,
+          Key: uploadKey,
+        }),
+      );
+
+      const s3ImageUrl = `${awsBaseUrl}/${fileName}`;
+      uploadedUrls.push(s3ImageUrl);
+
+      logger.info(`${uploadKey} uploaded successfully from ${isUrl ? 'URL' : 'file'}.`);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      const errorLog = `Error processing source '${source}': ${errorMessage}`;
+      logger.error(errorLog);
+      errors.push(errorLog);
+    } finally {
+      // Clean up temporary file if it was created
+      if (tempFile) {
+        try {
+          tempFile.cleanup();
+        } catch (cleanupError) {
+          logger.warn(
+            `Failed to cleanup temporary file: ${cleanupError instanceof Error ? cleanupError.message : 'Unknown error'}`,
+          );
+        }
       }
     }
-    return imageUrls;
-  } catch (error: any) {
-    console.error(`Error uploading files: ${error.message}`);
-    throw error;
   }
-};
 
-export const deleteFileInBucket = async (bucketName: string, folderPath: string) => {
-  const command = new DeleteObjectCommand({
-    Bucket: bucketName,
-    Key: folderPath,
-  });
+  public async uploadFromUrlsOrFiles(uploadData: UploadDetails): Promise<UploadResult> {
+    const { sources, blogId, uploadPath } = uploadData;
+    const { bucketName, awsRegion } = this.getS3Config();
+    const awsBaseUrl = `https://${bucketName}.s3.${awsRegion}.amazonaws.com/blogs/${blogId}`;
 
-  try {
-    const response = await s3Client.send(command);
-    console.log(response);
-  } catch (err: any) {
-    console.error(`Error deleting file: ${err.message}`);
-    throw err;
+    const uploadedUrls: string[] = [];
+    const errors: string[] = [];
+
+    try {
+      await this.checkBucket(bucketName);
+      await this.createFolderPathIfNotExists(bucketName, `${uploadPath}/`);
+
+      logger.info(`Processing ${sources.length} sources for upload to '${bucketName}/${uploadPath}'\n`);
+
+      for (let i = 0; i < sources.length; i++) {
+        const source = sources[i];
+
+        if (!source) {
+          logger.warn(`Skipping empty source at index ${i}`);
+          continue;
+        }
+
+        await this.processSource(source, uploadPath, bucketName, awsBaseUrl, uploadedUrls, errors);
+      }
+
+      return { uploadedUrls, errors };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error(`Error uploading images from sources: ${errorMessage}`);
+      throw error;
+    }
   }
-};
+
+  async deleteFileInBucket(bucketName: string, key: string): Promise<void> {
+    const command = new DeleteObjectCommand({
+      Bucket: bucketName,
+      Key: key,
+    });
+
+    try {
+      const response = await s3Client.send(command);
+      logger.info(`Successfully deleted file: ${key}`);
+      logger.info(response);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      logger.error(`Error deleting file '${key}': ${errorMessage}`);
+      throw error;
+    }
+  }
+}
+
+export default new S3Utils();
