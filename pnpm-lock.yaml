@@ -44,9 +44,6 @@ importers:
       express:
         specifier: ^5.1.0
         version: 5.1.0
-      express-mongo-sanitize:
-        specifier: ^2.2.0
-        version: 2.2.0
       express-rate-limit:
         specifier: ^8.0.1
         version: 8.0.1(express@5.1.0)
@@ -116,9 +113,6 @@ importers:
       winston:
         specifier: ^3.17.0
         version: 3.17.0
-      xss-clean:
-        specifier: ^0.1.4
-        version: 0.1.4
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.8.1
@@ -3113,10 +3107,6 @@ packages:
   expr-eval@2.0.2:
     resolution: {integrity: sha512-4EMSHGOPSwAfBiibw3ndnP0AvjDWLsMvGOvWEZ2F96IGk0bIVdjQisOHxReSkE13mHcfbuCiXw+G4y0zv6N8Eg==}
 
-  express-mongo-sanitize@2.2.0:
-    resolution: {integrity: sha512-PZBs5nwhD6ek9ZuP+W2xmpvcrHwXZxD5GdieX2dsjPbAbH4azOkrHbycBud2QRU+YQF1CT+pki/lZGedHgo/dQ==}
-    engines: {node: '>=10'}
-
   express-rate-limit@8.0.1:
     resolution: {integrity: sha512-aZVCnybn7TVmxO4BtlmnvX+nuz8qHW124KKJ8dumsBsmv5ZLxE0pYu7S2nwyRBGHHCAzdmnGyrc5U/rksSPO7Q==}
     engines: {node: '>= 16'}
@@ -6056,13 +6046,6 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-
-  xss-clean@0.1.4:
-    resolution: {integrity: sha512-4hArTFHYxrifK9VXOu/zFvwjTXVjKByPi6woUHb1IqxlX0Z4xtFBRjOhTKuYV/uE1VswbYsIh5vUEYp7MmoISQ==}
-    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
-
-  xss-filters@1.2.7:
-    resolution: {integrity: sha512-KzcmYT/f+YzcYrYRqw6mXxd25BEZCxBQnf+uXTopQDIhrmiaLwO+f+yLsIvvNlPhYvgff8g3igqrBxYh9k8NbQ==}
 
   xtend@4.0.2:
     resolution: {integrity: sha512-LKYU1iAXJXUgAXn9URjiu+MWhyUXHsvfp7mcuYm9dSUKK0/CjtrUwFAxD82/mCWbtLsGjFIad0wIsod4zrTAEQ==}
@@ -9537,8 +9520,6 @@ snapshots:
 
   expr-eval@2.0.2: {}
 
-  express-mongo-sanitize@2.2.0: {}
-
   express-rate-limit@8.0.1(express@5.1.0):
     dependencies:
       express: 5.1.0
@@ -12896,12 +12877,6 @@ snapshots:
   ws@7.5.10: {}
 
   ws@8.18.3: {}
-
-  xss-clean@0.1.4:
-    dependencies:
-      xss-filters: 1.2.7
-
-  xss-filters@1.2.7: {}
 
   xtend@4.0.2: {}
 

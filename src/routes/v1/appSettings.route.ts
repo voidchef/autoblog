@@ -8,11 +8,6 @@ const router: Router = express.Router();
 router.get('/', appSettingsController.getAppSettings);
 
 router
-  .route('/apiKeys')
-  .get(appSettingsController.getApiKeys)
-  .post(auth('manageAppSettings'), validate(appSettingsValidation.updateApiKeys), appSettingsController.updateApiKeys);
-
-router
   .route('/categories')
   .post(auth('manageAppSettings'), validate(appSettingsValidation.updateCategories), appSettingsController.updateCategories)
   .delete(
