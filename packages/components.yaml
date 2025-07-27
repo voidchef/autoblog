@@ -13,11 +13,232 @@ components:
         role:
           type: string
           enum: [user, admin]
+        isEmailVerified:
+          type: boolean
+        openAiKey:
+          type: string
       example:
         id: 5ebac534954b54139806c112
         email: fake@example.com
         name: fake name
         role: user
+        isEmailVerified: true
+        openAiKey: sk-1234567890abcdef
+
+    Blog:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        seoTitle:
+          type: string
+        seoDescription:
+          type: string
+        content:
+          type: string
+        author:
+          type: string
+        topic:
+          type: string
+        category:
+          type: string
+        language:
+          type: string
+        llmModel:
+          type: string
+          enum: [gpt-3.5-turbo, gpt-4, gpt-4-turbo, claude-3-sonnet, claude-3-haiku]
+        country:
+          type: string
+        intent:
+          type: string
+        audience:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        readingTime:
+          type: number
+        isFeatured:
+          type: boolean
+        isPublished:
+          type: boolean
+        isDraft:
+          type: boolean
+        generatedImages:
+          type: array
+          items:
+            type: string
+        selectedImage:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        id: 60d5ecb54b20f20d5c4b5c72
+        title: "Complete Guide to Node.js Development"
+        slug: "complete-guide-nodejs-development"
+        seoTitle: "Complete Guide to Node.js Development - 2024"
+        seoDescription: "Learn Node.js from basics to advanced concepts"
+        content: "Node.js is a powerful runtime environment..."
+        author: 5ebac534954b54139806c112
+        topic: "Node.js Development"
+        category: "Programming"
+        language: "English"
+        llmModel: "gpt-4"
+        country: "US"
+        intent: "educational"
+        audience: "developers"
+        tags: ["nodejs", "javascript", "backend"]
+        readingTime: 15
+        isFeatured: false
+        isPublished: true
+        isDraft: false
+        generatedImages: ["image1.jpg", "image2.jpg"]
+        selectedImage: "image1.jpg"
+        createdAt: "2023-06-25T10:30:00.000Z"
+        updatedAt: "2023-06-25T10:30:00.000Z"
+
+    GenerateBlogRequest:
+      type: object
+      required:
+        - topic
+        - language
+        - llmModel
+        - category
+      properties:
+        topic:
+          type: string
+          description: The topic for the blog post
+        country:
+          type: string
+          description: Target country for the content
+        intent:
+          type: string
+          description: The intent of the blog post
+        audience:
+          type: string
+          description: Target audience
+        language:
+          type: string
+          description: Language of the blog post
+        llmModel:
+          type: string
+          enum: [gpt-3.5-turbo, gpt-4, gpt-4-turbo, claude-3-sonnet, claude-3-haiku]
+          description: LLM model to use for generation
+        category:
+          type: string
+          description: Blog category
+        tags:
+          type: array
+          items:
+            type: string
+          description: Tags for the blog post
+      example:
+        topic: "Getting Started with React Hooks"
+        country: "US"
+        intent: "tutorial"
+        audience: "beginner developers"
+        language: "English"
+        llmModel: "gpt-4"
+        category: "Frontend Development"
+        tags: ["react", "hooks", "javascript"]
+
+    BlogsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Blog'
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        totalPages:
+          type: integer
+          example: 5
+        totalResults:
+          type: integer
+          example: 50
+
+    Category:
+      type: object
+      properties:
+        _id:
+          type: string
+        categoryName:
+          type: string
+        categoryDescription:
+          type: string
+        categoryPicUrl:
+          type: string
+      example:
+        _id: 60d5ecb54b20f20d5c4b5c73
+        categoryName: "Technology"
+        categoryDescription: "Articles about latest technology trends"
+        categoryPicUrl: "https://example.com/tech.jpg"
+
+    FieldData:
+      type: object
+      properties:
+        value:
+          type: string
+        label:
+          type: string
+      example:
+        value: "english"
+        label: "English"
+
+    AppSettings:
+      type: object
+      properties:
+        categories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+        languages:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldData'
+        languageModels:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldData'
+        queryType:
+          type: array
+          items:
+            $ref: '#/components/schemas/FieldData'
+      example:
+        categories:
+          - _id: 60d5ecb54b20f20d5c4b5c73
+            categoryName: "Technology"
+            categoryDescription: "Latest tech trends"
+            categoryPicUrl: "https://example.com/tech.jpg"
+        languages:
+          - value: "english"
+            label: "English"
+          - value: "spanish"
+            label: "Spanish"
+        languageModels:
+          - value: "gpt-4"
+            label: "GPT-4"
+          - value: "claude-3-sonnet"
+            label: "Claude 3 Sonnet"
+        queryType:
+          - value: "tutorial"
+            label: "Tutorial"
+          - value: "review"
+            label: "Review"
 
     Token:
       type: object
@@ -65,6 +286,15 @@ components:
           example:
             code: 400
             message: Email already taken
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 400
+            message: Bad request
     Unauthorized:
       description: Unauthorized
       content:
@@ -92,6 +322,15 @@ components:
           example:
             code: 404
             message: Not found
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: 500
+            message: Internal server error
 
   securitySchemes:
     bearerAuth:

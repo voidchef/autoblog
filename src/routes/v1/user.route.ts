@@ -57,11 +57,15 @@ export default router;
  *               role:
  *                  type: string
  *                  enum: [user, admin]
+ *               openAiKey:
+ *                 type: string
+ *                 description: OpenAI API key (optional)
  *             example:
  *               name: fake name
  *               email: fake@example.com
  *               password: password1
  *               role: user
+ *               openAiKey: sk-1234567890abcdef
  *     responses:
  *       "201":
  *         description: Created

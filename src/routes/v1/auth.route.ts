@@ -50,10 +50,14 @@ export default router;
  *                 format: password
  *                 minLength: 8
  *                 description: At least one number and one letter
+ *               openAiKey:
+ *                 type: string
+ *                 description: OpenAI API key (optional)
  *             example:
  *               name: fake name
  *               email: fake@example.com
  *               password: password1
+ *               openAiKey: sk-1234567890abcdef
  *     responses:
  *       "201":
  *         description: Created

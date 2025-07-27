@@ -3,12 +3,12 @@ import config from '../../config/config';
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
-    title: 'node-express-typescript-boilerplate API documentation',
-    version: '0.0.1',
-    description: 'This is a node express mongoose boilerplate in typescript',
+    title: 'Autoblog',
+    version: '1.0.0',
+    description: 'AI generated blogs',
     license: {
       name: 'MIT',
-      url: 'https://github.com/saisilinus/node-express-mongoose-typescript-boilerplate.git',
+      url: 'https://github.com/voidchef/autoblog.git',
     },
   },
   servers: [

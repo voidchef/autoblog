@@ -49,8 +49,6 @@ describe('Auth routes', () => {
         email: faker.internet.email().toLowerCase(),
         password: 'password1',
         openAiKey: faker.string.alphanumeric(32),
-        bingKey: faker.string.alphanumeric(32),
-        bardKey: faker.string.alphanumeric(32),
       };
     });
 
@@ -432,7 +430,7 @@ describe('Auth middleware', () => {
     const req = httpMocks.createRequest({ headers: { Authorization: `Bearer ${userOneAccessToken}` } });
     const next = jest.fn();
 
-    await authMiddleware()(req, httpMocks.createResponse(), next); 
+    await authMiddleware()(req, httpMocks.createResponse(), next);
     const user = req.user as IUserDoc;
 
     expect(next).toHaveBeenCalledWith();

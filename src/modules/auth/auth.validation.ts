@@ -7,8 +7,6 @@ const registerBody: Record<keyof NewRegisteredUser, any> = {
   password: Joi.string().required().custom(password),
   name: Joi.string().required(),
   openAiKey: Joi.string().optional(),
-  bingKey: Joi.string().optional(),
-  bardKey: Joi.string().optional(),
 };
 
 export const register = {
