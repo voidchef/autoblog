@@ -8,7 +8,8 @@ import AddIcon from '@mui/icons-material/Add';
 import { ROUTES } from '../../utils/routing/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/reduxHooks';
-import { clearBlog, getBlogViews } from '../../actions/blog';
+import { clearBlog } from '../../reducers/blog';
+import { useGetBlogViewsQuery } from '../../services/blogApi';
 import ViewsGraph from '../elements/Dashboard/ViewsGraph';
 import DraftsTable from '../elements/Dashboard/DraftsTable';
 
@@ -20,49 +21,52 @@ const months = Array.from({ length: 12 }, (_, index) => ({
 export default function Dashboard() {
   const [selectedMonth, setSelectedMonth] = React.useState<number>(new Date().getMonth());
   const [monthDays, setMonthDays] = React.useState<Array<Date>>([]);
-  const [selectedBlog, setSelectedBlog] = React.useState<string>();
-  const blogViews = useAppSelector((state) => state.blog.views);
+  const [selectedBlog, setSelectedBlog] = React.useState<string>('');
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  
+  // Prepare parameters for RTK Query
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  let lastDay: number;
+  switch (selectedMonth) {
+    case 1:
+      lastDay = currentYear % 4 === 0 ? 29 : 28;
+      break;
+    case 3:
+    case 5:
+    case 8:
+    case 10:
+      lastDay = 30;
+      break;
+    default:
+      lastDay = 31;
+  }
+  
+  const startDate = `${currentYear}-${(selectedMonth + 1).toString().padStart(2, '0')}-01`;
+  const endDate = `${currentYear}-${(selectedMonth + 1).toString().padStart(2, '0')}-${lastDay.toString().padStart(2, '0')}`;
+  
+  // Use RTK Query for blog views
+  const { data: blogViews = [], isLoading: viewsLoading } = useGetBlogViewsQuery(
+    { startDate, endDate, slug: selectedBlog },
+    { skip: !selectedBlog || selectedBlog === '' }
+  );
 
   React.useEffect(() => {
     if (selectedBlog) {
-      const currentDate = new Date();
-      const currentYear = currentDate.getFullYear();
-      let lastDay: number;
-      switch (selectedMonth) {
-        case 1:
-          lastDay = currentYear % 4 === 0 ? 29 : 28;
-          break;
-        case 3:
-        case 5:
-        case 8:
-        case 10:
-          lastDay = 30;
-          break;
-        default:
-          lastDay = 31;
-      }
-      dispatch(
-        getBlogViews(
-          `${currentYear}-${selectedMonth + 1}-01`,
-          `${currentYear}-${selectedMonth + 1}-${lastDay}`,
-          selectedBlog,
-        ),
-      );
-
       const days = Array.from({ length: lastDay }, (_, index) => new Date(currentYear, selectedMonth, index + 1));
       setMonthDays(days);
     }
-  }, [selectedMonth, selectedBlog]);
+  }, [selectedMonth, selectedBlog, lastDay, currentYear]);
 
   function handleSelectBlog(slug: string) {
     setSelectedBlog(slug);
   }
 
   function handleClick() {
-    dispatch(clearBlog(() => navigate(ROUTES.CREATEPOST)));
+    dispatch(clearBlog());
+    navigate(ROUTES.CREATEPOST);
   }
 
   return (
@@ -91,7 +95,7 @@ export default function Dashboard() {
             <Select
               label="Month"
               value={selectedMonth}
-              onChange={(e) => setSelectedMonth(parseInt(e.target.value as string, 10))}
+              onChange={(e) => setSelectedMonth(Number(e.target.value))}
               sx={{ minWidth: '10rem' }}
               size="small"
             >

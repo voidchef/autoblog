@@ -10,12 +10,12 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BookIcon from '@mui/icons-material/Book';
-import { logout } from '../../../actions/user';
+import { logout as logoutAction } from '../../../reducers/user';
+import { clearBlog } from '../../../reducers/blog';
 import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { AWS_BASEURL } from '../../../utils/consts';
-import { clearBlog } from '../../../actions/blog';
 
 export default function AccountMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -35,7 +35,7 @@ export default function AccountMenu() {
   };
   const handleLogout = () => {
     setAnchorEl(null);
-    dispatch(logout());
+    dispatch(logoutAction());
   };
 
   function stringToColor(string: string) {
@@ -66,7 +66,8 @@ export default function AccountMenu() {
   }
 
   const handleCreatePost = () => {
-    dispatch(clearBlog(() => navigate(ROUTES.CREATEPOST)));
+    dispatch(clearBlog());
+    navigate(ROUTES.CREATEPOST);
     setAnchorEl(null);
   }
 

@@ -1,20 +1,22 @@
-import { SET_LOADING, Action } from '../utils/consts';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-const initialState = {
+interface RootState {
+  loading: boolean;
+}
+
+const initialState: RootState = {
   loading: false,
 };
 
-const rootReducer = (state = initialState, action: Action) => {
-  const { type, payload } = action;
-  switch (type) {
-    case SET_LOADING:
-      return {
-        ...state,
-        ...payload,
-      };
-    default:
-      return state;
-  }
-};
+const rootSlice = createSlice({
+  name: 'root',
+  initialState,
+  reducers: {
+    setLoading: (state, action: PayloadAction<boolean>) => {
+      state.loading = action.payload;
+    },
+  },
+});
 
-export default rootReducer;
+export const { setLoading } = rootSlice.actions;
+export default rootSlice.reducer;

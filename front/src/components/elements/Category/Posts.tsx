@@ -5,15 +5,14 @@ import Grid from '@mui/material/Grid';
 import AllTags from './Tags';
 import TablePagination from '@mui/material/TablePagination';
 import { useAppDispatch, useAppSelector } from '../../../utils/reduxHooks';
-import { getBlogs } from '../../../actions/blog';
+import { useGetBlogsByCategoryQuery } from '../../../services/blogApi';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { AWS_BASEURL } from '../../../utils/consts';
 
-const AllPosts = ({ category }: { category: String }) => {
+const AllPosts = ({ category }: { category: string }) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const allBlogs = useAppSelector((state) => state.blog.allBlogs);
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -27,9 +26,14 @@ const AllPosts = ({ category }: { category: String }) => {
     setPage(0);
   };
 
-  React.useEffect(() => {
-    dispatch(getBlogs({ limit: rowsPerPage, page, populate: 'author', category, isPublished: true }));
-  }, [rowsPerPage, page]);
+  const { data: blogsData, isLoading } = useGetBlogsByCategoryQuery({
+    category,
+    limit: rowsPerPage,
+    page: page + 1, // RTK Query pages are 1-based
+  });
+
+  // Use the data from RTK Query
+  const allBlogs = blogsData || { results: [], page: 1, totalPages: 1, totalResults: 0 };
 
   const handleClick = (slug: string) => {
     navigate(`${ROUTES.BLOG}/${slug}`);
@@ -45,10 +49,10 @@ const AllPosts = ({ category }: { category: String }) => {
         </Box>
       ) : (
         <Grid container spacing={2}>
-          <Grid container item xs={12} sm={8} spacing={2}>
+          <Grid container size={{ xs: 12, sm: 8 }} spacing={2}>
             {allBlogs.results.length > 0 ? (
               allBlogs.results.map((post: any, index: number) => (
-                <Grid item xs={12} sm={6} key={index} onClick={() => handleClick(post.slug)}>
+                <Grid size={{ xs: 12, sm: 6 }} key={index} onClick={() => handleClick(post.slug)}>
                   <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'} marginBottom={4}>
                     <img
                       src={`${AWS_BASEURL}/blogs/${post.id}/1.img`}
@@ -90,7 +94,7 @@ const AllPosts = ({ category }: { category: String }) => {
               </Typography>
             )}
           </Grid>
-          <Grid item xs={12} sm={4} sx={{ marginBottom: '2rem' }}>
+          <Grid size={{ xs: 12, sm: 4 }} sx={{ marginBottom: '2rem' }}>
             <AllTags />
           </Grid>
         </Grid>

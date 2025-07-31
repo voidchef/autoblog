@@ -1,4 +1,5 @@
-import { Action, APP_SETTINGS_LOAD_SUCCESS, SET_THEME_MODE, SET_APP_SETTINGS_LOADING_STATUS } from '../utils/consts';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { appSettingsApi } from '../services/appSettingsApi';
 
 export interface ICategory {
   _id: string;
@@ -32,28 +33,31 @@ const initialState: IAppSettings = {
   isLoading: false,
 };
 
-const appSettingsReducer = (state = initialState, action: Action) => {
-  const { type, payload } = action;
-  switch (type) {
-    case APP_SETTINGS_LOAD_SUCCESS:
-      return {
-        ...state,
-        ...payload,
-        isLoading: false,
-      };
-    case SET_THEME_MODE:
-      return {
-        ...state,
-        themeMode: payload,
-      };
-    case SET_APP_SETTINGS_LOADING_STATUS:
-      return {
-        ...state,
-        isLoading: state.isLoading ? false : true,
-      };
-    default:
-      return state;
-  }
-};
+const appSettingsSlice = createSlice({
+  name: 'appSettings',
+  initialState,
+  reducers: {
+    setThemeMode: (state, action: PayloadAction<string>) => {
+      state.themeMode = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addMatcher(appSettingsApi.endpoints.getAppSettings.matchPending, (state) => {
+        state.isLoading = true;
+      })
+      .addMatcher(appSettingsApi.endpoints.getAppSettings.matchFulfilled, (state, action) => {
+        state.isLoading = false;
+        state.categories = action.payload.categories;
+        state.languages = action.payload.languages;
+        state.languageModels = action.payload.languageModels;
+        state.queryType = action.payload.queryType;
+      })
+      .addMatcher(appSettingsApi.endpoints.getAppSettings.matchRejected, (state) => {
+        state.isLoading = false;
+      });
+  },
+});
 
-export default appSettingsReducer;
+export const { setThemeMode } = appSettingsSlice.actions;
+export default appSettingsSlice.reducer;

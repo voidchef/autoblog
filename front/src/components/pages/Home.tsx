@@ -6,19 +6,23 @@ import Categories from '../elements/Home/Categories';
 import FeaturedPost from '../elements/Home/FeaturedPost';
 import RecentPosts from '../elements/Home/RecentPosts';
 import Footer from '../elements/Common/Footer';
-import { useAppDispatch, useAppSelector } from '../../utils/reduxHooks';
-import { getBlogs } from '../../actions/blog';
+import { useGetBlogsQuery } from '../../services/blogApi';
 
 export default function Home() {
-  const dispatch = useAppDispatch();
+  // Fetch featured blogs
+  const { data: featuredBlogs } = useGetBlogsQuery({ 
+    limit: 6, 
+    isFeatured: true, 
+    isPublished: true 
+  });
 
-  const recentBlogs = useAppSelector((state) => state.blog.allBlogs);
-  const featuredBlogs = useAppSelector((state) => state.blog.featuredBlogs.results);
-
-  React.useEffect(() => {
-    dispatch(getBlogs({ limit: 6, populate: 'author', isFeatured: true, isPublished: true }));
-    dispatch(getBlogs({ limit: 4, populate: 'author', isPublished: true, isFeatured: false, sortBy: 'createdAt' }));
-  }, []);
+  // Fetch recent blogs
+  const { data: recentBlogs } = useGetBlogsQuery({ 
+    limit: 4, 
+    isPublished: true, 
+    isFeatured: false, 
+    sortBy: 'createdAt' 
+  });
 
   return (
     <Box>
@@ -42,7 +46,7 @@ export default function Home() {
         justifyContent={'space-between'}
         sx={{ marginX: { xs: '1rem', sm: '7rem' } }}
       >
-        {featuredBlogs.length > 0 && <FeaturedPost featuredBlogs={featuredBlogs} />}
+        {featuredBlogs?.results && featuredBlogs.results.length > 0 && <FeaturedPost featuredBlogs={featuredBlogs.results} />}
       </Box>
       <Box sx={{ my: 4 }} />
       <Box
@@ -51,7 +55,7 @@ export default function Home() {
         justifyContent={'space-between'}
         sx={{ marginX: { xs: '1rem', sm: '7rem' } }}
       >
-        {recentBlogs.length > 0 && <RecentPosts recentBlogs={recentBlogs} />}
+        {recentBlogs?.results && recentBlogs.results.length > 0 && <RecentPosts recentBlogs={recentBlogs.results} />}
       </Box>
       <Box sx={{ my: 4 }} />
       <Footer />

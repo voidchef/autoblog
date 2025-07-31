@@ -1,7 +1,7 @@
 import * as React from 'react';
 import EnhancedTable from '../Common/EnhancedTable/EnhancedTable';
-import { useAppDispatch, useAppSelector } from '../../../utils/reduxHooks';
-import { deleteBlog, getBlogs, updateBlog } from '../../../actions/blog';
+import { useAppSelector } from '../../../utils/reduxHooks';
+import { useGetBlogsQuery, useUpdateBlogMutation, useDeleteBlogMutation } from '../../../services/blogApi';
 import { IBlog } from '../../../reducers/blog';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
@@ -98,20 +98,24 @@ interface IProps {
 export default function BlogsTable({ handleSelectBlog }: IProps) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [rows, setRows] = React.useState([]);
+  const [rows, setRows] = React.useState<ReturnType<typeof createData>[]>([]);
 
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const userId = localStorage.getItem('userId');
-  const blogs = useAppSelector((state) => state.blog.allBlogs);
+  
+  const { data: blogs, isLoading } = useGetBlogsQuery({ 
+    limit: rowsPerPage, 
+    page: page + 1, 
+    author: userId || '', 
+    isDraft: false 
+  });
+  
+  const [updateBlog] = useUpdateBlogMutation();
+  const [deleteBlog] = useDeleteBlogMutation();
 
   React.useEffect(() => {
-    dispatch(getBlogs({ limit: rowsPerPage, page, populate: 'author', author: userId, isDraft: false }));
-  }, [rowsPerPage, page]);
-
-  React.useEffect(() => {
-    if (blogs.results.length > 0) {
+    if (blogs && blogs.results.length > 0) {
       setRows(
         blogs.results.map((blog: IBlog, index: number) =>
           createData(
@@ -128,6 +132,8 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
           ),
         ),
       );
+    } else {
+      setRows([]);
     }
   }, [blogs]);
 
@@ -141,7 +147,7 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
   }
 
   function handleChangePublishStatus(blogId: string, isPublished: boolean) {
-    dispatch(updateBlog({ isPublished }, false, blogId, () => navigate(ROUTES.DASHBOARD)));
+    updateBlog({ id: blogId, data: { isPublished } });
   }
 
   function handleEditBlog(blogId: string) {
@@ -149,12 +155,18 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
   }
 
   function handleDeleteBlog(blogId: string) {
-    dispatch(deleteBlog(blogId));
+    deleteBlog(blogId);
   }
 
   return (
     <React.Fragment>
-      {rows.length > 0 && (
+      {isLoading ? (
+        <Box>
+          <Typography component={'div'} fontSize={'1rem'} color={'#6D6E76'}>
+            Loading blogs...
+          </Typography>
+        </Box>
+      ) : rows.length > 0 ? (
         <Box>
           <Typography component={'div'} fontSize={'1rem'} color={'#6D6E76'}>
             Blogs
@@ -171,8 +183,14 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
             handleEditBlog={handleEditBlog}
             handleDeleteBlog={handleDeleteBlog}
             handleChangePublishStatus={handleChangePublishStatus}
-            totalResults={blogs.totalResults}
+            totalResults={blogs?.totalResults || 0}
           />
+        </Box>
+      ) : (
+        <Box>
+          <Typography component={'div'} fontSize={'1rem'} color={'#6D6E76'}>
+            No blogs found
+          </Typography>
         </Box>
       )}
     </React.Fragment>

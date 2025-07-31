@@ -1,4 +1,4 @@
-import createTheme from "@mui/material/styles/createTheme";
+import { createTheme } from '@mui/material/styles';
 import { red } from '@mui/material/colors';
 
 // Light mode theme

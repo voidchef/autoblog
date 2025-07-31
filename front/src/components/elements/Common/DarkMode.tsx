@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useAppDispatch, useAppSelector } from '../../../utils/reduxHooks';
-import { changeThemeMode } from '../../../actions/appSettings';
+import { setThemeMode } from '../../../reducers/appSettings';
 
 export default function DarkMode() {
   const dispatch = useAppDispatch();
@@ -13,7 +13,7 @@ export default function DarkMode() {
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
-        dispatch(changeThemeMode(themeMode === 'light' ? 'dark' : 'light'));
+        dispatch(setThemeMode(themeMode === 'light' ? 'dark' : 'light'));
       },
     }),
     [themeMode],

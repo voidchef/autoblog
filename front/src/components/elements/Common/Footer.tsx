@@ -52,7 +52,7 @@ const Footer = () => {
           ))}
         </Box>
         <Grid container alignItems="center" marginY={3} spacing={3}>
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Typography
               fontSize={{ xs: '1.5rem', sm: '2.25rem' }}
               sx={{ color: 'white' }}
@@ -61,11 +61,11 @@ const Footer = () => {
               Subscribe to our newsletter to get the latest updates and news.
             </Typography>
           </Grid>
-          <Grid item container xs={12} sm={5} spacing={2} alignItems="center">
-            <Grid item xs={8} display={'flex'} justifyContent={'center'} alignItems={'center'}>
+          <Grid container size={{ xs: 12, sm: 5 }} spacing={2} alignItems="center">
+            <Grid size={8} display={'flex'} justifyContent={'center'} alignItems={'center'}>
               <TextField label="Enter Your Email" variant="outlined" fullWidth inputProps={{ style: { color: 'white' } }} />
             </Grid>
-            <Grid item xs={4} sx={{ height: '100%' }}>
+            <Grid size={4} sx={{ height: '100%' }}>
               <Button variant="contained" color="primary" fullWidth sx={{ height: '100%' }}>
                 Subscribe
               </Button>

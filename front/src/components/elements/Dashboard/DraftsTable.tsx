@@ -1,7 +1,7 @@
 import * as React from 'react';
 import EnhancedTable from '../Common/EnhancedTable/EnhancedTable';
-import { useAppDispatch, useAppSelector } from '../../../utils/reduxHooks';
-import { deleteBlog, getBlogs, updateBlog } from '../../../actions/blog';
+import { useAppSelector } from '../../../utils/reduxHooks';
+import { useGetBlogsQuery, useUpdateBlogMutation, useDeleteBlogMutation } from '../../../services/blogApi';
 import { IBlog } from '../../../reducers/blog';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
@@ -94,20 +94,24 @@ const headCells = [
 export default function DraftsTable() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [rows, setRows] = React.useState([]);
+  const [rows, setRows] = React.useState<any[]>([]);
 
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const userId = localStorage.getItem('userId');
-  const drafts = useAppSelector((state) => state.blog.drafts);
+  
+  const { data: drafts, isLoading } = useGetBlogsQuery({ 
+    limit: rowsPerPage, 
+    page: page + 1, 
+    author: userId || '', 
+    isDraft: true 
+  });
+  
+  const [updateBlog] = useUpdateBlogMutation();
+  const [deleteBlog] = useDeleteBlogMutation();
 
   React.useEffect(() => {
-    dispatch(getBlogs({ limit: rowsPerPage, page, populate: 'author', author: userId, isDraft: true }));
-  }, [rowsPerPage, page]);
-
-  React.useEffect(() => {
-    if (drafts.results.length > 0) {
+    if (drafts && drafts.results.length > 0) {
       setRows(
         drafts.results.map((blog: IBlog, index: number) =>
           createData(
@@ -124,6 +128,8 @@ export default function DraftsTable() {
           ),
         ),
       );
+    } else {
+      setRows([]);
     }
   }, [drafts]);
 
@@ -137,7 +143,7 @@ export default function DraftsTable() {
   }
 
   function handleChangePublishStatus(blogId: string, isDraft: boolean) {
-    dispatch(updateBlog({ isDraft, isPublished: !isDraft }, false, blogId, () => navigate(ROUTES.DASHBOARD)));
+    updateBlog({ id: blogId, data: { isDraft, isPublished: !isDraft } });
   }
 
   function handleEditBlog(blogId: string) {
@@ -145,12 +151,18 @@ export default function DraftsTable() {
   }
 
   function handleDeleteBlog(blogId: string) {
-    dispatch(deleteBlog(blogId));
+    deleteBlog(blogId);
   }
 
   return (
     <React.Fragment>
-      {rows.length > 0 && (
+      {isLoading ? (
+        <Box>
+          <Typography component={'div'} fontSize={'1rem'} color={'#6D6E76'}>
+            Loading drafts...
+          </Typography>
+        </Box>
+      ) : rows.length > 0 ? (
         <Box>
           <Typography component={'div'} fontSize={'1rem'} color={'#6D6E76'}>
             Drafts
@@ -166,9 +178,15 @@ export default function DraftsTable() {
             handleEditBlog={handleEditBlog}
             handleDeleteBlog={handleDeleteBlog}
             handleChangePublishStatus={handleChangePublishStatus}
-            totalResults={drafts.totalResults}
+            totalResults={drafts?.totalResults || 0}
             isDraftTable={true}
           />
+        </Box>
+      ) : (
+        <Box>
+          <Typography component={'div'} fontSize={'1rem'} color={'#6D6E76'}>
+            No drafts found
+          </Typography>
         </Box>
       )}
     </React.Fragment>

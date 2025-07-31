@@ -3,8 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TablePagination from '@mui/material/TablePagination';
-import { useAppDispatch, useAppSelector } from '../../../utils/reduxHooks';
-import { getBlogs } from '../../../actions/blog';
+import { useGetBlogsQuery } from '../../../services/blogApi';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { AWS_BASEURL } from '../../../utils/consts';
@@ -12,9 +11,13 @@ import { AWS_BASEURL } from '../../../utils/consts';
 const AllPosts = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const allBlogs = useAppSelector((state) => state.blog.allBlogs);
+  
+  const { data: allBlogs, isLoading } = useGetBlogsQuery({ 
+    limit: rowsPerPage, 
+    page: page + 1, // API expects 1-based page
+    isPublished: true 
+  });
 
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -26,17 +29,19 @@ const AllPosts = () => {
     setPage(0);
   };
 
-  React.useEffect(() => {
-    dispatch(getBlogs({ limit: rowsPerPage, page, populate: 'author', isPublished: true }));
-  }, [page, rowsPerPage]);
-
   const handleClick = (slug: string) => {
     navigate(`${ROUTES.BLOG}/${slug}`);
   };
 
   return (
     <Box sx={{ flexGrow: 1, marginX: { xs: '1rem', sm: '7rem' } }}>
-      {allBlogs.results.length === 0 ? (
+      {isLoading ? (
+        <Box display={'flex'} justifyContent={'center'} margin={3}>
+          <Typography fontSize={{ sm: 22 }} fontWeight={500} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
+            Loading blogs...
+          </Typography>
+        </Box>
+      ) : !allBlogs || allBlogs.results.length === 0 ? (
         <Box display={'flex'} justifyContent={'center'} margin={3}>
           <Typography fontSize={{ sm: 22 }} fontWeight={500} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
             No blogs found
@@ -46,7 +51,7 @@ const AllPosts = () => {
         <React.Fragment>
           <Grid container spacing={3}>
             {allBlogs.results.map((post: any, index: number) => (
-              <Grid item xs={12} sm={4} key={index} onClick={() => handleClick(post.slug)}>
+              <Grid size={{ xs: 12, sm: 4 }} key={index} onClick={() => handleClick(post.slug)}>
                 <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'}>
                   <img
                     src={`${AWS_BASEURL}/blogs/${post.id}/1.img`}
@@ -56,7 +61,7 @@ const AllPosts = () => {
                 </Box>
                 <Box display="flex" flexDirection="column" justifyContent="space-between">
                   <Typography fontSize={{ sm: 15 }} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
-                    By <span style={{ color: '#555FAC' }}>{post.author.name}</span> |{' '}
+                    By <span style={{ color: '#555FAC' }}>{post.author?.name || 'Unknown'}</span> |{' '}
                     {new Date(post.createdAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',

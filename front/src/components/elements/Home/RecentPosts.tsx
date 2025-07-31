@@ -40,7 +40,7 @@ const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
         }}
       >
         {recentBlogs.map((post, index) => (
-          <Grid item xs={12} sm={5.55} key={index}>
+                    <Grid size={{ xs: 12, sm: 5.55 }} key={index}>
             <Box sx={{ p: 1, background: '#E9EAF4' }} height={{ xs: '15rem', sm: '18rem' }} marginBottom={4} />
             <Box display={'flex'} flexDirection={'column'} justifyContent={'space-between'}>
               <Typography fontSize={{ sm: 15 }} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>

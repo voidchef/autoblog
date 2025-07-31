@@ -25,7 +25,6 @@ export default function CategoryCard({ categoryId, categoryIcon, categoryName, c
       <CardActionArea>
         <Grid
           key={categoryId}
-          item
           sx={{ display: 'flex', justifyContent: 'center' }}
           onClick={() => handleClick(categoryName.toLocaleLowerCase())}
         >

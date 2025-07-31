@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
 import Grid from '@mui/material/Grid';
@@ -34,7 +33,7 @@ const ImagePicker = ({ open, handleClose, images, blogImage, handleSelectImage }
       <DialogContent>
         <Grid container spacing={2}>
           {images.map((image, index) => (
-            <Grid key={index} item xs={12} sm={6} onClick={() => handleSelectImage(image)}>
+            <Grid key={index} size={{ xs: 12, sm: 6 }} onClick={() => handleSelectImage(image)}>
               <div
                 style={{
                   width: '100%',

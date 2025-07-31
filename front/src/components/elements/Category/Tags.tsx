@@ -14,7 +14,7 @@ const AllTags = () => {
       </Typography>
       <Grid container spacing={2}>
         {tags.map((tag) => (
-          <Grid item xs="auto" key={tag}>
+          <Grid size="auto" key={tag}>
             <Button variant="outlined" sx={{ borderRadius: '1rem' }}>
               {tag}
             </Button>

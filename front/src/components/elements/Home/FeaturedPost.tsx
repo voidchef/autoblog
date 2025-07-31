@@ -20,7 +20,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
 
   return (
     <Grid container sx={{ justifyContent: featuredBlogs.length > 1? 'space-between' : 'center' }}>
-      <Grid item xs={12} sm={6} container sx={{ p: { xs: 0, sm: 1 }, border: '2px solid #E0E0E0' }}>
+      <Grid size={{ xs: 12, sm: 6 }} container sx={{ p: { xs: 0, sm: 1 }, border: '2px solid #E0E0E0' }}>
         <Box sx={{ m: 2 }}>
           <Typography
             variant="h2"
@@ -75,7 +75,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
         </Box>
       </Grid>
       {featuredBlogs.length > 1 && (
-        <Grid item xs={12} sm={6} container sx={{ p: { xs: 0, sm: 1 } }}>
+        <Grid size={{ xs: 12, sm: 6 }} container sx={{ p: { xs: 0, sm: 1 } }}>
           <Box sx={{ m: 2 }}>
             <Box display="flex" flexDirection="row" justifyContent="space-between" marginBottom={{ xs: '1rem', sm: '2rem' }}>
               <Typography
