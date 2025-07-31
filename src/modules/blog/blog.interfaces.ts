@@ -26,16 +26,19 @@ export interface IBlog extends IGenerateBlog {
   isDraft: boolean;
   generatedImages?: string[];
   selectedImage?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface IBlogDoc extends IBlog, Document {
   generateReadTime(content: string): number;
+  generateExcerpt(maxLength?: number): string;
 }
 
 export interface IBlogModel extends Model<IBlogDoc> {
   paginate(filter: Record<string, any>, options: Record<string, any>): Promise<QueryResult>;
 }
 
-export type NewCreatedBlog = Omit<IBlog, 'readingTime' | 'isFeatured' | 'isPublished' | 'isDraft'>;
+export type NewCreatedBlog = Omit<IBlog, 'readingTime' | 'isFeatured' | 'isPublished' | 'isDraft' | 'createdAt' | 'updatedAt'>;
 
 export type UpdateBlogBody = Partial<IBlog>;

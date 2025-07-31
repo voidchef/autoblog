@@ -34,7 +34,10 @@ export interface IBlog {
   audience?: string;
   language: string;
   llmModel: string;
+  generatedImages?: string[];
+  selectedImage?: string;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IQueryResult {

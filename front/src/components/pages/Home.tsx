@@ -7,6 +7,7 @@ import FeaturedPost from '../elements/Home/FeaturedPost';
 import RecentPosts from '../elements/Home/RecentPosts';
 import Footer from '../elements/Common/Footer';
 import { useGetBlogsQuery } from '../../services/blogApi';
+import { Helmet } from 'react-helmet-async';
 
 export default function Home() {
   // Fetch featured blogs
@@ -26,6 +27,26 @@ export default function Home() {
 
   return (
     <Box>
+      <Helmet>
+        <title>AutoBlog - AI-Powered Blog Generation Platform</title>
+        <meta name="description" content="Create high-quality, SEO-optimized blog posts with our AI-powered platform. Generate engaging content in multiple languages with advanced SEO features." />
+        <meta name="keywords" content="AI blog generation, SEO content, automated blogging, content creation, blog writing" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href={window.location.href} />
+        
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta property="og:title" content="AutoBlog - AI-Powered Blog Generation Platform" />
+        <meta property="og:description" content="Create high-quality, SEO-optimized blog posts with our AI-powered platform." />
+        <meta property="og:url" content={window.location.href} />
+        <meta property="og:site_name" content="AutoBlog" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="AutoBlog - AI-Powered Blog Generation Platform" />
+        <meta name="twitter:description" content="Create high-quality, SEO-optimized blog posts with our AI-powered platform." />
+      </Helmet>
+      
       <Box>
         <NavBar />
         <Headline />

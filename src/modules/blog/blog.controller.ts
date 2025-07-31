@@ -27,8 +27,7 @@ export const getBlogs = catchAsync(async (req: Request, res: Response) => {
   const options: IOptions = pick(req.query, ['sortBy', 'limit', 'page', 'projectBy', 'populate']);
   const result = await blogService.queryBlogs(filter, options);
   result.results.forEach((blog: any) => {
-    // eslint-disable-next-line no-param-reassign
-    blog.content = blog.content.split(' ').slice(0, 40).join(' ');
+    blog.excerpt = blog.generateExcerpt ? blog.generateExcerpt(160) : blog.content.split(' ').slice(0, 40).join(' ') + '...';
   });
   res.send(result);
 });
@@ -133,4 +132,22 @@ export const searchBlogs = catchAsync(async (req: Request, res: Response) => {
     blog.content = blog.content.split(' ').slice(0, 40).join(' ');
   });
   res.send(result);
+});
+
+export const generateSitemap = catchAsync(async (req: Request, res: Response) => {
+  const { generateSitemapXML } = await import('./sitemap.service');
+  const baseUrl = `${req.protocol}://${req.get('host')}`;
+  const sitemapXML = await generateSitemapXML(baseUrl);
+  
+  res.set('Content-Type', 'application/xml');
+  res.send(sitemapXML);
+});
+
+export const generateRobots = catchAsync(async (req: Request, res: Response) => {
+  const { generateRobotsTxt } = await import('./sitemap.service');
+  const baseUrl = `${req.protocol}://${req.get('host')}`;
+  const robotsTxt = generateRobotsTxt(baseUrl);
+  
+  res.set('Content-Type', 'text/plain');
+  res.send(robotsTxt);
 });

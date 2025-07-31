@@ -112,6 +112,38 @@ blogSchema.method('generateReadTime', function (this: IBlogDoc, content: string)
   return readingTime;
 });
 
+/**
+ * Generate SEO-friendly excerpt from content
+ * @param {number} maxLength - Maximum length of excerpt (default: 160)
+ * @returns {string}
+ */
+blogSchema.method('generateExcerpt', function (this: IBlogDoc, maxLength: number = 160): string {
+  // Remove markdown and HTML tags, then create excerpt
+  const cleanContent = this.content
+    .replace(/#{1,6}\s?/g, '') // Remove markdown headers
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold markdown
+    .replace(/\*(.*?)\*/g, '$1') // Remove italic markdown
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // Remove markdown links
+    .trim();
+  
+  if (cleanContent.length <= maxLength) {
+    return cleanContent;
+  }
+  
+  // Find the last complete sentence within the limit
+  const excerpt = cleanContent.substring(0, maxLength);
+  const lastSentence = excerpt.lastIndexOf('.');
+  
+  if (lastSentence > maxLength * 0.7) {
+    return excerpt.substring(0, lastSentence + 1);
+  }
+  
+  // If no good sentence break, cut at word boundary
+  const lastSpace = excerpt.lastIndexOf(' ');
+  return excerpt.substring(0, lastSpace) + '...';
+});
+
 blogSchema.pre('save', async function (next) {
   const blog = this;
   if (blog.isModified('content')) {

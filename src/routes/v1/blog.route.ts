@@ -13,6 +13,8 @@ router
 router.route('/create').post(auth('manageBlogs'), validate(blogValidation.createBlog), blogController.createBlog);
 router.route('/bulk-delete').delete(auth('manageBlogs'), validate(blogValidation.bulkDeleteBlogs), blogController.bulkDeleteBlogs);
 router.route('/search').get(validate(blogValidation.getBlogs), blogController.searchBlogs);
+router.route('/sitemap.xml').get(blogController.generateSitemap);
+router.route('/robots.txt').get(blogController.generateRobots);
 
 router.route('/views').get(auth('getViews'), validate(blogValidation.getViews), blogController.getViews);
 

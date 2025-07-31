@@ -137,66 +137,6 @@ export const useBlogs = (options?: {
 };
 
 /**
- * Custom hook for managing UI state and common UI operations
- */
-export const useUI = () => {
-  const dispatch = useAppDispatch();
-  const ui = useAppSelector((state) => state.ui);
-
-  const showNotification = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info') => {
-    dispatch({
-      type: 'ui/addNotification',
-      payload: {
-        message,
-        type,
-        autoHide: true,
-        duration: 5000,
-      },
-    });
-  };
-
-  const openModal = (modalKey: keyof typeof ui.modals) => {
-    dispatch({ type: 'ui/openModal', payload: modalKey });
-  };
-
-  const closeModal = (modalKey: keyof typeof ui.modals) => {
-    dispatch({ type: 'ui/closeModal', payload: modalKey });
-  };
-
-  const toggleSidebar = () => {
-    dispatch({ type: 'ui/toggleSidebar' });
-  };
-
-  const setFilter = (key: string, value: any) => {
-    dispatch({ type: 'ui/setActiveFilter', payload: { key, value } });
-  };
-
-  const clearFilters = () => {
-    dispatch({ type: 'ui/clearFilters' });
-  };
-
-  const selectItems = (itemIds: string[]) => {
-    dispatch({ type: 'ui/selectAllItems', payload: itemIds });
-  };
-
-  const toggleItemSelection = (itemId: string) => {
-    dispatch({ type: 'ui/toggleItemSelection', payload: itemId });
-  };
-
-  return {
-    ...ui,
-    showNotification,
-    openModal,
-    closeModal,
-    toggleSidebar,
-    setFilter,
-    clearFilters,
-    selectItems,
-    toggleItemSelection,
-  };
-};
-
-/**
  * Custom hook for theme management
  */
 export const useTheme = () => {

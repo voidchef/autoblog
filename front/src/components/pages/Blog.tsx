@@ -60,6 +60,65 @@ export default function Blog() {
             <Helmet>
               <title>{currentBlogData.seoTitle}</title>
               <meta name="description" content={currentBlogData.seoDescription} />
+              
+              {/* Open Graph / Facebook */}
+              <meta property="og:type" content="article" />
+              <meta property="og:title" content={currentBlogData.seoTitle} />
+              <meta property="og:description" content={currentBlogData.seoDescription} />
+              <meta property="og:image" content={currentBlogData.selectedImage || `${AWS_BASEURL}/blogs/${currentBlogData.id}/1.img`} />
+              <meta property="og:url" content={window.location.href} />
+              <meta property="og:site_name" content="AutoBlog" />
+              <meta property="article:author" content={currentBlogData.author?.name} />
+              <meta property="article:published_time" content={new Date(currentBlogData.createdAt).toISOString()} />
+              <meta property="article:modified_time" content={new Date(currentBlogData.updatedAt).toISOString()} />
+              <meta property="article:section" content={currentBlogData.category} />
+              {currentBlogData.tags && currentBlogData.tags.map((tag: string, index: number) => (
+                <meta key={index} property="article:tag" content={tag} />
+              ))}
+              
+              {/* Twitter */}
+              <meta name="twitter:card" content="summary_large_image" />
+              <meta name="twitter:title" content={currentBlogData.seoTitle} />
+              <meta name="twitter:description" content={currentBlogData.seoDescription} />
+              <meta name="twitter:image" content={currentBlogData.selectedImage || `${AWS_BASEURL}/blogs/${currentBlogData.id}/1.img`} />
+              
+              {/* Additional SEO */}
+              <meta name="keywords" content={currentBlogData.tags?.join(', ')} />
+              <meta name="author" content={currentBlogData.author?.name} />
+              <meta name="robots" content="index, follow" />
+              <link rel="canonical" href={window.location.href} />
+              
+              {/* JSON-LD Structured Data */}
+              <script type="application/ld+json">
+                {JSON.stringify({
+                  "@context": "https://schema.org",
+                  "@type": "BlogPosting",
+                  "headline": currentBlogData.title,
+                  "description": currentBlogData.seoDescription,
+                  "image": currentBlogData.selectedImage || `${AWS_BASEURL}/blogs/${currentBlogData.id}/1.img`,
+                  "author": {
+                    "@type": "Person",
+                    "name": currentBlogData.author?.name
+                  },
+                  "publisher": {
+                    "@type": "Organization",
+                    "name": "AutoBlog",
+                    "logo": {
+                      "@type": "ImageObject",
+                      "url": `${window.location.origin}/vite.svg`
+                    }
+                  },
+                  "datePublished": new Date(currentBlogData.createdAt).toISOString(),
+                  "dateModified": new Date(currentBlogData.updatedAt).toISOString(),
+                  "mainEntityOfPage": {
+                    "@type": "WebPage",
+                    "@id": window.location.href
+                  },
+                  "keywords": currentBlogData.tags?.join(', '),
+                  "wordCount": currentBlogData.content?.split(/\s+/).length,
+                  "timeRequired": `PT${currentBlogData.readingTime}M`
+                })}
+              </script>
             </Helmet>
             <Typography component={'div'} fontSize={{ xs: '2rem', sm: '3rem' }} textAlign={'center'}>
               {currentBlogData.title}

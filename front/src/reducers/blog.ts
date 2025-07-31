@@ -24,7 +24,10 @@ export type IBlog = {
   audience?: string;
   language: string;
   llmModel: string;
+  generatedImages?: string[];
+  selectedImage?: string;
   createdAt: Date;
+  updatedAt: Date;
 };
 
 interface IQueryResult {
