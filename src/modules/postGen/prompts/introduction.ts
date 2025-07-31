@@ -1,4 +1,4 @@
-Based on the post outline, compose a blog post introduction in {language} about the topic : '{topic}' 
+export const introductionPrompt = `Based on the post outline, compose a blog post introduction in {language} about the topic : '{topic}' 
 - Without using phrases such as, "In this article,..." to introduce the subject.
 - Instead, explain the context and/or explain the main problem. 
 - If necessary, mention facts to help the user better understand the context or the problem. 
@@ -16,4 +16,4 @@ Based on the post outline, compose a blog post introduction in {language} about 
 
 Do not markdown formatting to your response : no tabs, no bold, no italics, no underline, no strikethrough, no headings, no lists, no links, no images, no code blocks, ....
 
-{formatInstructions}  
+{formatInstructions}`;

@@ -1,4 +1,4 @@
-I need a detailed blog post outline in {language} about the topic: '{topic}'.
+export const outlinePrompt = `I need a detailed blog post outline in {language} about the topic: '{topic}'.
     - Write this post outline structure/headings based on the copywriting concept called 'inverted pyramid'.
     - For the title, the headings and the SEO Title :  capitalize words in function of the language: {language} :
         In English : capitalize the first word and all nouns, pronouns, adjectives, verbs, adverbs, and subordinate conjunctions ("as", "because", "although").
@@ -15,4 +15,4 @@ I need a detailed blog post outline in {language} about the topic: '{topic}'.
     - Audience: {audience}.
     - Intent: {intent}.
 
-IMPORTANT: Do not add a heading in the JSON for an introduction, a conclusion, or to summarize the article in the post outline. We will add them later.
+IMPORTANT: Do not add a heading in the JSON for an introduction, a conclusion, or to summarize the article in the post outline. We will add them later.`;

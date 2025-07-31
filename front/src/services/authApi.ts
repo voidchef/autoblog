@@ -49,17 +49,6 @@ export interface AuthResponse {
   };
 }
 
-export interface TokenResponse {
-  access: {
-    token: string;
-    expires: string;
-  };
-  refresh: {
-    token: string;
-    expires: string;
-  };
-}
-
 export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginData>({
@@ -95,7 +84,7 @@ export const authApi = api.injectEndpoints({
       invalidatesTags: ['Auth', 'User'],
     }),
 
-    refreshTokens: builder.mutation<TokenResponse, RefreshTokenData>({
+    refreshTokens: builder.mutation<AuthResponse, RefreshTokenData>({
       query: (data) => ({
         url: '/auth/refresh-tokens',
         method: 'POST',

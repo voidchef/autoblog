@@ -1,4 +1,4 @@
- Based on the blog post outline, compose some informative content for the heading  "{headingTitle}" in {language}.
+export const headingPrompt = `Based on the blog post outline, compose some informative content for the heading  "{headingTitle}" in {language}.
 - Do not add the heading in your response.
 - Use the following keywords in the content : {keywords}.
 - Do not repeat ideas or information from the introduction or other headings.
@@ -13,5 +13,4 @@
 8. Format the content according to the usual rules for the SEO content/copywriting. 
 9. IMPORTANT : do NOT end the content with a tip, question, conclusion or summary.
 
-
-{formatInstructions} 
+{formatInstructions}`;

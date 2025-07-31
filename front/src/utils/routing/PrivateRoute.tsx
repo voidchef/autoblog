@@ -17,7 +17,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const loading = useAppSelector((state) => state.root.loading);
 
-  if (isAuthenticated === false) {
+  if (!isAuthenticated) {
     return <Navigate to={ROUTES.LOGIN} />;
   }
 

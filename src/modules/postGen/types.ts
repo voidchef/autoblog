@@ -34,7 +34,6 @@ export type BasePostPrompt = {
   debugapi?: boolean;
   apiKey?: string;
   filename?: string;
-  promptFolder?: string;
 };
 
 // Prompt for a post based on a topic (automatic mode with no template)

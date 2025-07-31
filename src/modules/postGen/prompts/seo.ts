@@ -1,4 +1,4 @@
-For the following content post (Delimited below with ****) based on the topic of this conversation, write a H1, a SEO title, a SEO description and a slug. 
+export const seoPrompt = `For the following content post (Delimited below with ****) based on the topic of this conversation, write a H1, a SEO title, a SEO description and a slug. 
 - The H1 and the title should be different.
 - The SEO title should be no more than 60 characters long.
 - The SEO description should be no more than 155 characters long.
@@ -15,4 +15,4 @@ Your response has to be in the following JSON format:
 Here is the content topic
 ****
 {content}
-****
+****`;

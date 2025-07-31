@@ -36,7 +36,7 @@ import { useAppDispatch } from '../../utils/reduxHooks';
 import { useUpdateUserMutation } from '../../services/userApi';
 import { showSuccess, showError } from '../../actions';
 import { updateUserDataOptimistic } from '../../reducers/user';
-import { encryptOpenAiKey } from '../../utils/crypto';
+import { encrypt } from '../../utils/crypto';
 
 interface ProfileFormData {
   name: string;
@@ -168,7 +168,7 @@ const Profile: React.FC = () => {
 
       if (formData.openAiKey) {
         // Encrypt the OpenAI key before sending to backend
-        updateData.openAiKey = await encryptOpenAiKey(formData.openAiKey, user.id);
+        updateData.openAiKey = await encrypt(formData.openAiKey, user.id);
       }
 
       // Only update if there are changes

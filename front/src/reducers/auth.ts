@@ -152,8 +152,8 @@ const authSlice = createSlice({
       })
       // Refresh tokens
       .addMatcher(authApi.endpoints.refreshTokens.matchFulfilled, (state, action) => {
-        state.tokens = action.payload;
-        localStorage.setItem('tokens', JSON.stringify(action.payload));
+        state.tokens = action.payload.tokens;
+        localStorage.setItem('tokens', JSON.stringify(action.payload.tokens));
       })
       .addMatcher(authApi.endpoints.refreshTokens.matchRejected, (state) => {
         // Token refresh failed, logout user

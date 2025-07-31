@@ -16,7 +16,9 @@ export const generateBlog = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const createBlog = catchAsync(async (req: Request, res: Response) => {
-  const blog = await blogService.createBlog(req.body);
+  const user = req.user as IUserDoc;
+  const blogData = { ...req.body, author: user._id };
+  const blog = await blogService.createBlog(blogData);
   res.status(httpStatus.CREATED).send(blog);
 });
 
@@ -62,4 +64,73 @@ export const deleteBlog = catchAsync(async (req: Request, res: Response) => {
     await blogService.deleteBlogById(new mongoose.Types.ObjectId(req.params['blogId']));
     res.status(httpStatus.NO_CONTENT).send();
   }
+});
+
+export const publishBlog = catchAsync(async (req: Request, res: Response) => {
+  if (typeof req.params['blogId'] === 'string') {
+    const blog = await blogService.updateBlogById(new mongoose.Types.ObjectId(req.params['blogId']), {
+      isPublished: true,
+      isDraft: false,
+    });
+    res.send(blog);
+  }
+});
+
+export const unpublishBlog = catchAsync(async (req: Request, res: Response) => {
+  if (typeof req.params['blogId'] === 'string') {
+    const blog = await blogService.updateBlogById(new mongoose.Types.ObjectId(req.params['blogId']), {
+      isPublished: false,
+      isDraft: true,
+    });
+    res.send(blog);
+  }
+});
+
+export const toggleFeatured = catchAsync(async (req: Request, res: Response) => {
+  if (typeof req.params['blogId'] === 'string') {
+    const currentBlog = await blogService.getBlogById(new mongoose.Types.ObjectId(req.params['blogId']));
+    if (!currentBlog) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
+    }
+    const blog = await blogService.updateBlogById(new mongoose.Types.ObjectId(req.params['blogId']), {
+      isFeatured: !currentBlog.isFeatured,
+    });
+    res.send(blog);
+  }
+});
+
+export const bulkDeleteBlogs = catchAsync(async (req: Request, res: Response) => {
+  const { blogIds } = req.body;
+  if (!Array.isArray(blogIds)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'blogIds must be an array');
+  }
+  
+  const deletePromises = blogIds.map((id: string) => 
+    blogService.deleteBlogById(new mongoose.Types.ObjectId(id))
+  );
+  
+  await Promise.all(deletePromises);
+  res.status(httpStatus.NO_CONTENT).send();
+});
+
+export const searchBlogs = catchAsync(async (req: Request, res: Response) => {
+  const { query: searchQuery, ...filterOptions } = req.query;
+  const filter: any = pick(req.query, ['author', 'category', 'tags', 'isFeatured', 'isPublished', 'isDraft']);
+  const options: IOptions = pick(req.query, ['sortBy', 'limit', 'page', 'projectBy', 'populate']);
+  
+  // Add search functionality to filter if query is provided
+  if (searchQuery && typeof searchQuery === 'string') {
+    filter.$or = [
+      { title: { $regex: searchQuery, $options: 'i' } },
+      { content: { $regex: searchQuery, $options: 'i' } },
+      { seoDescription: { $regex: searchQuery, $options: 'i' } },
+    ];
+  }
+  
+  const result = await blogService.queryBlogs(filter, options);
+  result.results.forEach((blog: any) => {
+    // eslint-disable-next-line no-param-reassign
+    blog.content = blog.content.split(' ').slice(0, 40).join(' ');
+  });
+  res.send(result);
 });

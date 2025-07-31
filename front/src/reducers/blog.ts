@@ -23,7 +23,7 @@ export type IBlog = {
   intent?: string;
   audience?: string;
   language: string;
-  languageModel: string;
+  llmModel: string;
   createdAt: Date;
 };
 
@@ -158,17 +158,26 @@ export const bulkDeleteBlogs = createAsyncThunk('blog/bulkDeleteBlogs', async (b
 
 export const duplicateBlog = createAsyncThunk('blog/duplicateBlog', async (blog: IBlog, { dispatch }) => {
   const duplicatedBlog = {
-    ...blog,
-    id: undefined, // Let backend assign new ID
+    topic: blog.title, // Map title to topic for the API
     title: `${blog.title} (Copy)`,
     slug: `${blog.slug}-copy`,
+    seoTitle: `${blog.seoTitle} (Copy)`,
+    seoDescription: blog.seoDescription,
+    content: blog.content,
+    category: blog.category,
+    tags: blog.tags,
+    country: blog.country,
+    intent: blog.intent,
+    audience: blog.audience,
+    language: blog.language,
+    llmModel: blog.llmModel,
     isDraft: true,
     isPublished: false,
     createdAt: new Date(),
-    model: blog.languageModel, // Add required model field
   };
 
-  const result = await dispatch(blogApi.endpoints.generateBlog.initiate(duplicatedBlog as any));
+  // Use createBlog endpoint instead of generateBlog since we already have content
+  const result = await dispatch(blogApi.endpoints.createBlog.initiate(duplicatedBlog as any));
 
   if ('data' in result) {
     return result.data;

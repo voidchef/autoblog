@@ -10,6 +10,10 @@ router
   .post(auth('generateBlogs'), validate(blogValidation.generateBlog), blogController.generateBlog)
   .get(validate(blogValidation.getBlogs), blogController.getBlogs);
 
+router.route('/create').post(auth('manageBlogs'), validate(blogValidation.createBlog), blogController.createBlog);
+router.route('/bulk-delete').delete(auth('manageBlogs'), validate(blogValidation.bulkDeleteBlogs), blogController.bulkDeleteBlogs);
+router.route('/search').get(validate(blogValidation.getBlogs), blogController.searchBlogs);
+
 router.route('/views').get(auth('getViews'), validate(blogValidation.getViews), blogController.getViews);
 
 router
@@ -17,6 +21,11 @@ router
   .get(validate(blogValidation.getBlog), blogController.getBlog)
   .patch(auth('manageBlogs'), validate(blogValidation.updateBlog), blogController.updateBlog)
   .delete(auth('manageBlogs'), validate(blogValidation.deleteBlog), blogController.deleteBlog);
+
+// Additional convenience routes for publishing and toggling featured
+router.route('/:blogId/publish').patch(auth('manageBlogs'), blogController.publishBlog);
+router.route('/:blogId/unpublish').patch(auth('manageBlogs'), blogController.unpublishBlog);
+router.route('/:blogId/toggle-featured').patch(auth('manageBlogs'), blogController.toggleFeatured);
 
 export default router;
 

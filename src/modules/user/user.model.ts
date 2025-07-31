@@ -88,8 +88,11 @@ userSchema.pre('save', async function (next) {
   if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 8);
   }
+  // Don't re-encrypt if it's already encrypted (frontend sends encrypted data)
+  // Only encrypt if it's plain text (for backward compatibility or direct backend usage)
   if (user.isModified('openAiKey') && user.openAiKey && !isEncrypted(user.openAiKey)) {
-    user.openAiKey = encrypt(user.openAiKey);
+    // Use password-based encryption with user ID
+    user.openAiKey = encrypt(user.openAiKey, (user._id as mongoose.Types.ObjectId).toString());
   }
   next();
 });
@@ -108,7 +111,7 @@ userSchema.method('hasOpenAiKey', function (): boolean {
  */
 userSchema.method('getDecryptedOpenAiKey', function (): string {
   if (!this.openAiKey) return '';
-  return decrypt(this.openAiKey);
+  return decrypt(this.openAiKey, (this._id as mongoose.Types.ObjectId).toString());
 });
 
 const User = mongoose.model<IUserDoc, IUserModel>('User', userSchema);

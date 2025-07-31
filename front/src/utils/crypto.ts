@@ -1,5 +1,5 @@
 /**
- * Frontend crypto utilities for OpenAI key encryption
+ * Frontend crypto utilities for encryption
  * Uses Web Crypto API for browser-based encryption
  */
 
@@ -25,7 +25,7 @@ const arrayBufferToString = (buffer: ArrayBuffer): string => {
  */
 const arrayBufferToHex = (buffer: ArrayBuffer): string => {
   return Array.from(new Uint8Array(buffer))
-    .map(b => b.toString(16).padStart(2, '0'))
+    .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
 };
 
@@ -45,13 +45,7 @@ const hexToArrayBuffer = (hex: string): ArrayBuffer => {
  */
 const deriveKey = async (password: string, salt: ArrayBuffer): Promise<CryptoKey> => {
   const passwordBuffer = stringToArrayBuffer(password);
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    passwordBuffer,
-    'PBKDF2',
-    false,
-    ['deriveKey']
-  );
+  const keyMaterial = await crypto.subtle.importKey('raw', passwordBuffer, 'PBKDF2', false, ['deriveKey']);
 
   return crypto.subtle.deriveKey(
     {
@@ -63,7 +57,7 @@ const deriveKey = async (password: string, salt: ArrayBuffer): Promise<CryptoKey
     keyMaterial,
     { name: 'AES-GCM', length: 256 },
     false,
-    ['encrypt', 'decrypt']
+    ['encrypt', 'decrypt'],
   );
 };
 
@@ -71,68 +65,80 @@ const deriveKey = async (password: string, salt: ArrayBuffer): Promise<CryptoKey
  * Encrypt text using AES-GCM
  * @param {string} text - The text to encrypt
  * @param {string} password - The password for encryption (user ID)
- * @returns {Promise<string>} - The encrypted text with salt and IV
+ * @returns {Promise<string>} - The encrypted text with salt, IV, and encrypted data
  */
-export const encryptOpenAiKey = async (text: string, password: string): Promise<string> => {
+export const encrypt = async (text: string, password: string): Promise<string> => {
   if (!text) return '';
 
   try {
     const salt = crypto.getRandomValues(new Uint8Array(16));
     const iv = crypto.getRandomValues(new Uint8Array(12));
-    
+
     const key = await deriveKey(password, salt.buffer);
     const encodedText = stringToArrayBuffer(text);
-    
+
     const encrypted = await crypto.subtle.encrypt(
       {
         name: 'AES-GCM',
         iv: iv,
       },
       key,
-      encodedText
+      encodedText,
     );
 
-    // Combine salt, IV, and encrypted data
+    // Extract auth tag from the end of encrypted data (GCM appends it automatically)
+    const encryptedArray = new Uint8Array(encrypted);
+    const encryptedData = encryptedArray.slice(0, -16); // Remove last 16 bytes (auth tag)
+    const authTag = encryptedArray.slice(-16); // Last 16 bytes are the auth tag
+
+    // Combine salt, IV, auth tag, and encrypted data
     const saltHex = arrayBufferToHex(salt.buffer);
     const ivHex = arrayBufferToHex(iv.buffer);
-    const encryptedHex = arrayBufferToHex(encrypted);
-    
-    return `${saltHex}:${ivHex}:${encryptedHex}`;
+    const authTagHex = arrayBufferToHex(authTag.buffer);
+    const encryptedHex = arrayBufferToHex(encryptedData.buffer);
+
+    return `${saltHex}:${ivHex}:${authTagHex}:${encryptedHex}`;
   } catch (error) {
     console.error('Encryption error:', error);
-    throw new Error('Failed to encrypt OpenAI key');
+    throw new Error('Failed to encrypt data');
   }
 };
 
 /**
  * Decrypt text using AES-GCM
- * @param {string} encryptedText - The encrypted text with salt and IV
+ * @param {string} encryptedText - The encrypted text with salt, IV, auth tag, and encrypted data
  * @param {string} password - The password for decryption (user ID)
  * @returns {Promise<string>} - The decrypted text
  */
-export const decryptOpenAiKey = async (encryptedText: string, password: string): Promise<string> => {
+export const decrypt = async (encryptedText: string, password: string): Promise<string> => {
   if (!encryptedText) return '';
 
   try {
     const parts = encryptedText.split(':');
-    if (parts.length !== 3) {
+    if (parts.length !== 4) {
       throw new Error('Invalid encrypted data format');
     }
 
-    const [saltHex, ivHex, encryptedHex] = parts;
+    const [saltHex, ivHex, authTagHex, encryptedHex] = parts;
     const salt = hexToArrayBuffer(saltHex);
     const iv = hexToArrayBuffer(ivHex);
-    const encrypted = hexToArrayBuffer(encryptedHex);
+    const authTag = hexToArrayBuffer(authTagHex);
+    const encryptedData = hexToArrayBuffer(encryptedHex);
 
     const key = await deriveKey(password, salt);
-    
+
+    // Combine encrypted data and auth tag for Web Crypto API
+    const combinedData = new Uint8Array(encryptedData.byteLength + authTag.byteLength);
+    combinedData.set(new Uint8Array(encryptedData));
+    combinedData.set(new Uint8Array(authTag), encryptedData.byteLength);
+
     const decrypted = await crypto.subtle.decrypt(
       {
         name: 'AES-GCM',
         iv: iv,
       },
       key,
-      encrypted
+      combinedData.buffer,
     );
 
     return arrayBufferToString(decrypted);
@@ -150,5 +156,5 @@ export const decryptOpenAiKey = async (encryptedText: string, password: string):
 export const isEncrypted = (value: string): boolean => {
   if (!value) return false;
   const parts = value.split(':');
-  return parts.length === 3 && parts.every(part => /^[0-9a-f]+$/i.test(part));
+  return parts.length === 4 && parts.every((part) => /^[0-9a-f]+$/i.test(part));
 };

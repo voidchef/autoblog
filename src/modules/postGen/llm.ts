@@ -21,27 +21,33 @@ export function buildLLM(postPrompt: BasePostPrompt, forJson: boolean = false): 
 }
 
 function buildOpenAI(postPrompt: BasePostPrompt, forJson: boolean = false) {
+  if (!postPrompt.apiKey) {
+    throw new Error('OpenAI API key is required. Please ensure your user profile has a valid OpenAI API key configured.');
+  }
+
   const llmParams = {
     modelName: postPrompt.model.toString(),
     temperature: postPrompt.temperature ?? 0.8,
     frequencyPenalty: forJson ? 0 : postPrompt.frequencyPenalty ?? 1,
     presencePenalty: forJson ? 0 : postPrompt.presencePenalty ?? 1,
     verbose: postPrompt.debugapi ?? false,
-    openAIApiKey: postPrompt.apiKey as string,
-
+    apiKey: postPrompt.apiKey,
   }
   return new ChatOpenAI(llmParams)
 }
 
 function buildMistral(postPrompt: BasePostPrompt, forJson: boolean = false) {
+  if (!postPrompt.apiKey) {
+    throw new Error('Mistral API key is required. Please ensure your user profile has a valid Mistral API key configured.');
+  }
+
   const llmParams = {
     modelName: postPrompt.model.toString(),
     temperature: postPrompt.temperature ?? 0.8,
     frequencyPenalty: forJson ? 0 : postPrompt.frequencyPenalty ?? 1,
     presencePenalty: forJson ? 0 : postPrompt.presencePenalty ?? 1,
     verbose: postPrompt.debugapi ?? false,
-    apiKey: postPrompt.apiKey as string,
-
+    apiKey: postPrompt.apiKey,
   }
   return new ChatMistralAI(llmParams)
 }

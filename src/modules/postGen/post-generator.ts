@@ -1,7 +1,5 @@
 import * as dotenv from 'dotenv';
-import { readFile as rd } from 'fs';
-import * as path from 'path';
-import { promisify } from 'util';
+import { readFile } from 'fs/promises';
 import { BufferMemory } from 'langchain/memory';
 import {
   ChatPromptTemplate,
@@ -31,11 +29,9 @@ import {
 import { Template } from './template';
 import { buildLLM } from './llm';
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
-import { PostImageService } from '../imageGen';
+import { PostImageService } from '../imageGen/index';
 
 dotenv.config();
-const readFile = promisify(rd);
-const DEFAULT_PROMPT_FOLDER = './prompts';
 const PARSER_INSTRUCTIONS_TAG = '\n{formatInstructions}\n';
 
 // -----------------------------------------------------------------------------------------
@@ -49,18 +45,8 @@ export class PostGenerator {
   private llm_json: BaseChatModel;
   private llm_content: BaseChatModel;
   private memory: BufferMemory;
-  private promptFolder: string;
 
   public constructor(private postPrompt: AutoPostPrompt) {
-    if (this.postPrompt.promptFolder && postPrompt.promptFolder !== '') {
-      logger.info('Use prompts from folder : ' + this.postPrompt.promptFolder);
-    }
-
-    this.promptFolder =
-      postPrompt.promptFolder && postPrompt.promptFolder !== ''
-        ? postPrompt.promptFolder
-        : path.join(__dirname, DEFAULT_PROMPT_FOLDER);
-
     this.llm_content = buildLLM(postPrompt) as BaseChatModel;
     // For the outline, we use a different setting without frequencyPenalty and presencePenalty
     // in order to avoid some json format issue
@@ -75,7 +61,7 @@ export class PostGenerator {
     logger.debug('\nPrompt :' + JSON.stringify(this.postPrompt, null, 2));
 
     // Add the system prompt to the memory
-    const systemPrompt = await getSystemPrompt(this.promptFolder);
+    const systemPrompt = await getSystemPrompt();
     this.memory.saveContext({ input: 'main recommendations for writing the post content' }, { output: systemPrompt });
 
     if (this.postPrompt.generate) {
@@ -121,7 +107,7 @@ export class PostGenerator {
    * Generate the audience and intent.
    */
   async generateAudienceAndIntent(): Promise<{ audience: string; intent: string }> {
-    const humanTemplate = await getAudienceIntentPrompt(this.promptFolder);
+    const humanTemplate = await getAudienceIntentPrompt();
     const chatPrompt = ChatPromptTemplate.fromMessages([
       new MessagesPlaceholder('history'),
       HumanMessagePromptTemplate.fromTemplate(humanTemplate),
@@ -161,7 +147,7 @@ export class PostGenerator {
    * Generate a post outline.
    */
   private async generateOutline(): Promise<PostOutline> {
-    const outlineTemplate = await getOutlinePrompt(this.promptFolder);
+    const outlineTemplate = await getOutlinePrompt();
     const chatPrompt = ChatPromptTemplate.fromMessages([
       new MessagesPlaceholder('history'),
       HumanMessagePromptTemplate.fromTemplate(outlineTemplate),
@@ -222,7 +208,7 @@ export class PostGenerator {
    * Generate the introduction of the blog post
    */
   private async generateIntroduction(): Promise<string> {
-    const template = await getIntroductionPrompt(this.promptFolder);
+    const template = await getIntroductionPrompt();
     const content = await this.generateContent(template, 'Write the introduction of the blog post');
     return content;
   }
@@ -231,7 +217,7 @@ export class PostGenerator {
    * Generate the conclusion of the blog post
    */
   private async generateConclusion(): Promise<string> {
-    const template = await getConclusionPrompt(this.promptFolder);
+    const template = await getConclusionPrompt();
     const content = await this.generateContent(template, 'Write the conclusion of the blog post');
     return content;
   }
@@ -273,7 +259,7 @@ export class PostGenerator {
    */
   private async generateHeadingContent(heading: Heading): Promise<string> {
     logger.info(` - Generating content for heading : ${heading.title}`);
-    const template = await getHeadingPrompt(this.promptFolder);
+    const template = await getHeadingPrompt();
     const parser = getMarkdownParser();
 
     const chatPrompt = ChatPromptTemplate.fromMessages([
@@ -461,18 +447,8 @@ export class PostTemplateGenerator {
   private llm_content: BaseChatModel;
   private llm_json: BaseChatModel;
   private memory: BufferMemory;
-  private promptFolder: string;
 
   public constructor(private postPrompt: TemplatePostPrompt) {
-    if (this.postPrompt.promptFolder) {
-      logger.info('Use prompts from folder : ' + this.postPrompt.promptFolder);
-    }
-
-    this.promptFolder =
-      postPrompt.promptFolder && postPrompt.promptFolder !== ''
-        ? postPrompt.promptFolder
-        : path.join(__dirname, DEFAULT_PROMPT_FOLDER);
-
     this.llm_content = buildLLM(postPrompt);
     // For the outline, we use a different setting without frequencyPenalty and presencePenalty
     // in order to avoid some json format issue
@@ -604,7 +580,7 @@ export class PostTemplateGenerator {
   private async generateSeoInfo(
     content: string,
   ): Promise<{ h1: string; seoTitle: string; seoDescription: string; slug: string }> {
-    const humanTemplate = await getSeoInfoPrompt(this.promptFolder);
+    const humanTemplate = await getSeoInfoPrompt();
     const chatPrompt = ChatPromptTemplate.fromMessages([
       new MessagesPlaceholder('history'),
       HumanMessagePromptTemplate.fromTemplate(humanTemplate),

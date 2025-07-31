@@ -24,7 +24,7 @@ const createBlogBody: Record<keyof NewCreatedBlog, any> = {
   category: Joi.string().required(),
   tags: Joi.array().optional(),
   generatedImages: Joi.array().items(Joi.string()).optional(),
-  selectedImage: Joi.number().optional(),
+  selectedImage: Joi.string().optional(),
 };
 
 export const createBlog = {
@@ -83,5 +83,11 @@ export const updateBlog = {
 export const deleteBlog = {
   params: Joi.object().keys({
     blogId: Joi.string().custom(objectId),
+  }),
+};
+
+export const bulkDeleteBlogs = {
+  body: Joi.object().keys({
+    blogIds: Joi.array().items(Joi.string().custom(objectId)).required(),
   }),
 };

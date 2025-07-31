@@ -114,7 +114,7 @@ export default function CreatePost() {
         intent: blog.intent || '',
         audience: blog.audience || '',
         language: blog.language || '',
-        languageModel: blog.languageModel || '',
+        languageModel: blog.llmModel || '',
         category: blog.category || '',
         tags: Array.isArray(blog.tags) ? blog.tags.join(', ') : '',
       });
@@ -181,12 +181,12 @@ export default function CreatePost() {
       return;
     } else {
       const generateData: IBlogData = {
-        title: formData.topic,
+        topic: formData.topic,
         country: formData.country || undefined,
         intent: formData.intent || undefined,
         audience: formData.audience || undefined,
         language: formData.language,
-        model: formData.languageModel,
+        llmModel: formData.languageModel,
         category: formData.category,
         tags: formData.tags,
       };

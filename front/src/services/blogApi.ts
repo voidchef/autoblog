@@ -1,12 +1,12 @@
 import { api } from './api';
 
 export interface IBlogData {
-  title: string;
+  topic: string;
   country?: string;
   intent?: string;
   audience?: string;
   language: string;
-  model: string;
+  llmModel: string;
   category: string;
   tags?: string;
 }
@@ -33,7 +33,7 @@ export interface IBlog {
   intent?: string;
   audience?: string;
   language: string;
-  languageModel: string;
+  llmModel: string;
   createdAt: Date;
 }
 
@@ -72,6 +72,18 @@ export const blogApi = api.injectEndpoints({
       invalidatesTags: ['Blog', 'Draft'],
       transformErrorResponse: (response: { status: number; data: any }) => {
         return response.data?.message || 'Blog generation failed';
+      },
+    }),
+
+    createBlog: builder.mutation<IBlog, Partial<IBlog>>({
+      query: (blogData) => ({
+        url: '/blogs/create',
+        method: 'POST',
+        body: blogData,
+      }),
+      invalidatesTags: ['Blog', 'Draft'],
+      transformErrorResponse: (response: { status: number; data: any }) => {
+        return response.data?.message || 'Blog creation failed';
       },
     }),
 
@@ -249,6 +261,7 @@ export const blogApi = api.injectEndpoints({
 
 export const {
   useGenerateBlogMutation,
+  useCreateBlogMutation,
   useGetBlogsQuery,
   useGetFeaturedBlogsQuery,
   useGetDraftBlogsQuery,

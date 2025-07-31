@@ -4,7 +4,7 @@ import Blog from './blog.model';
 import ApiError from '../errors/ApiError';
 import { IOptions, QueryResult } from '../paginate/paginate';
 import { IGenerateBlog, NewCreatedBlog, UpdateBlogBody, IBlogDoc } from './blog.interfaces';
-import { PostGenerator, Post } from '../postGen';
+import { PostGenerator, Post, AutoPostPrompt } from '../postGen';
 import runReport, { IRunReportResponse } from '../utils/analytics';
 import S3Utils from '../aws/s3utils';
 import { getUserById } from '../user/user.service';
@@ -56,10 +56,11 @@ export const generateBlog = async (generateBlogData: IGenerateBlog, author: mong
 
   const { category, tags, ...prompt } = generateBlogData;
   // Ensure 'model' property is present for AutoPostPrompt and add the decrypted API key
-  const postPrompt = {
+  const postPrompt: AutoPostPrompt = {
     ...prompt,
-    model: prompt.llmModel ?? 'gpt-4o', // Set default model if not provided
+    model: prompt.llmModel, // Map llmModel to model for PostGenerator
     apiKey: decryptedApiKey, // Add the decrypted API key
+    generateImages: true, // Default to generating images
   };
   const postGenerator = new PostGenerator(postPrompt);
   const post: Post = await postGenerator.generate();

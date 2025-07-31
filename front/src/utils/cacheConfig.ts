@@ -6,19 +6,19 @@
 export const CACHE_TIMES = {
   // User data - moderate caching since it can change
   USER_DATA: 300, // 5 minutes
-  
+
   // App settings - long caching since they rarely change
   APP_SETTINGS: 1800, // 30 minutes
-  
+
   // Blog content - varies by type
   BLOG_LIST: 300, // 5 minutes
   BLOG_DETAIL: 600, // 10 minutes
   FEATURED_BLOGS: 600, // 10 minutes
   BLOG_ANALYTICS: 3600, // 1 hour
-  
+
   // Search results - short caching
   SEARCH_RESULTS: 60, // 1 minute
-  
+
   // Categories - long caching
   CATEGORIES: 1800, // 30 minutes
 } as const;
