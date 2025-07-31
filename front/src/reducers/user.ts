@@ -13,6 +13,8 @@ export type UserData = {
   createdAt?: string;
   updatedAt?: string;
   lastLogin?: string;
+  openAiKey?: string;
+  hasOpenAiKey?: boolean;
   preferences?: {
     theme: 'light' | 'dark';
     language: string;

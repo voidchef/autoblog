@@ -1,20 +1,22 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
-import { Button, MenuItem } from '@mui/material';
-import Title from '../elements/CreatePost/Title';
+import { 
+  Title, 
+  BlogFormFields, 
+  ActionButtons, 
+  BlogContentFields, 
+  ImagePicker 
+} from '../elements/CreatePost';
 import { useAppSelector } from '../../utils/reduxHooks';
 import { useGenerateBlogMutation, useGetBlogQuery, useUpdateBlogMutation, IBlogData } from '../../services/blogApi';
 import { setBlogData, clearBlog, IBlog } from '../../reducers/blog';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import axios from 'axios';
-import ImagePicker from '../elements/CreatePost/ImagePicker';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AWS_BASEURL } from '../../utils/consts';
 import { ROUTES } from '../../utils/routing/routes';
-import { IFieldData, ICategory } from '../../reducers/appSettings';
 
 async function fetchImages(blogId: string) {
   const newImages: string[] = [];
@@ -265,191 +267,29 @@ export default function CreatePost() {
         gap={{ xs: 3, sm: 5 }}
         onSubmit={handleSubmit}
       >
-        <Box width={{ sm: '60%' }} display={'flex'} flexDirection={'column'} sx={{ gap: { xs: 2, sm: 3 } }}>
-          <TextField
-            required
-            fullWidth
-            disabled={blog?.id ? true : false}
-            id="post-topic-required"
-            label="Post Topic"
-            value={formData.topic}
-            helperText="Please enter blog topic"
-            onChange={handleFormDataChange('topic')}
-          />
-          <Box
-            display={'flex'}
-            flexDirection={{ xs: 'column', sm: 'row' }}
-            justifyContent={'space-between'}
-            textAlign={'start'}
-            gap={{ xs: 3, sm: 5 }}
-          >
-            <TextField
-              disabled={blog?.id ? true : false}
-              id="country"
-              label="Country"
-              value={formData.country}
-              helperText="Enter blog audience country"
-              onChange={handleFormDataChange('country')}
-              sx={{ flex: 1 }}
-            />
-            <TextField
-              required
-              disabled={blog?.id ? true : false}
-              select
-              id="outlined-select-language"
-              label="language"
-              value={formData.language}
-              helperText="Please select blog language"
-              onChange={handleFormDataChange('language')}
-              sx={{ flex: 1 }}
-            >
-              {appSettings.languages.map((option: IFieldData) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
-          <Box
-            display={'flex'}
-            flexDirection={{ xs: 'column', sm: 'row' }}
-            justifyContent={'space-between'}
-            textAlign={'start'}
-            gap={{ xs: 3, sm: 5 }}
-          >
-            <TextField
-              required
-              disabled={blog?.id ? true : false}
-              select
-              id="outlined-select-languageModel"
-              label="language model"
-              value={formData.languageModel}
-              helperText="Please select language model"
-              onChange={handleFormDataChange('languageModel')}
-              sx={{ flex: 1 }}
-            >
-              {appSettings.languageModels.map((option: IFieldData) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              select
-              required
-              id="outlined-select-category"
-              label="category"
-              value={formData.category}
-              helperText="Please select category of the blog"
-              onChange={handleFormDataChange('category')}
-              sx={{ flex: 1 }}
-            >
-              {appSettings.categories.map((option: ICategory) => (
-                <MenuItem key={option._id} value={option.categoryName}>
-                  {option.categoryName}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Box>
-          <TextField
-            disabled={blog?.id ? true : false}
-            id="audience"
-            label="Audience"
-            value={formData.audience}
-            helperText="Enter intended audience"
-            onChange={handleFormDataChange('audience')}
-            fullWidth
-          />
-
-          <TextField
-            disabled={blog?.id ? true : false}
-            id="intent"
-            label="Intent"
-            value={formData.intent}
-            helperText="Enter blog intent"
-            onChange={handleFormDataChange('intent')}
-            fullWidth
-          />
-
-          <TextField
-            id="tags"
-            label="Tags"
-            value={formData.tags}
-            helperText="Enter comma separated list of tags"
-            onChange={handleFormDataChange('tags')}
-            fullWidth
-          />
-        </Box>
-        <Box
-          width={{ sm: '40%' }}
-          display={'flex'}
-          flexDirection={'column'}
-          justifyContent={'space-between'}
-          alignItems={'center'}
-          sx={{ gap: { xs: 2, sm: 3 } }}
-        >
-          <Button type="submit" variant="contained" sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}>
-            {blog?.id ? 'Preview' : 'Generate'}
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
-            disabled={!blog}
-            onClick={handleReset}
-          >
-            Reset
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
-            disabled={!blog}
-            onClick={handleUpdate}
-          >
-            Save
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
-            disabled={!blog}
-            onClick={handleOpen}
-          >
-            Select Image
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
-            disabled={!blog}
-            onClick={handlePublishStatusChange}
-          >
-            {isPublished ? 'UnPublish' : 'Publish'}
-          </Button>
-        </Box>
+        <BlogFormFields
+          formData={formData}
+          appSettings={appSettings}
+          isEditMode={!!blog?.id}
+          onFormDataChange={handleFormDataChange}
+        />
+        <ActionButtons
+          isEditMode={!!blog?.id}
+          isPublished={isPublished}
+          onReset={handleReset}
+          onUpdate={handleUpdate}
+          onOpenImagePicker={handleOpen}
+          onPublishStatusChange={handlePublishStatusChange}
+        />
       </Box>
       <Box sx={{ my: 4 }} />
-      <Box sx={{ flexGrow: 1, marginX: { xs: '1rem', sm: '7rem' } }}>
-        <TextField
-          fullWidth
-          id="post-title-required"
-          label="Post Title"
-          value={blogTitle}
-          disabled={blogTitle !== '' ? false : true}
-          required={blog?.id ? true : false}
-          onChange={handleBlogTitleChange}
-        />
-        <Box sx={{ my: 3 }} />
-        <TextField
-          id="outlined-multiline-static"
-          label="Blog Content"
-          value={blogContent}
-          disabled={blogTitle !== '' ? false : true}
-          required={blog?.id ? true : false}
-          multiline
-          rows={30}
-          placeholder="Start writing your blog here..."
-          fullWidth
-          onChange={handleBlogContentChange}
-        />
-      </Box>
+      <BlogContentFields
+        blogTitle={blogTitle}
+        blogContent={blogContent}
+        isEditMode={!!blog?.id}
+        onBlogTitleChange={handleBlogTitleChange}
+        onBlogContentChange={handleBlogContentChange}
+      />
       <Box sx={{ my: 6 }} />
       <Footer />
     </Box>

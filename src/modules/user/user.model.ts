@@ -5,6 +5,7 @@ import toJSON from '../toJSON/toJSON';
 import paginate from '../paginate/paginate';
 import { roles } from '../../config/roles';
 import { IUserDoc, IUserModel } from './user.interfaces';
+import { encrypt, decrypt, isEncrypted } from '../utils/crypto';
 
 const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
   {
@@ -48,8 +49,8 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
     },
     openAiKey: {
       type: String,
-      unique: true,
       trim: true,
+      private: true, // used by the toJSON plugin to exclude from responses
     }
   },
   {
@@ -87,7 +88,27 @@ userSchema.pre('save', async function (next) {
   if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 8);
   }
+  if (user.isModified('openAiKey') && user.openAiKey && !isEncrypted(user.openAiKey)) {
+    user.openAiKey = encrypt(user.openAiKey);
+  }
   next();
+});
+
+/**
+ * Method to check if user has an OpenAI key (without revealing it)
+ * @returns {boolean}
+ */
+userSchema.method('hasOpenAiKey', function (): boolean {
+  return !!(this.openAiKey && this.openAiKey.length > 0);
+});
+
+/**
+ * Method to get decrypted OpenAI key
+ * @returns {string}
+ */
+userSchema.method('getDecryptedOpenAiKey', function (): string {
+  if (!this.openAiKey) return '';
+  return decrypt(this.openAiKey);
 });
 
 const User = mongoose.model<IUserDoc, IUserModel>('User', userSchema);

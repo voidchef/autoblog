@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react';
 import type { RootState } from '../store';
+import { CACHE_TIMES } from '../utils/cacheConfig';
 
 // Enhanced base query with retry logic and better error handling
 const baseQuery = fetchBaseQuery({
@@ -72,7 +73,10 @@ export const api = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ['User', 'Blog', 'AppSettings', 'Auth', 'Category', 'Draft'],
   endpoints: () => ({}),
-  refetchOnMountOrArgChange: 30, // Refetch data if it's older than 30 seconds
-  refetchOnFocus: true,
-  refetchOnReconnect: true,
+  // More conservative refetch policies to prevent excessive API calls
+  refetchOnMountOrArgChange: false, // Only refetch when explicitly triggered
+  refetchOnFocus: false, // Don't refetch on window focus
+  refetchOnReconnect: false, // Don't refetch on network reconnection
+  // Keep data for longer periods using centralized config
+  keepUnusedDataFor: CACHE_TIMES.USER_DATA, // Default to moderate caching
 });

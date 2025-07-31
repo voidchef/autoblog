@@ -4,6 +4,7 @@ import { useGetUserQuery } from '../services/userApi';
 import { useGetAppSettingsQuery } from '../services/appSettingsApi';
 import { useGetFeaturedBlogsQuery, useGetBlogsQuery } from '../services/blogApi';
 import { showError } from '../actions';
+import { REFETCH_INTERVALS } from './cacheConfig';
 
 /**
  * Custom hook for managing user authentication and data
@@ -19,7 +20,8 @@ export const useAuth = () => {
     error: userError,
   } = useGetUserQuery(userId, {
     skip: !userId,
-    refetchOnMountOrArgChange: true,
+    // Only refetch if data is stale using centralized config
+    refetchOnMountOrArgChange: REFETCH_INTERVALS.STALE_5_MIN,
   });
 
   useEffect(() => {
@@ -49,7 +51,8 @@ export const useAppSettings = () => {
     isLoading,
     error,
   } = useGetAppSettingsQuery(undefined, {
-    refetchOnMountOrArgChange: 30, // Refetch if data is older than 30 seconds
+    // App settings rarely change, so cache for longer periods using centralized config
+    refetchOnMountOrArgChange: REFETCH_INTERVALS.STALE_30_MIN,
   });
 
   useEffect(() => {
@@ -85,8 +88,8 @@ export const useBlogs = (options?: {
       page,
       limit,
       category,
-      refetchOnMountOrArgChange: autoRefetch ? 30 : false,
-      refetchOnFocus: autoRefetch,
+      refetchOnMountOrArgChange: autoRefetch ? REFETCH_INTERVALS.STALE_5_MIN : REFETCH_INTERVALS.NEVER,
+      refetchOnFocus: false, // Disabled for better performance
     }),
     [page, limit, category, autoRefetch],
   );
@@ -106,7 +109,7 @@ export const useBlogs = (options?: {
     { page: 1, limit: 5 },
     {
       skip: !featured,
-      refetchOnMountOrArgChange: autoRefetch ? 30 : false,
+      refetchOnMountOrArgChange: autoRefetch ? REFETCH_INTERVALS.STALE_5_MIN : REFETCH_INTERVALS.NEVER,
     },
   );
 

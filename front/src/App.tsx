@@ -18,6 +18,7 @@ import AllPosts from './components/pages/AllPosts';
 import CreatePost from './components/pages/CreatePost';
 import Blog from './components/pages/Blog';
 import Dashboard from './components/pages/Dashboard';
+import Profile from './components/pages/Profile';
 import Alerts from './components/elements/Common/Alerts';
 import { useAuth, useAppSettings, useTheme } from './utils/hooks';
 import ReactGA from 'react-ga4';
@@ -121,6 +122,14 @@ export default function App() {
                   element={
                     <PrivateRoute>
                       <Dashboard />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path={ROUTES.PROFILE}
+                  element={
+                    <PrivateRoute>
+                      <Profile />
                     </PrivateRoute>
                   }
                 />

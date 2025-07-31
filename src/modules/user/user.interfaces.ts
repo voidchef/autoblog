@@ -13,6 +13,8 @@ export interface IUser {
 
 export interface IUserDoc extends IUser, Document {
   isPasswordMatch(password: string): Promise<boolean>;
+  hasOpenAiKey(): boolean;
+  getDecryptedOpenAiKey(): string;
 }
 
 export interface IUserModel extends Model<IUserDoc> {

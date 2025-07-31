@@ -11,14 +11,20 @@ import { generateAuthTokens, verifyToken } from '../token/token.service';
  * Login with username and password
  * @param {string} email
  * @param {string} password
- * @returns {Promise<IUserDoc>}
+ * @returns {Promise<any>}
  */
-export const loginUserWithEmailAndPassword = async (email: string, password: string): Promise<IUserDoc> => {
+export const loginUserWithEmailAndPassword = async (email: string, password: string): Promise<any> => {
   const user = await getUserByEmail(email);
   if (!user || !(await user.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
-  return user;
+  
+  // Return user data with hasOpenAiKey flag for frontend
+  const userObj = user.toJSON();
+  return {
+    ...userObj,
+    hasOpenAiKey: user.hasOpenAiKey()
+  };
 };
 
 /**

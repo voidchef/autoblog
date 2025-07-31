@@ -129,7 +129,7 @@ export default function AccountMenu() {
             style={{ width: '100%', height: '100%', borderRadius: '0.5rem 0.5rem 0 0' }}
           />
         </Box>
-        <MenuItem onClick={() => handleClose(ROUTES.CREATEPOST)}>
+        <MenuItem onClick={() => handleClose(ROUTES.PROFILE)}>
           <ListItemIcon>
             <AccountCircleIcon fontSize="small" />
           </ListItemIcon>

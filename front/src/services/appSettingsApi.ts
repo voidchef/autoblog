@@ -1,4 +1,5 @@
 import { api } from './api';
+import { CACHE_TIMES } from '../utils/cacheConfig';
 
 export interface ICategory {
   _id: string;
@@ -24,6 +25,8 @@ export const appSettingsApi = api.injectEndpoints({
     getAppSettings: builder.query<IAppSettingsResponse, void>({
       query: () => '/appSettings/',
       providesTags: ['AppSettings'],
+      // Cache app settings for longer periods since they change infrequently
+      keepUnusedDataFor: CACHE_TIMES.APP_SETTINGS,
     }),
   }),
 });

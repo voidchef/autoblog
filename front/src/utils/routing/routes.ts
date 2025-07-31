@@ -9,4 +9,5 @@ export enum ROUTES {
   BLOG = '/blog',
   PREVIEW = '/preview',
   DASHBOARD = '/dashboard',
+  PROFILE = '/profile',
 }

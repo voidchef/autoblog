@@ -7,6 +7,7 @@ import { IGenerateBlog, NewCreatedBlog, UpdateBlogBody, IBlogDoc } from './blog.
 import { PostGenerator, Post } from '../postGen';
 import runReport, { IRunReportResponse } from '../utils/analytics';
 import S3Utils from '../aws/s3utils';
+import { getUserById } from '../user/user.service';
 
 /**
  * Create a blog post
@@ -38,11 +39,27 @@ export const createBlog = async (blogBody: NewCreatedBlog): Promise<IBlogDoc> =>
  * @returns {Promise<IBlogDoc>}
  */
 export const generateBlog = async (generateBlogData: IGenerateBlog, author: mongoose.Types.ObjectId): Promise<IBlogDoc> => {
+  // Get the user to retrieve the decrypted OpenAI key
+  const user = await getUserById(author);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  if (!user.hasOpenAiKey()) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'OpenAI API key is required for blog generation');
+  }
+
+  const decryptedApiKey = user.getDecryptedOpenAiKey();
+  if (!decryptedApiKey) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to decrypt OpenAI API key');
+  }
+
   const { category, tags, ...prompt } = generateBlogData;
-  // Ensure 'model' property is present for AutoPostPrompt
+  // Ensure 'model' property is present for AutoPostPrompt and add the decrypted API key
   const postPrompt = {
     ...prompt,
     model: prompt.llmModel ?? 'gpt-4o', // Set default model if not provided
+    apiKey: decryptedApiKey, // Add the decrypted API key
   };
   const postGenerator = new PostGenerator(postPrompt);
   const post: Post = await postGenerator.generate();

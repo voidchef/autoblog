@@ -35,6 +35,7 @@ export interface AuthResponse {
     email: string;
     role: string;
     isEmailVerified: boolean;
+    hasOpenAiKey?: boolean;
   };
   tokens: {
     access: {

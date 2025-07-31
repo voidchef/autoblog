@@ -20,13 +20,20 @@ export const createUser = async (userBody: NewCreatedUser): Promise<IUserDoc> =>
 /**
  * Register a user
  * @param {NewRegisteredUser} userBody
- * @returns {Promise<IUserDoc>}
+ * @returns {Promise<any>}
  */
-export const registerUser = async (userBody: NewRegisteredUser): Promise<IUserDoc> => {
+export const registerUser = async (userBody: NewRegisteredUser): Promise<any> => {
   if (await User.isEmailTaken(userBody.email)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
-  return User.create(userBody);
+  const user = await User.create(userBody);
+  
+  // Return user data with hasOpenAiKey flag for frontend
+  const userObj = user.toJSON();
+  return {
+    ...userObj,
+    hasOpenAiKey: user.hasOpenAiKey()
+  };
 };
 
 /**
@@ -45,7 +52,26 @@ export const queryUsers = async (filter: Record<string, any>, options: IOptions)
  * @param {mongoose.Types.ObjectId} id
  * @returns {Promise<IUserDoc | null>}
  */
-export const getUserById = async (id: mongoose.Types.ObjectId): Promise<IUserDoc | null> => User.findById(id);
+export const getUserById = async (id: mongoose.Types.ObjectId): Promise<IUserDoc | null> => {
+  const user = await User.findById(id);
+  return user;
+};
+
+/**
+ * Get user by id with openAiKey status (for frontend)
+ * @param {mongoose.Types.ObjectId} id
+ * @returns {Promise<any | null>}
+ */
+export const getUserByIdForFrontend = async (id: mongoose.Types.ObjectId): Promise<any | null> => {
+  const user = await User.findById(id);
+  if (!user) return null;
+  
+  const userObj = user.toJSON();
+  return {
+    ...userObj,
+    hasOpenAiKey: user.hasOpenAiKey()
+  };
+};
 
 /**
  * Get user by email
@@ -58,12 +84,12 @@ export const getUserByEmail = async (email: string): Promise<IUserDoc | null> =>
  * Update user by id
  * @param {mongoose.Types.ObjectId} userId
  * @param {UpdateUserBody} updateBody
- * @returns {Promise<IUserDoc | null>}
+ * @returns {Promise<any | null>}
  */
 export const updateUserById = async (
   userId: mongoose.Types.ObjectId,
   updateBody: UpdateUserBody,
-): Promise<IUserDoc | null> => {
+): Promise<any | null> => {
   const user = await getUserById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -73,7 +99,13 @@ export const updateUserById = async (
   }
   Object.assign(user, updateBody);
   await user.save();
-  return user;
+  
+  // Return user data with hasOpenAiKey flag for frontend
+  const userObj = user.toJSON();
+  return {
+    ...userObj,
+    hasOpenAiKey: user.hasOpenAiKey()
+  };
 };
 
 /**
