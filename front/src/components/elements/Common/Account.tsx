@@ -10,8 +10,8 @@ import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BookIcon from '@mui/icons-material/Book';
-import { logout as logoutAction } from '../../../reducers/user';
 import { clearBlog } from '../../../reducers/blog';
+import { logoutUser } from '../../../reducers/auth';
 import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
@@ -33,9 +33,12 @@ export default function AccountMenu() {
     navigate(navigateTo);
     setAnchorEl(null);
   };
-  const handleLogout = () => {
+  
+  const handleLogout = async () => {
     setAnchorEl(null);
-    dispatch(logoutAction());
+    
+    // Use the logoutUser thunk which handles everything
+    await dispatch(logoutUser({ navigate }));
   };
 
   function stringToColor(string: string) {

@@ -27,15 +27,6 @@ const initialState: AuthState = {
 };
 
 // Async thunks for complex auth flows
-export const loginWithRedirect = createAsyncThunk(
-  'auth/loginWithRedirect',
-  async ({ email, password, navigate }: { email: string; password: string; navigate: Function }) => {
-    // This will trigger the RTK Query mutation but allows for additional navigation logic
-    navigate('/');
-    return { email, password };
-  },
-);
-
 export const logoutUser = createAsyncThunk(
   'auth/logoutUser',
   async ({ navigate }: { navigate?: Function }, { getState, dispatch }) => {
@@ -56,27 +47,14 @@ export const logoutUser = createAsyncThunk(
     localStorage.removeItem('tokens');
     localStorage.removeItem('userId');
 
+    // Dispatch user logout action to clear user state
+    dispatch({ type: 'user/logout' });
+
     if (navigate) {
       navigate('/login');
     }
   },
 );
-
-export const refreshTokens = createAsyncThunk('auth/refreshTokens', async (_, { getState, dispatch, rejectWithValue }) => {
-  const state = getState() as any;
-  const refreshToken = state.auth.tokens?.refresh?.token;
-
-  if (!refreshToken) {
-    return rejectWithValue('No refresh token available');
-  }
-
-  try {
-    const result = await dispatch(authApi.endpoints.refreshTokens.initiate({ refreshToken }));
-    return result.data;
-  } catch (error) {
-    return rejectWithValue('Token refresh failed');
-  }
-});
 
 const authSlice = createSlice({
   name: 'auth',
@@ -107,6 +85,13 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Handle logoutUser thunk
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.tokens = null;
+        state.userId = '';
+        state.isLoading = false;
+        state.error = null;
+      })
       // Login
       .addMatcher(authApi.endpoints.login.matchPending, (state) => {
         state.isLoading = true;

@@ -57,10 +57,12 @@ const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
         // Retry the original query with new token
         result = await baseQueryWithRetry(args, api, extraOptions);
       } else {
-        // Refresh failed, logout user
+        // Refresh failed, logout user by clearing tokens
         api.dispatch({ type: 'auth/logout' });
-        api.dispatch({ type: 'user/logout' });
       }
+    } else {
+      // No refresh token available, logout user
+      api.dispatch({ type: 'auth/logout' });
     }
   }
 

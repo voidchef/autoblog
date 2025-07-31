@@ -15,7 +15,7 @@ import Button from '@mui/material/Button';
 import Account from './Account';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
-import { useAppSelector } from '../../../utils/reduxHooks';
+import { useAuth } from '../../../utils/hooks';
 import DarkMode from './DarkMode';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 
@@ -35,7 +35,7 @@ export default function DrawerAppBar(props: Props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const authenticated = useAppSelector((state) => state.user.isAuthenticated);
+  const { isAuthenticated } = useAuth();
 
   const navigate = useNavigate();
 
@@ -113,7 +113,7 @@ export default function DrawerAppBar(props: Props) {
               <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2 }}>
                 <MenuIcon />
               </IconButton>
-              {authenticated ? (
+              {isAuthenticated ? (
                 <Account />
               ) : (
                 <Button
@@ -141,7 +141,7 @@ export default function DrawerAppBar(props: Props) {
                   {item}
                 </Button>
               ))}
-              {authenticated ? (
+              {isAuthenticated ? (
                 <Account />
               ) : (
                 <Button

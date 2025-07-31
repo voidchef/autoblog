@@ -3,7 +3,7 @@ import { Box, Container } from '@mui/material';
 import { Navigate } from 'react-router-dom';
 import { ROUTES } from './routes';
 import Loading from '../../components/elements/Common/Loading';
-import { useAppSelector } from '../reduxHooks';
+import { useAuth } from '../hooks';
 
 type PrivateRouteProps = {
   children: React.ReactNode;
@@ -14,14 +14,13 @@ type PrivateRouteProps = {
  * otherwise it redirects to the login page.
  */
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
-  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
-  const loading = useAppSelector((state) => state.root.loading);
+  const { isAuthenticated, isLoading } = useAuth();
 
   if (!isAuthenticated) {
     return <Navigate to={ROUTES.LOGIN} />;
   }
 
-  return loading ? (
+  return isLoading ? (
     <Container sx={{ height: '40vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <Box width={{ xs: '60%', sm: '40%', md: '30%' }}>
         <Loading />

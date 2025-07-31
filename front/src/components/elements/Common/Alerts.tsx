@@ -1,11 +1,11 @@
 import Box from '@mui/material/Box';
-import { REMOVE_ALERT } from '../../../utils/consts';
 import Alert from '@mui/material/Alert';
 import { Fragment } from 'react';
 import { useDispatch } from 'react-redux';
 import AlertTitle from '@mui/material/AlertTitle';
 import Slide from '@mui/material/Slide';
 import { useAppSelector } from '../../../utils/reduxHooks';
+import { removeAlert } from '../../../reducers/alert';
 
 const Alerts = () => {
   const alerts = useAppSelector((state) => state.alert);
@@ -30,12 +30,7 @@ const Alerts = () => {
               <Slide direction="up" in={true} timeout={500}>
                 <Alert
                   className="spaced-alert"
-                  onClose={() =>
-                    dispatch({
-                      type: REMOVE_ALERT,
-                      payload: alert.alertId,
-                    })
-                  }
+                  onClose={() => dispatch(removeAlert(alert.alertId))}
                   severity={alert.alertType ?? 'info'}
                   key={alert.alertId}
                   sx={{ marginBottom: '10px' }}
