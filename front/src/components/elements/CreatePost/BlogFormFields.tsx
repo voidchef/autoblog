@@ -19,16 +19,17 @@ interface BlogFormFieldsProps {
     categories: ICategory[];
   };
   isEditMode: boolean;
+  disabled?: boolean;
   onFormDataChange: (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function BlogFormFields({ formData, appSettings, isEditMode, onFormDataChange }: BlogFormFieldsProps) {
+export default function BlogFormFields({ formData, appSettings, isEditMode, disabled = false, onFormDataChange }: BlogFormFieldsProps) {
   return (
     <Box width={{ sm: '60%' }} display={'flex'} flexDirection={'column'} sx={{ gap: { xs: 2, sm: 3 } }}>
       <TextField
         required
         fullWidth
-        disabled={isEditMode}
+        disabled={isEditMode || disabled}
         id="post-topic-required"
         label="Post Topic"
         value={formData.topic}
@@ -43,7 +44,7 @@ export default function BlogFormFields({ formData, appSettings, isEditMode, onFo
         gap={{ xs: 3, sm: 5 }}
       >
         <TextField
-          disabled={isEditMode}
+          disabled={isEditMode || disabled}
           id="country"
           label="Country"
           value={formData.country}
@@ -53,7 +54,7 @@ export default function BlogFormFields({ formData, appSettings, isEditMode, onFo
         />
         <TextField
           required
-          disabled={isEditMode}
+          disabled={isEditMode || disabled}
           select
           id="outlined-select-language"
           label="language"
@@ -78,7 +79,7 @@ export default function BlogFormFields({ formData, appSettings, isEditMode, onFo
       >
         <TextField
           required
-          disabled={isEditMode}
+          disabled={isEditMode || disabled}
           select
           id="outlined-select-languageModel"
           label="language model"
@@ -96,6 +97,7 @@ export default function BlogFormFields({ formData, appSettings, isEditMode, onFo
         <TextField
           select
           required
+          disabled={disabled}
           id="outlined-select-category"
           label="category"
           value={formData.category}
@@ -111,7 +113,7 @@ export default function BlogFormFields({ formData, appSettings, isEditMode, onFo
         </TextField>
       </Box>
       <TextField
-        disabled={isEditMode}
+        disabled={isEditMode || disabled}
         id="audience"
         label="Audience"
         value={formData.audience}
@@ -120,7 +122,7 @@ export default function BlogFormFields({ formData, appSettings, isEditMode, onFo
         fullWidth
       />
       <TextField
-        disabled={isEditMode}
+        disabled={isEditMode || disabled}
         id="intent"
         label="Intent"
         value={formData.intent}
@@ -129,6 +131,7 @@ export default function BlogFormFields({ formData, appSettings, isEditMode, onFo
         fullWidth
       />
       <TextField
+        disabled={disabled}
         id="tags"
         label="Tags"
         value={formData.tags}

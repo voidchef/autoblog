@@ -3,6 +3,7 @@ import { Box, Button } from '@mui/material';
 interface ActionButtonsProps {
   isEditMode: boolean;
   isPublished: boolean;
+  disabled?: boolean;
   onReset: () => void;
   onUpdate: () => void;
   onOpenImagePicker: () => void;
@@ -12,6 +13,7 @@ interface ActionButtonsProps {
 export default function ActionButtons({
   isEditMode,
   isPublished,
+  disabled = false,
   onReset,
   onUpdate,
   onOpenImagePicker,
@@ -26,16 +28,26 @@ export default function ActionButtons({
       alignItems={'center'}
       sx={{ gap: { xs: 2, sm: 3 } }}
     >
-      <Button type="submit" variant="contained" sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}>
+      <Button 
+        type="submit" 
+        variant="contained" 
+        sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
+        disabled={disabled}
+      >
         {isEditMode ? 'Preview' : 'Generate'}
       </Button>
-      <Button variant="contained" sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }} disabled={!isEditMode} onClick={onReset}>
+      <Button 
+        variant="contained" 
+        sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }} 
+        disabled={!isEditMode || disabled} 
+        onClick={onReset}
+      >
         Reset
       </Button>
       <Button
         variant="contained"
         sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
-        disabled={!isEditMode}
+        disabled={!isEditMode || disabled}
         onClick={onUpdate}
       >
         Save
@@ -43,7 +55,7 @@ export default function ActionButtons({
       <Button
         variant="contained"
         sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
-        disabled={!isEditMode}
+        disabled={!isEditMode || disabled}
         onClick={onOpenImagePicker}
       >
         Select Image
@@ -51,7 +63,7 @@ export default function ActionButtons({
       <Button
         variant="contained"
         sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
-        disabled={!isEditMode}
+        disabled={!isEditMode || disabled}
         onClick={onPublishStatusChange}
       >
         {isPublished ? 'UnPublish' : 'Publish'}

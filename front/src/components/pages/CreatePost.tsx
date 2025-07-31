@@ -7,12 +7,14 @@ import {
   BlogFormFields, 
   ActionButtons, 
   BlogContentFields, 
-  ImagePicker 
+  ImagePicker,
+  OpenAiKeyBanner
 } from '../elements/CreatePost';
 import { useAppSelector } from '../../utils/reduxHooks';
 import { useGenerateBlogMutation, useGetBlogQuery, useUpdateBlogMutation, IBlogData } from '../../services/blogApi';
 import { setBlogData, clearBlog, IBlog } from '../../reducers/blog';
 import { useAppDispatch } from '../../utils/reduxHooks';
+import { useAuth } from '../../utils/hooks';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AWS_BASEURL } from '../../utils/consts';
@@ -46,6 +48,7 @@ async function fetchImages(blogId: string) {
 export default function CreatePost() {
   const { state } = useLocation();
   const appSettings = useAppSelector((state) => state.appSettings);
+  const { user } = useAuth();
 
   const blogId = state?.blogId;
   const dispatch = useAppDispatch();
@@ -53,6 +56,10 @@ export default function CreatePost() {
   const { data: blog, isLoading } = useGetBlogQuery(blogId, { skip: !blogId });
   const [updateBlog] = useUpdateBlogMutation();
   const [generateBlog] = useGenerateBlogMutation();
+
+  // Check if user has OpenAI key
+  const hasOpenAiKey = user?.hasOpenAiKey || false;
+  const isFormDisabled = !hasOpenAiKey;
 
   React.useEffect(() => {
     if (!blogId) {
@@ -249,6 +256,10 @@ export default function CreatePost() {
         <Title />
       </Box>
       <Box sx={{ my: 4 }} />
+      
+      {/* OpenAI Key Banner */}
+      <OpenAiKeyBanner hasOpenAiKey={hasOpenAiKey} />
+      
       {images.length > 0 && (
         <ImagePicker
           open={open}
@@ -271,11 +282,13 @@ export default function CreatePost() {
           formData={formData}
           appSettings={appSettings}
           isEditMode={!!blog?.id}
+          disabled={isFormDisabled}
           onFormDataChange={handleFormDataChange}
         />
         <ActionButtons
           isEditMode={!!blog?.id}
           isPublished={isPublished}
+          disabled={isFormDisabled}
           onReset={handleReset}
           onUpdate={handleUpdate}
           onOpenImagePicker={handleOpen}
@@ -287,6 +300,7 @@ export default function CreatePost() {
         blogTitle={blogTitle}
         blogContent={blogContent}
         isEditMode={!!blog?.id}
+        disabled={isFormDisabled}
         onBlogTitleChange={handleBlogTitleChange}
         onBlogContentChange={handleBlogContentChange}
       />

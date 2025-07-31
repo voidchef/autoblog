@@ -5,6 +5,7 @@ interface BlogContentFieldsProps {
   blogTitle: string;
   blogContent: string;
   isEditMode: boolean;
+  disabled?: boolean;
   onBlogTitleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlogContentChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -13,6 +14,7 @@ export default function BlogContentFields({
   blogTitle,
   blogContent,
   isEditMode,
+  disabled = false,
   onBlogTitleChange,
   onBlogContentChange,
 }: BlogContentFieldsProps) {
@@ -23,7 +25,7 @@ export default function BlogContentFields({
         id="post-title-required"
         label="Post Title"
         value={blogTitle}
-        disabled={blogTitle !== '' ? false : true}
+        disabled={blogTitle !== '' ? false : true || disabled}
         required={isEditMode}
         onChange={onBlogTitleChange}
       />
@@ -32,7 +34,7 @@ export default function BlogContentFields({
         id="outlined-multiline-static"
         label="Blog Content"
         value={blogContent}
-        disabled={blogTitle !== '' ? false : true}
+        disabled={blogTitle !== '' ? false : true || disabled}
         required={isEditMode}
         multiline
         rows={30}
