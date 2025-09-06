@@ -34,7 +34,7 @@ import ConfirmationDialog from '../elements/Common/ConfirmationDialog';
 import { useAuth } from '../../utils/hooks';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import { useUpdateUserMutation } from '../../services/userApi';
-import { showSuccess, showError } from '../../actions';
+import { showSuccess, showError } from '../../reducers/alert';
 import { updateUserDataOptimistic } from '../../reducers/user';
 import { encrypt } from '../../utils/crypto';
 

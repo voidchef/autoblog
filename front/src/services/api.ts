@@ -46,12 +46,13 @@ const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
 
       if (refreshResult.data) {
         // Store the new tokens
+        const authResponse = refreshResult.data as any;
         api.dispatch({
           type: 'auth/setTokens',
           payload: {
-            tokens: refreshResult.data,
+            tokens: authResponse.tokens,
             userId: state.auth.userId,
-          },
+          }
         });
 
         // Retry the original query with new token

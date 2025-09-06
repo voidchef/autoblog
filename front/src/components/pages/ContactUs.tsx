@@ -39,10 +39,10 @@ export default function ContactUs() {
             <TextField required id="outlined-required" label="Your Email" placeholder="Your Email" />
             <TextField
               required
-              id="outlined-select-currency"
+              id="outlined-select-query"
               select
-              label="Select"
-              defaultValue="EUR"
+              label="Query Type"
+              defaultValue=""
               helperText="Please select your query"
             >
               {queries.map((option: IFieldData) => (

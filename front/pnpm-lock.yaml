@@ -56,9 +56,6 @@ importers:
       react-router-dom:
         specifier: ^7.7.1
         version: 7.7.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      redux-devtools-extension:
-        specifier: ^2.13.9
-        version: 2.13.9(redux@5.0.1)
       uuid:
         specifier: ^11.1.0
         version: 11.1.0
@@ -1230,12 +1227,6 @@ packages:
   react@19.1.0:
     resolution: {integrity: sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg==}
     engines: {node: '>=0.10.0'}
-
-  redux-devtools-extension@2.13.9:
-    resolution: {integrity: sha512-cNJ8Q/EtjhQaZ71c8I9+BPySIBVEKssbPpskBfsXqb8HJ002A3KRVHfeRzwRo6mGPqsm7XuHTqNSNeS1Khig0A==}
-    deprecated: Package moved to @redux-devtools/extension.
-    peerDependencies:
-      redux: ^3.1.0 || ^4.0.0
 
   redux-thunk@3.1.0:
     resolution: {integrity: sha512-NW2r5T6ksUKXCabzhL9z+h206HQw/NJkcLm1GPImRQ8IzfXwRGqjVhKJGauHirT0DAuyy6hjdnMZaRoAcy0Klw==}
@@ -2466,10 +2457,6 @@ snapshots:
       react-dom: 19.1.0(react@19.1.0)
 
   react@19.1.0: {}
-
-  redux-devtools-extension@2.13.9(redux@5.0.1):
-    dependencies:
-      redux: 5.0.1
 
   redux-thunk@3.1.0(redux@5.0.1):
     dependencies:

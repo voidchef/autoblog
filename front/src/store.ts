@@ -1,16 +1,24 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@reduxjs/toolkit/query';
-import rootReducer from './reducers';
 import { api } from './services/api';
+import rootReducer from './reducers/root';
+import alertReducer from './reducers/alert';
+import authReducer from './reducers/auth';
+import userReducer from './reducers/user';
+import blogReducer from './reducers/blog';
+import appSettingsReducer from './reducers/appSettings';
 
-const reducer = combineReducers({
-  ...rootReducer,
-  [api.reducerPath]: api.reducer,
-});
-
-// Configure store with enhanced middleware
+// Configure store with modern RTK approach
 const store = configureStore({
-  reducer,
+  reducer: {
+    root: rootReducer,
+    alert: alertReducer,
+    auth: authReducer,
+    user: userReducer,
+    blog: blogReducer,
+    appSettings: appSettingsReducer,
+    [api.reducerPath]: api.reducer,
+  },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
@@ -54,17 +62,5 @@ setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-
-// Add hot module replacement for reducers in development
-if (import.meta.env.MODE !== 'production' && import.meta.hot) {
-  import.meta.hot.accept('./reducers', () => {
-    const newRootReducer = require('./reducers').default;
-    const newReducer = combineReducers({
-      ...newRootReducer,
-      [api.reducerPath]: api.reducer,
-    });
-    store.replaceReducer(newReducer as any);
-  });
-}
 
 export default store;

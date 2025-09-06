@@ -3,7 +3,7 @@ import { useAppSelector, useAppDispatch } from './reduxHooks';
 import { useGetUserQuery } from '../services/userApi';
 import { useGetAppSettingsQuery } from '../services/appSettingsApi';
 import { useGetFeaturedBlogsQuery, useGetBlogsQuery } from '../services/blogApi';
-import { showError } from '../actions';
+import { showError } from '../reducers/alert';
 import { REFETCH_INTERVALS } from './cacheConfig';
 
 /**

@@ -14,7 +14,7 @@ import { useLoginMutation, useRegisterMutation } from '../../services/authApi';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../utils/routing/routes';
 import { useAppDispatch } from '../../utils/reduxHooks';
-import { showSuccess, showError } from '../../actions';
+import { showSuccess, showError } from '../../reducers/alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 
