@@ -36,7 +36,7 @@ export class ImageGenerator {
     this.llm = new ChatOpenAI({
       modelName: 'gpt-4o-mini', // Use a smaller model for prompt optimization
       temperature: 0.7,
-      ...(apiKey && { openAIApiKey: apiKey }),
+      ...(apiKey && { apiKey: apiKey }),
     });
 
     this.tool = new DallEAPIWrapper({

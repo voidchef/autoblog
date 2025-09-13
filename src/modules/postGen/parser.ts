@@ -1,33 +1,100 @@
-import Joi from 'joi';
 import { BaseOutputParser, StringOutputParser } from '@langchain/core/output_parsers';
 import { TemplatePostPrompt } from './types';
 import { isHTML, isMarkdown } from './template';
 
-const HeadingSchema = Joi.object({
-  title: Joi.string().description('The title of the heading').required(),
-  keywords: Joi.array().items(Joi.string()).optional().description('The keywords of the heading'),
-  headings: Joi.array().items(Joi.link('#headings')).optional().description('The subheadings of the heading'),
-}).id('headings');
+const HeadingSchema = {
+  type: 'object',
+  properties: {
+    title: {
+      type: 'string',
+      description: 'The title of the heading',
+    },
+    keywords: {
+      type: 'array',
+      items: { type: 'string' },
+      description: 'The keywords of the heading',
+    },
+    headings: {
+      type: 'array',
+      items: { $ref: '#/$defs/Heading' },
+      description: 'The subheadings of the heading',
+    },
+  },
+  required: ['title'],
+  additionalProperties: false,
+};
 
-export const PostOutlineSchema = Joi.object({
-  title: Joi.string().description('The title of the post').required(),
-  headings: Joi.array().items(HeadingSchema).description('The headings of the post').required(),
-  slug: Joi.string().description('The slug of the post').required(),
-  seoTitle: Joi.string().description('The SEO title of the post').required(),
-  seoDescription: Joi.string().description('The SEO description of the post').required(),
-});
+export const PostOutlineSchema = {
+  type: 'object',
+  properties: {
+    title: {
+      type: 'string',
+      description: 'The title of the post',
+    },
+    headings: {
+      type: 'array',
+      items: HeadingSchema,
+      description: 'The headings of the post',
+    },
+    slug: {
+      type: 'string',
+      description: 'The slug of the post',
+    },
+    seoTitle: {
+      type: 'string',
+      description: 'The SEO title of the post',
+    },
+    seoDescription: {
+      type: 'string',
+      description: 'The SEO description of the post',
+    },
+  },
+  required: ['title', 'headings', 'slug', 'seoTitle', 'seoDescription'],
+  additionalProperties: false,
+  $defs: {
+    Heading: HeadingSchema,
+  },
+};
 
-export const AudienceIntentSchema = Joi.object({
-  audience: Joi.string().description('The audience of the post').required(),
-  intent: Joi.string().description('The intent of the post').required(),
-});
+export const AudienceIntentSchema = {
+  type: 'object',
+  properties: {
+    audience: {
+      type: 'string',
+      description: 'The audience of the post',
+    },
+    intent: {
+      type: 'string',
+      description: 'The intent of the post',
+    },
+  },
+  required: ['audience', 'intent'],
+  additionalProperties: false,
+};
 
-export const SeoInfoSchema = Joi.object({
-  h1: Joi.string().description('The H1 of the post').required(),
-  seoTitle: Joi.string().description('The SEO title of the post').required(),
-  seoDescription: Joi.string().description('The SEO description of the post').required(),
-  slug: Joi.string().description('The slug of the post').required(),
-});
+export const SeoInfoSchema = {
+  type: 'object',
+  properties: {
+    h1: {
+      type: 'string',
+      description: 'The H1 of the post',
+    },
+    seoTitle: {
+      type: 'string',
+      description: 'The SEO title of the post',
+    },
+    seoDescription: {
+      type: 'string',
+      description: 'The SEO description of the post',
+    },
+    slug: {
+      type: 'string',
+      description: 'The slug of the post',
+    },
+  },
+  required: ['h1', 'seoTitle', 'seoDescription', 'slug'],
+  additionalProperties: false,
+};
 
 export class MarkdownOutputParser extends BaseOutputParser<string> {
   lc_namespace = ['julius', 'markdown'];

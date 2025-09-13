@@ -26,11 +26,11 @@ export class S3Utils {
   private static readonly DEFAULT_EXTENSION = '.jpg';
 
   private getS3Config(): S3Config {
-    const bucketName = process.env['AWS_BUCKET'];
+    const bucketName = process.env['AWS_BUCKET_NAME'];
     const awsRegion = process.env['AWS_REGION'];
 
     if (!bucketName || !awsRegion) {
-      throw new Error('AWS_BUCKET and AWS_REGION environment variables must be set');
+      throw new Error('AWS_BUCKET_NAME and AWS_REGION environment variables must be set');
     }
 
     return { bucketName, awsRegion };
