@@ -12,7 +12,7 @@ import {
 } from '../elements/CreatePost';
 import { useAppSelector } from '../../utils/reduxHooks';
 import { useGenerateBlogMutation, useGetBlogQuery, useUpdateBlogMutation, IBlogData } from '../../services/blogApi';
-import { setBlogData, clearBlog, IBlog } from '../../reducers/blog';
+import { setBlogData, clearBlog, IBlog, generateBlogWithProgress } from '../../reducers/blog';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import { useAuth } from '../../utils/hooks';
 import axios from 'axios';
@@ -48,6 +48,7 @@ async function fetchImages(blogId: string) {
 export default function CreatePost() {
   const { state } = useLocation();
   const appSettings = useAppSelector((state) => state.appSettings);
+  const generationProgress = useAppSelector((state) => state.blog.generationProgress);
   const { user } = useAuth();
 
   const blogId = state?.blogId;
@@ -55,7 +56,6 @@ export default function CreatePost() {
   const navigate = useNavigate();
   const { data: blog, isLoading } = useGetBlogQuery(blogId, { skip: !blogId });
   const [updateBlog] = useUpdateBlogMutation();
-  const [generateBlog] = useGenerateBlogMutation();
 
   // Check if user has OpenAI key
   const hasOpenAiKey = user?.hasOpenAiKey || false;
@@ -191,10 +191,12 @@ export default function CreatePost() {
         tags: formData.tags,
       };
 
-      generateBlog(generateData)
+      dispatch(generateBlogWithProgress(generateData))
         .unwrap()
         .then((newBlog) => {
-          navigate(`${ROUTES.PREVIEW}/${newBlog.slug}?preview=${true}`);
+          if (newBlog) {
+            navigate(`${ROUTES.PREVIEW}/${newBlog.slug}?preview=${true}`);
+          }
         })
         .catch((error) => {
           console.error('Failed to generate blog:', error);
@@ -289,6 +291,7 @@ export default function CreatePost() {
           isEditMode={!!blog?.id}
           isPublished={isPublished}
           disabled={isFormDisabled}
+          isLoading={generationProgress.isGenerating}
           onReset={handleReset}
           onUpdate={handleUpdate}
           onOpenImagePicker={handleOpen}

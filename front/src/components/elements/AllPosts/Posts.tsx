@@ -6,7 +6,6 @@ import TablePagination from '@mui/material/TablePagination';
 import { useGetBlogsQuery } from '../../../services/blogApi';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
-import { AWS_BASEURL } from '../../../utils/consts';
 
 const AllPosts = () => {
   const [page, setPage] = React.useState(0);
@@ -54,7 +53,7 @@ const AllPosts = () => {
               <Grid size={{ xs: 12, sm: 4 }} key={index} onClick={() => handleClick(post.slug)}>
                 <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'}>
                   <img
-                    src={`${AWS_BASEURL}/blogs/${post.id}/1.img`}
+                    src={post.selectedImage}
                     alt={post.topic}
                     style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }}
                   />

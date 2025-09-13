@@ -29,8 +29,10 @@ export class PostImageService {
     }
 
     // Generate images for each heading
-    const headingImages = await this.generateHeadingImages(postOutline.headings);
-    images.push(...headingImages);
+    if (this.shouldGenerateHeadingImages()) {
+      const headingImages = await this.generateHeadingImages(postOutline.headings);
+      images.push(...headingImages);
+    }
 
     return images;
   }
@@ -71,7 +73,6 @@ export class PostImageService {
    */
   async generateTemplateImages(title: string, content: string): Promise<GeneratedImage[]> {
     const images: GeneratedImage[] = [];
-    const imagesPerSection = this.getImagesPerSection();
 
     try {
       // Generate main image for the post title
@@ -81,13 +82,16 @@ export class PostImageService {
       images.push(mainImage);
 
       // Generate additional images based on content sections
-      const sections = this.extractContentSections(content);
-      for (let i = 0; i < Math.min(sections.length, imagesPerSection); i++) {
-        const section = sections[i];
-        if (section) {
-          const imagePrompt = this.createContentImagePrompt(section);
-          const image = await this.imageGenerator.generateImage(imagePrompt);
-          images.push(image);
+      if (this.shouldGenerateHeadingImages()) {
+        const imagesPerSection = this.getImagesPerSection();
+        const sections = this.extractContentSections(content);
+        for (let i = 0; i < Math.min(sections.length, imagesPerSection); i++) {
+          const section = sections[i];
+          if (section) {
+            const imagePrompt = this.createContentImagePrompt(section);
+            const image = await this.imageGenerator.generateImage(imagePrompt);
+            images.push(image);
+          }
         }
       }
     } catch (error) {
@@ -145,10 +149,13 @@ export class PostImageService {
   }
 
   /**
-   * Convert GeneratedImage array to string array for backward compatibility
+   * Check if heading images should be generated
    */
-  static imagesToStrings(images: GeneratedImage[]): string[] {
-    return images.map((img) => img.revisedPrompt || img.prompt);
+  private shouldGenerateHeadingImages(): boolean {
+    if ('generateHeadingImages' in this.postPrompt) {
+      return this.postPrompt.generateHeadingImages || false;
+    }
+    return false;
   }
 
   /**

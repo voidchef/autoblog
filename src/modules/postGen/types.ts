@@ -45,7 +45,8 @@ export type AutoPostPrompt = BasePostPrompt & {
   language: string;
   generate?: boolean; // generate the audience and intent
   withConclusion?: boolean;
-  generateImages?: boolean; // generate images for headings
+  generateImages?: boolean; // generate central image for title
+  generateHeadingImages?: boolean; // generate images for headings
   imagesPerHeading?: number; // number of images to generate per heading
 };
 
@@ -60,6 +61,7 @@ export type TemplatePostPrompt = BasePostPrompt & {
   
   // Image generation options
   generateImages?: boolean;
+  generateHeadingImages?: boolean; // generate images for headings
   imagesPerSection?: number;
 };
 

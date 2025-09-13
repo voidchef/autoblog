@@ -168,7 +168,7 @@ export const blogApi = api.injectEndpoints({
       query: ({ id, data, preview = false }) => ({
         url: `/blogs/${id}`,
         method: 'PATCH',
-        body: { ...data, preview },
+        body: data,
       }),
       invalidatesTags: (result, error, { id }) => [
         { type: 'Blog', id },

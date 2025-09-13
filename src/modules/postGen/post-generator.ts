@@ -372,7 +372,7 @@ export class PostGenerator {
     const generatedImages = await imageService.generatePostImages(postOutline);
 
     // Return image prompts for backward compatibility
-    return PostImageService.imagesToStrings(generatedImages);
+    return PostImageService.imagesToUrls(generatedImages);
   }
 
   /**
@@ -383,7 +383,7 @@ export class PostGenerator {
     const generatedImages = await imageService.generateHeadingImages(headings);
 
     // Return image prompts for backward compatibility
-    return PostImageService.imagesToStrings(generatedImages);
+    return PostImageService.imagesToUrls(generatedImages);
   }
 
   // ---------------------------------------------------------------------------
@@ -574,7 +574,7 @@ export class PostTemplateGenerator {
     const generatedImages = await imageService.generateTemplateImages(title, content);
 
     // Return image prompts for backward compatibility
-    return PostImageService.imagesToStrings(generatedImages);
+    return PostImageService.imagesToUrls(generatedImages);
   }
 
   private async generateSeoInfo(

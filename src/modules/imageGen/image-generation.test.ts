@@ -12,10 +12,12 @@ describe('PostGenerator with Image Generation', () => {
       language: 'English',
       model: 'gpt-4o',
       generateImages: true,
+      generateHeadingImages: true,
       imagesPerHeading: 2,
     };
 
     expect(prompt.generateImages).toBe(true);
+    expect(prompt.generateHeadingImages).toBe(true);
     expect(prompt.imagesPerHeading).toBe(2);
   });
 
@@ -25,6 +27,7 @@ describe('PostGenerator with Image Generation', () => {
       language: 'English',
       model: 'gpt-4o',
       generateImages: true,
+      generateHeadingImages: false, // Default behavior
       imagesPerHeading: 1,
     };
 
@@ -131,7 +134,7 @@ describe('PostImageService', () => {
       },
     ];
 
-    const strings = PostImageService.imagesToStrings(generatedImages);
+    const strings = PostImageService.imagesToUrls(generatedImages);
     expect(strings).toEqual(['optimized prompt 1', 'optimized prompt 2']);
   });
 

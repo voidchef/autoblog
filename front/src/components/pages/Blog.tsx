@@ -65,7 +65,7 @@ export default function Blog() {
               <meta property="og:type" content="article" />
               <meta property="og:title" content={currentBlogData.seoTitle} />
               <meta property="og:description" content={currentBlogData.seoDescription} />
-              <meta property="og:image" content={currentBlogData.selectedImage || `${AWS_BASEURL}/blogs/${currentBlogData.id}/1.img`} />
+              <meta property="og:image" content={currentBlogData.selectedImage} />
               <meta property="og:url" content={window.location.href} />
               <meta property="og:site_name" content="AutoBlog" />
               <meta property="article:author" content={currentBlogData.author?.name} />
@@ -80,7 +80,7 @@ export default function Blog() {
               <meta name="twitter:card" content="summary_large_image" />
               <meta name="twitter:title" content={currentBlogData.seoTitle} />
               <meta name="twitter:description" content={currentBlogData.seoDescription} />
-              <meta name="twitter:image" content={currentBlogData.selectedImage || `${AWS_BASEURL}/blogs/${currentBlogData.id}/1.img`} />
+              <meta name="twitter:image" content={currentBlogData.selectedImage} />
               
               {/* Additional SEO */}
               <meta name="keywords" content={currentBlogData.tags?.join(', ')} />
@@ -95,7 +95,7 @@ export default function Blog() {
                   "@type": "BlogPosting",
                   "headline": currentBlogData.title,
                   "description": currentBlogData.seoDescription,
-                  "image": currentBlogData.selectedImage || `${AWS_BASEURL}/blogs/${currentBlogData.id}/1.img`,
+                  "image": currentBlogData.selectedImage,
                   "author": {
                     "@type": "Person",
                     "name": currentBlogData.author?.name
@@ -141,7 +141,7 @@ export default function Blog() {
             </Box>
             <Box height={{ xs: '15rem', sm: '23rem' }} maxWidth={'100%'} display={'flex'} justifyContent={'center'}>
               <img
-                src={`${AWS_BASEURL}/blogs/${currentBlogData.id}/1.img`}
+                src={currentBlogData.selectedImage}
                 alt={currentBlogData.topic}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }}
               />

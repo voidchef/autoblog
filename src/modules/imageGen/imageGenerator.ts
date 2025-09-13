@@ -22,8 +22,6 @@ export interface GeneratedImage {
 
 /**
  * Image generator using OpenAI's DALL-E integration
- * Since LangChain doesn't directly expose DALL-E, we'll create a wrapper
- * that uses the text generation to create optimized prompts and simulates image generation
  */
 export class ImageGenerator {
   private llm: BaseChatModel;
@@ -50,8 +48,7 @@ export class ImageGenerator {
   }
 
   /**
-   * Generate an optimized image prompt and simulate image generation
-   * In a real implementation, this would call DALL-E API directly
+   * Generate an optimized image prompt and generate image
    */
   async generateImage(prompt: string): Promise<GeneratedImage> {
     try {
@@ -60,12 +57,12 @@ export class ImageGenerator {
       // Use LLM to create an optimized DALL-E prompt
       const optimizedPrompt = await this.optimizeImagePrompt(prompt);
 
-      // Simulate image generation using the DALL-E API wrapper
-      logger.info(`Simulating DALL-E image generation for: "${optimizedPrompt}"`);
+      // Generate image using the DALL-E API wrapper
+      logger.info(`Generate image using DALL-E: "${optimizedPrompt}"`);
 
       const imageURL = await this.tool.invoke(optimizedPrompt);
 
-      logger.debug('Image generation simulated successfully:', {
+      logger.debug('Image generated successfully:', {
         originalPrompt: prompt,
         optimizedPrompt: optimizedPrompt,
         url: imageURL,

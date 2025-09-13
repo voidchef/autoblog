@@ -81,7 +81,7 @@ const Footer = () => {
             020 7993 2905
           </Typography>
           <Typography variant="body1" color={'white'}>
-            hello@finsweet.com
+            hello@autoblog.com
           </Typography>
         </Box>
         <Box

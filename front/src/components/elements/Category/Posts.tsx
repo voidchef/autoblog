@@ -4,17 +4,15 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import AllTags from './Tags';
 import TablePagination from '@mui/material/TablePagination';
-import { useAppDispatch, useAppSelector } from '../../../utils/reduxHooks';
+import { useAppDispatch } from '../../../utils/reduxHooks';
 import { useGetBlogsByCategoryQuery } from '../../../services/blogApi';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
-import { AWS_BASEURL } from '../../../utils/consts';
 
 const AllPosts = ({ category }: { category: string }) => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
@@ -27,7 +25,7 @@ const AllPosts = ({ category }: { category: string }) => {
   };
 
   const { data: blogsData, isLoading } = useGetBlogsByCategoryQuery({
-    category,
+    category: category.charAt(0).toUpperCase() + category.slice(1).toLowerCase(),
     limit: rowsPerPage,
     page: page + 1, // RTK Query pages are 1-based
   });
@@ -55,7 +53,7 @@ const AllPosts = ({ category }: { category: string }) => {
                 <Grid size={{ xs: 12, sm: 6 }} key={index} onClick={() => handleClick(post.slug)}>
                   <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'} marginBottom={4}>
                     <img
-                      src={`${AWS_BASEURL}/blogs/${post.id}/1.img`}
+                      src={post.selectedImage}
                       alt={post.topic}
                       style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }}
                     />

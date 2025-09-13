@@ -1,9 +1,10 @@
-import { Box, Button } from '@mui/material';
+import { Box, Button, CircularProgress } from '@mui/material';
 
 interface ActionButtonsProps {
   isEditMode: boolean;
   isPublished: boolean;
   disabled?: boolean;
+  isLoading?: boolean;
   onReset: () => void;
   onUpdate: () => void;
   onOpenImagePicker: () => void;
@@ -14,6 +15,7 @@ export default function ActionButtons({
   isEditMode,
   isPublished,
   disabled = false,
+  isLoading = false,
   onReset,
   onUpdate,
   onOpenImagePicker,
@@ -32,9 +34,13 @@ export default function ActionButtons({
         type="submit" 
         variant="contained" 
         sx={{ width: { xs: '100%', sm: '15rem' }, m: 1 }}
-        disabled={disabled}
+        disabled={disabled || isLoading}
+        startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : undefined}
       >
-        {isEditMode ? 'Preview' : 'Generate'}
+        {isLoading 
+          ? 'Generating...' 
+          : (isEditMode ? 'Preview' : 'Generate')
+        }
       </Button>
       <Button 
         variant="contained" 

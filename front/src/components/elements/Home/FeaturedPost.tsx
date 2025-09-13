@@ -41,7 +41,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
               justifyContent={'center'}
             >
               <img
-                src={`${AWS_BASEURL}/blogs/${featuredBlogs[0].id}/1.img`}
+                src={featuredBlogs[0].selectedImage}
                 alt={featuredBlogs[0].topic}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }}
               />
