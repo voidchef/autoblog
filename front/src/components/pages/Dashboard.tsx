@@ -86,7 +86,7 @@ export default function Dashboard() {
             display="flex"
             justifyContent="space-between"
             alignItems="center"
-            mb={-4}
+            mb={2}
             sx={{ paddingRight: { sm: '3rem' } }}
           >
             <Typography component="h1" fontSize="1.3rem">
