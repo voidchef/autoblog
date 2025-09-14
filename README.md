@@ -277,7 +277,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Neelutpal Saha**
 - GitHub: [@voidchef](https://github.com/voidchef)
-- Email: neelutpal.saha@s.amity.edu
+- Email: neelutpalsaha44@gmail.com
 
 ## 🙏 Acknowledgments
 
