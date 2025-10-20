@@ -2,14 +2,15 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
-import { Typography } from '@mui/material';
+import { Typography, Paper, Divider } from '@mui/material';
 import Title from '../elements/Blog/Title';
 import { marked } from 'marked';
 import { useGetBlogQuery } from '../../services/blogApi';
 import { useAppSelector } from '../../utils/reduxHooks';
 import { Helmet } from 'react-helmet-async';
-import { AWS_BASEURL } from '../../utils/consts';
 import { useLocation, useParams } from 'react-router-dom';
+import BlogLikeDislike from '../elements/BlogLikeDislike';
+import CommentSection from '../elements/CommentSection';
 
 export default function Blog() {
   const location = useLocation();
@@ -41,7 +42,7 @@ export default function Blog() {
         display={'flex'}
         flexDirection={'column'}
         justifyContent={'space-between'}
-        sx={{ marginX: { xs: '1rem', sm: '25rem' } }}
+        sx={{ marginX: { xs: '1rem', sm: '22rem' } }}
       >
         {isLoading && !preview ? (
           <Box textAlign={'center'}>
@@ -149,6 +150,61 @@ export default function Blog() {
             <Typography component={'div'} fontSize={{ sx: '1rem', sm: '1.1rem' }} textAlign={'left'}>
               <div dangerouslySetInnerHTML={{ __html: marked(currentBlogData.content) }} />
             </Typography>
+
+            {/* Like/Dislike Section */}
+            <Box sx={{ my: 4 }}>
+              <Paper 
+                elevation={0} 
+                sx={{ 
+                  p: 3, 
+                  bgcolor: '#F5F6FA',
+                  borderRadius: 2,
+                  textAlign: 'center'
+                }}
+              >
+                <Typography 
+                  variant="h6" 
+                  gutterBottom 
+                  sx={{ 
+                    color: '#2C3E50',
+                    fontWeight: 600,
+                    mb: 2
+                  }}
+                >
+                  Was this article helpful?
+                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <BlogLikeDislike blog={currentBlogData} size="large" showCounts />
+                </Box>
+              </Paper>
+            </Box>
+
+            {/* Comment Section */}
+            <Box sx={{ my: 4 }}>
+              <Paper 
+                elevation={0} 
+                sx={{ 
+                  p: { xs: 2, sm: 3 },
+                  bgcolor: '#FFFFFF',
+                  borderRadius: 2,
+                  border: '1px solid #E0E0E0'
+                }}
+              >
+                <Typography 
+                  variant="h5" 
+                  gutterBottom 
+                  sx={{ 
+                    color: '#2C3E50',
+                    fontWeight: 600,
+                    mb: 3
+                  }}
+                >
+                  Comments
+                </Typography>
+                <Divider sx={{ mb: 3 }} />
+                <CommentSection blogId={currentBlogData.id} />
+              </Paper>
+            </Box>
           </Box>
         ) : (
           <Box textAlign={'center'}>

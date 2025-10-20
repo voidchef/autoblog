@@ -39,6 +39,23 @@
 - **Dark/Light Theme**: Toggle between dark and light modes
 - **Mobile Responsive**: Optimized for all device sizes
 
+### 💬 Social Engagement
+- **Comments System**: Full-featured commenting with nested replies
+  - Create, edit, and delete comments
+  - Nested comment threading for conversations
+  - User authentication and ownership validation
+  - Real-time updates with optimistic UI
+- **Like/Dislike**: Engagement features for blogs and comments
+  - Like/dislike blog posts
+  - Like/dislike individual comments
+  - Real-time count display
+  - Mutually exclusive actions (like removes dislike)
+- **Interactive UI**: Smooth, responsive user interactions
+  - Expandable/collapsible reply threads
+  - Inline editing and deletion
+  - Loading states and error handling
+  - Mobile-friendly touch interactions
+
 ## 🛠️ Tech Stack
 
 ### Backend
@@ -250,9 +267,16 @@ autoblog/
 ├── front/                        # Frontend React application
 │   ├── src/
 │   │   ├── components/           # React components
+│   │   │   ├── elements/         # Reusable UI elements
+│   │   │   │   ├── CommentSection.tsx   # Comment system (NEW)
+│   │   │   │   └── BlogLikeDislike.tsx  # Like/dislike buttons (NEW)
+│   │   │   └── pages/            # Page components
 │   │   ├── services/             # API services
-│   │   ├── utils/                # Utility functions
-│   │   └── reducers/             # Redux reducers
+│   │   │   ├── commentApi.ts     # Comment API (NEW)
+│   │   │   └── blogApi.ts        # Blog API (updated)
+│   │   ├── reducers/             # Redux reducers
+│   │   │   └── comment.ts        # Comment state (NEW)
+│   │   └── utils/                # Utility functions
 │   └── public/                   # Static assets
 ├── docs/                         # Documentation
 ├── docker-compose*.yml           # Docker configurations

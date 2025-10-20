@@ -2,6 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { Button, Grid, useTheme } from '@mui/material';
+import { ThumbUp, ThumbDown } from '@mui/icons-material';
 import { AWS_BASEURL } from '../../../utils/consts';
 import { IBlog } from '../../../reducers/blog';
 import { ROUTES } from '../../../utils/routing/routes';
@@ -68,6 +69,27 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
             >
               {`${featuredBlogs[0].content.slice(0, 255)}...`}
             </Typography>
+            
+            {/* Engagement Stats */}
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                gap: 2, 
+                mb: 2,
+                alignItems: 'center',
+                color: '#6D6E76'
+              }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <ThumbUp fontSize="small" />
+                <Typography variant="body2">{featuredBlogs[0].likes?.length || 0}</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <ThumbDown fontSize="small" />
+                <Typography variant="body2">{featuredBlogs[0].dislikes?.length || 0}</Typography>
+              </Box>
+            </Box>
+            
             <Button variant="contained" onClick={() => handleClick(featuredBlogs[0].slug)}>
               Read More {'>'}
             </Button>

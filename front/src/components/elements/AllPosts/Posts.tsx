@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TablePagination from '@mui/material/TablePagination';
+import { ThumbUp, ThumbDown, ChatBubbleOutline } from '@mui/icons-material';
 import { useGetBlogsQuery } from '../../../services/blogApi';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
@@ -73,6 +74,30 @@ const AllPosts = () => {
                   <Typography fontSize={{ sm: 18 }} component="div" sx={{ flexGrow: 1 }}>
                     {`${post.content.slice(0, 255)}...`}
                   </Typography>
+                  
+                  {/* Engagement Stats */}
+                  <Box 
+                    sx={{ 
+                      display: 'flex', 
+                      gap: 2, 
+                      mt: 2, 
+                      alignItems: 'center',
+                      color: '#6D6E76'
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <ThumbUp fontSize="small" sx={{ fontSize: '1rem' }} />
+                      <Typography variant="body2">{post.likes?.length || 0}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <ThumbDown fontSize="small" sx={{ fontSize: '1rem' }} />
+                      <Typography variant="body2">{post.dislikes?.length || 0}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <ChatBubbleOutline fontSize="small" sx={{ fontSize: '1rem' }} />
+                      <Typography variant="body2">Comments</Typography>
+                    </Box>
+                  </Box>
                 </Box>
               </Grid>
             ))}

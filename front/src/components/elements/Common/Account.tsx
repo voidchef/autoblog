@@ -12,19 +12,26 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BookIcon from '@mui/icons-material/Book';
 import { clearBlog } from '../../../reducers/blog';
 import { logoutUser } from '../../../reducers/auth';
-import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
+import { useAppDispatch } from '../../../utils/reduxHooks';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { AWS_BASEURL } from '../../../utils/consts';
+import { useAuth } from '../../../utils/hooks';
+import { stringAvatar } from '../../../utils/utils';
 
 export default function AccountMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  const user = useAppSelector((state) => state.user.userData);
+  const { user, isLoading } = useAuth();
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+  // Don't render if user data is not loaded yet
+  if (isLoading) {
+    return null;
+  }
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -40,33 +47,6 @@ export default function AccountMenu() {
     // Use the logoutUser thunk which handles everything
     await dispatch(logoutUser({ navigate }));
   };
-
-  function stringToColor(string: string) {
-    let hash = 0;
-    let i;
-
-    for (i = 0; i < string.length; i += 1) {
-      hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    let color = '#';
-
-    for (i = 0; i < 3; i += 1) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += `00${value.toString(16)}`.slice(-2);
-    }
-
-    return color;
-  }
-
-  function stringAvatar(name: string) {
-    return {
-      sx: {
-        bgcolor: stringToColor(name),
-      },
-      children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
-    };
-  }
 
   const handleCreatePost = () => {
     dispatch(clearBlog());

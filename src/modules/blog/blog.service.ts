@@ -148,3 +148,40 @@ export const getBlogViews = async (startDate: string, endDate: string, slug: str
   }
   return views;
 };
+
+/**
+ * Like a blog
+ * @param {mongoose.Types.ObjectId} blogId
+ * @param {mongoose.Types.ObjectId} userId
+ * @returns {Promise<IBlogDoc | null>}
+ */
+export const likeBlog = async (
+  blogId: mongoose.Types.ObjectId,
+  userId: mongoose.Types.ObjectId,
+): Promise<IBlogDoc | null> => {
+  const blog = await getBlogById(blogId);
+  if (!blog) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
+  }
+  await blog.toggleLike(userId);
+  return blog;
+};
+
+/**
+ * Dislike a blog
+ * @param {mongoose.Types.ObjectId} blogId
+ * @param {mongoose.Types.ObjectId} userId
+ * @returns {Promise<IBlogDoc | null>}
+ */
+export const dislikeBlog = async (
+  blogId: mongoose.Types.ObjectId,
+  userId: mongoose.Types.ObjectId,
+): Promise<IBlogDoc | null> => {
+  const blog = await getBlogById(blogId);
+  if (!blog) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
+  }
+  await blog.toggleDislike(userId);
+  return blog;
+};
+

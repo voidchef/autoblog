@@ -26,6 +26,8 @@ export type IBlog = {
   llmModel: string;
   generatedImages?: string[];
   selectedImage?: string;
+  likes: string[];
+  dislikes: string[];
   createdAt: Date;
   updatedAt: Date;
 };

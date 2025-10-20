@@ -151,3 +151,26 @@ export const generateRobots = catchAsync(async (req: Request, res: Response) => 
   res.set('Content-Type', 'text/plain');
   res.send(robotsTxt);
 });
+
+export const likeBlog = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+  if (typeof req.params['blogId'] === 'string') {
+    const blog = await blogService.likeBlog(
+      new mongoose.Types.ObjectId(req.params['blogId']),
+      user._id as mongoose.Types.ObjectId,
+    );
+    res.send(blog);
+  }
+});
+
+export const dislikeBlog = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+  if (typeof req.params['blogId'] === 'string') {
+    const blog = await blogService.dislikeBlog(
+      new mongoose.Types.ObjectId(req.params['blogId']),
+      user._id as mongoose.Types.ObjectId,
+    );
+    res.send(blog);
+  }
+});
+

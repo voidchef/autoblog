@@ -90,6 +90,18 @@ const blogSchema = new mongoose.Schema<IBlogDoc, IBlogModel>(
     selectedImage: {
       type: String,
     },
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    dislikes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     timestamps: true,
@@ -142,6 +154,54 @@ blogSchema.method('generateExcerpt', function (this: IBlogDoc, maxLength: number
   // If no good sentence break, cut at word boundary
   const lastSpace = excerpt.lastIndexOf(' ');
   return excerpt.substring(0, lastSpace) + '...';
+});
+
+/**
+ * Toggle like on blog
+ * @param {mongoose.Types.ObjectId} userId
+ */
+blogSchema.method('toggleLike', async function (this: IBlogDoc, userId: mongoose.Types.ObjectId): Promise<void> {
+  const userIdString = userId.toString();
+  const likeIndex = this.likes.findIndex((id) => id.toString() === userIdString);
+  const dislikeIndex = this.dislikes.findIndex((id) => id.toString() === userIdString);
+
+  // Remove from dislikes if present
+  if (dislikeIndex !== -1) {
+    this.dislikes.splice(dislikeIndex, 1);
+  }
+
+  // Toggle like
+  if (likeIndex === -1) {
+    this.likes.push(userId);
+  } else {
+    this.likes.splice(likeIndex, 1);
+  }
+
+  await this.save();
+});
+
+/**
+ * Toggle dislike on blog
+ * @param {mongoose.Types.ObjectId} userId
+ */
+blogSchema.method('toggleDislike', async function (this: IBlogDoc, userId: mongoose.Types.ObjectId): Promise<void> {
+  const userIdString = userId.toString();
+  const likeIndex = this.likes.findIndex((id) => id.toString() === userIdString);
+  const dislikeIndex = this.dislikes.findIndex((id) => id.toString() === userIdString);
+
+  // Remove from likes if present
+  if (likeIndex !== -1) {
+    this.likes.splice(likeIndex, 1);
+  }
+
+  // Toggle dislike
+  if (dislikeIndex === -1) {
+    this.dislikes.push(userId);
+  } else {
+    this.dislikes.splice(dislikeIndex, 1);
+  }
+
+  await this.save();
 });
 
 blogSchema.pre('save', async function (next) {

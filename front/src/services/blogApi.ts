@@ -36,6 +36,8 @@ export interface IBlog {
   llmModel: string;
   generatedImages?: string[];
   selectedImage?: string;
+  likes: string[];
+  dislikes: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -259,6 +261,74 @@ export const blogApi = api.injectEndpoints({
       providesTags: [{ type: 'Blog', id: 'SEARCH' }],
       keepUnusedDataFor: 60, // Keep search results for 1 minute
     }),
+
+    // Like a blog post
+    likeBlog: builder.mutation<IBlog, string>({
+      query: (blogId) => ({
+        url: `/blogs/${blogId}/like`,
+        method: 'POST',
+      }),
+      // Invalidate all blog-related tags to force refetch
+      async onQueryStarted(blogId, { dispatch, queryFulfilled }) {
+        try {
+          const { data: updatedBlog } = await queryFulfilled;
+          
+          // Update the cache for getBlog query (by slug)
+          dispatch(
+            blogApi.util.updateQueryData('getBlog', updatedBlog.slug, (draft) => {
+              draft.likes = updatedBlog.likes;
+              draft.dislikes = updatedBlog.dislikes;
+            }),
+          );
+          
+          // Also try to update by ID
+          dispatch(
+            blogApi.util.updateQueryData('getBlog', updatedBlog.id, (draft) => {
+              draft.likes = updatedBlog.likes;
+              draft.dislikes = updatedBlog.dislikes;
+            }),
+          );
+        } catch (error) {
+          // If update fails, invalidate to trigger refetch
+          console.error('Failed to update like cache:', error);
+        }
+      },
+      invalidatesTags: ['Blog', 'Draft'],
+    }),
+
+    // Dislike a blog post
+    dislikeBlog: builder.mutation<IBlog, string>({
+      query: (blogId) => ({
+        url: `/blogs/${blogId}/dislike`,
+        method: 'POST',
+      }),
+      // Invalidate all blog-related tags to force refetch
+      async onQueryStarted(blogId, { dispatch, queryFulfilled }) {
+        try {
+          const { data: updatedBlog } = await queryFulfilled;
+          
+          // Update the cache for getBlog query (by slug)
+          dispatch(
+            blogApi.util.updateQueryData('getBlog', updatedBlog.slug, (draft) => {
+              draft.likes = updatedBlog.likes;
+              draft.dislikes = updatedBlog.dislikes;
+            }),
+          );
+          
+          // Also try to update by ID
+          dispatch(
+            blogApi.util.updateQueryData('getBlog', updatedBlog.id, (draft) => {
+              draft.likes = updatedBlog.likes;
+              draft.dislikes = updatedBlog.dislikes;
+            }),
+          );
+        } catch (error) {
+          // If update fails, invalidate to trigger refetch
+          console.error('Failed to update dislike cache:', error);
+        }
+      },
+      invalidatesTags: ['Blog', 'Draft'],
+    }),
   }),
 });
 
@@ -279,6 +349,8 @@ export const {
   useDeleteBlogMutation,
   useBulkDeleteBlogsMutation,
   useSearchBlogsQuery,
+  useLikeBlogMutation,
+  useDislikeBlogMutation,
   useLazyGetBlogsQuery,
   useLazyGetFeaturedBlogsQuery,
   useLazyGetDraftBlogsQuery,

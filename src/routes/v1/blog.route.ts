@@ -29,6 +29,10 @@ router.route('/:blogId/publish').patch(auth('manageBlogs'), blogController.publi
 router.route('/:blogId/unpublish').patch(auth('manageBlogs'), blogController.unpublishBlog);
 router.route('/:blogId/toggle-featured').patch(auth('manageBlogs'), blogController.toggleFeatured);
 
+// Like and dislike routes
+router.route('/:blogId/like').post(auth(), blogController.likeBlog);
+router.route('/:blogId/dislike').post(auth(), blogController.dislikeBlog);
+
 export default router;
 
 /**

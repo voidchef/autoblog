@@ -7,6 +7,7 @@ import authReducer from './reducers/auth';
 import userReducer from './reducers/user';
 import blogReducer from './reducers/blog';
 import appSettingsReducer from './reducers/appSettings';
+import commentReducer from './reducers/comment';
 
 // Configure store with modern RTK approach
 const store = configureStore({
@@ -17,6 +18,7 @@ const store = configureStore({
     user: userReducer,
     blog: blogReducer,
     appSettings: appSettingsReducer,
+    comment: commentReducer,
     [api.reducerPath]: api.reducer,
   },
   middleware: (getDefaultMiddleware) =>
