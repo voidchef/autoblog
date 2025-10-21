@@ -121,11 +121,11 @@ const ShareButton: React.FC<ShareButtonProps> = ({ blog, size = 'medium' }) => {
           size={size}
           onClick={handleShare}
           sx={{
-            color: '#555FAC',
+            color: 'primary.main',
             '&:hover': {
               transform: 'scale(1.1)',
               transition: 'transform 0.2s',
-              bgcolor: 'rgba(85, 95, 172, 0.08)',
+              bgcolor: 'action.hover',
             },
           }}
         >
@@ -163,21 +163,21 @@ const ShareButton: React.FC<ShareButtonProps> = ({ blog, size = 'medium' }) => {
 
         <MenuItem onClick={handleShareTwitter}>
           <ListItemIcon>
-            <TwitterIcon fontSize="small" sx={{ color: '#1DA1F2' }} />
+            <TwitterIcon fontSize="small" sx={{ color: (theme) => theme.palette.customColors.social.twitter }} />
           </ListItemIcon>
           <ListItemText>Share on Twitter</ListItemText>
         </MenuItem>
 
         <MenuItem onClick={handleShareFacebook}>
           <ListItemIcon>
-            <FacebookIcon fontSize="small" sx={{ color: '#1877F2' }} />
+            <FacebookIcon fontSize="small" sx={{ color: (theme) => theme.palette.customColors.social.facebook }} />
           </ListItemIcon>
           <ListItemText>Share on Facebook</ListItemText>
         </MenuItem>
 
         <MenuItem onClick={handleShareLinkedIn}>
           <ListItemIcon>
-            <LinkedInIcon fontSize="small" sx={{ color: '#0A66C2' }} />
+            <LinkedInIcon fontSize="small" sx={{ color: (theme) => theme.palette.customColors.social.linkedin }} />
           </ListItemIcon>
           <ListItemText>Share on LinkedIn</ListItemText>
         </MenuItem>

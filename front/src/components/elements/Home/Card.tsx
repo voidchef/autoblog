@@ -4,9 +4,9 @@ import Typography from '@mui/material/Typography';
 import SpaceShip from '../../assets/spaceShip.svg?react';
 import SvgIcon from '@mui/material/SvgIcon';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import CardActionArea from '@mui/material/CardActionArea';
 import { useNavigate } from 'react-router-dom';
+import { ArrowForward } from '@mui/icons-material';
 
 interface Props {
   categoryId: string;
@@ -20,31 +20,133 @@ export default function CategoryCard({ categoryId, categoryIcon, categoryName, c
   const handleClick = (categoryName: string) => {
     navigate(`/category/${categoryName}`);
   };
+
   return (
-    <Card variant="outlined" sx={{ width: '200px', border: '2px solid #555FAC', borderRadius: 2 }}>
-      <CardActionArea>
-        <Grid
-          key={categoryId}
-          sx={{ display: 'flex', justifyContent: 'center' }}
-          onClick={() => handleClick(categoryName.toLocaleLowerCase())}
+    <Card
+      className="animate-fade-in-up"
+      sx={{
+        width: { xs: '280px', sm: '200px' },
+        height: '100%',
+        position: 'relative',
+        overflow: 'hidden',
+        background: (theme) =>
+          theme.palette.mode === 'dark'
+            ? theme.palette.customColors.gradients.cardDark
+            : theme.palette.customColors.gradients.cardLight,
+        border: '2px solid',
+        borderColor: (theme) => (theme.palette.mode === 'dark' ? theme.palette.customColors.borders.primaryDark : theme.palette.customColors.borders.primaryLight),
+        '&::before': {
+          content: '""',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: (theme) => theme.palette.customColors.gradients.iconLight,
+          opacity: 0,
+          transition: 'opacity 0.4s ease',
+        },
+        '&:hover::before': {
+          opacity: 1,
+        },
+        '&:hover': {
+          borderColor: 'primary.main',
+          transform: 'translateY(-8px) scale(1.02)',
+          boxShadow: (theme) => `0 20px 60px ${theme.palette.customColors.shadows.primary}`,
+          '& .category-icon': {
+            transform: 'scale(1.15) rotate(10deg)',
+            background: (theme) => theme.palette.customColors.gradients.iconDark,
+          },
+          '& .arrow-icon': {
+            opacity: 1,
+            transform: 'translateX(0) rotate(-45deg)',
+          },
+        },
+      }}
+    >
+      <CardActionArea onClick={() => handleClick(categoryName.toLocaleLowerCase())} sx={{ height: '100%' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            p: 3,
+            gap: 2,
+            minHeight: '220px',
+            position: 'relative',
+          }}
         >
           <Box
-            display={'flex'}
-            flexDirection={'column'}
-            justifyContent={'space-between'}
-            paddingX={1}
-            paddingY={4}
-            sx={{ gap: { xs: 1, sm: 1.5 } }}
+            className="category-icon"
+            sx={{
+              width: 90,
+              height: 90,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '50%',
+              background: (theme) => theme.palette.customColors.gradients.iconLight,
+              border: '3px solid',
+              borderColor: (theme) => (theme.palette.mode === 'dark' ? theme.palette.customColors.borders.primaryDarkHover : theme.palette.customColors.borders.primaryLightHover),
+              transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              position: 'relative',
+              boxShadow: (theme) => `0 8px 24px ${theme.palette.customColors.shadows.primaryLight}`,
+            }}
           >
-            <Box sx={{ textAlign: 'center' }}>
-              <SvgIcon /* component={category.categoryPicUrl} */ component={SpaceShip} inheritViewBox fontSize="large" />
-            </Box>
-            <Typography fontSize={{ xs: '1rem', sm: '1.5rem' }} fontWeight={450} color={'black'} textAlign={'center'}>
+            <SvgIcon
+              component={SpaceShip}
+              inheritViewBox
+              sx={{
+                fontSize: '3rem',
+                color: 'primary.main',
+                filter: (theme) => `drop-shadow(0 2px 8px ${theme.palette.customColors.shadows.primary})`,
+                transition: 'all 0.3s ease',
+              }}
+            />
+          </Box>
+
+          <Box sx={{ textAlign: 'center', flexGrow: 1 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 700,
+                fontSize: { xs: '1.1rem', sm: '1rem' },
+                mb: 1,
+                color: 'text.primary',
+              }}
+            >
               {categoryName}
             </Typography>
-            <Typography textAlign={'center'}>{categoryDescription}</Typography>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{
+                lineHeight: 1.6,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
+              {categoryDescription}
+            </Typography>
           </Box>
-        </Grid>
+
+          <ArrowForward
+            className="arrow-icon"
+            sx={{
+              position: 'absolute',
+              bottom: 16,
+              right: 16,
+              fontSize: '1.2rem',
+              color: 'primary.main',
+              opacity: 0,
+              transform: 'translateX(-10px)',
+              transition: 'all 0.3s ease',
+            }}
+          />
+        </Box>
       </CardActionArea>
     </Card>
   );

@@ -21,7 +21,6 @@ const CommentReplyForm: React.FC<CommentReplyFormProps> = ({ content, onContentC
           onChange={(e) => onContentChange(e.target.value)}
           sx={{
             mb: 1.5,
-            bgcolor: 'background.paper',
             '& .MuiOutlinedInput-root': {
               borderRadius: 2,
             },

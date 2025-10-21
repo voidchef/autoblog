@@ -3,7 +3,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { ThumbUp, ThumbDown } from '@mui/icons-material';
+import { Card, CardMedia, CardContent, Chip, Stack, Avatar, IconButton } from '@mui/material';
+import { ThumbUp, ThumbDown, AccessTime, ArrowForward } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { IBlog } from '../../../reducers/blog';
@@ -20,90 +21,286 @@ const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
   };
 
   return (
-    <React.Fragment>
-      <Box display="flex" flexDirection="row" justifyContent="space-between">
-        <Typography
-          variant="h2"
-          component="div"
-          fontSize={{ xs: '1.5rem', sm: '2rem' }}
-          fontWeight={500}
-          color="black"
-          marginBottom={2}
+    <Box sx={{ mb: 8 }}>
+      <Box
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 5, flexWrap: 'wrap', gap: 2 }}
+        className="animate-fade-in-up"
+      >
+        <Box>
+          <Chip
+            icon={<AccessTime sx={{ fontSize: '1.2rem', color: '#fff !important' }} />}
+            label="Latest Articles"
+            sx={{
+              mb: 3,
+              fontWeight: 700,
+              px: 2.5,
+              py: 2.5,
+              fontSize: '0.95rem',
+              background: (theme) => theme.palette.customColors.gradients.primaryReverse,
+              color: 'white',
+              border: 'none',
+              boxShadow: (theme) => `0 4px 16px ${theme.palette.customColors.shadows.secondary}`,
+              '&:hover': {
+                boxShadow: (theme) => `0 6px 24px ${theme.palette.customColors.shadows.secondaryHeavy}`,
+              },
+              '& .MuiChip-icon': {
+                color: '#fff !important',
+              },
+            }}
+          />
+          <Typography
+            variant="h2"
+            component="h2"
+            sx={{
+              fontSize: { xs: '2.25rem', md: '3rem' },
+              fontWeight: 900,
+              background: (theme) =>
+                theme.palette.mode === 'dark'
+                  ? theme.palette.customColors.gradients.textDarkSecondary
+                  : theme.palette.customColors.gradients.textLightSecondary,
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              letterSpacing: '-0.02em',
+            }}
+          >
+            Recent Posts
+          </Typography>
+        </Box>
+        <Button
+          variant="outlined"
+          endIcon={<ArrowForward />}
+          onClick={() => navigate(ROUTES.ALLPOSTS)}
+          sx={{
+            display: { xs: 'none', sm: 'flex' },
+            borderWidth: 2,
+            borderColor: (theme) => (theme.palette.mode === 'dark' ? 'primary.main' : 'secondary.main'),
+            color: (theme) => (theme.palette.mode === 'dark' ? 'primary.main' : 'secondary.main'),
+            px: 3,
+            py: 1.5,
+            fontSize: '1rem',
+            fontWeight: 700,
+            borderRadius: 3,
+            '&:hover': {
+              borderWidth: 2,
+              background: (theme) => (theme.palette.mode === 'dark' ? 'primary.main' : 'secondary.main'),
+              color: 'white',
+              transform: 'translateY(-2px)',
+              boxShadow: (theme) =>
+                theme.palette.mode === 'dark' ? `0 8px 24px ${theme.palette.customColors.shadows.primary}` : `0 8px 24px ${theme.palette.customColors.shadows.secondary}`,
+            },
+          }}
         >
-          Recent Posts
-        </Typography>
-        <Button variant="text" onClick={() => navigate(ROUTES.ALLPOSTS)}>
           View All
         </Button>
       </Box>
-      <Grid
-        container
-        sx={{
-          justifyContent: 'space-between',
-          alignContent: 'space-between',
-          gap: { xs: 3, sm: 5 },
-          padding: { xs: 2, sm: 5 },
-        }}
-      >
+
+      <Grid container spacing={3}>
         {recentBlogs.map((post, index) => (
-          <Grid size={{ xs: 12, sm: 5.55 }} key={index} onClick={() => handleClick(post.slug)}>
-            <Box
-              sx={{ p: 1 }}
-              height={{ xs: '15rem', sm: '18rem' }}
-              maxWidth={'100%'}
-              display={'flex'}
-              justifyContent={'center'}
-              marginBottom={4}
+          <Grid size={{ xs: 12, sm: 6, md: 6 }} key={index}>
+            <Card
+              className="animate-fade-in-up"
+              sx={{
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                cursor: 'pointer',
+                position: 'relative',
+                overflow: 'hidden',
+                background: (theme) =>
+                  theme.palette.mode === 'dark'
+                    ? theme.palette.customColors.gradients.cardDark
+                    : theme.palette.customColors.gradients.cardLight,
+                border: '2px solid',
+                borderColor: (theme) =>
+                  theme.palette.mode === 'dark' ? theme.palette.customColors.borders.secondaryDark : theme.palette.customColors.borders.secondaryLight,
+                transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                '&:hover': {
+                  borderColor: 'secondary.main',
+                  transform: 'translateY(-8px)',
+                  boxShadow: (theme) => `0 20px 60px ${theme.palette.customColors.shadows.secondary}`,
+                  '& .recent-post-image': {
+                    transform: 'scale(1.1)',
+                  },
+                },
+              }}
+              onClick={() => handleClick(post.slug)}
             >
-              <img
-                src={post.selectedImage}
-                alt={post.topic}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }}
-              />
-            </Box>
-            <Box sx={{ my: 4 }} />
-            <Box display={'flex'} flexDirection={'column'} justifyContent={'space-between'}>
-              <Typography fontSize={{ sm: 15 }} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
-                By <span style={{ color: '#555FAC' }}>{post.author.name}</span> |{' '}
-                <span style={{ color: '#6D6E76' }}>
-                  {new Date(post.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </span>
-              </Typography>
-              <Typography fontSize={{ sm: 22 }} fontWeight={500} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
-                {post.topic}
-              </Typography>
-              <Typography fontSize={{ sm: 18 }} component="div" sx={{ flexGrow: 1 }}>
-                {`${post.content.slice(0, 255)}...`}
-              </Typography>
-              
-              {/* Engagement Stats */}
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  gap: 2, 
-                  mt: 2, 
-                  alignItems: 'center',
-                  color: '#6D6E76'
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <ThumbUp fontSize="small" sx={{ fontSize: '1rem' }} />
-                  <Typography variant="body2">{post.likes?.length || 0}</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <ThumbDown fontSize="small" sx={{ fontSize: '1rem' }} />
-                  <Typography variant="body2">{post.dislikes?.length || 0}</Typography>
-                </Box>
+              <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+                <CardMedia
+                  component="img"
+                  className="recent-post-image"
+                  image={post.selectedImage}
+                  alt={post.topic}
+                  sx={{
+                    transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+                    height: 350,
+                  }}
+                />
+                {post.category && (
+                  <Chip
+                    label={post.category}
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: 8,
+                      left: 8,
+                      background: (theme) => theme.palette.customColors.gradients.primaryReverse,
+                      color: 'white',
+                      backdropFilter: 'blur(10px)',
+                      fontWeight: 700,
+                      fontSize: '0.65rem',
+                      height: '20px',
+                      boxShadow: (theme) => `0 2px 8px ${theme.palette.customColors.shadows.secondary}`,
+                    }}
+                  />
+                )}
               </Box>
-            </Box>
+
+              <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', py: 1.25, px: 1.75 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 0.75 }}>
+                  <Avatar
+                    sx={{
+                      width: 24,
+                      height: 24,
+                      bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'primary.main' : 'secondary.main'),
+                      fontSize: '0.7rem',
+                      fontWeight: 600,
+                    }}
+                  >
+                    {post.author.name}
+                  </Avatar>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Typography variant="body2" fontWeight={600} fontSize="0.75rem">
+                      {post.author.name}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" fontSize="0.65rem">
+                      {new Date(post.createdAt).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Typography
+                  variant="h6"
+                  component="h3"
+                  gutterBottom
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: { xs: '0.95rem', md: '1rem' },
+                    lineHeight: 1.3,
+                    mb: 0.75,
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                  }}
+                >
+                  {post.title || post.topic}
+                </Typography>
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    mb: 1,
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    lineHeight: 1.4,
+                    fontSize: '0.8rem',
+                  }}
+                >
+                  {post.excerpt}
+                </Typography>
+
+                <Box sx={{ mt: 'auto' }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      pt: 0.75,
+                      borderTop: '1px solid',
+                      borderColor: 'divider',
+                    }}
+                  >
+                    <Stack direction="row" spacing={1}>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.3,
+                          color: 'text.secondary',
+                        }}
+                      >
+                        <ThumbUp sx={{ fontSize: '0.8rem' }} />
+                        <Typography variant="caption" fontWeight={500} fontSize="0.65rem">
+                          {post.likes?.length || 0}
+                        </Typography>
+                      </Box>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 0.3,
+                          color: 'text.secondary',
+                        }}
+                      >
+                        <ThumbDown sx={{ fontSize: '0.8rem' }} />
+                        <Typography variant="caption" fontWeight={500} fontSize="0.65rem">
+                          {post.dislikes?.length || 0}
+                        </Typography>
+                      </Box>
+                    </Stack>
+
+                    <IconButton
+                      size="small"
+                      sx={{
+                        bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'primary.main' : 'secondary.main'),
+                        color: 'white',
+                        width: 26,
+                        height: 26,
+                        '&:hover': {
+                          bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'primary.dark' : 'secondary.dark'),
+                        },
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClick(post.slug);
+                      }}
+                    >
+                      <ArrowForward sx={{ fontSize: '0.85rem' }} />
+                    </IconButton>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
           </Grid>
         ))}
       </Grid>
-    </React.Fragment>
+
+      {/* Mobile View All Button */}
+      <Box sx={{ display: { xs: 'flex', sm: 'none' }, justifyContent: 'center', mt: 4 }}>
+        <Button
+          variant="outlined"
+          endIcon={<ArrowForward />}
+          onClick={() => navigate(ROUTES.ALLPOSTS)}
+          fullWidth
+          sx={{
+            borderWidth: 2,
+            '&:hover': {
+              borderWidth: 2,
+            },
+          }}
+        >
+          View All Posts
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

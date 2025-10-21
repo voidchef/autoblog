@@ -41,7 +41,6 @@ const NewCommentForm: React.FC<NewCommentFormProps> = ({ comment, isCreating, on
             mb: 2,
             '& .MuiOutlinedInput-root': {
               borderRadius: 2,
-              bgcolor: 'background.default',
             },
           }}
         />

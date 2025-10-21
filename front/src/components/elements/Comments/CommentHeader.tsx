@@ -55,8 +55,8 @@ const CommentHeader: React.FC<CommentHeaderProps> = ({
           sx={{
             transition: 'all 0.2s',
             '&:hover': {
-              bgcolor: 'primary.light',
-              color: 'white',
+              bgcolor: 'action.hover',
+              color: 'primary.main',
             },
           }}
         >

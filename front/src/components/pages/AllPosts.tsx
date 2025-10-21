@@ -12,8 +12,12 @@ export default function Category() {
         display={'flex'}
         flexDirection={'column'}
         justifyContent={'space-between'}
-        sx={{ gap: { xs: 2, sm: 5 } }}
-        bgcolor={'#E9EAF4'}
+        sx={{ 
+          gap: { xs: 2, sm: 5 },
+          bgcolor: (theme) => theme.palette.mode === 'dark' 
+            ? theme.palette.background.default
+            : theme.palette.customColors.pageBackground.light,
+        }}
       >
         <NavBar />
         <Title />

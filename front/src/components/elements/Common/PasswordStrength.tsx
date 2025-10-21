@@ -56,19 +56,19 @@ const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password }) => {
 
     if (score < 25) {
       strength = 'Very Weak';
-      color = '#ff1744';
+      color = 'error.dark';
     } else if (score < 50) {
       strength = 'Weak';
-      color = '#ff5722';
+      color = 'error.main';
     } else if (score < 75) {
       strength = 'Fair';
-      color = '#ff9800';
+      color = 'warning.main';
     } else if (score < 100) {
       strength = 'Good';
-      color = '#2196f3';
+      color = 'info.main';
     } else {
       strength = 'Strong';
-      color = '#4caf50';
+      color = 'success.main';
     }
 
     return { score: Math.min(score, 100), strength, color, feedback };

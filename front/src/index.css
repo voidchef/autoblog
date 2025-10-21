@@ -1,0 +1,300 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Enhanced Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+}
+
+::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, #fafbfc 0%, #f1f5f9 100%);
+  border-radius: 10px;
+  margin: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #1d4ed8 0%, #0d9488 70%, #0d9488 100%);
+  border-radius: 10px;
+  border: 2px solid #fafbfc;
+  transition: all 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #1e3a8a 0%, #0f766e 70%, #0f766e 100%);
+  border-color: #e2e8f0;
+  transform: scale(1.05);
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: linear-gradient(180deg, #0a0e1a 0%, #131827 100%);
+  border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #1d4ed8 0%, #0d9488 70%, #3b82f6 100%);
+  border-color: #0a0e1a;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #3b82f6 0%, #14b8a6 70%, #60a5fa 100%);
+  border-color: #131827;
+}
+
+/* Enhanced Selection Styling with Gradient */
+::selection {
+  background: linear-gradient(135deg, rgba(29, 78, 216, 0.4) 0%, rgba(13, 148, 136, 0.4) 100%);
+  color: inherit;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+::-moz-selection {
+  background: linear-gradient(135deg, rgba(29, 78, 216, 0.4) 0%, rgba(13, 148, 136, 0.4) 100%);
+  color: inherit;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced Global Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(5deg);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(29, 78, 216, 0.4), 0 0 40px rgba(13, 148, 136, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(29, 78, 216, 0.6), 0 0 80px rgba(13, 148, 136, 0.45);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Enhanced Utility Classes */
+.animate-fade-in {
+  animation: fadeIn 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #1d4ed8 0%, #0d9488 50%, #3b82f6 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 5s ease infinite;
+}
+
+/* Enhanced Focus Visible Styling */
+*:focus-visible {
+  outline: 3px solid #1d4ed8;
+  outline-offset: 3px;
+  border-radius: 8px;
+  box-shadow: 0 0 0 6px rgba(29, 78, 216, 0.2);
+}
+
+/* Image Loading Optimization */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+img:hover {
+  transform: scale(1.02);
+  filter: brightness(1.05);
+}
+
+/* Link Styling */
+a {
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced Smooth Transitions */
+button, a, input, textarea, select {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Glassmorphism Effect */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.dark .glass-effect {
+  background: rgba(19, 24, 39, 0.7);
+  border: 1px solid rgba(29, 78, 216, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Print Styles */
+@media print {
+  body {
+    background: white !important;
+  }
+  
+  nav, footer, button, .no-print {
+    display: none !important;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

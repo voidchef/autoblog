@@ -79,7 +79,7 @@ export default function AccountMenu() {
           elevation: 0,
           sx: {
             overflow: 'visible',
-            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+            filter: (theme) => `drop-shadow(0px 2px 8px ${theme.palette.customColors.overlay.black.light})`,
             mt: 1.5,
             '& .MuiAvatar-root': {
               width: 32,
@@ -105,7 +105,7 @@ export default function AccountMenu() {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <Box bgcolor={'#ECE9F1'} width={'17rem'} height={'11rem'} marginTop={'-8px'}>
+        <Box bgcolor={(theme) => theme.palette.customColors.pageBackground.grayLight} width={'17rem'} height={'11rem'} marginTop={'-8px'}>
           <img
             src={`${AWS_BASEURL}/background.png`}
             alt="profile background"

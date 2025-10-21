@@ -15,6 +15,7 @@ export type IBlog = {
   };
   readingTime: number;
   content: string;
+  excerpt?: string;
   category: string;
   tags?: string[];
   isFeatured: boolean;

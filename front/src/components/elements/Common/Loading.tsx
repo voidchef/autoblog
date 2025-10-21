@@ -14,7 +14,7 @@ export default function SimpleBackdrop() {
   };
 
   return (
-    <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open} onClick={handleClose}>
+    <Backdrop sx={{ color: 'white', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open} onClick={handleClose}>
       <CircularProgress color="inherit" />
     </Backdrop>
   );

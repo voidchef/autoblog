@@ -50,8 +50,8 @@ const CommentActions: React.FC<CommentActionsProps> = ({
             color: hasLiked ? 'primary.main' : 'text.secondary',
             transition: 'all 0.2s',
             '&:hover': {
-              bgcolor: 'primary.light',
-              color: 'white',
+              bgcolor: 'action.hover',
+              color: 'primary.main',
               transform: 'scale(1.1)',
             },
           }}
@@ -77,8 +77,8 @@ const CommentActions: React.FC<CommentActionsProps> = ({
             color: hasDisliked ? 'error.main' : 'text.secondary',
             transition: 'all 0.2s',
             '&:hover': {
-              bgcolor: 'error.light',
-              color: 'white',
+              bgcolor: 'action.hover',
+              color: 'error.main',
               transform: 'scale(1.1)',
             },
           }}
@@ -106,8 +106,7 @@ const CommentActions: React.FC<CommentActionsProps> = ({
             fontWeight: 500,
             transition: 'all 0.2s',
             '&:hover': {
-              bgcolor: 'primary.light',
-              color: 'white',
+              bgcolor: 'action.hover',
             },
           }}
         >

@@ -32,7 +32,7 @@ export default function Category() {
         flexDirection={'column'}
         justifyContent={'space-between'}
         sx={{ gap: { xs: 2, sm: 5 } }}
-        bgcolor={'#E9EAF4'}
+        bgcolor={(theme) => theme.palette.customColors.pageBackground.light}
       >
         <NavBar />
         {category && <Title category={category} />}

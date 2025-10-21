@@ -28,8 +28,12 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, color, grad
         borderRadius: 3,
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         border: '1px solid',
-        borderColor: 'divider',
-        background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)',
+        borderColor: (theme) => theme.palette.mode === 'dark' 
+          ? theme.palette.customColors.borders.primaryDark 
+          : 'divider',
+        background: (theme) => theme.palette.mode === 'dark'
+          ? theme.palette.customColors.gradients.cardDark
+          : 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)',
         backdropFilter: 'blur(10px)',
         '&:hover': {
           transform: 'translateY(-8px) scale(1.02)',
@@ -194,7 +198,9 @@ export default function EngagementMetrics() {
             component="h2" 
             fontWeight="bold"
             sx={{
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: (theme) => theme.palette.mode === 'dark'
+                ? theme.palette.customColors.gradients.textDark
+                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',

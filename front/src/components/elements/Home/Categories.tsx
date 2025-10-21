@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Box from '@mui/material/Box';
-import { IconButton, Typography } from '@mui/material';
+import { IconButton, Typography, Chip, Paper } from '@mui/material';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { Category as CategoryIcon } from '@mui/icons-material';
 import Slide from '@mui/material/Slide';
 import Stack from '@mui/material/Stack';
 import Card from './Card';
@@ -38,45 +39,109 @@ function Carousel() {
   };
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" width={'100%'}>
-      <Typography
-        fontSize={{ xs: '1.75rem', sm: '2.25rem' }}
-        component="div"
-        sx={{ flexGrow: 1, textAlign: 'center', marginBottom: { xs: '1rem', sm: '2rem' } }}
-        color={'black'}
-      >
-        Choose a Category
-      </Typography>
+    <Box
+      sx={{
+        py: 6,
+        px: 2,
+      }}
+    >
+      <Box sx={{ textAlign: 'center', mb: 5 }}>
+        <Chip
+          icon={<CategoryIcon sx={{ color: 'white' }} />}
+          label="Explore Topics"
+          sx={{ 
+            mb: 2, 
+            fontWeight: 700, 
+            px: 2.5,
+            py: 2.5,
+            fontSize: '0.95rem',
+            background: (theme) => theme.palette.customColors.gradients.primary,
+            color: 'white',
+            border: 'none',
+            boxShadow: (theme) => `0 4px 16px ${theme.palette.customColors.shadows.primary}`,
+            '&:hover': {
+              boxShadow: (theme) => `0 6px 24px ${theme.palette.customColors.shadows.primaryHeavy}`,
+            },
+            '& .MuiChip-icon': {
+              color: 'white',
+            },
+          }}
+        />
+        <Typography
+          variant="h2"
+          component="h2"
+          sx={{
+            fontSize: { xs: '2.25rem', md: '3rem' },
+            fontWeight: 900,
+            mb: 2,
+            background: (theme) =>
+              theme.palette.mode === 'dark'
+                ? theme.palette.customColors.gradients.textDarkAlt
+                : theme.palette.customColors.gradients.textLightAlt,
+            backgroundClip: 'text',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            letterSpacing: '-0.02em',
+          }}
+        >
+          Choose a Category
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          Browse through our diverse collection of topics
+        </Typography>
+      </Box>
+
       <Box
         sx={{
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          alignContent: 'center',
           justifyContent: 'center',
+          gap: 2,
         }}
-        width={'100%'}
       >
-        <IconButton onClick={() => handlePageChange('prev')} sx={{ margin: 1 }} disabled={currentPage === 0}>
+        <IconButton
+          onClick={() => handlePageChange('prev')}
+          disabled={currentPage === 0}
+          sx={{
+            bgcolor: (theme) => theme.palette.mode === 'dark' ? `${theme.palette.customColors.accent.blue.main}26` : 'background.paper',
+            boxShadow: 2,
+            border: '1px solid',
+            borderColor: (theme) => theme.palette.mode === 'dark' ? 'primary.main' : theme.palette.customColors.borders.primaryLightHover,
+            '&:hover': {
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              transform: 'scale(1.1)',
+            },
+            '&:disabled': {
+              bgcolor: 'action.disabledBackground',
+              opacity: 0.5,
+            },
+            transition: 'all 0.3s ease',
+          }}
+        >
           <NavigateBeforeIcon />
         </IconButton>
-        <Box>
+
+        <Box sx={{ flexGrow: 1, maxWidth: '1200px' }}>
           {categories.map((category: ICategory, index: number) => (
             <Box
               key={`card-${index}`}
               sx={{
                 width: '100%',
-                height: '100%',
                 display: currentPage === index ? 'block' : 'none',
               }}
             >
               <Slide direction={slideDirection} in={currentPage === index}>
                 <Stack
-                  spacing={5}
+                  spacing={{ xs: 2, sm: 3 }}
                   direction="row"
                   alignContent="center"
                   justifyContent="center"
-                  sx={{ width: '100%', height: '100%' }}
+                  sx={{
+                    width: '100%',
+                    px: 2,
+                  }}
                 >
                   {categories
                     .slice(currentPage * cardsPerPage, (currentPage + 1) * cardsPerPage)
@@ -94,12 +159,26 @@ function Carousel() {
             </Box>
           ))}
         </Box>
+
         <IconButton
           onClick={() => handlePageChange('next')}
-          sx={{
-            margin: 1,
-          }}
           disabled={currentPage >= Math.ceil((categories.length || 0) / cardsPerPage) - 1}
+          sx={{
+            bgcolor: (theme) => theme.palette.mode === 'dark' ? `${theme.palette.customColors.accent.blue.main}26` : 'background.paper',
+            boxShadow: 2,
+            border: '1px solid',
+            borderColor: (theme) => theme.palette.mode === 'dark' ? 'primary.main' : theme.palette.customColors.borders.primaryLightHover,
+            '&:hover': {
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              transform: 'scale(1.1)',
+            },
+            '&:disabled': {
+              bgcolor: 'action.disabledBackground',
+              opacity: 0.5,
+            },
+            transition: 'all 0.3s ease',
+          }}
         >
           <NavigateNextIcon />
         </IconButton>

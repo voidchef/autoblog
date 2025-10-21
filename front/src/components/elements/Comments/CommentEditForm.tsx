@@ -20,7 +20,6 @@ const CommentEditForm: React.FC<CommentEditFormProps> = ({ content, onContentCha
           onChange={(e) => onContentChange(e.target.value)}
           sx={{
             mb: 1.5,
-            bgcolor: 'background.paper',
             '& .MuiOutlinedInput-root': {
               borderRadius: 2,
             },

@@ -15,9 +15,11 @@ import Button from '@mui/material/Button';
 import Account from './Account';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
-import { useAuth } from '../../../utils/hooks';
+import { useAuth, useTheme } from '../../../utils/hooks';
 import DarkMode from './DarkMode';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
+import { AutoAwesome } from '@mui/icons-material';
+import { Theme } from '@mui/material/styles';
 
 interface Props {
   /**
@@ -36,6 +38,7 @@ export default function DrawerAppBar(props: Props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   const { isAuthenticated } = useAuth();
+  const { themeMode } = useTheme();
 
   const navigate = useNavigate();
 
@@ -73,31 +76,113 @@ export default function DrawerAppBar(props: Props) {
       target: window ? window() : undefined,
     });
 
+    const bgColor = themeMode === 'dark' 
+      ? trigger ? (theme: Theme) => theme.palette.customColors.bgDark.tertiary + 'cc' : 'rgba(15, 23, 42, 0)'
+      : trigger ? (theme: Theme) => theme.palette.customColors.overlay.white.almostOpaque : 'rgba(255, 255, 255, 0)';
+
     return React.cloneElement(children, {
       elevation: trigger ? 2 : 0,
       sx: {
-        backgroundColor: trigger ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0)',
-        backdropFilter: trigger ? 'blur(5px)' : 'blur(0px)',
-        transition: '0.3s',
+        backgroundColor: bgColor,
+        backdropFilter: trigger ? 'blur(12px)' : 'blur(0px)',
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        borderBottom: trigger ? '1px solid' : 'none',
+        borderColor: themeMode === 'dark' 
+          ? (theme: Theme) => theme.palette.customColors.borders.primaryDark 
+          : (theme: Theme) => theme.palette.customColors.borders.primaryLight,
       },
     });
   }
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
-      <Typography variant="h6" sx={{ my: 2 }} onClick={() => navigate(ROUTES.ROOT)}>
-        AUTOBLOG
-      </Typography>
-      <Divider />
-      <List>
-        {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
-            <ListItemButton sx={{ textAlign: 'center' }} onClick={() => handleNavigation(item)}>
-              <ListItemText primary={item} />
+    <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center', height: '100%' }}>
+      <Box 
+        sx={{ 
+          my: 3, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          gap: 1.5,
+          cursor: 'pointer',
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            transform: 'scale(1.05)',
+          }
+        }} 
+        onClick={() => navigate(ROUTES.ROOT)}
+      >
+        <Box
+          sx={{
+            background: (theme) => theme.palette.customColors.gradients.primary,
+            borderRadius: '12px',
+            p: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: (theme) => `0 4px 12px ${theme.palette.customColors.shadows.primary}`,
+          }}
+        >
+          <AutoAwesome sx={{ color: 'white', fontSize: '1.5rem' }} />
+        </Box>
+        <Typography 
+          variant="h6" 
+          className="gradient-text"
+          sx={{ 
+            fontWeight: 800,
+            letterSpacing: '0.05em',
+          }}
+        >
+          AUTOBLOG
+        </Typography>
+      </Box>
+      <Divider sx={{ mx: 2, opacity: 0.3 }} />
+      <List sx={{ px: 1 }}>
+        {navItems.map((item, index) => (
+          <ListItem key={item} disablePadding sx={{ mb: 0.5 }}>
+            <ListItemButton 
+              sx={{ 
+                textAlign: 'center',
+                py: 1.5,
+                borderRadius: '12px',
+                position: 'relative',
+                overflow: 'hidden',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  background: (theme) => theme.palette.customColors.gradients.primary,
+                  opacity: 0,
+                  transition: 'opacity 0.3s ease',
+                },
+                '&:hover': {
+                  '&::before': {
+                    opacity: 1,
+                  },
+                  '& .MuiListItemText-primary': {
+                    color: 'white',
+                    position: 'relative',
+                    zIndex: 1,
+                  }
+                }
+              }} 
+              onClick={() => handleNavigation(item)}
+            >
+              <ListItemText 
+                primary={item} 
+                primaryTypographyProps={{ 
+                  fontWeight: 600,
+                  fontSize: '1rem',
+                }}
+              />
             </ListItemButton>
           </ListItem>
         ))}
-        <DarkMode />
+        <ListItem sx={{ justifyContent: 'center', mt: 2 }}>
+          <DarkMode />
+        </ListItem>
       </List>
     </Box>
   );
@@ -105,12 +190,24 @@ export default function DrawerAppBar(props: Props) {
   const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
-    <Box sx={{ display: 'flex', my: 2 }}>
+    <Box sx={{ display: 'flex'}}>
       <ElevationScroll {...props}>
         <AppBar component="nav" color="transparent" elevation={0}>
-          <Toolbar>
-            <Box width={'100%'} display={{ sm: 'none', xs: 'flex' }} justifyContent={'space-between'}>
-              <IconButton color="inherit" aria-label="open drawer" edge="start" onClick={handleDrawerToggle} sx={{ mr: 2 }}>
+          <Toolbar sx={{ py: 1 }}>
+            <Box width={'100%'} display={{ sm: 'none', xs: 'flex' }} justifyContent={'space-between'} alignItems={'center'}>
+              <IconButton 
+                color="primary" 
+                aria-label="open drawer" 
+                edge="start" 
+                onClick={handleDrawerToggle} 
+                sx={{ 
+                  mr: 2,
+                  '&:hover': {
+                    backgroundColor: 'primary.main',
+                    color: 'primary.contrastText',
+                  }
+                }}
+              >
                 <MenuIcon />
               </IconButton>
               {isAuthenticated ? (
@@ -118,36 +215,117 @@ export default function DrawerAppBar(props: Props) {
               ) : (
                 <Button
                   variant={'contained'}
-                  sx={{ backgroundColor: '#320D9A', color: 'white' }}
                   onClick={() => handleNavigation('Log In')}
                 >
                   Log In
                 </Button>
               )}
             </Box>
-            <Typography
-              variant="h6"
-              component="div"
-              color={'primary'}
-              sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+            <Box 
+              sx={{ 
+                flexGrow: 1, 
+                display: { xs: 'none', sm: 'flex' }, 
+                alignItems: 'center',
+                gap: 1.5,
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  transform: 'scale(1.02)',
+                }
+              }}
               onClick={() => navigate(ROUTES.ROOT)}
             >
-              AUTOBLOG
-            </Typography>
-            <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 2 }}>
+              <Box
+                sx={{
+                  background: (theme) => theme.palette.customColors.gradients.primary,
+                  borderRadius: '14px',
+                  p: 1.2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: (theme) => `0 4px 16px ${theme.palette.customColors.shadows.primary}`,
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    boxShadow: (theme) => `0 6px 24px ${theme.palette.customColors.shadows.primaryHeavy}`,
+                  }
+                }}
+              >
+                <AutoAwesome sx={{ color: 'white', fontSize: '1.75rem' }} />
+              </Box>
+              <Typography
+                variant="h5"
+                component="div"
+                className="gradient-text"
+                sx={{ 
+                  fontWeight: 800,
+                  letterSpacing: '0.05em',
+                }}
+              >
+                AUTOBLOG
+              </Typography>
+            </Box>
+            <Box sx={{ display: { xs: 'none', sm: 'flex' }, gap: 0.5, alignItems: 'center' }}>
               <DarkMode />
               {navItems.map((item) => (
-                <Button key={item} variant={'text'} sx={{ color: '#320D9A' }} onClick={() => handleNavigation(item)}>
+                <Button 
+                  key={item} 
+                  variant={'text'} 
+                  sx={{ 
+                    color: 'text.primary',
+                    fontWeight: 600,
+                    px: 2.5,
+                    py: 1,
+                    borderRadius: '12px',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    '&::before': {
+                      content: '""',
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      background: (theme) => theme.palette.customColors.gradients.primary,
+                      opacity: 0,
+                      transition: 'opacity 0.3s ease',
+                    },
+                    '&:hover': {
+                      color: 'white',
+                      transform: 'translateY(-2px)',
+                      '&::before': {
+                        opacity: 1,
+                      },
+                    },
+                    '& span': {
+                      position: 'relative',
+                      zIndex: 1,
+                    }
+                  }} 
+                  onClick={() => handleNavigation(item)}
+                >
                   {item}
                 </Button>
               ))}
               {isAuthenticated ? (
-                <Account />
+                <Box sx={{ ml: 1 }}>
+                  <Account />
+                </Box>
               ) : (
                 <Button
                   variant={'contained'}
-                  sx={{ backgroundColor: '#320D9A', color: 'white' }}
                   onClick={() => handleNavigation('Log In')}
+                  sx={{ 
+                    ml: 1,
+                    px: 3,
+                    py: 1.2,
+                    background: (theme) => theme.palette.customColors.gradients.primary,
+                    boxShadow: (theme) => `0 4px 16px ${theme.palette.customColors.shadows.primary}`,
+                    '&:hover': {
+                      background: (theme) => theme.palette.customColors.gradients.primaryDark,
+                      boxShadow: (theme) => `0 6px 24px ${theme.palette.customColors.shadows.primaryHeavy}`,
+                      transform: 'translateY(-2px)',
+                    }
+                  }}
                 >
                   Log In
                 </Button>

@@ -33,8 +33,12 @@ export default function Blog() {
         display={'flex'}
         flexDirection={'column'}
         justifyContent={'space-between'}
-        sx={{ gap: { xs: 2, sm: 5 } }}
-        bgcolor={'#E9EAF4'}
+        sx={{ 
+          gap: { xs: 2, sm: 5 },
+          bgcolor: (theme) => theme.palette.mode === 'dark' 
+            ? theme.palette.background.default
+            : theme.palette.customColors.pageBackground.light,
+        }}
       >
         <NavBar />
         <Title title={currentBlogData ? currentBlogData.category : 'Loading'} />
@@ -128,19 +132,32 @@ export default function Blog() {
             </Typography>
             <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'}>
               <Box display={'flex'} alignItems={'center'} gap={2} flexWrap={'wrap'}>
-                <Typography component={'div'} fontSize={'1rem'} textAlign={'left'}>
-                  <span style={{ color: '#6D6E76' }}>By </span>
-                  <span style={{ color: '#555FAC', fontWeight: 700 }}>{currentBlogData.author?.name || 'Unknown'}</span>
-                  <span style={{ color: '#6D6E76' }}> | </span>
-                  <span style={{ color: '#6D6E76' }}>
+                <Typography 
+                  component={'div'} 
+                  fontSize={'1rem'} 
+                  textAlign={'left'}
+                  sx={{
+                    '& .text-gray': {
+                      color: (theme) => theme.palette.customColors.neutral.gray.text,
+                    },
+                    '& .text-primary': {
+                      color: 'primary.main',
+                      fontWeight: 700,
+                    },
+                  }}
+                >
+                  <span className="text-gray">By </span>
+                  <span className="text-primary">{currentBlogData.author?.name || 'Unknown'}</span>
+                  <span className="text-gray"> | </span>
+                  <span className="text-gray">
                     {new Date(currentBlogData.createdAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
                     })}
                   </span>
-                  <span style={{ color: '#6D6E76' }}> | </span>
-                  <span style={{ color: '#6D6E76' }}>{currentBlogData.readingTime} mins</span>
+                  <span className="text-gray"> | </span>
+                  <span className="text-gray">{currentBlogData.readingTime} mins</span>
                 </Typography>
                 {currentBlogData.author?.id && (
                   <FollowButton 
@@ -172,16 +189,16 @@ export default function Blog() {
                 elevation={0} 
                 sx={{ 
                   p: 3, 
-                  bgcolor: '#F5F6FA',
                   borderRadius: 2,
-                  textAlign: 'center'
+                  textAlign: 'center',
+                  border: '1px solid',
+                  borderColor: 'divider',
                 }}
               >
                 <Typography 
                   variant="h6" 
                   gutterBottom 
                   sx={{ 
-                    color: '#2C3E50',
                     fontWeight: 600,
                     mb: 2
                   }}
@@ -190,7 +207,7 @@ export default function Blog() {
                 </Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
                   <BlogLikeDislike blog={currentBlogData} size="large" showCounts />
-                  <Box sx={{ borderLeft: '2px solid #E0E0E0', height: '40px', mx: 1 }} />
+                  <Box sx={{ borderLeft: '2px solid', borderColor: 'divider', height: '40px', mx: 1 }} />
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <ShareButton blog={currentBlogData} size="large" />
                   </Box>
@@ -204,16 +221,15 @@ export default function Blog() {
                 elevation={0} 
                 sx={{ 
                   p: { xs: 2, sm: 3 },
-                  bgcolor: '#FFFFFF',
                   borderRadius: 2,
-                  border: '1px solid #E0E0E0'
+                  border: '1px solid',
+                  borderColor: 'divider',
                 }}
               >
                 <Typography 
                   variant="h5" 
                   gutterBottom 
                   sx={{ 
-                    color: '#2C3E50',
                     fontWeight: 600,
                     mb: 3
                   }}

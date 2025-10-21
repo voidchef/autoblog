@@ -422,7 +422,7 @@ const Profile: React.FC = () => {
       <NavBar />
       <Box
         sx={{
-          background: 'linear-gradient(135deg, rgba(50, 13, 154, 0.05) 0%, rgba(85, 95, 172, 0.05) 100%)',
+          background: (theme) => theme.palette.customColors.gradients.badgeLight,
           minHeight: '100vh',
           py: 4,
         }}
@@ -436,7 +436,7 @@ const Profile: React.FC = () => {
               gutterBottom
               sx={{
                 fontWeight: 700,
-                background: 'linear-gradient(135deg, #320D9A 0%, #555FAC 100%)',
+                background: (theme) => theme.palette.customColors.gradients.primary,
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -469,7 +469,7 @@ const Profile: React.FC = () => {
                 {/* Header with gradient background */}
                 <Box
                   sx={{
-                    background: 'linear-gradient(135deg, #320D9A 0%, #555FAC 100%)',
+                    background: (theme) => theme.palette.customColors.gradients.primary,
                     height: 120,
                     position: 'relative',
                   }}
@@ -543,7 +543,7 @@ const Profile: React.FC = () => {
                         sx={{
                           p: 2,
                           textAlign: 'left',
-                          bgcolor: 'rgba(50, 13, 154, 0.03)',
+                          bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
                           borderRadius: 2,
                         }}
                       >
@@ -572,7 +572,7 @@ const Profile: React.FC = () => {
                           sx={{
                             p: 2,
                             textAlign: 'left',
-                            bgcolor: 'rgba(50, 13, 154, 0.03)',
+                            bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
                             borderRadius: 2,
                           }}
                         >
@@ -728,9 +728,9 @@ const Profile: React.FC = () => {
                           borderRadius: 2,
                           textTransform: 'none',
                           px: 3,
-                          background: 'linear-gradient(135deg, #320D9A 0%, #555FAC 100%)',
+                          background: (theme) => theme.palette.customColors.gradients.primary,
                           '&:hover': {
-                            background: 'linear-gradient(135deg, #2a0b82 0%, #4a5197 100%)',
+                            background: (theme) => theme.palette.customColors.gradients.primaryDark,
                           },
                         }}
                       >
@@ -747,10 +747,10 @@ const Profile: React.FC = () => {
                           elevation={0}
                           sx={{
                             p: 2.5,
-                            bgcolor: 'rgba(50, 13, 154, 0.03)',
+                            bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
                             borderRadius: 2,
                             border: '1px solid',
-                            borderColor: 'rgba(50, 13, 154, 0.1)',
+                            borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
                           }}
                         >
                           <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
@@ -848,10 +848,10 @@ const Profile: React.FC = () => {
                           elevation={0}
                           sx={{
                             p: 2.5,
-                            bgcolor: 'rgba(50, 13, 154, 0.03)',
+                            bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
                             borderRadius: 2,
                             border: '1px solid',
-                            borderColor: 'rgba(50, 13, 154, 0.1)',
+                            borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
                           }}
                         >
                           <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
@@ -974,10 +974,10 @@ const Profile: React.FC = () => {
                           elevation={0}
                           sx={{
                             p: 2.5,
-                            bgcolor: 'rgba(50, 13, 154, 0.03)',
+                            bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
                             borderRadius: 2,
                             border: '1px solid',
-                            borderColor: 'rgba(50, 13, 154, 0.1)',
+                            borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
                           }}
                         >
                           <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
@@ -1130,7 +1130,7 @@ const Profile: React.FC = () => {
                             elevation={0}
                             sx={{
                               p: 2,
-                              bgcolor: 'rgba(50, 13, 154, 0.03)',
+                              bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
                               borderRadius: 2,
                             }}
                           >
@@ -1157,9 +1157,9 @@ const Profile: React.FC = () => {
                                   borderRadius: 2,
                                   textTransform: 'none',
                                   px: 3,
-                                  background: 'linear-gradient(135deg, #320D9A 0%, #555FAC 100%)',
+                                  background: (theme) => theme.palette.customColors.gradients.primary,
                                   '&:hover': {
-                                    background: 'linear-gradient(135deg, #2a0b82 0%, #4a5197 100%)',
+                                    background: (theme) => theme.palette.customColors.gradients.primaryDark,
                                   },
                                 }}
                               >

@@ -30,7 +30,6 @@ export default function DarkMode() {
         borderRadius: 1,
       }}
     >
-      {themeMode} mode
       <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
         {themeMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
       </IconButton>
