@@ -144,27 +144,15 @@ export default function DrawerAppBar(props: Props) {
                 textAlign: 'center',
                 py: 1.5,
                 borderRadius: '12px',
-                position: 'relative',
-                overflow: 'hidden',
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  background: (theme) => theme.palette.customColors.gradients.primary,
-                  opacity: 0,
-                  transition: 'opacity 0.3s ease',
-                },
+                transition: 'all 0.3s ease',
                 '&:hover': {
-                  '&::before': {
-                    opacity: 1,
-                  },
+                  backgroundColor: (theme) => theme.palette.mode === 'dark' 
+                    ? 'rgba(29, 78, 216, 0.15)' 
+                    : 'rgba(29, 78, 216, 0.1)',
                   '& .MuiListItemText-primary': {
-                    color: 'white',
-                    position: 'relative',
-                    zIndex: 1,
+                    color: (theme) => theme.palette.mode === 'dark' 
+                      ? theme.palette.primary.light 
+                      : theme.palette.primary.dark,
                   }
                 }
               }} 
@@ -276,30 +264,16 @@ export default function DrawerAppBar(props: Props) {
                     px: 2.5,
                     py: 1,
                     borderRadius: '12px',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    '&::before': {
-                      content: '""',
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      width: '100%',
-                      height: '100%',
-                      background: (theme) => theme.palette.customColors.gradients.primary,
-                      opacity: 0,
-                      transition: 'opacity 0.3s ease',
-                    },
+                    transition: 'all 0.3s ease',
                     '&:hover': {
-                      color: 'white',
+                      backgroundColor: (theme) => theme.palette.mode === 'dark' 
+                        ? 'rgba(29, 78, 216, 0.1)' 
+                        : 'rgba(29, 78, 216, 0.08)',
+                      color: (theme) => theme.palette.mode === 'dark' 
+                        ? 'primary.light' 
+                        : 'primary.dark',
                       transform: 'translateY(-2px)',
-                      '&::before': {
-                        opacity: 1,
-                      },
                     },
-                    '& span': {
-                      position: 'relative',
-                      zIndex: 1,
-                    }
                   }} 
                   onClick={() => handleNavigation(item)}
                 >

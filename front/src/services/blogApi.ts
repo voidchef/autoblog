@@ -105,7 +105,10 @@ export const blogApi = api.injectEndpoints({
     getBlogs: builder.query<IQueryResult, BlogsQueryParams>({
       query: (params) => ({
         url: '/blogs/',
-        params,
+        params: {
+          ...params,
+          populate: 'author',
+        },
       }),
       providesTags: (result) =>
         result
@@ -117,7 +120,11 @@ export const blogApi = api.injectEndpoints({
     getFeaturedBlogs: builder.query<IQueryResult, { page?: number; limit?: number }>({
       query: (params) => ({
         url: '/blogs/',
-        params: { ...params, isFeatured: true },
+        params: { 
+          ...params, 
+          isFeatured: true,
+          populate: 'author',
+        },
       }),
       providesTags: [{ type: 'Blog', id: 'FEATURED' }],
       keepUnusedDataFor: 600, // Keep featured blogs for 10 minutes
@@ -126,7 +133,11 @@ export const blogApi = api.injectEndpoints({
     getDraftBlogs: builder.query<IQueryResult, BlogsQueryParams>({
       query: (params) => ({
         url: '/blogs/',
-        params: { ...params, isDraft: true },
+        params: { 
+          ...params, 
+          isDraft: true,
+          populate: 'author',
+        },
       }),
       providesTags: (result) =>
         result
@@ -137,7 +148,12 @@ export const blogApi = api.injectEndpoints({
     getBlogsByCategory: builder.query<IQueryResult, { category: string; page?: number; limit?: number }>({
       query: ({ category, ...params }) => ({
         url: '/blogs/',
-        params: { ...params, category, isPublished: true },
+        params: { 
+          ...params, 
+          category, 
+          isPublished: true,
+          populate: 'author',
+        },
       }),
       providesTags: (result, error, { category }) => [{ type: 'Blog', id: `CATEGORY_${category}` }],
       keepUnusedDataFor: 300,
@@ -272,7 +288,10 @@ export const blogApi = api.injectEndpoints({
     searchBlogs: builder.query<IQueryResult, { query: string; page?: number; limit?: number }>({
       query: (params) => ({
         url: '/blogs/search',
-        params,
+        params: {
+          ...params,
+          populate: 'author',
+        },
       }),
       providesTags: [{ type: 'Blog', id: 'SEARCH' }],
       keepUnusedDataFor: 60, // Keep search results for 1 minute

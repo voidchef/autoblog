@@ -7,6 +7,7 @@ import { AWS_BASEURL } from '../../../utils/consts';
 import { IBlog } from '../../../reducers/blog';
 import { ROUTES } from '../../../utils/routing/routes';
 import { useNavigate } from 'react-router-dom';
+import { stringAvatar } from '../../../utils/utils';
 
 interface FeaturedPostProps {
   featuredBlogs: IBlog[];
@@ -199,23 +200,24 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
               </Typography>
 
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.75 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Avatar
+                    {...stringAvatar(featuredBlogs[0].author.name)}
                     sx={{
-                      width: 24,
-                      height: 24,
-                      bgcolor: 'primary.main',
+                      width: 36,
+                      height: 36,
                       fontWeight: 600,
-                      fontSize: '0.7rem',
+                      fontSize: '0.875rem',
                     }}
-                  >
-                    {featuredBlogs[0].author.name}
-                  </Avatar>
-                  <Box>
-                    <Typography variant="body2" fontWeight={600} fontSize="0.75rem">
+                  />
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+                    <Typography variant="body2" fontWeight={600} fontSize="0.875rem">
                       {featuredBlogs[0].author.name}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary" fontSize="0.65rem">
+                    <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
+                      •
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
                       {new Date(featuredBlogs[0].createdAt).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
@@ -349,25 +351,30 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
                       {post.title || post.topic}
                     </Typography>
 
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 'auto' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 'auto' }}>
                       <Avatar
+                        {...stringAvatar(post.author.name)}
                         sx={{
-                          width: 16,
-                          height: 16,
-                          bgcolor: 'secondary.main',
-                          fontSize: '0.55rem',
+                          width: 28,
+                          height: 28,
+                          fontSize: '0.75rem',
                           fontWeight: 600,
                         }}
-                      >
-                        {post.author.name.charAt(0)}
-                      </Avatar>
-                      <Typography variant="caption" color="text.secondary" fontSize="0.6rem">
-                        {post.author.name} •{' '}
-                        {new Date(post.createdAt).toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </Typography>
+                      />
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+                        <Typography variant="caption" color="text.primary" fontSize="0.75rem" fontWeight={600}>
+                          {post.author.name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary" fontSize="0.7rem">
+                          •
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary" fontSize="0.7rem">
+                          {new Date(post.createdAt).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </Typography>
+                      </Box>
                     </Box>
                   </CardContent>
                 </Card>

@@ -48,6 +48,7 @@ import { useAuth } from '../../utils/hooks';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import { useUpdateUserMutation } from '../../services/userApi';
 import { showSuccess, showError } from '../../reducers/alert';
+import { stringAvatar as baseStringAvatar } from '../../utils/utils';
 import { updateUserDataOptimistic } from '../../reducers/user';
 import { encrypt } from '../../utils/crypto';
 
@@ -358,36 +359,17 @@ const Profile: React.FC = () => {
     setIsEditing(false);
   };
 
-  const stringToColor = (string: string): string => {
-    let hash = 0;
-    let i;
-
-    for (i = 0; i < string.length; i += 1) {
-      hash = string.charCodeAt(i) + ((hash << 5) - hash);
-    }
-
-    let color = '#';
-
-    for (i = 0; i < 3; i += 1) {
-      const value = (hash >> (i * 8)) & 0xff;
-      color += `00${value.toString(16)}`.slice(-2);
-    }
-
-    return color;
-  };
-
-  const stringAvatar = (name: string) => {
-    const nameParts = name.split(' ');
-    const initials = nameParts.length >= 2 ? `${nameParts[0][0]}${nameParts[1][0]}` : name.substring(0, 2);
-
+  // Custom avatar with larger size for profile page
+  const profileAvatar = (name: string) => {
+    const baseAvatar = baseStringAvatar(name);
     return {
+      ...baseAvatar,
       sx: {
-        bgcolor: stringToColor(name),
+        ...baseAvatar.sx,
         width: 120,
         height: 120,
         fontSize: '2.5rem',
       },
-      children: initials.toUpperCase(),
     };
   };
 
@@ -500,7 +482,7 @@ const Profile: React.FC = () => {
                       }
                     >
                       <Avatar
-                        {...stringAvatar(formData.name || 'User')}
+                        {...profileAvatar(formData.name || 'User')}
                         sx={{
                           width: 100,
                           height: 100,

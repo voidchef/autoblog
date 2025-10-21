@@ -25,6 +25,14 @@ export const createBlog = catchAsync(async (req: Request, res: Response) => {
 export const getBlogs = catchAsync(async (req: Request, res: Response) => {
   const filter = pick(req.query, ['author', 'category', 'tags', 'isFeatured', 'isPublished', 'isDraft', 'views']);
   const options: IOptions = pick(req.query, ['sortBy', 'limit', 'page', 'projectBy', 'populate']);
+  
+  // Always populate author field with id and name if not already specified
+  if (!options.populate) {
+    options.populate = 'author';
+  } else if (!options.populate.includes('author')) {
+    options.populate += ',author';
+  }
+  
   const result = await blogService.queryBlogs(filter, options);
   result.results.forEach((blog: any) => {
     blog.excerpt = blog.generateExcerpt(160);
@@ -115,6 +123,13 @@ export const searchBlogs = catchAsync(async (req: Request, res: Response) => {
   const { query: searchQuery, ...filterOptions } = req.query;
   const filter: any = pick(req.query, ['author', 'category', 'tags', 'isFeatured', 'isPublished', 'isDraft']);
   const options: IOptions = pick(req.query, ['sortBy', 'limit', 'page', 'projectBy', 'populate']);
+
+  // Always populate author field with id and name if not already specified
+  if (!options.populate) {
+    options.populate = 'author';
+  } else if (!options.populate.includes('author')) {
+    options.populate += ',author';
+  }
 
   // Add search functionality to filter if query is provided
   if (searchQuery && typeof searchQuery === 'string') {

@@ -8,6 +8,7 @@ import { ThumbUp, ThumbDown, AccessTime, ArrowForward } from '@mui/icons-materia
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { IBlog } from '../../../reducers/blog';
+import { stringAvatar } from '../../../utils/utils';
 
 interface RecentPostProps {
   recentBlogs: IBlog[];
@@ -158,23 +159,24 @@ const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
               </Box>
 
               <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', py: 1.25, px: 1.75 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 0.75 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
                   <Avatar
+                    {...stringAvatar(post.author.name)}
                     sx={{
-                      width: 24,
-                      height: 24,
-                      bgcolor: (theme) => (theme.palette.mode === 'dark' ? 'primary.main' : 'secondary.main'),
-                      fontSize: '0.7rem',
+                      width: 32,
+                      height: 32,
+                      fontSize: '0.875rem',
                       fontWeight: 600,
                     }}
-                  >
-                    {post.author.name}
-                  </Avatar>
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="body2" fontWeight={600} fontSize="0.75rem">
+                  />
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+                    <Typography variant="body2" fontWeight={600} fontSize="0.875rem">
                       {post.author.name}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary" fontSize="0.65rem">
+                    <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
+                      •
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
                       {new Date(post.createdAt).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
