@@ -51,7 +51,15 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
       type: String,
       trim: true,
       private: true, // used by the toJSON plugin to exclude from responses
-    }
+    },
+    followers: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    }],
+    following: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    }],
   },
   {
     timestamps: true,

@@ -110,3 +110,77 @@ export const deleteUserById = async (userId: mongoose.Types.ObjectId): Promise<I
   await user.deleteOne();
   return user;
 };
+
+/**
+ * Follow a user
+ * @param {mongoose.Types.ObjectId} userId - ID of the user who wants to follow
+ * @param {mongoose.Types.ObjectId} targetUserId - ID of the user to be followed
+ * @returns {Promise<any>}
+ */
+export const followUser = async (
+  userId: mongoose.Types.ObjectId,
+  targetUserId: mongoose.Types.ObjectId,
+): Promise<any> => {
+  if (userId.toString() === targetUserId.toString()) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot follow yourself');
+  }
+
+  const user = await getUserById(userId);
+  const targetUser = await getUserById(targetUserId);
+
+  if (!user || !targetUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  // Check if already following
+  if (user.following.includes(targetUserId)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'You are already following this user');
+  }
+
+  // Add to following list of current user
+  user.following.push(targetUserId);
+  await user.save();
+
+  // Add to followers list of target user
+  targetUser.followers.push(userId);
+  await targetUser.save();
+
+  return user.toJSON();
+};
+
+/**
+ * Unfollow a user
+ * @param {mongoose.Types.ObjectId} userId - ID of the user who wants to unfollow
+ * @param {mongoose.Types.ObjectId} targetUserId - ID of the user to be unfollowed
+ * @returns {Promise<any>}
+ */
+export const unfollowUser = async (
+  userId: mongoose.Types.ObjectId,
+  targetUserId: mongoose.Types.ObjectId,
+): Promise<any> => {
+  if (userId.toString() === targetUserId.toString()) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot unfollow yourself');
+  }
+
+  const user = await getUserById(userId);
+  const targetUser = await getUserById(targetUserId);
+
+  if (!user || !targetUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  // Check if not following
+  if (!user.following.includes(targetUserId)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'You are not following this user');
+  }
+
+  // Remove from following list of current user
+  user.following = user.following.filter((id) => id.toString() !== targetUserId.toString());
+  await user.save();
+
+  // Remove from followers list of target user
+  targetUser.followers = targetUser.followers.filter((id) => id.toString() !== userId.toString());
+  await targetUser.save();
+
+  return user.toJSON();
+};

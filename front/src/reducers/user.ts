@@ -15,6 +15,8 @@ export type UserData = {
   lastLogin?: string;
   openAiKey?: string;
   hasOpenAiKey?: boolean;
+  followers?: string[];
+  following?: string[];
   preferences?: {
     theme: 'light' | 'dark';
     language: string;
@@ -209,6 +211,15 @@ const userSlice = createSlice({
       .addMatcher(authApi.endpoints.register.matchRejected, (state, action) => {
         state.isAuthenticated = false;
         state.error = action.error.message || 'Registration failed';
+      })
+      // Handle follow/unfollow mutations
+      .addMatcher(userApi.endpoints.followUser.matchFulfilled, (state, action) => {
+        // Update the current user's following list
+        state.userData = action.payload;
+      })
+      .addMatcher(userApi.endpoints.unfollowUser.matchFulfilled, (state, action) => {
+        // Update the current user's following list
+        state.userData = action.payload;
       });
   },
 });

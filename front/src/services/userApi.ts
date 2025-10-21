@@ -9,6 +9,8 @@ export interface UserData {
   isEmailVerified: boolean;
   openAiKey?: string;
   hasOpenAiKey?: boolean;
+  followers?: string[];
+  following?: string[];
 }
 
 export const userApi = api.injectEndpoints({
@@ -27,7 +29,33 @@ export const userApi = api.injectEndpoints({
       }),
       invalidatesTags: (result, error, { id }) => [{ type: 'User', id }],
     }),
+    followUser: builder.mutation<UserData, string>({
+      query: (userId) => ({
+        url: `/users/${userId}/follow`,
+        method: 'POST',
+      }),
+      invalidatesTags: (result, error, userId) => [
+        { type: 'User', id: userId },
+        { type: 'User', id: 'ME' },
+      ],
+    }),
+    unfollowUser: builder.mutation<UserData, string>({
+      query: (userId) => ({
+        url: `/users/${userId}/unfollow`,
+        method: 'POST',
+      }),
+      invalidatesTags: (result, error, userId) => [
+        { type: 'User', id: userId },
+        { type: 'User', id: 'ME' },
+      ],
+    }),
   }),
 });
 
-export const { useGetUserQuery, useUpdateUserMutation, useLazyGetUserQuery } = userApi;
+export const { 
+  useGetUserQuery, 
+  useUpdateUserMutation, 
+  useLazyGetUserQuery,
+  useFollowUserMutation,
+  useUnfollowUserMutation,
+} = userApi;

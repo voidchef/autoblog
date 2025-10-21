@@ -9,6 +9,7 @@ export type IBlog = {
   seoTitle: string;
   seoDescription: string;
   author: {
+    id: string;
     name: string;
     avatar: string;
   };

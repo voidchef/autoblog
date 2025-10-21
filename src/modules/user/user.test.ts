@@ -63,7 +63,7 @@ describe('User routes', () => {
         email: faker.internet.email().toLowerCase(),
         password: 'password1',
         role: 'user',
-        openAiKey: faker.string.alphanumeric(32)
+        openAiKey: faker.string.alphanumeric(32),
       };
     });
 
@@ -77,13 +77,15 @@ describe('User routes', () => {
         .expect(httpStatus.CREATED);
 
       expect(res.body).not.toHaveProperty('password');
-      expect(res.body).toEqual(expect.objectContaining({
-        id: expect.anything(),
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
-        isEmailVerified: false,
-      }));
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          id: expect.anything(),
+          name: newUser.name,
+          email: newUser.email,
+          role: newUser.role,
+          isEmailVerified: false,
+        }),
+      );
 
       const dbUser = await User.findById(res.body.id);
       expect(dbUser).toBeDefined();
@@ -207,13 +209,15 @@ describe('User routes', () => {
         totalResults: 3,
       });
       expect(res.body.results).toHaveLength(3);
-      expect(res.body.results[0]).toEqual(expect.objectContaining({
-        id: userOne._id.toHexString(),
-        name: userOne.name,
-        email: userOne.email,
-        role: userOne.role,
-        isEmailVerified: userOne.isEmailVerified,
-      }));
+      expect(res.body.results[0]).toEqual(
+        expect.objectContaining({
+          id: userOne._id.toHexString(),
+          name: userOne.name,
+          email: userOne.email,
+          role: userOne.role,
+          isEmailVerified: userOne.isEmailVerified,
+        }),
+      );
     });
 
     test('should return 401 if access token is missing', async () => {
@@ -410,13 +414,15 @@ describe('User routes', () => {
         .expect(httpStatus.OK);
 
       expect(res.body).not.toHaveProperty('password');
-      expect(res.body).toEqual(expect.objectContaining({
-        id: userOne._id.toHexString(),
-        email: userOne.email,
-        name: userOne.name,
-        role: userOne.role,
-        isEmailVerified: userOne.isEmailVerified,
-      }));
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          id: userOne._id.toHexString(),
+          email: userOne.email,
+          name: userOne.name,
+          role: userOne.role,
+          isEmailVerified: userOne.isEmailVerified,
+        }),
+      );
     });
 
     test('should return 401 error if access token is missing', async () => {
@@ -543,13 +549,15 @@ describe('User routes', () => {
         .expect(httpStatus.OK);
 
       expect(res.body).not.toHaveProperty('password');
-      expect(res.body).toEqual(expect.objectContaining({
-        id: userOne._id.toHexString(),
-        name: updateBody.name,
-        email: updateBody.email,
-        role: 'user',
-        isEmailVerified: false,
-      }));
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          id: userOne._id.toHexString(),
+          name: updateBody.name,
+          email: updateBody.email,
+          role: 'user',
+          isEmailVerified: false,
+        }),
+      );
 
       const dbUser = await User.findById(userOne._id);
       expect(dbUser).toBeDefined();
@@ -670,6 +678,220 @@ describe('User routes', () => {
         .set('Authorization', `Bearer ${userOneAccessToken}`)
         .send(updateBody)
         .expect(httpStatus.BAD_REQUEST);
+    });
+  });
+
+  describe('POST /v1/users/:userId/follow', () => {
+    test('should return 200 and successfully follow a user', async () => {
+      await insertUsers([userOne, userTwo]);
+
+      const res = await request(app)
+        .post(`/v1/users/${userTwo._id}/follow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.OK);
+
+      expect(res.body).toHaveProperty('following');
+      expect(res.body.following).toContain(userTwo._id.toHexString());
+
+      // Verify userTwo has userOne in followers
+      const dbUserTwo = await User.findById(userTwo._id);
+      expect(dbUserTwo?.followers).toContainEqual(userOne._id);
+    });
+
+    test('should return 401 if not authenticated', async () => {
+      await insertUsers([userTwo]);
+
+      await request(app).post(`/v1/users/${userTwo._id}/follow`).send().expect(httpStatus.UNAUTHORIZED);
+    });
+
+    test('should return 400 if trying to follow yourself', async () => {
+      await insertUsers([userOne]);
+
+      await request(app)
+        .post(`/v1/users/${userOne._id}/follow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.BAD_REQUEST);
+    });
+
+    test('should return 400 if already following the user', async () => {
+      await insertUsers([userOne, userTwo]);
+
+      // First follow
+      await request(app)
+        .post(`/v1/users/${userTwo._id}/follow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.OK);
+
+      // Try to follow again
+      await request(app)
+        .post(`/v1/users/${userTwo._id}/follow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.BAD_REQUEST);
+    });
+
+    test('should return 404 if user to follow does not exist', async () => {
+      await insertUsers([userOne]);
+      const fakeUserId = new mongoose.Types.ObjectId();
+
+      await request(app)
+        .post(`/v1/users/${fakeUserId}/follow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.NOT_FOUND);
+    });
+
+    test('should return 400 if userId is not a valid mongo id', async () => {
+      await insertUsers([userOne]);
+
+      await request(app)
+        .post(`/v1/users/invalidId/follow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.BAD_REQUEST);
+    });
+  });
+
+  describe('POST /v1/users/:userId/unfollow', () => {
+    test('should return 200 and successfully unfollow a user', async () => {
+      await insertUsers([userOne, userTwo]);
+
+      // First follow the user
+      await request(app)
+        .post(`/v1/users/${userTwo._id}/follow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.OK);
+
+      // Then unfollow
+      const res = await request(app)
+        .post(`/v1/users/${userTwo._id}/unfollow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.OK);
+
+      expect(res.body).toHaveProperty('following');
+      expect(res.body.following).not.toContain(userTwo._id.toHexString());
+
+      // Verify userTwo doesn't have userOne in followers
+      const dbUserTwo = await User.findById(userTwo._id);
+      expect(dbUserTwo?.followers).not.toContainEqual(userOne._id);
+    });
+
+    test('should return 401 if not authenticated', async () => {
+      await insertUsers([userTwo]);
+
+      await request(app).post(`/v1/users/${userTwo._id}/unfollow`).send().expect(httpStatus.UNAUTHORIZED);
+    });
+
+    test('should return 400 if trying to unfollow yourself', async () => {
+      await insertUsers([userOne]);
+
+      await request(app)
+        .post(`/v1/users/${userOne._id}/unfollow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.BAD_REQUEST);
+    });
+
+    test('should return 400 if not following the user', async () => {
+      await insertUsers([userOne, userTwo]);
+
+      await request(app)
+        .post(`/v1/users/${userTwo._id}/unfollow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.BAD_REQUEST);
+    });
+
+    test('should return 404 if user to unfollow does not exist', async () => {
+      await insertUsers([userOne]);
+      const fakeUserId = new mongoose.Types.ObjectId();
+
+      await request(app)
+        .post(`/v1/users/${fakeUserId}/unfollow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.NOT_FOUND);
+    });
+
+    test('should return 400 if userId is not a valid mongo id', async () => {
+      await insertUsers([userOne]);
+
+      await request(app)
+        .post(`/v1/users/invalidId/unfollow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.BAD_REQUEST);
+    });
+
+    test('should allow multiple users to follow the same user', async () => {
+      const userThree = {
+        _id: new mongoose.Types.ObjectId(),
+        name: faker.person.fullName(),
+        email: faker.internet.email().toLowerCase(),
+        password,
+        role: 'user',
+        isEmailVerified: false,
+      };
+      const userThreeAccessToken = tokenService.generateToken(userThree._id, accessTokenExpires, tokenTypes.ACCESS);
+
+      await insertUsers([userOne, userTwo, userThree]);
+
+      // UserOne follows userTwo
+      await request(app)
+        .post(`/v1/users/${userTwo._id}/follow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.OK);
+
+      // UserThree also follows userTwo
+      await request(app)
+        .post(`/v1/users/${userTwo._id}/follow`)
+        .set('Authorization', `Bearer ${userThreeAccessToken}`)
+        .send()
+        .expect(httpStatus.OK);
+
+      // Verify userTwo has both followers
+      const dbUserTwo = await User.findById(userTwo._id);
+      expect(dbUserTwo?.followers).toHaveLength(2);
+      expect(dbUserTwo?.followers).toContainEqual(userOne._id);
+      expect(dbUserTwo?.followers).toContainEqual(userThree._id);
+    });
+
+    test('should allow a user to follow multiple users', async () => {
+      const userThree = {
+        _id: new mongoose.Types.ObjectId(),
+        name: faker.person.fullName(),
+        email: faker.internet.email().toLowerCase(),
+        password,
+        role: 'user',
+        isEmailVerified: false,
+      };
+
+      await insertUsers([userOne, userTwo, userThree]);
+
+      // UserOne follows userTwo
+      await request(app)
+        .post(`/v1/users/${userTwo._id}/follow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.OK);
+
+      // UserOne also follows userThree
+      const res = await request(app)
+        .post(`/v1/users/${userThree._id}/follow`)
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.OK);
+
+      // Verify userOne is following both users
+      expect(res.body.following).toHaveLength(2);
+      expect(res.body.following).toContain(userTwo._id.toHexString());
+      expect(res.body.following).toContain(userThree._id.toHexString());
     });
   });
 });

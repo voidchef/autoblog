@@ -63,6 +63,8 @@ describe('Auth routes', () => {
         role: 'user',
         isEmailVerified: false,
         hasOpenAiKey: expect.any(Boolean),
+        followers: expect.any(Array),
+        following: expect.any(Array),
       });
 
       const dbUser = await User.findById(res.body.user.id);
@@ -122,6 +124,8 @@ describe('Auth routes', () => {
         role: userOne.role,
         isEmailVerified: userOne.isEmailVerified,
         hasOpenAiKey: expect.any(Boolean),
+        followers: expect.any(Array),
+        following: expect.any(Array),
       });
 
       expect(res.body.tokens).toEqual({
@@ -205,6 +209,8 @@ describe('Auth routes', () => {
         role: userOne.role,
         isEmailVerified: userOne.isEmailVerified,
         hasOpenAiKey: expect.any(Boolean),
+        followers: expect.any(Array),
+        following: expect.any(Array),
       });
 
       expect(res.body.tokens).toEqual({

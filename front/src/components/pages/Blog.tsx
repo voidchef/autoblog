@@ -12,6 +12,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import BlogLikeDislike from '../elements/BlogLikeDislike';
 import CommentSection from '../elements/CommentSection';
 import ShareButton from '../elements/ShareButton';
+import FollowButton from '../elements/FollowButton';
 
 export default function Blog() {
   const location = useLocation();
@@ -126,20 +127,30 @@ export default function Blog() {
               {currentBlogData.title}
             </Typography>
             <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'}>
-              <Typography component={'div'} fontSize={'1rem'} textAlign={'left'}>
-                <span style={{ color: '#6D6E76' }}>By </span>
-                <span style={{ color: '#555FAC', fontWeight: 700 }}>{currentBlogData.author?.name || 'Unknown'}</span>
-                <span style={{ color: '#6D6E76' }}> | </span>
-                <span style={{ color: '#6D6E76' }}>
-                  {new Date(currentBlogData.createdAt).toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </span>
-                <span style={{ color: '#6D6E76' }}> | </span>
-                <span style={{ color: '#6D6E76' }}>{currentBlogData.readingTime} mins</span>
-              </Typography>
+              <Box display={'flex'} alignItems={'center'} gap={2} flexWrap={'wrap'}>
+                <Typography component={'div'} fontSize={'1rem'} textAlign={'left'}>
+                  <span style={{ color: '#6D6E76' }}>By </span>
+                  <span style={{ color: '#555FAC', fontWeight: 700 }}>{currentBlogData.author?.name || 'Unknown'}</span>
+                  <span style={{ color: '#6D6E76' }}> | </span>
+                  <span style={{ color: '#6D6E76' }}>
+                    {new Date(currentBlogData.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </span>
+                  <span style={{ color: '#6D6E76' }}> | </span>
+                  <span style={{ color: '#6D6E76' }}>{currentBlogData.readingTime} mins</span>
+                </Typography>
+                {currentBlogData.author?.id && (
+                  <FollowButton 
+                    authorId={currentBlogData.author.id} 
+                    authorName={currentBlogData.author.name || 'Unknown'}
+                    size="small"
+                    variant="outlined"
+                  />
+                )}
+              </Box>
               <Box>
                 <ShareButton blog={currentBlogData} size="medium" />
               </Box>
