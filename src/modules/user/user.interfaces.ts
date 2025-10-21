@@ -9,6 +9,13 @@ export interface IUser {
   role: string;
   isEmailVerified: boolean;
   openAiKey: string;
+  bio?: string;
+  socialLinks?: {
+    twitter?: string;
+    linkedin?: string;
+    github?: string;
+    website?: string;
+  };
   followers: mongoose.Types.ObjectId[];
   following: mongoose.Types.ObjectId[];
 }
@@ -26,9 +33,9 @@ export interface IUserModel extends Model<IUserDoc> {
 
 export type UpdateUserBody = Partial<IUser>;
 
-export type NewRegisteredUser = Omit<IUser, 'role' | 'isEmailVerified' | 'followers' | 'following'>;
+export type NewRegisteredUser = Omit<IUser, 'role' | 'isEmailVerified' | 'followers' | 'following' | 'bio' | 'socialLinks'>;
 
-export type NewCreatedUser = Omit<IUser, 'isEmailVerified' | 'followers' | 'following'>;
+export type NewCreatedUser = Omit<IUser, 'isEmailVerified' | 'followers' | 'following' | 'bio' | 'socialLinks'>;
 
 export interface IUserWithTokens {
   user: IUserDoc;

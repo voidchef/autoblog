@@ -15,6 +15,10 @@ import {
   IconButton,
   InputAdornment,
   Chip,
+  Paper,
+  Stack,
+  Tooltip,
+  Badge,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -26,6 +30,15 @@ import {
   Cancel as CancelIcon,
   CheckCircle as CheckCircleIcon,
   Warning as WarningIcon,
+  Edit as EditIcon,
+  Twitter as TwitterIcon,
+  LinkedIn as LinkedInIcon,
+  GitHub as GitHubIcon,
+  Language as LanguageIcon,
+  Info as InfoIcon,
+  Security as SecurityIcon,
+  Link as LinkIcon,
+  AccountCircle as AccountCircleIcon,
 } from '@mui/icons-material';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
@@ -41,17 +54,29 @@ import { encrypt } from '../../utils/crypto';
 interface ProfileFormData {
   name: string;
   email: string;
+  bio: string;
   password: string;
   confirmPassword: string;
   openAiKey: string;
+  socialLinks: {
+    twitter: string;
+    linkedin: string;
+    github: string;
+    website: string;
+  };
 }
 
 interface FormErrors {
   name?: string;
   email?: string;
+  bio?: string;
   password?: string;
   confirmPassword?: string;
   openAiKey?: string;
+  twitter?: string;
+  linkedin?: string;
+  github?: string;
+  website?: string;
 }
 
 const Profile: React.FC = () => {
@@ -62,9 +87,16 @@ const Profile: React.FC = () => {
   const [formData, setFormData] = React.useState<ProfileFormData>({
     name: '',
     email: '',
+    bio: '',
     password: '',
     confirmPassword: '',
     openAiKey: '',
+    socialLinks: {
+      twitter: '',
+      linkedin: '',
+      github: '',
+      website: '',
+    },
   });
 
   const [errors, setErrors] = React.useState<FormErrors>({});
@@ -81,9 +113,16 @@ const Profile: React.FC = () => {
       setFormData({
         name: user.name || '',
         email: user.email || '',
+        bio: user.bio || '',
         password: '',
         confirmPassword: '',
         openAiKey: '', // Always show empty field for security
+        socialLinks: {
+          twitter: user.socialLinks?.twitter || '',
+          linkedin: user.socialLinks?.linkedin || '',
+          github: user.socialLinks?.github || '',
+          website: user.socialLinks?.website || '',
+        },
       });
     }
   }, [user]);
@@ -101,6 +140,36 @@ const Profile: React.FC = () => {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
+    }
+
+    // Bio validation
+    if (formData.bio && formData.bio.length > 500) {
+      newErrors.bio = 'Bio must be 500 characters or less';
+    }
+
+    // URL validation helper
+    const isValidUrl = (url: string) => {
+      if (!url) return true; // Empty is valid
+      try {
+        const urlObj = new URL(url);
+        return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
+      } catch {
+        return false;
+      }
+    };
+
+    // Social links validation
+    if (formData.socialLinks.twitter && !isValidUrl(formData.socialLinks.twitter)) {
+      newErrors.twitter = 'Please enter a valid URL';
+    }
+    if (formData.socialLinks.linkedin && !isValidUrl(formData.socialLinks.linkedin)) {
+      newErrors.linkedin = 'Please enter a valid URL';
+    }
+    if (formData.socialLinks.github && !isValidUrl(formData.socialLinks.github)) {
+      newErrors.github = 'Please enter a valid URL';
+    }
+    if (formData.socialLinks.website && !isValidUrl(formData.socialLinks.website)) {
+      newErrors.website = 'Please enter a valid URL';
     }
 
     // Password validation (only if password is being changed)
@@ -121,18 +190,36 @@ const Profile: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (field: keyof ProfileFormData) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: event.target.value,
-    }));
-
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors((prev) => ({
+  const handleInputChange = (field: keyof ProfileFormData | string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Handle nested socialLinks fields
+    if (field.startsWith('socialLinks.')) {
+      const socialField = field.split('.')[1] as keyof ProfileFormData['socialLinks'];
+      setFormData((prev) => ({
         ...prev,
-        [field]: undefined,
+        socialLinks: {
+          ...prev.socialLinks,
+          [socialField]: event.target.value,
+        },
       }));
+      // Clear error when user starts typing
+      if (errors[socialField as keyof FormErrors]) {
+        setErrors((prev) => ({
+          ...prev,
+          [socialField]: undefined,
+        }));
+      }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [field]: event.target.value,
+      }));
+      // Clear error when user starts typing
+      if (errors[field as keyof FormErrors]) {
+        setErrors((prev) => ({
+          ...prev,
+          [field]: undefined,
+        }));
+      }
     }
   };
 
@@ -160,6 +247,21 @@ const Profile: React.FC = () => {
 
       if (formData.email !== user.email) {
         updateData.email = formData.email;
+      }
+
+      if (formData.bio !== (user.bio || '')) {
+        updateData.bio = formData.bio;
+      }
+
+      // Check if social links changed
+      const socialLinksChanged =
+        formData.socialLinks.twitter !== (user.socialLinks?.twitter || '') ||
+        formData.socialLinks.linkedin !== (user.socialLinks?.linkedin || '') ||
+        formData.socialLinks.github !== (user.socialLinks?.github || '') ||
+        formData.socialLinks.website !== (user.socialLinks?.website || '');
+
+      if (socialLinksChanged) {
+        updateData.socialLinks = formData.socialLinks;
       }
 
       if (formData.password) {
@@ -196,6 +298,8 @@ const Profile: React.FC = () => {
     const optimisticUpdate: any = {
       name: formData.name,
       email: formData.email,
+      bio: formData.bio,
+      socialLinks: formData.socialLinks,
     };
 
     // If OpenAI key was updated, set hasOpenAiKey flag
@@ -238,9 +342,16 @@ const Profile: React.FC = () => {
       setFormData({
         name: user.name || '',
         email: user.email || '',
+        bio: user.bio || '',
         password: '',
         confirmPassword: '',
         openAiKey: '', // Always reset to empty for security
+        socialLinks: {
+          twitter: user.socialLinks?.twitter || '',
+          linkedin: user.socialLinks?.linkedin || '',
+          github: user.socialLinks?.github || '',
+          website: user.socialLinks?.website || '',
+        },
       });
     }
     setErrors({});
@@ -272,9 +383,9 @@ const Profile: React.FC = () => {
     return {
       sx: {
         bgcolor: stringToColor(name),
-        width: 80,
-        height: 80,
-        fontSize: '2rem',
+        width: 120,
+        height: 120,
+        fontSize: '2.5rem',
       },
       children: initials.toUpperCase(),
     };
@@ -309,238 +420,774 @@ const Profile: React.FC = () => {
   return (
     <>
       <NavBar />
-      <Container maxWidth="md" sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom align="center">
-          Profile Settings
-        </Typography>
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, rgba(50, 13, 154, 0.05) 0%, rgba(85, 95, 172, 0.05) 100%)',
+          minHeight: '100vh',
+          py: 4,
+        }}
+      >
+        <Container maxWidth="lg">
+          {/* Header Section */}
+          <Box sx={{ mb: 4, textAlign: 'center' }}>
+            <Typography
+              variant="h3"
+              component="h1"
+              gutterBottom
+              sx={{
+                fontWeight: 700,
+                background: 'linear-gradient(135deg, #320D9A 0%, #555FAC 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                mb: 1,
+              }}
+            >
+              Profile Settings
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Manage your account information and preferences
+            </Typography>
+          </Box>
 
-        <Card sx={{ mt: 4 }}>
-          <CardContent sx={{ p: 4 }}>
-            {/* Profile Header */}
-            <Box display="flex" alignItems="center" mb={4}>
-              <Avatar {...stringAvatar(formData.name || 'User')} />
-              <Box ml={3}>
-                <Typography variant="h5" component="h2">
-                  {formData.name || 'User'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {user.role === 'admin' ? 'Administrator' : 'User'}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {user.isEmailVerified ? 'Email Verified' : 'Email Not Verified'}
-                </Typography>
-                {user.updatedAt && (
-                  <Typography variant="caption" color="text.secondary">
-                    Last updated: {new Date(user.updatedAt).toLocaleDateString()}
-                  </Typography>
-                )}
-              </Box>
-            </Box>
-
-            <Divider sx={{ mb: 4 }} />
-
-            {/* Profile Form */}
-            <Box component="form" onSubmit={handleSubmit}>
-              <Grid container spacing={3}>
-                {/* Name Field */}
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    fullWidth
-                    label="Full Name"
-                    value={formData.name}
-                    onChange={handleInputChange('name')}
-                    error={!!errors.name}
-                    helperText={errors.name}
-                    disabled={!isEditing}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <PersonIcon />
-                        </InputAdornment>
-                      ),
+          <Grid container spacing={3}>
+            {/* Left Column - Profile Card */}
+            <Grid size={{ xs: 12, md: 4 }}>
+              <Card
+                sx={{
+                  position: 'sticky',
+                  top: 80,
+                  overflow: 'hidden',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+                  transition: 'transform 0.2s, box-shadow 0.2s',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: '0 12px 48px rgba(0, 0, 0, 0.12)',
+                  },
+                }}
+              >
+                {/* Header with gradient background */}
+                <Box
+                  sx={{
+                    background: 'linear-gradient(135deg, #320D9A 0%, #555FAC 100%)',
+                    height: 120,
+                    position: 'relative',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      transform: 'translate(-50%, 0%)',
                     }}
-                  />
-                </Grid>
-
-                {/* Email Field */}
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    fullWidth
-                    label="Email Address"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange('email')}
-                    error={!!errors.email}
-                    helperText={errors.email}
-                    disabled={!isEditing}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <EmailIcon />
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                {/* Password Field */}
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    fullWidth
-                    label="New Password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={formData.password}
-                    onChange={handleInputChange('password')}
-                    error={!!errors.password}
-                    helperText={errors.password || 'Leave blank to keep current password'}
-                    disabled={!isEditing}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <KeyIcon />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" disabled={!isEditing}>
-                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                  {isEditing && formData.password && <PasswordStrength password={formData.password} />}
-                </Grid>
-
-                {/* Confirm Password Field */}
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    fullWidth
-                    label="Confirm New Password"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange('confirmPassword')}
-                    error={!!errors.confirmPassword}
-                    helperText={errors.confirmPassword}
-                    disabled={!isEditing || !formData.password}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <KeyIcon />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end">
-                          <IconButton
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            edge="end"
-                            disabled={!isEditing || !formData.password}
-                          >
-                            {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                          </IconButton>
-                        </InputAdornment>
-                      ),
-                    }}
-                  />
-                </Grid>
-
-                {/* OpenAI API Key Field */}
-                <Grid size={12}>
-                  <Box>
-                    <TextField
-                      fullWidth
-                      label="OpenAI API Key"
-                      type={showOpenAiKey ? 'text' : 'password'}
-                      value={formData.openAiKey}
-                      onChange={handleInputChange('openAiKey')}
-                      error={!!errors.openAiKey}
-                      helperText={
-                        errors.openAiKey || 
-                        (isEditing 
-                          ? 'Enter a new OpenAI API key to update it' 
-                          : user?.hasOpenAiKey 
-                            ? 'API key is set (hidden for security)' 
-                            : 'No API key set - required for blog generation'
-                        )
+                  >
+                    <Badge
+                      overlap="circular"
+                      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                      badgeContent={
+                        user.isEmailVerified ? (
+                          <CheckCircleIcon
+                            sx={{
+                              bgcolor: 'success.main',
+                              borderRadius: '50%',
+                              color: 'white',
+                              p: 0.3,
+                              fontSize: 28,
+                            }}
+                          />
+                        ) : null
                       }
-                      disabled={!isEditing}
-                      placeholder={isEditing ? 'Enter new API key...' : ''}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <KeyIcon />
-                          </InputAdornment>
-                        ),
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton onClick={() => setShowOpenAiKey(!showOpenAiKey)} edge="end" disabled={!isEditing}>
-                              {showOpenAiKey ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                          </InputAdornment>
-                        ),
-                      }}
-                    />
-                    
-                    {/* API Key Status Indicator */}
-                    {!isEditing && (
-                      <Box mt={1} display="flex" alignItems="center" gap={1}>
-                        <Chip
-                          icon={user?.hasOpenAiKey ? <CheckCircleIcon /> : <WarningIcon />}
-                          label={user?.hasOpenAiKey ? 'API Key Configured' : 'API Key Required'}
-                          color={user?.hasOpenAiKey ? 'success' : 'warning'}
-                          size="small"
-                          variant="outlined"
-                        />
-                      </Box>
-                    )}
+                    >
+                      <Avatar
+                        {...stringAvatar(formData.name || 'User')}
+                        sx={{
+                          width: 100,
+                          height: 100,
+                          border: '4px solid white',
+                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                        }}
+                      />
+                    </Badge>
                   </Box>
-                </Grid>
+                </Box>
 
-                {/* Action Buttons */}
-                <Grid size={12}>
-                  <Box display="flex" gap={2} justifyContent="flex-end" mt={2}>
-                    {!isEditing ? (
-                      <Button variant="contained" onClick={() => setIsEditing(true)} startIcon={<PersonIcon />}>
-                        Edit Profile
-                      </Button>
-                    ) : (
+                <CardContent sx={{ pt: 7, pb: 3, px: 3, textAlign: 'center' }}>
+                  <Typography variant="h5" component="h2" gutterBottom fontWeight={600}>
+                    {formData.name || 'User'}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2 }}>
+                    {formData.email}
+                  </Typography>
+
+                  <Stack direction="row" spacing={1} justifyContent="center" sx={{ mb: 2 }}>
+                    <Chip
+                      label={user.role === 'admin' ? 'Administrator' : 'User'}
+                      size="small"
+                      color="primary"
+                      variant="outlined"
+                    />
+                    <Chip
+                      icon={user.isEmailVerified ? <CheckCircleIcon /> : <WarningIcon />}
+                      label={user.isEmailVerified ? 'Verified' : 'Not Verified'}
+                      color={user.isEmailVerified ? 'success' : 'warning'}
+                      size="small"
+                    />
+                  </Stack>
+
+                  {formData.bio && !isEditing && (
+                    <>
+                      <Divider sx={{ my: 2 }} />
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 2,
+                          textAlign: 'left',
+                          bgcolor: 'rgba(50, 13, 154, 0.03)',
+                          borderRadius: 2,
+                        }}
+                      >
+                        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
+                          <InfoIcon sx={{ fontSize: 18, color: 'primary.main' }} />
+                          <Typography variant="subtitle2" color="primary" fontWeight={600}>
+                            Bio
+                          </Typography>
+                        </Stack>
+                        <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+                          {formData.bio}
+                        </Typography>
+                      </Paper>
+                    </>
+                  )}
+
+                  {!isEditing &&
+                    (formData.socialLinks.twitter ||
+                      formData.socialLinks.linkedin ||
+                      formData.socialLinks.github ||
+                      formData.socialLinks.website) && (
                       <>
-                        <Button
-                          variant="outlined"
-                          onClick={handleCancel}
-                          startIcon={<CancelIcon />}
-                          disabled={updateLoading}
+                        <Divider sx={{ my: 2 }} />
+                        <Paper
+                          elevation={0}
+                          sx={{
+                            p: 2,
+                            textAlign: 'left',
+                            bgcolor: 'rgba(50, 13, 154, 0.03)',
+                            borderRadius: 2,
+                          }}
                         >
-                          Cancel
-                        </Button>
-                        <Button
-                          type="submit"
-                          variant="contained"
-                          startIcon={updateLoading ? <CircularProgress size={20} /> : <SaveIcon />}
-                          disabled={updateLoading}
-                        >
-                          {updateLoading ? 'Saving...' : 'Save Changes'}
-                        </Button>
+                          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.5 }}>
+                            <LinkIcon sx={{ fontSize: 18, color: 'primary.main' }} />
+                            <Typography variant="subtitle2" color="primary" fontWeight={600}>
+                              Social Links
+                            </Typography>
+                          </Stack>
+                          <Stack spacing={1}>
+                            {formData.socialLinks.twitter && (
+                              <Tooltip title="Visit Twitter Profile" placement="right">
+                                <Button
+                                  startIcon={<TwitterIcon />}
+                                  href={formData.socialLinks.twitter}
+                                  target="_blank"
+                                  size="small"
+                                  fullWidth
+                                  variant="outlined"
+                                  sx={{
+                                    justifyContent: 'flex-start',
+                                    textTransform: 'none',
+                                    borderRadius: 2,
+                                    '&:hover': {
+                                      bgcolor: 'primary.light',
+                                      color: 'white',
+                                    },
+                                  }}
+                                >
+                                  Twitter
+                                </Button>
+                              </Tooltip>
+                            )}
+                            {formData.socialLinks.linkedin && (
+                              <Tooltip title="Visit LinkedIn Profile" placement="right">
+                                <Button
+                                  startIcon={<LinkedInIcon />}
+                                  href={formData.socialLinks.linkedin}
+                                  target="_blank"
+                                  size="small"
+                                  fullWidth
+                                  variant="outlined"
+                                  sx={{
+                                    justifyContent: 'flex-start',
+                                    textTransform: 'none',
+                                    borderRadius: 2,
+                                    '&:hover': {
+                                      bgcolor: 'primary.light',
+                                      color: 'white',
+                                    },
+                                  }}
+                                >
+                                  LinkedIn
+                                </Button>
+                              </Tooltip>
+                            )}
+                            {formData.socialLinks.github && (
+                              <Tooltip title="Visit GitHub Profile" placement="right">
+                                <Button
+                                  startIcon={<GitHubIcon />}
+                                  href={formData.socialLinks.github}
+                                  target="_blank"
+                                  size="small"
+                                  fullWidth
+                                  variant="outlined"
+                                  sx={{
+                                    justifyContent: 'flex-start',
+                                    textTransform: 'none',
+                                    borderRadius: 2,
+                                    '&:hover': {
+                                      bgcolor: 'primary.light',
+                                      color: 'white',
+                                    },
+                                  }}
+                                >
+                                  GitHub
+                                </Button>
+                              </Tooltip>
+                            )}
+                            {formData.socialLinks.website && (
+                              <Tooltip title="Visit Website" placement="right">
+                                <Button
+                                  startIcon={<LanguageIcon />}
+                                  href={formData.socialLinks.website}
+                                  target="_blank"
+                                  size="small"
+                                  fullWidth
+                                  variant="outlined"
+                                  sx={{
+                                    justifyContent: 'flex-start',
+                                    textTransform: 'none',
+                                    borderRadius: 2,
+                                    '&:hover': {
+                                      bgcolor: 'primary.light',
+                                      color: 'white',
+                                    },
+                                  }}
+                                >
+                                  Website
+                                </Button>
+                              </Tooltip>
+                            )}
+                          </Stack>
+                        </Paper>
                       </>
                     )}
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
-          </CardContent>
-        </Card>
 
-        {/* Confirmation Dialog */}
-        <ConfirmationDialog
-          open={showConfirmDialog}
-          title="Confirm Email Change"
-          message={`Are you sure you want to change your email to "${formData.email}"? You may need to verify your new email address.`}
-          onConfirm={handleConfirmUpdate}
-          onCancel={handleCancelUpdate}
-          confirmText="Change Email"
-          confirmColor="warning"
-        />
-      </Container>
+                  {user.updatedAt && (
+                    <>
+                      <Divider sx={{ my: 2 }} />
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="center"
+                      >
+                        Last updated:{' '}
+                        {new Date(user.updatedAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </Typography>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Right Column - Edit Form */}
+            <Grid size={{ xs: 12, md: 8 }}>
+              <Card
+                sx={{
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+                  borderRadius: 2,
+                }}
+              >
+                <CardContent sx={{ p: 4 }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+                    <Stack direction="row" alignItems="center" spacing={1.5}>
+                      <AccountCircleIcon sx={{ fontSize: 28, color: 'primary.main' }} />
+                      <Typography variant="h5" component="h3" fontWeight={600}>
+                        Profile Information
+                      </Typography>
+                    </Stack>
+                    {!isEditing && (
+                      <Button
+                        variant="contained"
+                        onClick={() => setIsEditing(true)}
+                        startIcon={<EditIcon />}
+                        sx={{
+                          borderRadius: 2,
+                          textTransform: 'none',
+                          px: 3,
+                          background: 'linear-gradient(135deg, #320D9A 0%, #555FAC 100%)',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, #2a0b82 0%, #4a5197 100%)',
+                          },
+                        }}
+                      >
+                        Edit Profile
+                      </Button>
+                    )}
+                  </Box>
+
+                  <Box component="form" onSubmit={handleSubmit}>
+                    <Grid container spacing={3}>
+                      {/* Basic Information Section */}
+                      <Grid size={12}>
+                        <Paper
+                          elevation={0}
+                          sx={{
+                            p: 2.5,
+                            bgcolor: 'rgba(50, 13, 154, 0.03)',
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: 'rgba(50, 13, 154, 0.1)',
+                          }}
+                        >
+                          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+                            <PersonIcon sx={{ color: 'primary.main' }} />
+                            <Typography variant="h6" fontWeight={600} color="primary">
+                              Basic Information
+                            </Typography>
+                          </Stack>
+                          <Grid container spacing={2}>
+                            {/* Name Field */}
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                              <TextField
+                                fullWidth
+                                label="Full Name"
+                                value={formData.name}
+                                onChange={handleInputChange('name')}
+                                error={!!errors.name}
+                                helperText={errors.name}
+                                disabled={!isEditing}
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <PersonIcon color="action" />
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                  },
+                                }}
+                              />
+                            </Grid>
+
+                            {/* Email Field */}
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                              <TextField
+                                fullWidth
+                                label="Email Address"
+                                type="email"
+                                value={formData.email}
+                                onChange={handleInputChange('email')}
+                                error={!!errors.email}
+                                helperText={errors.email}
+                                disabled={!isEditing}
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <EmailIcon color="action" />
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                  },
+                                }}
+                              />
+                            </Grid>
+
+                            {/* Bio Field */}
+                            <Grid size={12}>
+                              <TextField
+                                fullWidth
+                                label="Bio"
+                                multiline
+                                rows={4}
+                                value={formData.bio}
+                                onChange={handleInputChange('bio')}
+                                error={!!errors.bio}
+                                helperText={errors.bio || `${formData.bio.length}/500 characters`}
+                                disabled={!isEditing}
+                                placeholder="Tell us about yourself..."
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 2 }}>
+                                      <InfoIcon color="action" />
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                  },
+                                }}
+                              />
+                            </Grid>
+                          </Grid>
+                        </Paper>
+                      </Grid>
+
+                      {/* Social Links Section */}
+                      <Grid size={12}>
+                        <Paper
+                          elevation={0}
+                          sx={{
+                            p: 2.5,
+                            bgcolor: 'rgba(50, 13, 154, 0.03)',
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: 'rgba(50, 13, 154, 0.1)',
+                          }}
+                        >
+                          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+                            <LinkIcon sx={{ color: 'primary.main' }} />
+                            <Typography variant="h6" fontWeight={600} color="primary">
+                              Social Links
+                            </Typography>
+                          </Stack>
+                          <Grid container spacing={2}>
+                            {/* Twitter */}
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                              <TextField
+                                fullWidth
+                                label="Twitter URL"
+                                value={formData.socialLinks.twitter}
+                                onChange={handleInputChange('socialLinks.twitter')}
+                                error={!!errors.twitter}
+                                helperText={errors.twitter}
+                                disabled={!isEditing}
+                                placeholder="https://twitter.com/username"
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <TwitterIcon color="action" />
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                  },
+                                }}
+                              />
+                            </Grid>
+
+                            {/* LinkedIn */}
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                              <TextField
+                                fullWidth
+                                label="LinkedIn URL"
+                                value={formData.socialLinks.linkedin}
+                                onChange={handleInputChange('socialLinks.linkedin')}
+                                error={!!errors.linkedin}
+                                helperText={errors.linkedin}
+                                disabled={!isEditing}
+                                placeholder="https://linkedin.com/in/username"
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <LinkedInIcon color="action" />
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                  },
+                                }}
+                              />
+                            </Grid>
+
+                            {/* GitHub */}
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                              <TextField
+                                fullWidth
+                                label="GitHub URL"
+                                value={formData.socialLinks.github}
+                                onChange={handleInputChange('socialLinks.github')}
+                                error={!!errors.github}
+                                helperText={errors.github}
+                                disabled={!isEditing}
+                                placeholder="https://github.com/username"
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <GitHubIcon color="action" />
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                  },
+                                }}
+                              />
+                            </Grid>
+
+                            {/* Website */}
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                              <TextField
+                                fullWidth
+                                label="Website URL"
+                                value={formData.socialLinks.website}
+                                onChange={handleInputChange('socialLinks.website')}
+                                error={!!errors.website}
+                                helperText={errors.website}
+                                disabled={!isEditing}
+                                placeholder="https://yourwebsite.com"
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <LanguageIcon color="action" />
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                  },
+                                }}
+                              />
+                            </Grid>
+                          </Grid>
+                        </Paper>
+                      </Grid>
+
+                      {/* Security Section */}
+                      <Grid size={12}>
+                        <Paper
+                          elevation={0}
+                          sx={{
+                            p: 2.5,
+                            bgcolor: 'rgba(50, 13, 154, 0.03)',
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: 'rgba(50, 13, 154, 0.1)',
+                          }}
+                        >
+                          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+                            <SecurityIcon sx={{ color: 'primary.main' }} />
+                            <Typography variant="h6" fontWeight={600} color="primary">
+                              Security & API Keys
+                            </Typography>
+                          </Stack>
+                          <Grid container spacing={2}>
+                            {/* Password Field */}
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                              <TextField
+                                fullWidth
+                                label="New Password"
+                                type={showPassword ? 'text' : 'password'}
+                                value={formData.password}
+                                onChange={handleInputChange('password')}
+                                error={!!errors.password}
+                                helperText={errors.password || 'Leave blank to keep current password'}
+                                disabled={!isEditing}
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <KeyIcon color="action" />
+                                    </InputAdornment>
+                                  ),
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      <IconButton
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        edge="end"
+                                        disabled={!isEditing}
+                                      >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                      </IconButton>
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                  },
+                                }}
+                              />
+                              {isEditing && formData.password && <PasswordStrength password={formData.password} />}
+                            </Grid>
+
+                            {/* Confirm Password Field */}
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                              <TextField
+                                fullWidth
+                                label="Confirm New Password"
+                                type={showConfirmPassword ? 'text' : 'password'}
+                                value={formData.confirmPassword}
+                                onChange={handleInputChange('confirmPassword')}
+                                error={!!errors.confirmPassword}
+                                helperText={errors.confirmPassword}
+                                disabled={!isEditing || !formData.password}
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <KeyIcon color="action" />
+                                    </InputAdornment>
+                                  ),
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      <IconButton
+                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                        edge="end"
+                                        disabled={!isEditing || !formData.password}
+                                      >
+                                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                                      </IconButton>
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                  },
+                                }}
+                              />
+                            </Grid>
+
+                            {/* OpenAI API Key Field */}
+                            <Grid size={12}>
+                              <TextField
+                                fullWidth
+                                label="OpenAI API Key"
+                                type={showOpenAiKey ? 'text' : 'password'}
+                                value={formData.openAiKey}
+                                onChange={handleInputChange('openAiKey')}
+                                error={!!errors.openAiKey}
+                                helperText={
+                                  errors.openAiKey ||
+                                  (isEditing
+                                    ? 'Enter a new OpenAI API key to update it'
+                                    : user?.hasOpenAiKey
+                                      ? 'API key is set (hidden for security)'
+                                      : 'No API key set - required for blog generation')
+                                }
+                                disabled={!isEditing}
+                                placeholder={isEditing ? 'Enter new API key...' : ''}
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <KeyIcon color="action" />
+                                    </InputAdornment>
+                                  ),
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      <IconButton
+                                        onClick={() => setShowOpenAiKey(!showOpenAiKey)}
+                                        edge="end"
+                                        disabled={!isEditing}
+                                      >
+                                        {showOpenAiKey ? <VisibilityOff /> : <Visibility />}
+                                      </IconButton>
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                  },
+                                }}
+                              />
+
+                              {/* API Key Status Indicator */}
+                              {!isEditing && (
+                                <Box mt={1.5} display="flex" alignItems="center" gap={1}>
+                                  <Chip
+                                    icon={user?.hasOpenAiKey ? <CheckCircleIcon /> : <WarningIcon />}
+                                    label={user?.hasOpenAiKey ? 'API Key Configured' : 'API Key Required'}
+                                    color={user?.hasOpenAiKey ? 'success' : 'warning'}
+                                    size="small"
+                                    variant="outlined"
+                                  />
+                                </Box>
+                              )}
+                            </Grid>
+                          </Grid>
+                        </Paper>
+                      </Grid>
+
+                      {/* Action Buttons */}
+                      {isEditing && (
+                        <Grid size={12}>
+                          <Paper
+                            elevation={0}
+                            sx={{
+                              p: 2,
+                              bgcolor: 'rgba(50, 13, 154, 0.03)',
+                              borderRadius: 2,
+                            }}
+                          >
+                            <Stack direction="row" spacing={2} justifyContent="flex-end">
+                              <Button
+                                variant="outlined"
+                                onClick={handleCancel}
+                                startIcon={<CancelIcon />}
+                                disabled={updateLoading}
+                                sx={{
+                                  borderRadius: 2,
+                                  textTransform: 'none',
+                                  px: 3,
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                              <Button
+                                type="submit"
+                                variant="contained"
+                                startIcon={updateLoading ? <CircularProgress size={20} /> : <SaveIcon />}
+                                disabled={updateLoading}
+                                sx={{
+                                  borderRadius: 2,
+                                  textTransform: 'none',
+                                  px: 3,
+                                  background: 'linear-gradient(135deg, #320D9A 0%, #555FAC 100%)',
+                                  '&:hover': {
+                                    background: 'linear-gradient(135deg, #2a0b82 0%, #4a5197 100%)',
+                                  },
+                                }}
+                              >
+                                {updateLoading ? 'Saving...' : 'Save Changes'}
+                              </Button>
+                            </Stack>
+                          </Paper>
+                        </Grid>
+                      )}
+                    </Grid>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+
+          {/* Confirmation Dialog */}
+          <ConfirmationDialog
+            open={showConfirmDialog}
+            title="Confirm Email Change"
+            message={`Are you sure you want to change your email to "${formData.email}"? You may need to verify your new email address.`}
+            onConfirm={handleConfirmUpdate}
+            onCancel={handleCancelUpdate}
+            confirmText="Change Email"
+            confirmColor="warning"
+          />
+        </Container>
+      </Box>
       <Footer />
     </>
   );

@@ -9,6 +9,13 @@ export interface UserData {
   isEmailVerified: boolean;
   openAiKey?: string;
   hasOpenAiKey?: boolean;
+  bio?: string;
+  socialLinks?: {
+    twitter?: string;
+    linkedin?: string;
+    github?: string;
+    website?: string;
+  };
   followers?: string[];
   following?: string[];
 }

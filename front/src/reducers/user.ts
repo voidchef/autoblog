@@ -10,6 +10,12 @@ export type UserData = {
   isEmailVerified?: boolean;
   avatar?: string;
   bio?: string;
+  socialLinks?: {
+    twitter?: string;
+    linkedin?: string;
+    github?: string;
+    website?: string;
+  };
   createdAt?: string;
   updatedAt?: string;
   lastLogin?: string;

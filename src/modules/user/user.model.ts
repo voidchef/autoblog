@@ -52,6 +52,29 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
       trim: true,
       private: true, // used by the toJSON plugin to exclude from responses
     },
+    bio: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+    },
+    socialLinks: {
+      twitter: {
+        type: String,
+        trim: true,
+      },
+      linkedin: {
+        type: String,
+        trim: true,
+      },
+      github: {
+        type: String,
+        trim: true,
+      },
+      website: {
+        type: String,
+        trim: true,
+      },
+    },
     followers: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
