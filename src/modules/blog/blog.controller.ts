@@ -174,3 +174,16 @@ export const dislikeBlog = catchAsync(async (req: Request, res: Response) => {
   }
 });
 
+export const getBlogEngagementStats = catchAsync(async (req: Request, res: Response) => {
+  if (typeof req.params['slug'] === 'string') {
+    const stats = await blogService.getBlogEngagementStats(req.params['slug']);
+    res.send(stats);
+  }
+});
+
+export const getAllBlogsEngagementStats = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+  const stats = await blogService.getAllBlogsEngagementStats(user._id as mongoose.Types.ObjectId);
+  res.send(stats);
+});
+

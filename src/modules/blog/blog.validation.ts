@@ -91,3 +91,13 @@ export const bulkDeleteBlogs = {
     blogIds: Joi.array().items(Joi.string().custom(objectId)).required(),
   }),
 };
+
+export const getBlogEngagementStats = {
+  params: Joi.object().keys({
+    slug: Joi.string().required(),
+  }),
+};
+
+export const getAllBlogsEngagementStats = {
+  // No params needed - uses authenticated user
+};

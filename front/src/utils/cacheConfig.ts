@@ -16,6 +16,9 @@ export const CACHE_TIMES = {
   FEATURED_BLOGS: 600, // 10 minutes
   BLOG_ANALYTICS: 3600, // 1 hour
 
+  // Dashboard - moderate caching
+  DASHBOARD: 600, // 10 minutes
+
   // Search results - short caching
   SEARCH_RESULTS: 60, // 1 minute
 

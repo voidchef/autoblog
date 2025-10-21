@@ -575,6 +575,180 @@ describe('Blog routes', () => {
     });
   });
 
+  describe('GET /v1/blogs/my-engagement-stats', () => {
+    beforeEach(async () => {
+      await insertUsers([admin, userOne]);
+      // Make blogs published so they appear in engagement stats
+      const publishedBlogOne = { ...blogOne, isPublished: true, isDraft: false };
+      const publishedBlogTwo = { ...blogTwo, isPublished: true, isDraft: false };
+      await insertBlogs([publishedBlogOne, publishedBlogTwo]);
+    });
+
+    test('should return 200 and aggregate engagement stats for all user blogs', async () => {
+      const res = await request(app)
+        .get('/v1/blogs/my-engagement-stats')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .send()
+        .expect(httpStatus.OK);
+
+      expect(res.body).toEqual({
+        totalBlogs: 2,
+        totalLikes: 0,
+        totalDislikes: 0,
+        totalComments: 0,
+        totalEngagement: 0,
+        avgEngagementPerBlog: '0.00',
+      });
+    });
+
+    test('should return correct aggregate stats with engagement data', async () => {
+      const Comment = mongoose.model('Comment');
+      const dbBlogOne = await Blog.findOne({ slug: blogOne.slug });
+      const dbBlogTwo = await Blog.findOne({ slug: blogTwo.slug });
+
+      // Add likes and dislikes to both blogs
+      await dbBlogOne?.toggleLike(userOne._id);
+      await dbBlogOne?.toggleLike(admin._id);
+      await dbBlogTwo?.toggleLike(userOne._id);
+      await dbBlogTwo?.toggleDislike(admin._id);
+
+      // Add comments
+      await Comment.create([
+        { content: 'Comment 1', author: userOne._id, blog: dbBlogOne?._id },
+        { content: 'Comment 2', author: admin._id, blog: dbBlogOne?._id },
+        { content: 'Comment 3', author: userOne._id, blog: dbBlogTwo?._id },
+      ]);
+
+      const res = await request(app)
+        .get('/v1/blogs/my-engagement-stats')
+        .set('Authorization', `Bearer ${adminAccessToken}`)
+        .send()
+        .expect(httpStatus.OK);
+
+      expect(res.body.totalBlogs).toBe(2);
+      expect(res.body.totalLikes).toBe(3); // 2 likes on blog1, 1 like on blog2
+      expect(res.body.totalDislikes).toBe(1); // 1 dislike on blog2
+      expect(res.body.totalComments).toBe(3); // 2 comments on blog1, 1 on blog2
+      expect(res.body.totalEngagement).toBe(7); // 3+1+3
+      expect(parseFloat(res.body.avgEngagementPerBlog)).toBeCloseTo(3.5); // 7/2
+    });
+
+    test('should return 401 error if access token is missing', async () => {
+      await request(app)
+        .get('/v1/blogs/my-engagement-stats')
+        .send()
+        .expect(httpStatus.UNAUTHORIZED);
+    });
+
+    test('should return zero stats if user has no published blogs', async () => {
+      const res = await request(app)
+        .get('/v1/blogs/my-engagement-stats')
+        .set('Authorization', `Bearer ${userOneAccessToken}`)
+        .send()
+        .expect(httpStatus.OK);
+
+      expect(res.body).toEqual({
+        totalBlogs: 0,
+        totalLikes: 0,
+        totalDislikes: 0,
+        totalComments: 0,
+        totalEngagement: 0,
+        avgEngagementPerBlog: '0.00',
+      });
+    });
+  });
+
+  describe('GET /v1/blogs/:slug/engagement-stats', () => {
+    beforeEach(async () => {
+      await insertUsers([admin, userOne]);
+      await insertBlogs([blogOne]);
+    });
+
+    test('should return 200 and engagement stats for a blog', async () => {
+      const res = await request(app)
+        .get(`/v1/blogs/${blogOne.slug}/engagement-stats`)
+        .send()
+        .expect(httpStatus.OK);
+
+      expect(res.body).toEqual({
+        slug: blogOne.slug,
+        title: blogOne.title,
+        likesCount: 0,
+        dislikesCount: 0,
+        commentsCount: 0,
+        totalEngagement: 0,
+      });
+    });
+
+    test('should return correct engagement stats with likes and dislikes', async () => {
+      const Comment = mongoose.model('Comment');
+      const dbBlog = await Blog.findOne({ slug: blogOne.slug });
+
+      // Add likes and dislikes
+      await dbBlog?.toggleLike(userOne._id);
+      await dbBlog?.toggleDislike(admin._id);
+
+      // Add comments
+      await Comment.create([
+        {
+          content: 'Test comment 1',
+          author: userOne._id,
+          blog: dbBlog?._id,
+        },
+        {
+          content: 'Test comment 2',
+          author: admin._id,
+          blog: dbBlog?._id,
+        },
+      ]);
+
+      const res = await request(app)
+        .get(`/v1/blogs/${blogOne.slug}/engagement-stats`)
+        .send()
+        .expect(httpStatus.OK);
+
+      expect(res.body.slug).toBe(blogOne.slug);
+      expect(res.body.title).toBe(blogOne.title);
+      expect(res.body.likesCount).toBe(1);
+      expect(res.body.dislikesCount).toBe(1);
+      expect(res.body.commentsCount).toBe(2);
+      expect(res.body.totalEngagement).toBe(4); // 1 like + 1 dislike + 2 comments
+    });
+
+    test('should return 404 if blog does not exist', async () => {
+      await request(app)
+        .get('/v1/blogs/non-existent-slug/engagement-stats')
+        .send()
+        .expect(httpStatus.NOT_FOUND);
+    });
+
+    test('should work without authentication', async () => {
+      // No authentication token provided
+      const res = await request(app)
+        .get(`/v1/blogs/${blogOne.slug}/engagement-stats`)
+        .send()
+        .expect(httpStatus.OK);
+
+      expect(res.body).toHaveProperty('slug');
+      expect(res.body).toHaveProperty('likesCount');
+      expect(res.body).toHaveProperty('commentsCount');
+    });
+
+    test('should return zero counts for blog with no engagement', async () => {
+      await insertBlogs([blogTwo]);
+
+      const res = await request(app)
+        .get(`/v1/blogs/${blogTwo.slug}/engagement-stats`)
+        .send()
+        .expect(httpStatus.OK);
+
+      expect(res.body.likesCount).toBe(0);
+      expect(res.body.dislikesCount).toBe(0);
+      expect(res.body.commentsCount).toBe(0);
+      expect(res.body.totalEngagement).toBe(0);
+    });
+  });
+
   describe('Blog model methods', () => {
     test('should generate reading time correctly', async () => {
       await insertUsers([admin]);

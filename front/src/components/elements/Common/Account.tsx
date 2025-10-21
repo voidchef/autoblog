@@ -128,7 +128,7 @@ export default function AccountMenu() {
           <ListItemIcon>
             <Settings fontSize="small" />
           </ListItemIcon>
-          Admin Panel
+          Dashboard
         </MenuItem>
         <MenuItem onClick={handleLogout}>
           <ListItemIcon>

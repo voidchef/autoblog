@@ -67,6 +67,15 @@ export interface BlogViewsParams {
   slug: string;
 }
 
+export interface AllBlogsEngagementStats {
+  totalBlogs: number;
+  totalLikes: number;
+  totalDislikes: number;
+  totalComments: number;
+  totalEngagement: number;
+  avgEngagementPerBlog: string;
+}
+
 export const blogApi = api.injectEndpoints({
   endpoints: (builder) => ({
     generateBlog: builder.mutation<IBlog, IBlogData>({
@@ -165,6 +174,12 @@ export const blogApi = api.injectEndpoints({
         return viewsArray;
       },
       keepUnusedDataFor: 3600, // Keep analytics data for 1 hour
+    }),
+
+    getAllBlogsEngagementStats: builder.query<AllBlogsEngagementStats, void>({
+      query: () => '/blogs/my-engagement-stats',
+      providesTags: [{ type: 'Blog', id: 'MY_ENGAGEMENT' }],
+      keepUnusedDataFor: 600, // Keep engagement data for 10 minutes
     }),
 
     updateBlog: builder.mutation<IBlog, { id: string; data: Partial<IBlog>; preview?: boolean }>({
@@ -343,6 +358,7 @@ export const {
   useGetBlogQuery,
   useGetBlogBySlugQuery,
   useGetBlogViewsQuery,
+  useGetAllBlogsEngagementStatsQuery,
   useUpdateBlogMutation,
   usePublishBlogMutation,
   useUnpublishBlogMutation,

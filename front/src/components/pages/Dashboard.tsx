@@ -12,6 +12,7 @@ import { clearBlog } from '../../reducers/blog';
 import { useGetBlogViewsQuery } from '../../services/blogApi';
 import ViewsGraph from '../elements/Dashboard/ViewsGraph';
 import DraftsTable from '../elements/Dashboard/DraftsTable';
+import EngagementMetrics from '../elements/Dashboard/EngagementMetrics';
 
 const months = Array.from({ length: 12 }, (_, index) => ({
   value: index,
@@ -81,6 +82,12 @@ export default function Dashboard() {
         justifyContent={'space-between'}
         sx={{ marginX: { xs: '1rem', sm: '7rem' } }}
       >
+        {/* Engagement Metrics Section - Overview of all blogs */}
+        <EngagementMetrics />
+        
+        <Box sx={{ my: { sm: 3, xs: 1 } }} />
+        
+        {/* Blog Views Graph Section */}
         <Box component={'div'} width={'100%'} height={{ sm: '35rem', xs: '15rem' }}>
           <Box
             display="flex"
@@ -108,6 +115,7 @@ export default function Dashboard() {
           </Box>
           {blogViews.length === monthDays.length && <ViewsGraph blogViews={blogViews} monthDays={monthDays} />}
         </Box>
+        
         <Box sx={{ my: { sm: 3, xs: 1 } }} />
         <BlogsTable handleSelectBlog={handleSelectBlog} />
         <Box sx={{ my: { sm: 3, xs: 1 } }} />
