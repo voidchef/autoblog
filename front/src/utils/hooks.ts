@@ -4,6 +4,7 @@ import { useGetUserQuery } from '../services/userApi';
 import { useGetAppSettingsQuery } from '../services/appSettingsApi';
 import { useGetFeaturedBlogsQuery, useGetBlogsQuery } from '../services/blogApi';
 import { showError } from '../reducers/alert';
+import { setThemeMode } from '../reducers/appSettings';
 import { REFETCH_INTERVALS } from './cacheConfig';
 
 /**
@@ -145,12 +146,12 @@ export const useTheme = () => {
 
   const toggleTheme = () => {
     const newMode = themeMode === 'light' ? 'dark' : 'light';
-    dispatch({ type: 'appSettings/setThemeMode', payload: newMode });
+    dispatch(setThemeMode(newMode));
     localStorage.setItem('themeMode', newMode);
   };
 
   const setTheme = (mode: 'light' | 'dark') => {
-    dispatch({ type: 'appSettings/setThemeMode', payload: mode });
+    dispatch(setThemeMode(mode));
     localStorage.setItem('themeMode', mode);
   };
 

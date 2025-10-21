@@ -13,10 +13,12 @@ export default function DarkMode() {
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
-        dispatch(setThemeMode(themeMode === 'light' ? 'dark' : 'light'));
+        const newMode = themeMode === 'light' ? 'dark' : 'light';
+        dispatch(setThemeMode(newMode));
+        localStorage.setItem('themeMode', newMode);
       },
     }),
-    [themeMode],
+    [themeMode, dispatch],
   );
 
   return (
