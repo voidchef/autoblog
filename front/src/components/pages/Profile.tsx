@@ -366,9 +366,9 @@ const Profile: React.FC = () => {
       ...baseAvatar,
       sx: {
         ...baseAvatar.sx,
-        width: 120,
-        height: 120,
-        fontSize: '2.5rem',
+        width: { xs: 80, sm: 100, md: 120 },
+        height: { xs: 80, sm: 100, md: 120 },
+        fontSize: { xs: '2rem', sm: '2.5rem', md: '2.5rem' },
       },
     };
   };
@@ -406,28 +406,34 @@ const Profile: React.FC = () => {
         sx={{
           background: (theme) => theme.palette.customColors.gradients.badgeLight,
           minHeight: '100vh',
-          py: 4,
+          py: { xs: 2, sm: 3, md: 4 },
+          px: { xs: 1, sm: 0 },
         }}
       >
         <Container maxWidth="lg">
           {/* Header Section */}
-          <Box sx={{ mb: 4, textAlign: 'center' }}>
+          <Box sx={{ mb: { xs: 2, sm: 3, md: 4 }, textAlign: 'center', px: { xs: 1, sm: 0 } }}>
             <Typography
               variant="h3"
               component="h1"
               gutterBottom
               sx={{
                 fontWeight: 700,
+                fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' },
                 background: (theme) => theme.palette.customColors.gradients.primary,
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                mb: 1,
+                mb: { xs: 0.5, md: 1 },
               }}
             >
               Profile Settings
             </Typography>
-            <Typography variant="body1" color="text.secondary">
+            <Typography 
+              variant="body1" 
+              color="text.secondary"
+              sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}
+            >
               Manage your account information and preferences
             </Typography>
           </Box>
@@ -437,14 +443,15 @@ const Profile: React.FC = () => {
             <Grid size={{ xs: 12, md: 4 }}>
               <Card
                 sx={{
-                  position: 'sticky',
-                  top: 80,
+                  position: { xs: 'static', md: 'sticky' },
+                  top: { xs: 'auto', md: 80 },
                   overflow: 'hidden',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+                  boxShadow: { xs: '0 4px 16px rgba(0, 0, 0, 0.06)', md: '0 8px 32px rgba(0, 0, 0, 0.08)' },
                   transition: 'transform 0.2s, box-shadow 0.2s',
+                  mb: { xs: 2, md: 0 },
                   '&:hover': {
-                    transform: 'translateY(-4px)',
-                    boxShadow: '0 12px 48px rgba(0, 0, 0, 0.12)',
+                    transform: { xs: 'none', md: 'translateY(-4px)' },
+                    boxShadow: { xs: '0 4px 16px rgba(0, 0, 0, 0.06)', md: '0 12px 48px rgba(0, 0, 0, 0.12)' },
                   },
                 }}
               >
@@ -452,7 +459,7 @@ const Profile: React.FC = () => {
                 <Box
                   sx={{
                     background: (theme) => theme.palette.customColors.gradients.primary,
-                    height: 120,
+                    height: { xs: 100, sm: 120 },
                     position: 'relative',
                   }}
                 >
@@ -475,7 +482,7 @@ const Profile: React.FC = () => {
                               borderRadius: '50%',
                               color: 'white',
                               p: 0.3,
-                              fontSize: 28,
+                              fontSize: { xs: 22, sm: 28 },
                             }}
                           />
                         ) : null
@@ -484,9 +491,10 @@ const Profile: React.FC = () => {
                       <Avatar
                         {...profileAvatar(formData.name || 'User')}
                         sx={{
-                          width: 100,
-                          height: 100,
-                          border: '4px solid white',
+                          width: { xs: 80, sm: 100 },
+                          height: { xs: 80, sm: 100 },
+                          fontSize: { xs: '2rem', sm: '2.5rem' },
+                          border: { xs: '3px solid white', sm: '4px solid white' },
                           boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                         }}
                       />
@@ -494,48 +502,86 @@ const Profile: React.FC = () => {
                   </Box>
                 </Box>
 
-                <CardContent sx={{ pt: 7, pb: 3, px: 3, textAlign: 'center' }}>
-                  <Typography variant="h5" component="h2" gutterBottom fontWeight={600}>
+                <CardContent sx={{ pt: { xs: 6, sm: 7 }, pb: { xs: 2, sm: 3 }, px: { xs: 2, sm: 3 }, textAlign: 'center' }}>
+                  <Typography 
+                    variant="h5" 
+                    component="h2" 
+                    gutterBottom 
+                    fontWeight={600}
+                    sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}
+                  >
                     {formData.name || 'User'}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2 }}>
+                  <Typography 
+                    variant="body2" 
+                    color="text.secondary" 
+                    gutterBottom 
+                    sx={{ 
+                      mb: 2,
+                      fontSize: { xs: '0.813rem', sm: '0.875rem' },
+                      wordBreak: 'break-word',
+                    }}
+                  >
                     {formData.email}
                   </Typography>
 
-                  <Stack direction="row" spacing={1} justifyContent="center" sx={{ mb: 2 }}>
+                  <Stack 
+                    direction="row" 
+                    spacing={1} 
+                    justifyContent="center" 
+                    sx={{ 
+                      mb: 2,
+                      flexWrap: 'wrap',
+                      gap: 1,
+                    }}
+                  >
                     <Chip
                       label={user.role === 'admin' ? 'Administrator' : 'User'}
                       size="small"
                       color="primary"
                       variant="outlined"
+                      sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
                     />
                     <Chip
                       icon={user.isEmailVerified ? <CheckCircleIcon /> : <WarningIcon />}
                       label={user.isEmailVerified ? 'Verified' : 'Not Verified'}
                       color={user.isEmailVerified ? 'success' : 'warning'}
                       size="small"
+                      sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
                     />
                   </Stack>
 
                   {formData.bio && !isEditing && (
                     <>
-                      <Divider sx={{ my: 2 }} />
+                      <Divider sx={{ my: { xs: 1.5, sm: 2 } }} />
                       <Paper
                         elevation={0}
                         sx={{
-                          p: 2,
+                          p: { xs: 1.5, sm: 2 },
                           textAlign: 'left',
                           bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
                           borderRadius: 2,
                         }}
                       >
                         <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-                          <InfoIcon sx={{ fontSize: 18, color: 'primary.main' }} />
-                          <Typography variant="subtitle2" color="primary" fontWeight={600}>
+                          <InfoIcon sx={{ fontSize: { xs: 16, sm: 18 }, color: 'primary.main' }} />
+                          <Typography 
+                            variant="subtitle2" 
+                            color="primary" 
+                            fontWeight={600}
+                            sx={{ fontSize: { xs: '0.813rem', sm: '0.875rem' } }}
+                          >
                             Bio
                           </Typography>
                         </Stack>
-                        <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
+                            whiteSpace: 'pre-wrap', 
+                            lineHeight: 1.6,
+                            fontSize: { xs: '0.813rem', sm: '0.875rem' },
+                          }}
+                        >
                           {formData.bio}
                         </Typography>
                       </Paper>
@@ -548,19 +594,24 @@ const Profile: React.FC = () => {
                       formData.socialLinks.github ||
                       formData.socialLinks.website) && (
                       <>
-                        <Divider sx={{ my: 2 }} />
+                        <Divider sx={{ my: { xs: 1.5, sm: 2 } }} />
                         <Paper
                           elevation={0}
                           sx={{
-                            p: 2,
+                            p: { xs: 1.5, sm: 2 },
                             textAlign: 'left',
                             bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
                             borderRadius: 2,
                           }}
                         >
                           <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.5 }}>
-                            <LinkIcon sx={{ fontSize: 18, color: 'primary.main' }} />
-                            <Typography variant="subtitle2" color="primary" fontWeight={600}>
+                            <LinkIcon sx={{ fontSize: { xs: 16, sm: 18 }, color: 'primary.main' }} />
+                            <Typography 
+                              variant="subtitle2" 
+                              color="primary" 
+                              fontWeight={600}
+                              sx={{ fontSize: { xs: '0.813rem', sm: '0.875rem' } }}
+                            >
                               Social Links
                             </Typography>
                           </Stack>
@@ -568,7 +619,7 @@ const Profile: React.FC = () => {
                             {formData.socialLinks.twitter && (
                               <Tooltip title="Visit Twitter Profile" placement="right">
                                 <Button
-                                  startIcon={<TwitterIcon />}
+                                  startIcon={<TwitterIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
                                   href={formData.socialLinks.twitter}
                                   target="_blank"
                                   size="small"
@@ -578,6 +629,9 @@ const Profile: React.FC = () => {
                                     justifyContent: 'flex-start',
                                     textTransform: 'none',
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.813rem', sm: '0.875rem' },
+                                    py: { xs: 0.75, sm: 1 },
+                                    minHeight: { xs: '40px', sm: '44px' },
                                     '&:hover': {
                                       bgcolor: 'primary.light',
                                       color: 'white',
@@ -591,7 +645,7 @@ const Profile: React.FC = () => {
                             {formData.socialLinks.linkedin && (
                               <Tooltip title="Visit LinkedIn Profile" placement="right">
                                 <Button
-                                  startIcon={<LinkedInIcon />}
+                                  startIcon={<LinkedInIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
                                   href={formData.socialLinks.linkedin}
                                   target="_blank"
                                   size="small"
@@ -601,6 +655,9 @@ const Profile: React.FC = () => {
                                     justifyContent: 'flex-start',
                                     textTransform: 'none',
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.813rem', sm: '0.875rem' },
+                                    py: { xs: 0.75, sm: 1 },
+                                    minHeight: { xs: '40px', sm: '44px' },
                                     '&:hover': {
                                       bgcolor: 'primary.light',
                                       color: 'white',
@@ -614,7 +671,7 @@ const Profile: React.FC = () => {
                             {formData.socialLinks.github && (
                               <Tooltip title="Visit GitHub Profile" placement="right">
                                 <Button
-                                  startIcon={<GitHubIcon />}
+                                  startIcon={<GitHubIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
                                   href={formData.socialLinks.github}
                                   target="_blank"
                                   size="small"
@@ -624,6 +681,9 @@ const Profile: React.FC = () => {
                                     justifyContent: 'flex-start',
                                     textTransform: 'none',
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.813rem', sm: '0.875rem' },
+                                    py: { xs: 0.75, sm: 1 },
+                                    minHeight: { xs: '40px', sm: '44px' },
                                     '&:hover': {
                                       bgcolor: 'primary.light',
                                       color: 'white',
@@ -637,7 +697,7 @@ const Profile: React.FC = () => {
                             {formData.socialLinks.website && (
                               <Tooltip title="Visit Website" placement="right">
                                 <Button
-                                  startIcon={<LanguageIcon />}
+                                  startIcon={<LanguageIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
                                   href={formData.socialLinks.website}
                                   target="_blank"
                                   size="small"
@@ -647,6 +707,9 @@ const Profile: React.FC = () => {
                                     justifyContent: 'flex-start',
                                     textTransform: 'none',
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.813rem', sm: '0.875rem' },
+                                    py: { xs: 0.75, sm: 1 },
+                                    minHeight: { xs: '40px', sm: '44px' },
                                     '&:hover': {
                                       bgcolor: 'primary.light',
                                       color: 'white',
@@ -664,13 +727,14 @@ const Profile: React.FC = () => {
 
                   {user.updatedAt && (
                     <>
-                      <Divider sx={{ my: 2 }} />
+                      <Divider sx={{ my: { xs: 1.5, sm: 2 } }} />
                       <Typography
                         variant="caption"
                         color="text.secondary"
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
+                        sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
                       >
                         Last updated:{' '}
                         {new Date(user.updatedAt).toLocaleDateString('en-US', {
@@ -689,15 +753,27 @@ const Profile: React.FC = () => {
             <Grid size={{ xs: 12, md: 8 }}>
               <Card
                 sx={{
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)',
+                  boxShadow: { xs: '0 4px 16px rgba(0, 0, 0, 0.06)', md: '0 8px 32px rgba(0, 0, 0, 0.08)' },
                   borderRadius: 2,
                 }}
               >
-                <CardContent sx={{ p: 4 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+                <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+                  <Box 
+                    display="flex" 
+                    flexDirection={{ xs: 'column', sm: 'row' }}
+                    justifyContent="space-between" 
+                    alignItems={{ xs: 'flex-start', sm: 'center' }}
+                    mb={{ xs: 2, md: 3 }}
+                    gap={{ xs: 1.5, sm: 0 }}
+                  >
                     <Stack direction="row" alignItems="center" spacing={1.5}>
-                      <AccountCircleIcon sx={{ fontSize: 28, color: 'primary.main' }} />
-                      <Typography variant="h5" component="h3" fontWeight={600}>
+                      <AccountCircleIcon sx={{ fontSize: { xs: 24, sm: 28 }, color: 'primary.main' }} />
+                      <Typography 
+                        variant="h5" 
+                        component="h3" 
+                        fontWeight={600}
+                        sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}
+                      >
                         Profile Information
                       </Typography>
                     </Stack>
@@ -705,11 +781,14 @@ const Profile: React.FC = () => {
                       <Button
                         variant="contained"
                         onClick={() => setIsEditing(true)}
-                        startIcon={<EditIcon />}
+                        startIcon={<EditIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
+                        fullWidth={false}
                         sx={{
                           borderRadius: 2,
                           textTransform: 'none',
-                          px: 3,
+                          px: { xs: 2, sm: 3 },
+                          fontSize: { xs: '0.875rem', sm: '1rem' },
+                          minHeight: { xs: '40px', sm: '44px' },
                           background: (theme) => theme.palette.customColors.gradients.primary,
                           '&:hover': {
                             background: (theme) => theme.palette.customColors.gradients.primaryDark,
@@ -722,22 +801,27 @@ const Profile: React.FC = () => {
                   </Box>
 
                   <Box component="form" onSubmit={handleSubmit}>
-                    <Grid container spacing={3}>
+                    <Grid container spacing={{ xs: 2, sm: 3 }}>
                       {/* Basic Information Section */}
                       <Grid size={12}>
                         <Paper
                           elevation={0}
                           sx={{
-                            p: 2.5,
+                            p: { xs: 2, sm: 2.5 },
                             bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
                             borderRadius: 2,
                             border: '1px solid',
                             borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
                           }}
                         >
-                          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-                            <PersonIcon sx={{ color: 'primary.main' }} />
-                            <Typography variant="h6" fontWeight={600} color="primary">
+                          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: { xs: 1.5, sm: 2 } }}>
+                            <PersonIcon sx={{ color: 'primary.main', fontSize: { xs: 20, sm: 24 } }} />
+                            <Typography 
+                              variant="h6" 
+                              fontWeight={600} 
+                              color="primary"
+                              sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+                            >
                               Basic Information
                             </Typography>
                           </Stack>
@@ -755,13 +839,20 @@ const Profile: React.FC = () => {
                                 InputProps={{
                                   startAdornment: (
                                     <InputAdornment position="start">
-                                      <PersonIcon color="action" />
+                                      <PersonIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
                                     </InputAdornment>
                                   ),
                                 }}
                                 sx={{
                                   '& .MuiOutlinedInput-root': {
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
                                   },
                                 }}
                               />
@@ -781,13 +872,20 @@ const Profile: React.FC = () => {
                                 InputProps={{
                                   startAdornment: (
                                     <InputAdornment position="start">
-                                      <EmailIcon color="action" />
+                                      <EmailIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
                                     </InputAdornment>
                                   ),
                                 }}
                                 sx={{
                                   '& .MuiOutlinedInput-root': {
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
                                   },
                                 }}
                               />
@@ -809,13 +907,20 @@ const Profile: React.FC = () => {
                                 InputProps={{
                                   startAdornment: (
                                     <InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 2 }}>
-                                      <InfoIcon color="action" />
+                                      <InfoIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
                                     </InputAdornment>
                                   ),
                                 }}
                                 sx={{
                                   '& .MuiOutlinedInput-root': {
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
                                   },
                                 }}
                               />
@@ -829,16 +934,21 @@ const Profile: React.FC = () => {
                         <Paper
                           elevation={0}
                           sx={{
-                            p: 2.5,
+                            p: { xs: 2, sm: 2.5 },
                             bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
                             borderRadius: 2,
                             border: '1px solid',
                             borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
                           }}
                         >
-                          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-                            <LinkIcon sx={{ color: 'primary.main' }} />
-                            <Typography variant="h6" fontWeight={600} color="primary">
+                          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: { xs: 1.5, sm: 2 } }}>
+                            <LinkIcon sx={{ color: 'primary.main', fontSize: { xs: 20, sm: 24 } }} />
+                            <Typography 
+                              variant="h6" 
+                              fontWeight={600} 
+                              color="primary"
+                              sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+                            >
                               Social Links
                             </Typography>
                           </Stack>
@@ -857,13 +967,20 @@ const Profile: React.FC = () => {
                                 InputProps={{
                                   startAdornment: (
                                     <InputAdornment position="start">
-                                      <TwitterIcon color="action" />
+                                      <TwitterIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
                                     </InputAdornment>
                                   ),
                                 }}
                                 sx={{
                                   '& .MuiOutlinedInput-root': {
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
                                   },
                                 }}
                               />
@@ -883,13 +1000,20 @@ const Profile: React.FC = () => {
                                 InputProps={{
                                   startAdornment: (
                                     <InputAdornment position="start">
-                                      <LinkedInIcon color="action" />
+                                      <LinkedInIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
                                     </InputAdornment>
                                   ),
                                 }}
                                 sx={{
                                   '& .MuiOutlinedInput-root': {
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
                                   },
                                 }}
                               />
@@ -909,13 +1033,20 @@ const Profile: React.FC = () => {
                                 InputProps={{
                                   startAdornment: (
                                     <InputAdornment position="start">
-                                      <GitHubIcon color="action" />
+                                      <GitHubIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
                                     </InputAdornment>
                                   ),
                                 }}
                                 sx={{
                                   '& .MuiOutlinedInput-root': {
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
                                   },
                                 }}
                               />
@@ -935,13 +1066,20 @@ const Profile: React.FC = () => {
                                 InputProps={{
                                   startAdornment: (
                                     <InputAdornment position="start">
-                                      <LanguageIcon color="action" />
+                                      <LanguageIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
                                     </InputAdornment>
                                   ),
                                 }}
                                 sx={{
                                   '& .MuiOutlinedInput-root': {
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
                                   },
                                 }}
                               />
@@ -955,16 +1093,21 @@ const Profile: React.FC = () => {
                         <Paper
                           elevation={0}
                           sx={{
-                            p: 2.5,
+                            p: { xs: 2, sm: 2.5 },
                             bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
                             borderRadius: 2,
                             border: '1px solid',
                             borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
                           }}
                         >
-                          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-                            <SecurityIcon sx={{ color: 'primary.main' }} />
-                            <Typography variant="h6" fontWeight={600} color="primary">
+                          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: { xs: 1.5, sm: 2 } }}>
+                            <SecurityIcon sx={{ color: 'primary.main', fontSize: { xs: 20, sm: 24 } }} />
+                            <Typography 
+                              variant="h6" 
+                              fontWeight={600} 
+                              color="primary"
+                              sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+                            >
                               Security & API Keys
                             </Typography>
                           </Stack>
@@ -983,7 +1126,7 @@ const Profile: React.FC = () => {
                                 InputProps={{
                                   startAdornment: (
                                     <InputAdornment position="start">
-                                      <KeyIcon color="action" />
+                                      <KeyIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
                                     </InputAdornment>
                                   ),
                                   endAdornment: (
@@ -992,6 +1135,7 @@ const Profile: React.FC = () => {
                                         onClick={() => setShowPassword(!showPassword)}
                                         edge="end"
                                         disabled={!isEditing}
+                                        size="small"
                                       >
                                         {showPassword ? <VisibilityOff /> : <Visibility />}
                                       </IconButton>
@@ -1001,6 +1145,13 @@ const Profile: React.FC = () => {
                                 sx={{
                                   '& .MuiOutlinedInput-root': {
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
                                   },
                                 }}
                               />
@@ -1021,7 +1172,7 @@ const Profile: React.FC = () => {
                                 InputProps={{
                                   startAdornment: (
                                     <InputAdornment position="start">
-                                      <KeyIcon color="action" />
+                                      <KeyIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
                                     </InputAdornment>
                                   ),
                                   endAdornment: (
@@ -1030,6 +1181,7 @@ const Profile: React.FC = () => {
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                         edge="end"
                                         disabled={!isEditing || !formData.password}
+                                        size="small"
                                       >
                                         {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                                       </IconButton>
@@ -1039,6 +1191,13 @@ const Profile: React.FC = () => {
                                 sx={{
                                   '& .MuiOutlinedInput-root': {
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
                                   },
                                 }}
                               />
@@ -1066,7 +1225,7 @@ const Profile: React.FC = () => {
                                 InputProps={{
                                   startAdornment: (
                                     <InputAdornment position="start">
-                                      <KeyIcon color="action" />
+                                      <KeyIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
                                     </InputAdornment>
                                   ),
                                   endAdornment: (
@@ -1075,6 +1234,7 @@ const Profile: React.FC = () => {
                                         onClick={() => setShowOpenAiKey(!showOpenAiKey)}
                                         edge="end"
                                         disabled={!isEditing}
+                                        size="small"
                                       >
                                         {showOpenAiKey ? <VisibilityOff /> : <Visibility />}
                                       </IconButton>
@@ -1084,6 +1244,13 @@ const Profile: React.FC = () => {
                                 sx={{
                                   '& .MuiOutlinedInput-root': {
                                     borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
                                   },
                                 }}
                               />
@@ -1097,6 +1264,7 @@ const Profile: React.FC = () => {
                                     color={user?.hasOpenAiKey ? 'success' : 'warning'}
                                     size="small"
                                     variant="outlined"
+                                    sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
                                   />
                                 </Box>
                               )}
@@ -1111,21 +1279,29 @@ const Profile: React.FC = () => {
                           <Paper
                             elevation={0}
                             sx={{
-                              p: 2,
+                              p: { xs: 1.5, sm: 2 },
                               bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
                               borderRadius: 2,
                             }}
                           >
-                            <Stack direction="row" spacing={2} justifyContent="flex-end">
+                            <Stack 
+                              direction={{ xs: 'column', sm: 'row' }}
+                              spacing={2} 
+                              justifyContent="flex-end"
+                            >
                               <Button
                                 variant="outlined"
                                 onClick={handleCancel}
-                                startIcon={<CancelIcon />}
+                                startIcon={<CancelIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
                                 disabled={updateLoading}
+                                fullWidth={true}
                                 sx={{
                                   borderRadius: 2,
                                   textTransform: 'none',
-                                  px: 3,
+                                  px: { xs: 2, sm: 3 },
+                                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  minHeight: { xs: '44px', sm: '48px' },
+                                  order: { xs: 2, sm: 1 },
                                 }}
                               >
                                 Cancel
@@ -1133,12 +1309,16 @@ const Profile: React.FC = () => {
                               <Button
                                 type="submit"
                                 variant="contained"
-                                startIcon={updateLoading ? <CircularProgress size={20} /> : <SaveIcon />}
+                                startIcon={updateLoading ? <CircularProgress size={20} /> : <SaveIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
                                 disabled={updateLoading}
+                                fullWidth={true}
                                 sx={{
                                   borderRadius: 2,
                                   textTransform: 'none',
-                                  px: 3,
+                                  px: { xs: 2, sm: 3 },
+                                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  minHeight: { xs: '44px', sm: '48px' },
+                                  order: { xs: 1, sm: 2 },
                                   background: (theme) => theme.palette.customColors.gradients.primary,
                                   '&:hover': {
                                     background: (theme) => theme.palette.customColors.gradients.primaryDark,

@@ -64,21 +64,21 @@ export default function Home() {
 
       <Headline />
 
-      <Container maxWidth="lg" sx={{ mt: 8 }}>
+      <Container maxWidth="lg" sx={{ mt: { xs: 6, md: 8 }, px: { xs: 2, sm: 3 } }}>
         <Categories />
       </Container>
 
-      <Container maxWidth="lg" sx={{ mt: 8 }}>
+      <Container maxWidth="lg" sx={{ mt: { xs: 6, md: 8 }, px: { xs: 2, sm: 3 } }}>
         {featuredBlogs?.results && featuredBlogs.results.length > 0 && (
           <FeaturedPost featuredBlogs={featuredBlogs.results} />
         )}
       </Container>
 
-      <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Container maxWidth="lg" sx={{ mt: { xs: 4, md: 4 }, px: { xs: 2, sm: 3 } }}>
         {recentBlogs?.results && recentBlogs.results.length > 0 && <RecentPosts recentBlogs={recentBlogs.results} />}
       </Container>
 
-      <Box sx={{ mt: 8 }}>
+      <Box sx={{ mt: { xs: 6, md: 8 } }}>
         <Footer />
       </Box>
     </Box>

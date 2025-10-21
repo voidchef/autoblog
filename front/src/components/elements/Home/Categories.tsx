@@ -41,20 +41,20 @@ function Carousel() {
   return (
     <Box
       sx={{
-        py: 6,
+        py: { xs: 0, md: 6 },
         px: 2,
       }}
     >
       <Box sx={{ textAlign: 'center', mb: 5 }}>
         <Chip
-          icon={<CategoryIcon sx={{ color: 'white' }} />}
+          icon={<CategoryIcon sx={{ color: 'white', fontSize: { xs: '1rem', md: '1.2rem' } }} />}
           label="Explore Topics"
           sx={{ 
             mb: 2, 
             fontWeight: 700, 
-            px: 2.5,
-            py: 2.5,
-            fontSize: '0.95rem',
+            px: { xs: 2, md: 2.5 },
+            py: { xs: 2, md: 2.5 },
+            fontSize: { xs: '0.85rem', md: '0.95rem' },
             background: (theme) => theme.palette.customColors.gradients.primary,
             color: 'white',
             border: 'none',
@@ -71,7 +71,7 @@ function Carousel() {
           variant="h2"
           component="h2"
           sx={{
-            fontSize: { xs: '2.25rem', md: '3rem' },
+            fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' },
             fontWeight: 900,
             mb: 2,
             background: (theme) =>
@@ -86,7 +86,7 @@ function Carousel() {
         >
           Choose a Category
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.95rem', md: '1rem' }, px: { xs: 2, md: 0 } }}>
           Browse through our diverse collection of topics
         </Typography>
       </Box>

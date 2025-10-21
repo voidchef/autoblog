@@ -22,21 +22,21 @@ const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
   };
 
   return (
-    <Box sx={{ mb: 8 }}>
+    <Box sx={{ mb: { xs: 6, md: 8 } }}>
       <Box
-        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 5, flexWrap: 'wrap', gap: 2 }}
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 5, flexWrap: 'wrap', gap: 2, px: { xs: 1, md: 0 } }}
         className="animate-fade-in-up"
       >
         <Box>
           <Chip
-            icon={<AccessTime sx={{ fontSize: '1.2rem', color: '#fff !important' }} />}
+            icon={<AccessTime sx={{ fontSize: { xs: '1rem', md: '1.2rem' }, color: '#fff !important' }} />}
             label="Latest Articles"
             sx={{
               mb: 3,
               fontWeight: 700,
-              px: 2.5,
-              py: 2.5,
-              fontSize: '0.95rem',
+              px: { xs: 2, md: 2.5 },
+              py: { xs: 2, md: 2.5 },
+              fontSize: { xs: '0.85rem', md: '0.95rem' },
               background: (theme) => theme.palette.customColors.gradients.primaryReverse,
               color: 'white',
               border: 'none',
@@ -53,7 +53,7 @@ const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
             variant="h2"
             component="h2"
             sx={{
-              fontSize: { xs: '2.25rem', md: '3rem' },
+              fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' },
               fontWeight: 900,
               background: (theme) =>
                 theme.palette.mode === 'dark'

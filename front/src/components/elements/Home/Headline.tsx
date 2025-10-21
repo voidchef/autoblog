@@ -89,7 +89,7 @@ const Headline = () => {
           justifyContent={'center'}
           alignItems={{ xs: 'center', md: 'flex-start' }}
           textAlign={{ xs: 'center', md: 'left' }}
-          sx={{ position: 'relative', zIndex: 1, py: { xs: 8, md: 3 } }}
+          sx={{ position: 'relative', zIndex: 1, py: { xs: 3, md: 3 } }}
         >
           {/* Enhanced Badge with animation */}
           <Box
@@ -97,10 +97,10 @@ const Headline = () => {
             sx={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 1.5,
-              px: 3,
-              py: 1.5,
-              mb: 4,
+              gap: { xs: 1, md: 1.5 },
+              px: { xs: 2, md: 3 },
+              py: { xs: 1, md: 1.5 },
+              mb: { xs: 3, md: 4 },
               borderRadius: 50,
               background: (theme) =>
                 theme.palette.mode === 'dark'
@@ -122,14 +122,14 @@ const Headline = () => {
                 animation: 'pulse 2s ease-in-out infinite',
               }}
             >
-              <AutoAwesome sx={{ fontSize: '1.3rem', color: 'primary.main' }} />
+              <AutoAwesome sx={{ fontSize: { xs: '1rem', md: '1.3rem' }, color: 'primary.main' }} />
             </Box>
             <Typography
               variant="body2"
               className="gradient-text"
               sx={{
                 fontWeight: 700,
-                fontSize: '0.95rem',
+                fontSize: { xs: '0.8rem', md: '0.95rem' },
                 letterSpacing: '0.05em',
               }}
             >
@@ -142,10 +142,10 @@ const Headline = () => {
             component="h1"
             className="animate-fade-in-up"
             sx={{
-              fontSize: { xs: '2.75rem', sm: '4rem', md: '5rem', lg: '5.5rem' },
+              fontSize: { xs: '2rem', sm: '3rem', md: '4.5rem', lg: '5.5rem' },
               fontWeight: 900,
-              lineHeight: 1.05,
-              mb: 3,
+              lineHeight: { xs: 1.15, md: 1.05 },
+              mb: { xs: 2, md: 3 },
               background: (theme) =>
                 theme.palette.mode === 'dark'
                   ? theme.palette.customColors.gradients.textDark
@@ -167,11 +167,11 @@ const Headline = () => {
             component="p"
             className="animate-fade-in-up"
             sx={{
-              fontSize: { xs: '1.15rem', sm: '1.35rem' },
+              fontSize: { xs: '0.95rem', sm: '1.15rem', md: '1.35rem' },
               color: 'text.secondary',
-              mb: 5,
+              mb: { xs: 3, md: 5 },
               maxWidth: '750px',
-              lineHeight: 1.8,
+              lineHeight: { xs: 1.6, md: 1.8 },
               fontWeight: 400,
               opacity: 0.95,
             }}
@@ -181,14 +181,14 @@ const Headline = () => {
           </Typography>
 
           {/* Enhanced Feature Pills */}
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2.5} sx={{ mb: 6 }} className="animate-fade-in-up">
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2.5} sx={{ mb: { xs: 4, md: 6 } }} className="animate-fade-in-up">
             <Box
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 1.5,
-                px: 3,
-                py: 1,
+                gap: { xs: 1, md: 1.5 },
+                px: { xs: 2.5, md: 3 },
+                py: { xs: 0.75, md: 1 },
                 borderRadius: 4,
                 background: (theme) =>
                   theme.palette.mode === 'dark'
@@ -204,8 +204,8 @@ const Headline = () => {
                 },
               }}
             >
-              <Speed sx={{ color: 'success.main', fontSize: '1.8rem' }} />
-              <Typography variant="body1" fontWeight={700}>
+              <Speed sx={{ color: 'success.main', fontSize: { xs: '1.5rem', md: '1.8rem' } }} />
+              <Typography variant="body1" fontWeight={700} sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
                 Lightning Fast
               </Typography>
             </Box>
@@ -213,9 +213,9 @@ const Headline = () => {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: 1.5,
-                px: 3,
-                py: 1,
+                gap: { xs: 1, md: 1.5 },
+                px: { xs: 2.5, md: 3 },
+                py: { xs: 0.75, md: 1 },
                 borderRadius: 4,
                 background: (theme) =>
                   theme.palette.mode === 'dark'
@@ -231,8 +231,8 @@ const Headline = () => {
                 },
               }}
             >
-              <TrendingUp sx={{ color: 'primary.main', fontSize: '1.8rem' }} />
-              <Typography variant="body1" fontWeight={700}>
+              <TrendingUp sx={{ color: 'primary.main', fontSize: { xs: '1.5rem', md: '1.8rem' } }} />
+              <Typography variant="body1" fontWeight={700} sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>
                 SEO Optimized
               </Typography>
             </Box>
@@ -245,15 +245,16 @@ const Headline = () => {
               size="large"
               onClick={() => navigate(ROUTES.ALLPOSTS)}
               sx={{
-                px: 5,
-                py: 1,
-                fontSize: '1.15rem',
+                px: { xs: 4, md: 5 },
+                py: { xs: 0.75, md: 1 },
+                fontSize: { xs: '1rem', md: '1.15rem' },
                 fontWeight: 700,
                 borderRadius: 4,
                 background: (theme) => theme.palette.customColors.gradients.primary,
                 boxShadow: (theme) => `0 12px 32px ${theme.palette.customColors.shadows.primaryHeavy}`,
                 position: 'relative',
                 overflow: 'hidden',
+                minHeight: '48px',
                 '&::before': {
                   content: '""',
                   position: 'absolute',
@@ -285,14 +286,15 @@ const Headline = () => {
               size="large"
               onClick={() => navigate(ROUTES.ABOUTUS)}
               sx={{
-                px: 5,
-                py: 1,
-                fontSize: '1.15rem',
+                px: { xs: 4, md: 5 },
+                py: { xs: 0.75, md: 1 },
+                fontSize: { xs: '1rem', md: '1.15rem' },
                 fontWeight: 700,
                 borderRadius: 4,
                 borderWidth: 3,
                 borderColor: 'primary.main',
                 color: 'primary.main',
+                minHeight: '48px',
                 background: (theme) =>
                   theme.palette.mode === 'dark' ? `${theme.palette.customColors.accent.blue.main}1a` : 'rgba(255, 255, 255, 0.9)',
                 backdropFilter: 'blur(10px)',

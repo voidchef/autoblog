@@ -43,12 +43,12 @@ export default function Blog() {
         <NavBar />
         <Title title={currentBlogData ? currentBlogData.category : 'Loading'} />
       </Box>
-      <Box sx={{ my: 4 }} />
+      <Box sx={{ my: { xs: 2, md: 4 } }} />
       <Box
         display={'flex'}
         flexDirection={'column'}
         justifyContent={'space-between'}
-        sx={{ marginX: { xs: '1rem', sm: '22rem' } }}
+        sx={{ marginX: { xs: '1rem', sm: '3rem', md: '10rem', lg: '22rem' }, px: { xs: 1, sm: 0 } }}
       >
         {isLoading && !preview ? (
           <Box textAlign={'center'}>
@@ -127,7 +127,7 @@ export default function Blog() {
                 })}
               </script>
             </Helmet>
-            <Typography component={'div'} fontSize={{ xs: '2rem', sm: '3rem' }} textAlign={'center'}>
+            <Typography component={'div'} fontSize={{ xs: '1.75rem', sm: '2.5rem', md: '3rem' }} textAlign={'center'} fontWeight={700}>
               {currentBlogData.title}
             </Typography>
             <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'}>

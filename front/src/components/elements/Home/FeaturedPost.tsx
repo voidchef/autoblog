@@ -24,14 +24,14 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
     <Box sx={{ mb: 8 }}>
       <Box sx={{ mb: 5, textAlign: 'center' }} className="animate-fade-in-up">
         <Chip
-          icon={<TrendingUp sx={{ fontSize: '1.2rem', color: '#fff !important' }} />}
+          icon={<TrendingUp sx={{ fontSize: { xs: '1rem', md: '1.2rem' }, color: '#fff !important' }} />}
           label="Featured Content"
           sx={{
             mb: 3,
             fontWeight: 700,
-            px: 2.5,
-            py: 2.5,
-            fontSize: '0.95rem',
+            px: { xs: 2, md: 2.5 },
+            py: { xs: 2, md: 2.5 },
+            fontSize: { xs: '0.85rem', md: '0.95rem' },
             background: (theme) => theme.palette.customColors.gradients.primary,
             color: 'white',
             border: 'none',
@@ -48,7 +48,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
           variant="h2"
           component="h2"
           sx={{
-            fontSize: { xs: '2.25rem', md: '3rem' },
+            fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' },
             fontWeight: 900,
             mb: 2,
             background: (theme) =>
@@ -66,7 +66,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
         <Typography
           variant="body1"
           color="text.secondary"
-          sx={{ maxWidth: '650px', mx: 'auto', fontSize: '1.1rem', lineHeight: 1.7 }}
+          sx={{ maxWidth: '650px', mx: 'auto', fontSize: { xs: '0.95rem', md: '1.1rem' }, lineHeight: 1.7, px: { xs: 2, md: 0 } }}
         >
           Discover our handpicked selection of outstanding blog posts
         </Typography>
@@ -122,12 +122,12 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
               image={featuredBlogs[0].selectedImage}
               alt={featuredBlogs[0].topic}
               sx={{
-                height: 350,
+                height: { xs: 250, sm: 300, md: 350 },
                 objectFit: 'cover',
                 transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
               }}
             />
-            <CardContent sx={{ flexGrow: 1, position: 'relative', zIndex: 2, py: 1.5, px: 2 }}>
+            <CardContent sx={{ flexGrow: 1, position: 'relative', zIndex: 2, py: { xs: 2, md: 2.5 }, px: { xs: 2, md: 3 } }}>
               <Stack direction="row" spacing={1} sx={{ mb: 1, flexWrap: 'wrap', gap: 0.5 }}>
                 <Chip
                   label="Featured"

@@ -241,51 +241,51 @@ const typography = {
   ].join(','),
   h1: {
     fontWeight: 800,
-    fontSize: '3.75rem',
+    fontSize: 'clamp(2rem, 5vw, 3.75rem)',
     lineHeight: 1.1,
     letterSpacing: '-0.03em',
   },
   h2: {
     fontWeight: 800,
-    fontSize: '3rem',
+    fontSize: 'clamp(1.75rem, 4vw, 3rem)',
     lineHeight: 1.2,
     letterSpacing: '-0.02em',
   },
   h3: {
     fontWeight: 700,
-    fontSize: '2.5rem',
+    fontSize: 'clamp(1.5rem, 3vw, 2.5rem)',
     lineHeight: 1.3,
     letterSpacing: '-0.01em',
   },
   h4: {
     fontWeight: 700,
-    fontSize: '2rem',
+    fontSize: 'clamp(1.25rem, 2.5vw, 2rem)',
     lineHeight: 1.3,
     letterSpacing: '-0.01em',
   },
   h5: {
     fontWeight: 600,
-    fontSize: '1.5rem',
+    fontSize: 'clamp(1.125rem, 2vw, 1.5rem)',
     lineHeight: 1.4,
   },
   h6: {
     fontWeight: 600,
-    fontSize: '1.25rem',
+    fontSize: 'clamp(1rem, 1.5vw, 1.25rem)',
     lineHeight: 1.4,
   },
   body1: {
-    fontSize: '1.0625rem',
+    fontSize: 'clamp(0.9375rem, 1.2vw, 1.0625rem)',
     lineHeight: 1.75,
     letterSpacing: '0.00938em',
   },
   body2: {
-    fontSize: '0.9375rem',
+    fontSize: 'clamp(0.875rem, 1.1vw, 0.9375rem)',
     lineHeight: 1.65,
   },
   button: {
     textTransform: 'none' as const,
     fontWeight: 600,
-    fontSize: '1rem',
+    fontSize: 'clamp(0.9375rem, 1.2vw, 1rem)',
     letterSpacing: '0.02em',
   },
 };
@@ -303,6 +303,12 @@ const components = {
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         position: 'relative' as const,
         overflow: 'hidden' as const,
+        minHeight: '44px',
+        '@media (max-width: 600px)': {
+          padding: '10px 20px',
+          fontSize: '0.9375rem',
+          minHeight: '48px',
+        },
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -341,10 +347,16 @@ const components = {
       sizeSmall: {
         padding: '8px 20px',
         fontSize: '0.875rem',
+        minHeight: '40px',
       },
       sizeLarge: {
         padding: '14px 32px',
         fontSize: '1.125rem',
+        minHeight: '52px',
+        '@media (max-width: 600px)': {
+          padding: '12px 24px',
+          fontSize: '1rem',
+        },
       },
     },
   },
