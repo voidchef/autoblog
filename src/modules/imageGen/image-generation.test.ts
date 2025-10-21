@@ -26,6 +26,7 @@ describe('PostGenerator with Image Generation', () => {
       topic: 'AI in Healthcare',
       language: 'English',
       model: 'gpt-4o',
+      apiKey: 'test-api-key',
       generateImages: true,
       generateHeadingImages: false, // Default behavior
       imagesPerHeading: 1,
@@ -135,7 +136,7 @@ describe('PostImageService', () => {
     ];
 
     const strings = PostImageService.imagesToUrls(generatedImages);
-    expect(strings).toEqual(['optimized prompt 1', 'optimized prompt 2']);
+    expect(strings).toEqual(['https://example.com/image1.jpg', 'https://example.com/image2.jpg']);
   });
 
   it('should convert generated images to URLs', () => {

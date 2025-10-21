@@ -62,6 +62,7 @@ describe('Auth routes', () => {
         email: newUser.email,
         role: 'user',
         isEmailVerified: false,
+        hasOpenAiKey: expect.any(Boolean),
       });
 
       const dbUser = await User.findById(res.body.user.id);
@@ -120,6 +121,7 @@ describe('Auth routes', () => {
         email: userOne.email,
         role: userOne.role,
         isEmailVerified: userOne.isEmailVerified,
+        hasOpenAiKey: expect.any(Boolean),
       });
 
       expect(res.body.tokens).toEqual({
@@ -166,7 +168,7 @@ describe('Auth routes', () => {
     });
 
     test('should return 400 error if refresh token is missing from request body', async () => {
-      await request(app).post('/v1/auth/logout').send().expect(httpStatus.BAD_REQUEST);
+      await request(app).post('/v1/auth/logout').send({}).expect(httpStatus.BAD_REQUEST);
     });
 
     test('should return 404 error if refresh token is not found in the database', async () => {
@@ -202,6 +204,7 @@ describe('Auth routes', () => {
         email: userOne.email,
         role: userOne.role,
         isEmailVerified: userOne.isEmailVerified,
+        hasOpenAiKey: expect.any(Boolean),
       });
 
       expect(res.body.tokens).toEqual({
@@ -210,14 +213,20 @@ describe('Auth routes', () => {
       });
 
       const dbRefreshTokenDoc = await Token.findOne({ token: res.body.tokens.refresh.token });
-      expect(dbRefreshTokenDoc).toMatchObject({ type: tokenTypes.REFRESH, user: userOne._id, blacklisted: false });
+      expect(dbRefreshTokenDoc).toBeDefined();
+      expect(dbRefreshTokenDoc).not.toBeNull();
+      if (dbRefreshTokenDoc) {
+        expect(dbRefreshTokenDoc.type).toBe(tokenTypes.REFRESH);
+        expect(dbRefreshTokenDoc.user.toString()).toBe(userOne._id.toString());
+        expect(dbRefreshTokenDoc.blacklisted).toBe(false);
+      }
 
       const dbRefreshTokenCount = await Token.countDocuments();
       expect(dbRefreshTokenCount).toBe(1);
     });
 
     test('should return 400 error if refresh token is missing from request body', async () => {
-      await request(app).post('/v1/auth/refresh-tokens').send().expect(httpStatus.BAD_REQUEST);
+      await request(app).post('/v1/auth/refresh-tokens').send({}).expect(httpStatus.BAD_REQUEST);
     });
 
     test('should return 401 error if refresh token is signed using an invalid secret', async () => {
@@ -338,7 +347,7 @@ describe('Auth routes', () => {
       const resetPasswordToken = tokenService.generateToken(userOne._id, expires, tokenTypes.RESET_PASSWORD);
       await tokenService.saveToken(resetPasswordToken, userOne._id, expires, tokenTypes.RESET_PASSWORD);
 
-      await request(app).post('/v1/auth/reset-password').query({ token: resetPasswordToken }).expect(httpStatus.BAD_REQUEST);
+      await request(app).post('/v1/auth/reset-password').query({ token: resetPasswordToken }).send({}).expect(httpStatus.BAD_REQUEST);
 
       await request(app)
         .post('/v1/auth/reset-password')

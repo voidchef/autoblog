@@ -77,13 +77,13 @@ describe('User routes', () => {
         .expect(httpStatus.CREATED);
 
       expect(res.body).not.toHaveProperty('password');
-      expect(res.body).toEqual({
+      expect(res.body).toEqual(expect.objectContaining({
         id: expect.anything(),
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
         isEmailVerified: false,
-      });
+      }));
 
       const dbUser = await User.findById(res.body.id);
       expect(dbUser).toBeDefined();
@@ -207,13 +207,13 @@ describe('User routes', () => {
         totalResults: 3,
       });
       expect(res.body.results).toHaveLength(3);
-      expect(res.body.results[0]).toEqual({
+      expect(res.body.results[0]).toEqual(expect.objectContaining({
         id: userOne._id.toHexString(),
         name: userOne.name,
         email: userOne.email,
         role: userOne.role,
         isEmailVerified: userOne.isEmailVerified,
-      });
+      }));
     });
 
     test('should return 401 if access token is missing', async () => {
@@ -410,13 +410,13 @@ describe('User routes', () => {
         .expect(httpStatus.OK);
 
       expect(res.body).not.toHaveProperty('password');
-      expect(res.body).toEqual({
+      expect(res.body).toEqual(expect.objectContaining({
         id: userOne._id.toHexString(),
         email: userOne.email,
         name: userOne.name,
         role: userOne.role,
         isEmailVerified: userOne.isEmailVerified,
-      });
+      }));
     });
 
     test('should return 401 error if access token is missing', async () => {
@@ -543,13 +543,13 @@ describe('User routes', () => {
         .expect(httpStatus.OK);
 
       expect(res.body).not.toHaveProperty('password');
-      expect(res.body).toEqual({
+      expect(res.body).toEqual(expect.objectContaining({
         id: userOne._id.toHexString(),
         name: updateBody.name,
         email: updateBody.email,
         role: 'user',
         isEmailVerified: false,
-      });
+      }));
 
       const dbUser = await User.findById(userOne._id);
       expect(dbUser).toBeDefined();

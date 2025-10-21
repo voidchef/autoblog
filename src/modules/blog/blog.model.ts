@@ -105,12 +105,33 @@ const blogSchema = new mongoose.Schema<IBlogDoc, IBlogModel>(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   },
 );
+
+// Virtual for excerpt
+blogSchema.virtual('excerpt').get(function (this: IBlogDoc) {
+  return this.generateExcerpt();
+});
 
 // add plugin that converts mongoose to json
 blogSchema.plugin(toJSON);
 blogSchema.plugin(paginate);
+
+// Override toJSON to preserve createdAt and updatedAt for blog posts
+blogSchema.set('toJSON', {
+  virtuals: true,
+  transform: function (doc: any, ret: any) {
+    if (doc.createdAt) {
+      ret.createdAt = doc.createdAt;
+    }
+    if (doc.updatedAt) {
+      ret.updatedAt = doc.updatedAt;
+    }
+    return ret;
+  },
+});
 
 /**
  * Generate Reading Time

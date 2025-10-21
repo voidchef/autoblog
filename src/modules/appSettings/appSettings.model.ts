@@ -3,69 +3,49 @@ import toJSON from '../toJSON/toJSON';
 import paginate from '../paginate/paginate';
 import { IAppSettingsDoc, IAppSettingsModel } from './appSettings.interfaces';
 
+const categorySchema = new mongoose.Schema(
+  {
+    categoryName: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    categoryDescription: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    categoryPicUrl: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
+const selectFieldSchema = new mongoose.Schema(
+  {
+    label: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    value: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
 const appSettingsSchema = new mongoose.Schema<IAppSettingsDoc, IAppSettingsModel>(
   {
-    categories: [
-      {
-        categoryName: {
-          type: String,
-          trim: true,
-          required: true,
-        },
-        categoryDescription: {
-          type: String,
-          trim: true,
-          required: true,
-        },
-        categoryPicUrl: {
-          type: String,
-          trim: true,
-          required: true,
-        },
-      },
-    ],
-    languages: [
-      {
-        label: {
-          type: String,
-          trim: true,
-          required: true,
-        },
-        value: {
-          type: String,
-          trim: true,
-          required: true,
-        },
-      },
-    ],
-    languageModels: [
-      {
-        label: {
-          type: String,
-          trim: true,
-          required: true,
-        },
-        value: {
-          type: String,
-          trim: true,
-          required: true,
-        },
-      },
-    ],
-    queryType: [
-      {
-        label: {
-          type: String,
-          trim: true,
-          required: true,
-        },
-        value: {
-          type: String,
-          trim: true,
-          required: true,
-        },
-      },
-    ],
+    categories: [categorySchema],
+    languages: [selectFieldSchema],
+    languageModels: [selectFieldSchema],
+    queryType: [selectFieldSchema],
   },
   {
     timestamps: true,

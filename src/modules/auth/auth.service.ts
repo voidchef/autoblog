@@ -19,12 +19,8 @@ export const loginUserWithEmailAndPassword = async (email: string, password: str
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
   
-  // Return user data with hasOpenAiKey flag for frontend
-  const userObj = user.toJSON();
-  return {
-    ...userObj,
-    hasOpenAiKey: user.hasOpenAiKey()
-  };
+  // Return user data with hasOpenAiKey virtual
+  return user.toJSON();
 };
 
 /**

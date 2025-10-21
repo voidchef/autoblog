@@ -28,12 +28,8 @@ export const registerUser = async (userBody: NewRegisteredUser): Promise<any> =>
   }
   const user = await User.create(userBody);
   
-  // Return user data with hasOpenAiKey flag for frontend
-  const userObj = user.toJSON();
-  return {
-    ...userObj,
-    hasOpenAiKey: user.hasOpenAiKey()
-  };
+  // Return user data with hasOpenAiKey virtual
+  return user.toJSON();
 };
 
 /**
@@ -66,11 +62,8 @@ export const getUserByIdForFrontend = async (id: mongoose.Types.ObjectId): Promi
   const user = await User.findById(id);
   if (!user) return null;
   
-  const userObj = user.toJSON();
-  return {
-    ...userObj,
-    hasOpenAiKey: user.hasOpenAiKey()
-  };
+  // Return user data with hasOpenAiKey virtual
+  return user.toJSON();
 };
 
 /**
@@ -100,12 +93,8 @@ export const updateUserById = async (
   Object.assign(user, updateBody);
   await user.save();
   
-  // Return user data with hasOpenAiKey flag for frontend
-  const userObj = user.toJSON();
-  return {
-    ...userObj,
-    hasOpenAiKey: user.hasOpenAiKey()
-  };
+  // Return user data with hasOpenAiKey virtual
+  return user.toJSON();
 };
 
 /**

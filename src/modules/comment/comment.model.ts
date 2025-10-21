@@ -51,6 +51,20 @@ const commentSchema = new mongoose.Schema<ICommentDoc, ICommentModel>(
 commentSchema.plugin(toJSON);
 commentSchema.plugin(paginate);
 
+// Override toJSON to preserve createdAt and updatedAt for comments
+commentSchema.set('toJSON', {
+  virtuals: true,
+  transform: function (doc: any, ret: any) {
+    if (doc.createdAt) {
+      ret.createdAt = doc.createdAt;
+    }
+    if (doc.updatedAt) {
+      ret.updatedAt = doc.updatedAt;
+    }
+    return ret;
+  },
+});
+
 /**
  * Toggle like on comment
  * @param {mongoose.Types.ObjectId} userId

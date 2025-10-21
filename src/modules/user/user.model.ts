@@ -55,8 +55,15 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   },
 );
+
+// Virtual for hasOpenAiKey
+userSchema.virtual('hasOpenAiKey').get(function (this: IUserDoc) {
+  return !!(this.openAiKey && this.openAiKey.length > 0);
+});
 
 // add plugin that converts mongoose to json
 userSchema.plugin(toJSON);
@@ -95,14 +102,6 @@ userSchema.pre('save', async function (next) {
     user.openAiKey = encrypt(user.openAiKey, (user._id as mongoose.Types.ObjectId).toString());
   }
   next();
-});
-
-/**
- * Method to check if user has an OpenAI key (without revealing it)
- * @returns {boolean}
- */
-userSchema.method('hasOpenAiKey', function (): boolean {
-  return !!(this.openAiKey && this.openAiKey.length > 0);
 });
 
 /**

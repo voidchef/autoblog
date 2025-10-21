@@ -1,16 +1,32 @@
 import nodemailer from 'nodemailer';
+import type { Transporter } from 'nodemailer';
 import config from '../../config/config';
 import logger from '../logger/logger';
 import { Message } from './email.interfaces';
 
-export const transport = nodemailer.createTransport(config.email.smtp);
-/* istanbul ignore next */
-if (config.env !== 'test') {
-  transport
-    .verify()
-    .then(() => logger.info('Connected to email server'))
-    .catch(() => logger.warn('Unable to connect to email server. Make sure you have configured the SMTP options in .env'));
-}
+let _transport: Transporter | null = null;
+
+export const getTransport = (): Transporter => {
+  if (!_transport) {
+    _transport = nodemailer.createTransport(config.email.smtp);
+    /* istanbul ignore next */
+    if (config.env !== 'test') {
+      _transport
+        .verify()
+        .then(() => logger.info('Connected to email server'))
+        .catch(() => logger.warn('Unable to connect to email server. Make sure you have configured the SMTP options in .env'));
+    }
+  }
+  return _transport;
+};
+
+// For backward compatibility
+export const transport = getTransport();
+
+// For testing - allow setting a custom transport
+export const setTransport = (transport: Transporter): void => {
+  _transport = transport;
+};
 
 /**
  * Send an email
@@ -28,7 +44,7 @@ export const sendEmail = async (to: string, subject: string, text: string, html:
     text,
     html,
   };
-  await transport.sendMail(msg);
+  await getTransport().sendMail(msg);
 };
 
 /**

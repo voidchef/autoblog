@@ -9,8 +9,8 @@ export const updateCategories = catchAsync(async (req: Request, res: Response) =
 });
 
 export const deleteCategories = catchAsync(async (req: Request, res: Response) => {
-  const { keyNames } = req.body;
-  await appSettingsService.deleteCategories(keyNames);
+  const { categoryNames } = req.body;
+  await appSettingsService.deleteCategories(categoryNames);
   res.status(httpStatus.NO_CONTENT).send();
 });
 
@@ -21,6 +21,5 @@ export const updateSelectFields = catchAsync(async (req: Request, res: Response)
 
 export const getAppSettings = catchAsync(async (_req: Request, res: Response) => {
   const result = await appSettingsService.getAppSettings();
-  console.log('App settings retrieved:', result);
   res.send(result);
 });

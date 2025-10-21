@@ -24,6 +24,7 @@ const toJSON = (schema: any) => {
 
   // eslint-disable-next-line no-param-reassign
   schema.options.toJSON = Object.assign(schema.options.toJSON || {}, {
+    virtuals: true,
     transform(doc: Document, ret: any, options: Record<string, any>) {
       Object.keys(schema.paths).forEach((path) => {
         if (schema.paths[path].options && schema.paths[path].options.private) {
@@ -38,9 +39,9 @@ const toJSON = (schema: any) => {
       // eslint-disable-next-line no-param-reassign
       delete ret.__v;
       // eslint-disable-next-line no-param-reassign
-      // delete ret.createdAt;
+      delete ret.createdAt;
       // eslint-disable-next-line no-param-reassign
-      // delete ret.updatedAt;
+      delete ret.updatedAt;
       if (transform) {
         return transform(doc, ret, options);
       }

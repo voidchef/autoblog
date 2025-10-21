@@ -37,10 +37,11 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, blogId, isReply = fa
   const [deleteComment] = useDeleteCommentMutation();
   const [createComment] = useCreateCommentMutation();
 
-  // Fetch replies if this is a parent comment
+  // Fetch replies if this is a parent comment (not a reply itself)
+  // We always fetch to get the count, but only display when showReplies is true
   const { data: repliesData } = useGetRepliesQuery(
     { commentId: comment.id, sortBy: 'createdAt:asc' },
-    { skip: !showRepliesForCommentId || showRepliesForCommentId !== comment.id },
+    { skip: isReply }, // Skip fetching replies for nested comments (replies to replies)
   );
 
   const isOwner = userId === comment.author.id;

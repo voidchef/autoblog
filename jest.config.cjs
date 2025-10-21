@@ -1,15 +1,39 @@
 module.exports = {
+  preset: 'ts-jest',
   testEnvironment: 'node',
-  testEnvironmentOptions: {
-    NODE_ENV: 'test',
+
+  transform: {
+    '^.+\\.tsx?$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.json',
+        diagnostics: true,
+      },
+    ],
   },
-  restoreMocks: true,
+
+  // Recognize .ts and .js files
+  moduleFileExtensions: ['ts', 'js', 'json', 'node'],
+
+  // Test discovery pattern
+  testMatch: ['**/__tests__/**/*.(spec|test).[tj]s', '**/?(*.)+(spec|test).[tj]s'],
+  
+  // Exclude dist and node_modules from test discovery
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+
+  clearMocks: true,
+  verbose: true,
+
+  // Coverage setup
+  collectCoverage: true,
+  collectCoverageFrom: ['src/**/*.{ts,js}', '!src/**/*.d.ts', '!src/**/__tests__/**'],
+  coverageDirectory: 'coverage',
   coveragePathIgnorePatterns: ['node_modules', 'dist/config', 'dist/app.js'],
   coverageReporters: ['text', 'lcov', 'clover', 'html'],
-  globals: {
-    'ts-jest': {
-      diagnostics: false,
-    },
+
+  // Match your TS path aliases
+  moduleNameMapper: {
+    '^@src/(.*)$': '<rootDir>/src/$1',
+    '^@tests/(.*)$': '<rootDir>/tests/$1',
   },
-  transform: { '\\.ts$': ['ts-jest'] },
 };
