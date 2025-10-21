@@ -75,14 +75,18 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
         trim: true,
       },
     },
-    followers: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    }],
-    following: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    }],
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
+    following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     timestamps: true,

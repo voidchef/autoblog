@@ -192,7 +192,7 @@ export const dislikeBlog = async (
  */
 export const getBlogEngagementStats = async (slug: string): Promise<any> => {
   const Comment = mongoose.model('Comment');
-  
+
   const blog = await getBlogBySlug(slug);
   if (!blog) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
@@ -201,7 +201,7 @@ export const getBlogEngagementStats = async (slug: string): Promise<any> => {
   // Get engagement metrics for this specific blog
   const likesCount = blog.likes?.length || 0;
   const dislikesCount = blog.dislikes?.length || 0;
-  
+
   // Get comments count for this blog
   const commentsCount = await Comment.countDocuments({ blog: blog._id });
 
@@ -222,18 +222,18 @@ export const getBlogEngagementStats = async (slug: string): Promise<any> => {
  */
 export const getAllBlogsEngagementStats = async (userId: mongoose.Types.ObjectId): Promise<any> => {
   const Comment = mongoose.model('Comment');
-  
+
   // Get all published blogs by the user
   const userBlogs = await Blog.find({ author: userId, isPublished: true }).select('_id likes dislikes');
 
   const totalBlogs = userBlogs.length;
-  
+
   // Calculate total likes and dislikes across all blogs
   const totalLikes = userBlogs.reduce((sum, blog) => sum + (blog.likes?.length || 0), 0);
   const totalDislikes = userBlogs.reduce((sum, blog) => sum + (blog.dislikes?.length || 0), 0);
 
   // Get total comments across all user's blogs
-  const blogIds = userBlogs.map(blog => blog._id);
+  const blogIds = userBlogs.map((blog) => blog._id);
   const totalComments = await Comment.countDocuments({ blog: { $in: blogIds } });
 
   return {
@@ -242,9 +242,6 @@ export const getAllBlogsEngagementStats = async (userId: mongoose.Types.ObjectId
     totalDislikes,
     totalComments,
     totalEngagement: totalLikes + totalDislikes + totalComments,
-    avgEngagementPerBlog: totalBlogs > 0 
-      ? ((totalLikes + totalDislikes + totalComments) / totalBlogs).toFixed(2) 
-      : '0.00',
+    avgEngagementPerBlog: totalBlogs > 0 ? ((totalLikes + totalDislikes + totalComments) / totalBlogs).toFixed(2) : '0.00',
   };
 };
-

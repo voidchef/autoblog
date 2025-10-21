@@ -17,36 +17,35 @@ export interface ShowAlertPayload {
 const initialState: AlertPayload[] = [];
 
 // Async thunk for showing alerts with auto-cleanup
-export const showAlert = createAsyncThunk(
-  'alert/showAlert',
-  async (payload: ShowAlertPayload, { dispatch }) => {
-    const alertId = uuid();
-    const duration = payload.duration ?? ALERT_CLEAR_TIME;
+export const showAlert = createAsyncThunk('alert/showAlert', async (payload: ShowAlertPayload, { dispatch }) => {
+  const alertId = uuid();
+  const duration = payload.duration ?? ALERT_CLEAR_TIME;
 
-    // Dispatch the alert
-    dispatch(addAlert({
+  // Dispatch the alert
+  dispatch(
+    addAlert({
       alertId,
       alertType: payload.alertType,
       msg: payload.msg,
-    }));
+    }),
+  );
 
-    // Auto-remove after duration
-    setTimeout(() => {
-      dispatch(removeAlert(alertId));
-    }, duration);
+  // Auto-remove after duration
+  setTimeout(() => {
+    dispatch(removeAlert(alertId));
+  }, duration);
 
-    return alertId;
-  }
-);
+  return alertId;
+});
 
 // Helper action creators for common patterns
-export const showSuccess = (message: string, duration?: number) => 
+export const showSuccess = (message: string, duration?: number) =>
   showAlert({ msg: message, alertType: ALERT_TYPE.SUCCESS, duration });
 
-export const showError = (message: string, duration?: number) => 
+export const showError = (message: string, duration?: number) =>
   showAlert({ msg: message, alertType: ALERT_TYPE.DANGER, duration });
 
-export const showInfo = (message: string, duration?: number) => 
+export const showInfo = (message: string, duration?: number) =>
   showAlert({ msg: message, alertType: ALERT_TYPE.INFO, duration });
 
 const alertSlice = createSlice({

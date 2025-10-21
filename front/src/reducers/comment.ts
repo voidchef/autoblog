@@ -49,12 +49,7 @@ export const commentSlice = createSlice({
   },
 });
 
-export const {
-  setActiveComment,
-  setReplyingToComment,
-  setEditingComment,
-  toggleShowReplies,
-  clearCommentState,
-} = commentSlice.actions;
+export const { setActiveComment, setReplyingToComment, setEditingComment, toggleShowReplies, clearCommentState } =
+  commentSlice.actions;
 
 export default commentSlice.reducer;

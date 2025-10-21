@@ -8,9 +8,9 @@ const router = express.Router();
 const specs = swaggerJsdoc({
   swaggerDefinition,
   apis: [
-    'packages/components.yaml', 
+    'packages/components.yaml',
     'dist/routes/v1/*.js',
-    'src/routes/v1/*.ts' // Include TypeScript files for development
+    'src/routes/v1/*.ts', // Include TypeScript files for development
   ],
 });
 

@@ -27,7 +27,8 @@ export const getBlogs = catchAsync(async (req: Request, res: Response) => {
   const options: IOptions = pick(req.query, ['sortBy', 'limit', 'page', 'projectBy', 'populate']);
   const result = await blogService.queryBlogs(filter, options);
   result.results.forEach((blog: any) => {
-    blog.excerpt = blog.generateExcerpt ? blog.generateExcerpt(160) : blog.content.split(' ').slice(0, 40).join(' ') + '...';
+    blog.excerpt = blog.generateExcerpt(160);
+    delete blog.content;
   });
   res.send(result);
 });
@@ -103,11 +104,9 @@ export const bulkDeleteBlogs = catchAsync(async (req: Request, res: Response) =>
   if (!Array.isArray(blogIds)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'blogIds must be an array');
   }
-  
-  const deletePromises = blogIds.map((id: string) => 
-    blogService.deleteBlogById(new mongoose.Types.ObjectId(id))
-  );
-  
+
+  const deletePromises = blogIds.map((id: string) => blogService.deleteBlogById(new mongoose.Types.ObjectId(id)));
+
   await Promise.all(deletePromises);
   res.status(httpStatus.NO_CONTENT).send();
 });
@@ -116,7 +115,7 @@ export const searchBlogs = catchAsync(async (req: Request, res: Response) => {
   const { query: searchQuery, ...filterOptions } = req.query;
   const filter: any = pick(req.query, ['author', 'category', 'tags', 'isFeatured', 'isPublished', 'isDraft']);
   const options: IOptions = pick(req.query, ['sortBy', 'limit', 'page', 'projectBy', 'populate']);
-  
+
   // Add search functionality to filter if query is provided
   if (searchQuery && typeof searchQuery === 'string') {
     filter.$or = [
@@ -125,7 +124,7 @@ export const searchBlogs = catchAsync(async (req: Request, res: Response) => {
       { seoDescription: { $regex: searchQuery, $options: 'i' } },
     ];
   }
-  
+
   const result = await blogService.queryBlogs(filter, options);
   result.results.forEach((blog: any) => {
     // eslint-disable-next-line no-param-reassign
@@ -138,7 +137,7 @@ export const generateSitemap = catchAsync(async (req: Request, res: Response) =>
   const { generateSitemapXML } = await import('./sitemap.service');
   const baseUrl = `${req.protocol}://${req.get('host')}`;
   const sitemapXML = await generateSitemapXML(baseUrl);
-  
+
   res.set('Content-Type', 'application/xml');
   res.send(sitemapXML);
 });
@@ -147,7 +146,7 @@ export const generateRobots = catchAsync(async (req: Request, res: Response) => 
   const { generateRobotsTxt } = await import('./sitemap.service');
   const baseUrl = `${req.protocol}://${req.get('host')}`;
   const robotsTxt = generateRobotsTxt(baseUrl);
-  
+
   res.set('Content-Type', 'text/plain');
   res.send(robotsTxt);
 });
@@ -186,4 +185,3 @@ export const getAllBlogsEngagementStats = catchAsync(async (req: Request, res: R
   const stats = await blogService.getAllBlogsEngagementStats(user._id as mongoose.Types.ObjectId);
   res.send(stats);
 });
-

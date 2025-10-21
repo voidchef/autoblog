@@ -159,19 +159,19 @@ blogSchema.method('generateExcerpt', function (this: IBlogDoc, maxLength: number
     .replace(/\*(.*?)\*/g, '$1') // Remove italic markdown
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // Remove markdown links
     .trim();
-  
+
   if (cleanContent.length <= maxLength) {
     return cleanContent;
   }
-  
+
   // Find the last complete sentence within the limit
   const excerpt = cleanContent.substring(0, maxLength);
   const lastSentence = excerpt.lastIndexOf('.');
-  
+
   if (lastSentence > maxLength * 0.7) {
     return excerpt.substring(0, lastSentence + 1);
   }
-  
+
   // If no good sentence break, cut at word boundary
   const lastSpace = excerpt.lastIndexOf(' ');
   return excerpt.substring(0, lastSpace) + '...';

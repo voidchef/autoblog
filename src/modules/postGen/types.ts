@@ -58,7 +58,7 @@ export type TemplatePostPrompt = BasePostPrompt & {
   // The input json used as inputs for the different sections/prompts in the template
   // This json is a key value pair where the key is of one template parameter
   input: any;
-  
+
   // Image generation options
   generateImages?: boolean;
   generateHeadingImages?: boolean; // generate images for headings

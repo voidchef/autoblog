@@ -76,7 +76,10 @@ export const commentApi = api.injectEndpoints({
     }),
 
     // Get comments for a specific blog post
-    getCommentsByBlog: builder.query<ICommentQueryResult, { blogId: string; page?: number; limit?: number; sortBy?: string }>({
+    getCommentsByBlog: builder.query<
+      ICommentQueryResult,
+      { blogId: string; page?: number; limit?: number; sortBy?: string }
+    >({
       query: ({ blogId, ...params }) => ({
         url: `/comments/blog/${blogId}`,
         params,

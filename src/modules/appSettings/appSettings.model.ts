@@ -21,7 +21,7 @@ const categorySchema = new mongoose.Schema(
       required: true,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const selectFieldSchema = new mongoose.Schema(
@@ -37,7 +37,7 @@ const selectFieldSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { _id: false }
+  { _id: false },
 );
 
 const appSettingsSchema = new mongoose.Schema<IAppSettingsDoc, IAppSettingsModel>(

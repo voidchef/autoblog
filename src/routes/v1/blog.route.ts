@@ -11,7 +11,9 @@ router
   .get(validate(blogValidation.getBlogs), blogController.getBlogs);
 
 router.route('/create').post(auth('manageBlogs'), validate(blogValidation.createBlog), blogController.createBlog);
-router.route('/bulk-delete').delete(auth('manageBlogs'), validate(blogValidation.bulkDeleteBlogs), blogController.bulkDeleteBlogs);
+router
+  .route('/bulk-delete')
+  .delete(auth('manageBlogs'), validate(blogValidation.bulkDeleteBlogs), blogController.bulkDeleteBlogs);
 router.route('/search').get(validate(blogValidation.getBlogs), blogController.searchBlogs);
 router.route('/sitemap.xml').get(blogController.generateSitemap);
 router.route('/robots.txt').get(blogController.generateRobots);

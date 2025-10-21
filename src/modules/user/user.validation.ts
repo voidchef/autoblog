@@ -6,7 +6,7 @@ const createUserBody = {
   password: Joi.string().required().custom(password),
   name: Joi.string().required(),
   role: Joi.string().required().valid('user', 'admin'),
-  openAiKey: Joi.string().optional()
+  openAiKey: Joi.string().optional(),
 };
 
 export const createUser = {
@@ -39,7 +39,7 @@ export const updateUser = {
       email: Joi.string().email(),
       password: Joi.string().custom(password),
       name: Joi.string(),
-      openAiKey: Joi.string().optional()
+      openAiKey: Joi.string().optional(),
     })
     .min(1),
 };

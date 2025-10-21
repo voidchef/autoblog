@@ -30,7 +30,7 @@ export const queryComments = async (filter: Record<string, any>, options: IOptio
     await Promise.all(
       comments.results.map(async (comment: any) => {
         await comment.populate('author', 'name');
-      })
+      }),
     );
   }
   return comments;
@@ -120,10 +120,7 @@ export const dislikeComment = async (
  * @param {IOptions} options
  * @returns {Promise<QueryResult>}
  */
-export const getCommentsByBlogId = async (
-  blogId: mongoose.Types.ObjectId,
-  options: IOptions,
-): Promise<QueryResult> => {
+export const getCommentsByBlogId = async (blogId: mongoose.Types.ObjectId, options: IOptions): Promise<QueryResult> => {
   const filter = { blog: blogId, parentComment: null };
   return queryComments(filter, options);
 };
@@ -134,10 +131,7 @@ export const getCommentsByBlogId = async (
  * @param {IOptions} options
  * @returns {Promise<QueryResult>}
  */
-export const getRepliesByCommentId = async (
-  commentId: mongoose.Types.ObjectId,
-  options: IOptions,
-): Promise<QueryResult> => {
+export const getRepliesByCommentId = async (commentId: mongoose.Types.ObjectId, options: IOptions): Promise<QueryResult> => {
   const filter = { parentComment: commentId };
   return queryComments(filter, options);
 };

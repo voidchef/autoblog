@@ -27,7 +27,7 @@ export const registerUser = async (userBody: NewRegisteredUser): Promise<any> =>
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
   const user = await User.create(userBody);
-  
+
   // Return user data with hasOpenAiKey virtual
   return user.toJSON();
 };
@@ -61,7 +61,7 @@ export const getUserById = async (id: mongoose.Types.ObjectId): Promise<IUserDoc
 export const getUserByIdForFrontend = async (id: mongoose.Types.ObjectId): Promise<any | null> => {
   const user = await User.findById(id);
   if (!user) return null;
-  
+
   // Return user data with hasOpenAiKey virtual
   return user.toJSON();
 };
@@ -79,10 +79,7 @@ export const getUserByEmail = async (email: string): Promise<IUserDoc | null> =>
  * @param {UpdateUserBody} updateBody
  * @returns {Promise<any | null>}
  */
-export const updateUserById = async (
-  userId: mongoose.Types.ObjectId,
-  updateBody: UpdateUserBody,
-): Promise<any | null> => {
+export const updateUserById = async (userId: mongoose.Types.ObjectId, updateBody: UpdateUserBody): Promise<any | null> => {
   const user = await getUserById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -92,7 +89,7 @@ export const updateUserById = async (
   }
   Object.assign(user, updateBody);
   await user.save();
-  
+
   // Return user data with hasOpenAiKey virtual
   return user.toJSON();
 };
@@ -117,10 +114,7 @@ export const deleteUserById = async (userId: mongoose.Types.ObjectId): Promise<I
  * @param {mongoose.Types.ObjectId} targetUserId - ID of the user to be followed
  * @returns {Promise<any>}
  */
-export const followUser = async (
-  userId: mongoose.Types.ObjectId,
-  targetUserId: mongoose.Types.ObjectId,
-): Promise<any> => {
+export const followUser = async (userId: mongoose.Types.ObjectId, targetUserId: mongoose.Types.ObjectId): Promise<any> => {
   if (userId.toString() === targetUserId.toString()) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot follow yourself');
   }
@@ -154,10 +148,7 @@ export const followUser = async (
  * @param {mongoose.Types.ObjectId} targetUserId - ID of the user to be unfollowed
  * @returns {Promise<any>}
  */
-export const unfollowUser = async (
-  userId: mongoose.Types.ObjectId,
-  targetUserId: mongoose.Types.ObjectId,
-): Promise<any> => {
+export const unfollowUser = async (userId: mongoose.Types.ObjectId, targetUserId: mongoose.Types.ObjectId): Promise<any> => {
   if (userId.toString() === targetUserId.toString()) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot unfollow yourself');
   }

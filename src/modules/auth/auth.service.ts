@@ -18,7 +18,7 @@ export const loginUserWithEmailAndPassword = async (email: string, password: str
   if (!user || !(await user.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
-  
+
   // Return user data with hasOpenAiKey virtual
   return user.toJSON();
 };

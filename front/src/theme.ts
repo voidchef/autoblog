@@ -5,37 +5,37 @@ import { createTheme } from '@mui/material/styles';
 
 const colors = {
   primary: {
-    main: '#1d4ed8',      // Deep Blue - darker, more sophisticated
+    main: '#1d4ed8', // Deep Blue - darker, more sophisticated
     light: '#3b82f6',
     dark: '#1e3a8a',
     contrastText: '#ffffff',
   },
   secondary: {
-    main: '#0d9488',      // Deep Teal - richer, more elegant
+    main: '#0d9488', // Deep Teal - richer, more elegant
     light: '#14b8a6',
     dark: '#0f766e',
     contrastText: '#ffffff',
   },
   success: {
-    main: '#10b981',      // Emerald
+    main: '#10b981', // Emerald
     light: '#6ee7b7',
     dark: '#047857',
     contrastText: '#ffffff',
   },
   error: {
-    main: '#ef4444',      // Red
+    main: '#ef4444', // Red
     light: '#f87171',
     dark: '#dc2626',
     contrastText: '#ffffff',
   },
   warning: {
-    main: '#f59e0b',      // Amber
+    main: '#f59e0b', // Amber
     light: '#fcd34d',
     dark: '#d97706',
     contrastText: '#ffffff',
   },
   info: {
-    main: '#3b82f6',      // Blue
+    main: '#3b82f6', // Blue
     light: '#3b82f6',
     dark: '#1d4ed8',
     contrastText: '#ffffff',
@@ -62,7 +62,7 @@ const customColors = {
     paper: '#131827',
     paperAlt: '#252d48',
   },
-  
+
   // Text colors
   textLight: {
     primary: '#0f172a',
@@ -72,7 +72,7 @@ const customColors = {
     primary: '#f1f5f9',
     secondary: '#94a3b8',
   },
-  
+
   // Accent colors (used in gradients, highlights, etc.)
   accent: {
     blue: {
@@ -96,17 +96,17 @@ const customColors = {
       darker: '#0f172a',
     },
   },
-  
+
   // Gradient definitions
   gradients: {
     primary: 'linear-gradient(135deg, #1d4ed8 0%, #0d9488 100%)',
     primaryReverse: 'linear-gradient(135deg, #0d9488 0%, #1d4ed8 100%)',
     primaryDark: 'linear-gradient(135deg, #1e3a8a 0%, #0f766e 100%)',
-    
+
     // Hero/Headline backgrounds
     heroLight: 'linear-gradient(135deg, #f8fafc 0%, #dbeafe 40%, #bfdbfe 70%, #ddd6fe 100%)',
     heroDark: 'linear-gradient(135deg, #0a0e1a 0%, #131827 40%, #1e293b 100%)',
-    
+
     // Text gradients
     textLight: 'linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1d4ed8 100%)',
     textLightAlt: 'linear-gradient(135deg, #0f172a 0%, #1d4ed8 100%)',
@@ -114,36 +114,36 @@ const customColors = {
     textDark: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #3b82f6 100%)',
     textDarkAlt: 'linear-gradient(135deg, #ffffff 0%, #3b82f6 100%)',
     textDarkSecondary: 'linear-gradient(135deg, #ffffff 0%, #14b8a6 100%)',
-    
+
     // Card/Paper backgrounds
     cardLight: 'linear-gradient(135deg, #ffffff 0%, #fafbff 100%)',
     cardLightAlt: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
     cardDark: 'linear-gradient(135deg, #1a1f35 0%, #252d48 100%)',
     cardDarkAlt: 'linear-gradient(135deg, #131827 0%, #1e293b 100%)',
-    
+
     // Footer backgrounds
     footerLight: 'linear-gradient(135deg, #1d4ed8 0%, #0d9488 100%)',
     footerDark: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)',
-    
+
     // Badge/Chip backgrounds
     badgeLight: 'linear-gradient(135deg, rgba(29, 78, 216, 0.1) 0%, rgba(13, 148, 136, 0.1) 100%)',
     badgeDark: 'linear-gradient(135deg, rgba(29, 78, 216, 0.15) 0%, rgba(13, 148, 136, 0.15) 100%)',
-    
+
     // Icon backgrounds
     iconLight: 'linear-gradient(135deg, rgba(29, 78, 216, 0.15) 0%, rgba(13, 148, 136, 0.15) 100%)',
     iconDark: 'linear-gradient(135deg, rgba(29, 78, 216, 0.15) 0%, rgba(13, 148, 136, 0.15) 100%)',
-    
+
     // Overlay gradients
     overlayLight: 'linear-gradient(180deg, transparent 50%, rgba(29, 78, 216, 0.3) 100%)',
     overlayDark: 'linear-gradient(180deg, transparent 50%, rgba(29, 78, 216, 0.3) 100%)',
-    
+
     // Feature pill gradients
     successLight: 'linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%)',
     successDark: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(13, 148, 136, 0.15) 100%)',
     primaryPillLight: 'linear-gradient(135deg, #ffffff 0%, #ede9fe 100%)',
     primaryPillDark: 'linear-gradient(135deg, rgba(29, 78, 216, 0.15) 0%, rgba(13, 148, 136, 0.15) 100%)',
   },
-  
+
   // Shadow colors (for box-shadow)
   shadows: {
     primary: 'rgba(29, 78, 216, 0.3)',
@@ -154,7 +154,7 @@ const customColors = {
     secondaryHeavy: 'rgba(13, 148, 136, 0.4)',
     success: 'rgba(16, 185, 129, 0.3)',
   },
-  
+
   // Border colors
   borders: {
     primaryLight: 'rgba(29, 78, 216, 0.1)',
@@ -166,7 +166,7 @@ const customColors = {
     secondaryDark: 'rgba(13, 148, 136, 0.15)',
     secondaryDarkHover: 'rgba(13, 148, 136, 0.2)',
   },
-  
+
   // Overlay colors (for transparent backgrounds, modals, etc.)
   overlay: {
     white: {
@@ -188,7 +188,7 @@ const customColors = {
       almostOpaque: 'rgba(0, 0, 0, 0.3)',
     },
   },
-  
+
   // Page background colors
   pageBackground: {
     light: '#E9EAF4',
@@ -196,7 +196,7 @@ const customColors = {
     white: '#FFFFFF',
     grayLight: '#ECE9F1',
   },
-  
+
   // Neutral colors for text and UI elements
   neutral: {
     gray: {
@@ -205,7 +205,7 @@ const customColors = {
       border: '#E0E0E0',
     },
   },
-  
+
   // Social media brand colors (keep consistent across platforms)
   social: {
     twitter: '#1DA1F2',

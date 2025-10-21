@@ -288,7 +288,7 @@ export const blogApi = api.injectEndpoints({
       async onQueryStarted(blogId, { dispatch, queryFulfilled }) {
         try {
           const { data: updatedBlog } = await queryFulfilled;
-          
+
           // Update the cache for getBlog query (by slug)
           dispatch(
             blogApi.util.updateQueryData('getBlog', updatedBlog.slug, (draft) => {
@@ -296,7 +296,7 @@ export const blogApi = api.injectEndpoints({
               draft.dislikes = updatedBlog.dislikes;
             }),
           );
-          
+
           // Also try to update by ID
           dispatch(
             blogApi.util.updateQueryData('getBlog', updatedBlog.id, (draft) => {
@@ -322,7 +322,7 @@ export const blogApi = api.injectEndpoints({
       async onQueryStarted(blogId, { dispatch, queryFulfilled }) {
         try {
           const { data: updatedBlog } = await queryFulfilled;
-          
+
           // Update the cache for getBlog query (by slug)
           dispatch(
             blogApi.util.updateQueryData('getBlog', updatedBlog.slug, (draft) => {
@@ -330,7 +330,7 @@ export const blogApi = api.injectEndpoints({
               draft.dislikes = updatedBlog.dislikes;
             }),
           );
-          
+
           // Also try to update by ID
           dispatch(
             blogApi.util.updateQueryData('getBlog', updatedBlog.id, (draft) => {

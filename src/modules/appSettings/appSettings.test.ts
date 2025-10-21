@@ -90,10 +90,7 @@ describe('AppSettings routes', () => {
       const res = await request(app).get('/v1/appSettings').send().expect(httpStatus.OK);
 
       expect(res.body).toMatchObject({
-        categories: expect.arrayContaining([
-          expect.objectContaining(categoryOne),
-          expect.objectContaining(categoryTwo),
-        ]),
+        categories: expect.arrayContaining([expect.objectContaining(categoryOne), expect.objectContaining(categoryTwo)]),
         languages: expect.arrayContaining(languagesData),
         languageModels: expect.arrayContaining(languageModelsData),
         queryType: expect.arrayContaining(queryTypeData),
@@ -103,7 +100,7 @@ describe('AppSettings routes', () => {
     test('should return 200 with null if no settings exist', async () => {
       const res = await request(app).get('/v1/appSettings').send().expect(httpStatus.OK);
 
-      // Express may serialize null as {} 
+      // Express may serialize null as {}
       expect(res.body === null || Object.keys(res.body).length === 0).toBe(true);
     });
 
@@ -135,10 +132,7 @@ describe('AppSettings routes', () => {
 
       expect(res.body).toHaveLength(2);
       expect(res.body).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining(categoryOne),
-          expect.objectContaining(categoryTwo),
-        ])
+        expect.arrayContaining([expect.objectContaining(categoryOne), expect.objectContaining(categoryTwo)]),
       );
 
       const dbSettings = await AppSettings.findOne();
@@ -163,10 +157,7 @@ describe('AppSettings routes', () => {
 
       expect(res.body).toHaveLength(2);
       expect(res.body).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining(categoryOne),
-          expect.objectContaining(newCategory),
-        ])
+        expect.arrayContaining([expect.objectContaining(categoryOne), expect.objectContaining(newCategory)]),
       );
     });
 

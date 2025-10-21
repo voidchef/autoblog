@@ -43,6 +43,9 @@ export interface IBlogModel extends Model<IBlogDoc> {
   paginate(filter: Record<string, any>, options: Record<string, any>): Promise<QueryResult>;
 }
 
-export type NewCreatedBlog = Omit<IBlog, 'readingTime' | 'isFeatured' | 'isPublished' | 'isDraft' | 'likes' | 'dislikes' | 'createdAt' | 'updatedAt'>;
+export type NewCreatedBlog = Omit<
+  IBlog,
+  'readingTime' | 'isFeatured' | 'isPublished' | 'isDraft' | 'likes' | 'dislikes' | 'createdAt' | 'updatedAt'
+>;
 
 export type UpdateBlogBody = Partial<IBlog>;

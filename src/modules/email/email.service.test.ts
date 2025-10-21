@@ -20,7 +20,7 @@ describe('Email Service', () => {
       sendMail: mockSendMail,
       verify: mockVerify,
     } as any;
-    
+
     emailService.setTransport(mockTransport);
   });
 
@@ -51,9 +51,9 @@ describe('Email Service', () => {
       const error = new Error('Email send failed');
       mockSendMail.mockRejectedValueOnce(error as any);
 
-      await expect(
-        emailService.sendEmail('test@example.com', 'Subject', 'Text', 'HTML')
-      ).rejects.toThrow('Email send failed');
+      await expect(emailService.sendEmail('test@example.com', 'Subject', 'Text', 'HTML')).rejects.toThrow(
+        'Email send failed',
+      );
     });
   });
 
@@ -66,7 +66,7 @@ describe('Email Service', () => {
 
       expect(mockSendMail).toHaveBeenCalledTimes(1);
       const callArgs = mockSendMail.mock.calls[0]?.[0] as EmailOptions;
-      
+
       expect(callArgs.to).toBe(to);
       expect(callArgs.subject).toBe('Reset password');
       expect(callArgs.text).toContain(token);
@@ -83,7 +83,7 @@ describe('Email Service', () => {
 
       const callArgs = mockSendMail.mock.calls[0]?.[0] as EmailOptions;
       const expectedUrl = `http://${config.clientUrl}/reset-password?token=${token}`;
-      
+
       expect(callArgs.text).toContain(expectedUrl);
       expect(callArgs.html).toContain(expectedUrl);
     });
@@ -99,7 +99,7 @@ describe('Email Service', () => {
 
       expect(mockSendMail).toHaveBeenCalledTimes(1);
       const callArgs = mockSendMail.mock.calls[0]?.[0] as EmailOptions;
-      
+
       expect(callArgs.to).toBe(to);
       expect(callArgs.subject).toBe('Email Verification');
       expect(callArgs.text).toContain(name);
@@ -117,7 +117,7 @@ describe('Email Service', () => {
 
       const callArgs = mockSendMail.mock.calls[0]?.[0] as EmailOptions;
       const expectedUrl = `http://${config.clientUrl}/verify-email?token=${token}`;
-      
+
       expect(callArgs.text).toContain(expectedUrl);
       expect(callArgs.html).toContain(expectedUrl);
     });
@@ -133,7 +133,7 @@ describe('Email Service', () => {
 
       expect(mockSendMail).toHaveBeenCalledTimes(1);
       const callArgs = mockSendMail.mock.calls[0]?.[0] as EmailOptions;
-      
+
       expect(callArgs.to).toBe(to);
       expect(callArgs.subject).toBe('Email Verification');
       expect(callArgs.text).toContain(name);
@@ -153,7 +153,7 @@ describe('Email Service', () => {
 
       const callArgs = mockSendMail.mock.calls[0]?.[0] as EmailOptions;
       const expectedUrl = `http://${config.clientUrl}/verify-email?token=${token}`;
-      
+
       expect(callArgs.text).toContain(expectedUrl);
       expect(callArgs.html).toContain(expectedUrl);
     });
@@ -166,7 +166,7 @@ describe('Email Service', () => {
       await emailService.sendSuccessfulRegistration(to, token, name);
 
       const callArgs = mockSendMail.mock.calls[0]?.[0] as EmailOptions;
-      
+
       expect(callArgs.text).toContain('account has been created');
       expect(callArgs.html).toContain('account has been created');
     });

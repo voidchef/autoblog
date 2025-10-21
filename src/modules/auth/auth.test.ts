@@ -353,7 +353,11 @@ describe('Auth routes', () => {
       const resetPasswordToken = tokenService.generateToken(userOne._id, expires, tokenTypes.RESET_PASSWORD);
       await tokenService.saveToken(resetPasswordToken, userOne._id, expires, tokenTypes.RESET_PASSWORD);
 
-      await request(app).post('/v1/auth/reset-password').query({ token: resetPasswordToken }).send({}).expect(httpStatus.BAD_REQUEST);
+      await request(app)
+        .post('/v1/auth/reset-password')
+        .query({ token: resetPasswordToken })
+        .send({})
+        .expect(httpStatus.BAD_REQUEST);
 
       await request(app)
         .post('/v1/auth/reset-password')

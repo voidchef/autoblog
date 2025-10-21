@@ -10,9 +10,7 @@ router
   .post(auth(), validate(commentValidation.createComment), commentController.createComment)
   .get(validate(commentValidation.getComments), commentController.getComments);
 
-router
-  .route('/blog/:blogId')
-  .get(validate(commentValidation.getCommentsByBlog), commentController.getCommentsByBlog);
+router.route('/blog/:blogId').get(validate(commentValidation.getCommentsByBlog), commentController.getCommentsByBlog);
 
 router
   .route('/:commentId')
@@ -20,13 +18,9 @@ router
   .patch(auth(), validate(commentValidation.updateComment), commentController.updateComment)
   .delete(auth(), validate(commentValidation.deleteComment), commentController.deleteComment);
 
-router
-  .route('/:commentId/replies')
-  .get(validate(commentValidation.getReplies), commentController.getReplies);
+router.route('/:commentId/replies').get(validate(commentValidation.getReplies), commentController.getReplies);
 
-router
-  .route('/:commentId/like')
-  .post(auth(), validate(commentValidation.likeComment), commentController.likeComment);
+router.route('/:commentId/like').post(auth(), validate(commentValidation.likeComment), commentController.likeComment);
 
 router
   .route('/:commentId/dislike')

@@ -634,10 +634,7 @@ describe('Blog routes', () => {
     });
 
     test('should return 401 error if access token is missing', async () => {
-      await request(app)
-        .get('/v1/blogs/my-engagement-stats')
-        .send()
-        .expect(httpStatus.UNAUTHORIZED);
+      await request(app).get('/v1/blogs/my-engagement-stats').send().expect(httpStatus.UNAUTHORIZED);
     });
 
     test('should return zero stats if user has no published blogs', async () => {
@@ -665,10 +662,7 @@ describe('Blog routes', () => {
     });
 
     test('should return 200 and engagement stats for a blog', async () => {
-      const res = await request(app)
-        .get(`/v1/blogs/${blogOne.slug}/engagement-stats`)
-        .send()
-        .expect(httpStatus.OK);
+      const res = await request(app).get(`/v1/blogs/${blogOne.slug}/engagement-stats`).send().expect(httpStatus.OK);
 
       expect(res.body).toEqual({
         slug: blogOne.slug,
@@ -702,10 +696,7 @@ describe('Blog routes', () => {
         },
       ]);
 
-      const res = await request(app)
-        .get(`/v1/blogs/${blogOne.slug}/engagement-stats`)
-        .send()
-        .expect(httpStatus.OK);
+      const res = await request(app).get(`/v1/blogs/${blogOne.slug}/engagement-stats`).send().expect(httpStatus.OK);
 
       expect(res.body.slug).toBe(blogOne.slug);
       expect(res.body.title).toBe(blogOne.title);
@@ -716,18 +707,12 @@ describe('Blog routes', () => {
     });
 
     test('should return 404 if blog does not exist', async () => {
-      await request(app)
-        .get('/v1/blogs/non-existent-slug/engagement-stats')
-        .send()
-        .expect(httpStatus.NOT_FOUND);
+      await request(app).get('/v1/blogs/non-existent-slug/engagement-stats').send().expect(httpStatus.NOT_FOUND);
     });
 
     test('should work without authentication', async () => {
       // No authentication token provided
-      const res = await request(app)
-        .get(`/v1/blogs/${blogOne.slug}/engagement-stats`)
-        .send()
-        .expect(httpStatus.OK);
+      const res = await request(app).get(`/v1/blogs/${blogOne.slug}/engagement-stats`).send().expect(httpStatus.OK);
 
       expect(res.body).toHaveProperty('slug');
       expect(res.body).toHaveProperty('likesCount');
@@ -737,10 +722,7 @@ describe('Blog routes', () => {
     test('should return zero counts for blog with no engagement', async () => {
       await insertBlogs([blogTwo]);
 
-      const res = await request(app)
-        .get(`/v1/blogs/${blogTwo.slug}/engagement-stats`)
-        .send()
-        .expect(httpStatus.OK);
+      const res = await request(app).get(`/v1/blogs/${blogTwo.slug}/engagement-stats`).send().expect(httpStatus.OK);
 
       expect(res.body.likesCount).toBe(0);
       expect(res.body.dislikesCount).toBe(0);

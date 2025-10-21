@@ -52,7 +52,7 @@ const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
           payload: {
             tokens: authResponse.tokens,
             userId: state.auth.userId,
-          }
+          },
         });
 
         // Retry the original query with new token

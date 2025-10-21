@@ -49,7 +49,7 @@ export const followUser = catchAsync(async (req: Request, res: Response) => {
     const currentUser = req.user as IUserDoc;
     const user = await userService.followUser(
       currentUser._id as mongoose.Types.ObjectId,
-      new mongoose.Types.ObjectId(req.params['userId'])
+      new mongoose.Types.ObjectId(req.params['userId']),
     );
     res.send(user);
   }
@@ -60,7 +60,7 @@ export const unfollowUser = catchAsync(async (req: Request, res: Response) => {
     const currentUser = req.user as IUserDoc;
     const user = await userService.unfollowUser(
       currentUser._id as mongoose.Types.ObjectId,
-      new mongoose.Types.ObjectId(req.params['userId'])
+      new mongoose.Types.ObjectId(req.params['userId']),
     );
     res.send(user);
   }
