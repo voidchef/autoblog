@@ -90,6 +90,13 @@ const blogSchema = new mongoose.Schema<IBlogDoc, IBlogModel>(
     selectedImage: {
       type: String,
     },
+    audioNarrationUrl: {
+      type: String,
+    },
+    audioGenerationStatus: {
+      type: String,
+      enum: ['pending', 'processing', 'completed', 'failed'],
+    },
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,

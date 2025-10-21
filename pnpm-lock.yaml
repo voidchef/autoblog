@@ -17,6 +17,9 @@ importers:
       '@google-analytics/data':
         specifier: ^5.2.0
         version: 5.2.0
+      '@google-cloud/text-to-speech':
+        specifier: ^6.3.1
+        version: 6.3.1
       '@langchain/community':
         specifier: 0.3.49
         version: 0.3.49(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.850.0)(@aws-sdk/credential-provider-node@3.848.0)(@browserbasehq/sdk@2.6.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.54.1)(deepmerge@4.3.1)(dotenv@17.2.1)(openai@5.10.2(ws@8.18.3)(zod@3.25.76))(zod@3.25.76))(@ibm-cloud/watsonx-ai@1.6.9)(@langchain/core@0.3.66(openai@5.10.2(ws@8.18.3)(zod@3.25.76)))(@langchain/mistralai@0.2.1(@langchain/core@0.3.66(openai@5.10.2(ws@8.18.3)(zod@3.25.76)))(zod@3.25.76))(@smithy/util-utf8@2.3.0)(axios@1.11.0)(fast-xml-parser@5.2.5)(google-auth-library@10.2.0)(handlebars@4.7.8)(ibm-cloud-sdk-core@5.4.2)(ignore@5.3.2)(jsonwebtoken@9.0.2)(lodash@4.17.21)(mongodb@6.17.0(socks@2.8.6))(openai@5.10.2(ws@8.18.3)(zod@3.25.76))(playwright@1.54.1)(weaviate-client@3.8.0)(ws@8.18.3)
@@ -744,6 +747,10 @@ packages:
 
   '@google-analytics/data@5.2.0':
     resolution: {integrity: sha512-CNCLF0jAoVjrcUo7yjyYiwJPWJuf/PTQEj+7FAqR1TU9nU4vmYgB3fcrtIL+TEjN19aLZ6DIRLjY+zhymwTCZg==}
+    engines: {node: '>=18'}
+
+  '@google-cloud/text-to-speech@6.3.1':
+    resolution: {integrity: sha512-gAcNqVL6E6V+d7yZbv5pQAPh5ZTE66UB0n2AZB3QaVaQDo9H8yalja3u2v3NE4QTVt03DkpoIuyvzs4i3w/b7A==}
     engines: {node: '>=18'}
 
   '@graphql-typed-document-node/core@3.2.0':
@@ -7035,6 +7042,12 @@ snapshots:
   '@faker-js/faker@9.9.0': {}
 
   '@google-analytics/data@5.2.0':
+    dependencies:
+      google-gax: 5.0.1
+    transitivePeerDependencies:
+      - supports-color
+
+  '@google-cloud/text-to-speech@6.3.1':
     dependencies:
       google-gax: 5.0.1
     transitivePeerDependencies:

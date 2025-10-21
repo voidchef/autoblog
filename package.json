@@ -90,6 +90,7 @@
     "@aws-sdk/client-s3": "^3.850.0",
     "@dqbd/tiktoken": "^1.0.21",
     "@google-analytics/data": "^5.2.0",
+    "@google-cloud/text-to-speech": "^6.3.1",
     "@langchain/community": "0.3.49",
     "@langchain/core": "0.3.66",
     "@langchain/mistralai": "0.2.1",

@@ -28,6 +28,8 @@ export type IBlog = {
   llmModel: string;
   generatedImages?: string[];
   selectedImage?: string;
+  audioNarrationUrl?: string;
+  audioGenerationStatus?: 'pending' | 'processing' | 'completed' | 'failed';
   likes: string[];
   dislikes: string[];
   createdAt: Date;

@@ -43,6 +43,10 @@ router.route('/:blogId/toggle-featured').patch(auth('manageBlogs'), blogControll
 router.route('/:blogId/like').post(auth(), blogController.likeBlog);
 router.route('/:blogId/dislike').post(auth(), blogController.dislikeBlog);
 
+// Audio narration routes
+router.route('/:blogId/audio').post(auth('manageBlogs'), blogController.generateAudioNarration);
+router.route('/:blogId/audio').get(blogController.getAudioNarrationStatus);
+
 export default router;
 
 /**

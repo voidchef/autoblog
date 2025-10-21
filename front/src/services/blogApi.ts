@@ -37,6 +37,8 @@ export interface IBlog {
   llmModel: string;
   generatedImages?: string[];
   selectedImage?: string;
+  audioNarrationUrl?: string;
+  audioGenerationStatus?: 'pending' | 'processing' | 'completed' | 'failed';
   likes: string[];
   dislikes: string[];
   createdAt: Date;
@@ -364,6 +366,19 @@ export const blogApi = api.injectEndpoints({
       },
       invalidatesTags: ['Blog', 'Draft'],
     }),
+
+    generateAudioNarration: builder.mutation<{ message: string; audioNarrationUrl: string; audioGenerationStatus: string }, string>({
+      query: (blogId) => ({
+        url: `/blogs/${blogId}/audio`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Blog'],
+    }),
+
+    getAudioNarrationStatus: builder.query<{ audioNarrationUrl?: string; audioGenerationStatus?: string }, string>({
+      query: (blogId) => `/blogs/${blogId}/audio`,
+      providesTags: ['Blog'],
+    }),
   }),
 });
 
@@ -395,4 +410,7 @@ export const {
   useLazyGetBlogBySlugQuery,
   useLazyGetBlogViewsQuery,
   useLazySearchBlogsQuery,
+  useGenerateAudioNarrationMutation,
+  useGetAudioNarrationStatusQuery,
+  useLazyGetAudioNarrationStatusQuery,
 } = blogApi;

@@ -26,6 +26,8 @@ export interface IBlog extends IGenerateBlog {
   isDraft: boolean;
   generatedImages?: string[];
   selectedImage?: string;
+  audioNarrationUrl?: string;
+  audioGenerationStatus?: 'pending' | 'processing' | 'completed' | 'failed';
   likes: mongo.ObjectId[];
   dislikes: mongo.ObjectId[];
   createdAt?: Date;

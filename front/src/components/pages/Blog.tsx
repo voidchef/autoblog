@@ -2,10 +2,11 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
-import { Typography, Paper, Divider } from '@mui/material';
+import { Typography, Paper, Divider, Button } from '@mui/material';
+import { VolumeUp as VolumeUpIcon } from '@mui/icons-material';
 import Title from '../elements/Blog/Title';
 import { marked } from 'marked';
-import { useGetBlogQuery } from '../../services/blogApi';
+import { useGetBlogQuery, useGenerateAudioNarrationMutation, IBlog as IBlogAPI } from '../../services/blogApi';
 import { useAppSelector } from '../../utils/reduxHooks';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useParams } from 'react-router-dom';
@@ -13,6 +14,7 @@ import BlogLikeDislike from '../elements/BlogLikeDislike';
 import CommentSection from '../elements/CommentSection';
 import ShareButton from '../elements/ShareButton';
 import FollowButton from '../elements/FollowButton';
+import AudioPlayer from '../elements/AudioPlayer';
 
 export default function Blog() {
   const location = useLocation();
@@ -25,7 +27,20 @@ export default function Blog() {
 
   // For preview mode, get data from Redux state
   const previewBlogData = useAppSelector((state) => state.blog.blogData);
-  const currentBlogData = preview ? previewBlogData : blogData;
+  const currentBlogData = (preview ? previewBlogData : blogData) as IBlogAPI | null;
+
+  // Audio narration mutation
+  const [generateAudio, { isLoading: isGeneratingAudio }] = useGenerateAudioNarrationMutation();
+
+  const handleGenerateAudio = async () => {
+    if (currentBlogData?.id) {
+      try {
+        await generateAudio(currentBlogData.id).unwrap();
+      } catch (error) {
+        console.error('Failed to generate audio:', error);
+      }
+    }
+  };
 
   return (
     <Box>
@@ -179,6 +194,40 @@ export default function Blog() {
                 style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }}
               />
             </Box>
+
+            {/* Audio Narration Player */}
+            <Box sx={{ my: 3 }}>
+              {currentBlogData.audioNarrationUrl ? (
+                <AudioPlayer 
+                  audioUrl={currentBlogData.audioNarrationUrl}
+                  title={currentBlogData.title}
+                  loading={isGeneratingAudio || currentBlogData.audioGenerationStatus === 'processing'}
+                />
+              ) : (
+                <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
+                  <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <VolumeUpIcon color="action" />
+                      <Typography variant="body2" color="text.secondary">
+                        Listen to this article
+                      </Typography>
+                    </Box>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      startIcon={<VolumeUpIcon />}
+                      onClick={handleGenerateAudio}
+                      disabled={isGeneratingAudio || currentBlogData.audioGenerationStatus === 'processing'}
+                    >
+                      {isGeneratingAudio || currentBlogData.audioGenerationStatus === 'processing' 
+                        ? 'Generating...' 
+                        : 'Generate Audio'}
+                    </Button>
+                  </Box>
+                </Paper>
+              )}
+            </Box>
+
             <Typography component={'div'} fontSize={{ sx: '1rem', sm: '1.1rem' }} textAlign={'left'}>
               <div dangerouslySetInnerHTML={{ __html: marked(currentBlogData.content) }} />
             </Typography>

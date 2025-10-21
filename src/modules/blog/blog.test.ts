@@ -12,6 +12,15 @@ import config from '../../config/config';
 import * as tokenService from '../token/token.service';
 import tokenTypes from '../token/token.types';
 import { NewCreatedBlog } from './blog.interfaces';
+import * as blogService from './blog.service';
+import { ttsService } from '../tts';
+
+// Mock TTS service
+jest.mock('../tts', () => ({
+  ttsService: {
+    textToSpeech: jest.fn(),
+  },
+}));
 
 setupTestDB();
 
@@ -74,7 +83,8 @@ const insertUsers = async (users: Record<string, any>[]) => {
 };
 
 const insertBlogs = async (blogs: NewCreatedBlog[]) => {
-  await Blog.create(blogs);
+  const result = await Blog.create(blogs);
+  return Array.isArray(result) ? result : [result];
 };
 
 describe('Blog routes', () => {
@@ -751,6 +761,287 @@ describe('Blog routes', () => {
       const excerpt = dbBlog?.generateExcerpt(100);
       expect(excerpt).toBeDefined();
       expect(excerpt?.length).toBeLessThanOrEqual(103); // 100 + '...'
+    });
+  });
+
+  describe('Audio Narration', () => {
+    describe('POST /v1/blogs/:blogId/audio', () => {
+      const mockAudioUrl = 'https://s3.amazonaws.com/bucket/blogs/123/audio/file.mp3';
+
+      beforeEach(() => {
+        (ttsService.textToSpeech as jest.Mock).mockResolvedValue({
+          audioUrl: mockAudioUrl,
+        });
+      });
+
+      afterEach(() => {
+        jest.clearAllMocks();
+      });
+
+      test('should return 200 and generate audio narration for blog', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]?._id?.toString();
+
+        const res = await request(app)
+          .post(`/v1/blogs/${blogId}/audio`)
+          .set('Authorization', `Bearer ${adminAccessToken}`)
+          .send()
+          .expect(httpStatus.OK);
+
+        expect(res.body).toHaveProperty('message', 'Audio narration generated successfully');
+        expect(res.body).toHaveProperty('audioNarrationUrl', mockAudioUrl);
+        expect(res.body).toHaveProperty('audioGenerationStatus', 'completed');
+
+        const dbBlog = await Blog.findById(blogId);
+        expect(dbBlog?.audioNarrationUrl).toBe(mockAudioUrl);
+        expect(dbBlog?.audioGenerationStatus).toBe('completed');
+      });
+
+      test('should return 401 if not authenticated', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]?._id?.toString();
+
+        await request(app).post(`/v1/blogs/${blogId}/audio`).send().expect(httpStatus.UNAUTHORIZED);
+      });
+
+      test('should return 403 if user does not have manageBlogs permission', async () => {
+        await insertUsers([admin, userOne]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]?._id?.toString();
+
+        await request(app)
+          .post(`/v1/blogs/${blogId}/audio`)
+          .set('Authorization', `Bearer ${userOneAccessToken}`)
+          .send()
+          .expect(httpStatus.FORBIDDEN);
+      });
+
+      test('should return 404 if blog does not exist', async () => {
+        await insertUsers([admin]);
+        const fakeId = new mongoose.Types.ObjectId();
+
+        await request(app)
+          .post(`/v1/blogs/${fakeId}/audio`)
+          .set('Authorization', `Bearer ${adminAccessToken}`)
+          .send()
+          .expect(httpStatus.NOT_FOUND);
+      });
+
+      test('should return 409 if audio is already being generated', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]?._id?.toString();
+
+        // Set status to processing
+        await Blog.findByIdAndUpdate(blogId, { audioGenerationStatus: 'processing' });
+
+        await request(app)
+          .post(`/v1/blogs/${blogId}/audio`)
+          .set('Authorization', `Bearer ${adminAccessToken}`)
+          .send()
+          .expect(httpStatus.CONFLICT);
+      });
+
+      test('should update status to failed if TTS service fails', async () => {
+        (ttsService.textToSpeech as jest.Mock).mockRejectedValue(new Error('TTS API error'));
+
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]?._id?.toString();
+
+        await request(app)
+          .post(`/v1/blogs/${blogId}/audio`)
+          .set('Authorization', `Bearer ${adminAccessToken}`)
+          .send()
+          .expect(httpStatus.INTERNAL_SERVER_ERROR);
+
+        const dbBlog = await Blog.findById(blogId);
+        expect(dbBlog?.audioGenerationStatus).toBe('failed');
+      });
+
+      test('should call TTS service with correct parameters', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]?._id?.toString();
+
+        await request(app)
+          .post(`/v1/blogs/${blogId}/audio`)
+          .set('Authorization', `Bearer ${adminAccessToken}`)
+          .send()
+          .expect(httpStatus.OK);
+
+        expect(ttsService.textToSpeech).toHaveBeenCalledWith(
+          blogOne.content,
+          blogId,
+          expect.objectContaining({
+            languageCode: 'en-US',
+          }),
+        );
+      });
+    });
+
+    describe('GET /v1/blogs/:blogId/audio', () => {
+      test('should return audio narration status and URL', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]?._id?.toString();
+
+        const audioUrl = 'https://s3.amazonaws.com/bucket/audio.mp3';
+        await Blog.findByIdAndUpdate(blogId, {
+          audioNarrationUrl: audioUrl,
+          audioGenerationStatus: 'completed',
+        });
+
+        const res = await request(app).get(`/v1/blogs/${blogId}/audio`).send().expect(httpStatus.OK);
+
+        expect(res.body).toHaveProperty('audioNarrationUrl', audioUrl);
+        expect(res.body).toHaveProperty('audioGenerationStatus', 'completed');
+      });
+
+      test('should return empty response if audio not generated', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]?._id?.toString();
+
+        const res = await request(app).get(`/v1/blogs/${blogId}/audio`).send().expect(httpStatus.OK);
+
+        expect(res.body).toEqual({});
+      });
+
+      test('should return 404 if blog does not exist', async () => {
+        const fakeId = new mongoose.Types.ObjectId();
+
+        await request(app).get(`/v1/blogs/${fakeId}/audio`).send().expect(httpStatus.NOT_FOUND);
+      });
+
+      test('should work without authentication', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]?._id?.toString();
+
+        // No authentication token provided
+        const res = await request(app).get(`/v1/blogs/${blogId}/audio`).send().expect(httpStatus.OK);
+
+        expect(res.body).toBeDefined();
+      });
+    });
+
+    describe('Blog Service - generateAudioNarration', () => {
+      const mockAudioUrl = 'https://s3.amazonaws.com/bucket/audio.mp3';
+
+      beforeEach(() => {
+        (ttsService.textToSpeech as jest.Mock).mockResolvedValue({
+          audioUrl: mockAudioUrl,
+        });
+      });
+
+      test('should generate audio and update blog', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+
+        const result = await blogService.generateAudioNarration(blogId);
+
+        expect(result.audioNarrationUrl).toBe(mockAudioUrl);
+        expect(result.audioGenerationStatus).toBe('completed');
+      });
+
+      test('should set status to processing before generation', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+
+        // Mock TTS to take some time
+        (ttsService.textToSpeech as jest.Mock).mockImplementation(
+          () =>
+            new Promise((resolve) =>
+              setTimeout(
+                () =>
+                  resolve({
+                    audioUrl: mockAudioUrl,
+                  }),
+                100,
+              ),
+            ),
+        );
+
+        const promise = blogService.generateAudioNarration(blogId);
+
+        // Check status is processing
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        const blog = await Blog.findById(blogId);
+        expect(blog?.audioGenerationStatus).toBe('processing');
+
+        await promise;
+      });
+
+      test('should throw error if blog not found', async () => {
+        const fakeId = new mongoose.Types.ObjectId();
+
+        await expect(blogService.generateAudioNarration(fakeId)).rejects.toThrow('Blog not found');
+      });
+
+      test('should throw error if already processing', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+
+        await Blog.findByIdAndUpdate(blogId, { audioGenerationStatus: 'processing' });
+
+        await expect(blogService.generateAudioNarration(blogId)).rejects.toThrow(
+          'Audio narration is already being generated',
+        );
+      });
+
+      test('should set status to failed on error', async () => {
+        (ttsService.textToSpeech as jest.Mock).mockRejectedValue(new Error('TTS error'));
+
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+
+        await expect(blogService.generateAudioNarration(blogId)).rejects.toThrow();
+
+        const blog = await Blog.findById(blogId);
+        expect(blog?.audioGenerationStatus).toBe('failed');
+      });
+    });
+
+    describe('Blog Service - getAudioNarrationStatus', () => {
+      test('should return audio status for blog', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+
+        const audioUrl = 'https://s3.amazonaws.com/bucket/audio.mp3';
+        await Blog.findByIdAndUpdate(blogId, {
+          audioNarrationUrl: audioUrl,
+          audioGenerationStatus: 'completed',
+        });
+
+        const result = await blogService.getAudioNarrationStatus(blogId);
+
+        expect(result.audioNarrationUrl).toBe(audioUrl);
+        expect(result.audioGenerationStatus).toBe('completed');
+      });
+
+      test('should return empty object if no audio data', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+
+        const result = await blogService.getAudioNarrationStatus(blogId);
+
+        expect(result).toEqual({});
+      });
+
+      test('should throw error if blog not found', async () => {
+        const fakeId = new mongoose.Types.ObjectId();
+
+        await expect(blogService.getAudioNarrationStatus(fakeId)).rejects.toThrow('Blog not found');
+      });
     });
   });
 });

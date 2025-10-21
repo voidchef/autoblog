@@ -8,6 +8,7 @@ import { PostGenerator, Post, AutoPostPrompt } from '../postGen';
 import runReport, { IRunReportResponse } from '../utils/analytics';
 import S3Utils from '../aws/s3utils';
 import { getUserById } from '../user/user.service';
+import { ttsService } from '../tts';
 
 /**
  * Create a blog post
@@ -244,4 +245,69 @@ export const getAllBlogsEngagementStats = async (userId: mongoose.Types.ObjectId
     totalEngagement: totalLikes + totalDislikes + totalComments,
     avgEngagementPerBlog: totalBlogs > 0 ? ((totalLikes + totalDislikes + totalComments) / totalBlogs).toFixed(2) : '0.00',
   };
+};
+
+/**
+ * Generate audio narration for a blog post
+ * @param {mongoose.Types.ObjectId} blogId - Blog ID
+ * @returns {Promise<IBlogDoc>}
+ */
+export const generateAudioNarration = async (blogId: mongoose.Types.ObjectId): Promise<IBlogDoc> => {
+  const blog = await Blog.findById(blogId);
+  if (!blog) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
+  }
+
+  // Check if audio is already being generated
+  if (blog.audioGenerationStatus === 'processing') {
+    throw new ApiError(httpStatus.CONFLICT, 'Audio narration is already being generated');
+  }
+
+  // Update status to processing
+  blog.audioGenerationStatus = 'processing';
+  await blog.save();
+
+  try {
+    // Generate audio using TTS service
+    const result = await ttsService.textToSpeech(blog.content, blog.id, {
+      languageCode: blog.language === 'en' ? 'en-US' : blog.language,
+    });
+
+    // Update blog with audio URL
+    blog.audioNarrationUrl = result.audioUrl;
+    blog.audioGenerationStatus = 'completed';
+    await blog.save();
+
+    return blog;
+  } catch (error) {
+    // Update status to failed
+    blog.audioGenerationStatus = 'failed';
+    await blog.save();
+
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, `Failed to generate audio narration: ${errorMessage}`);
+  }
+};
+
+/**
+ * Get audio narration status for a blog post
+ * @param {mongoose.Types.ObjectId} blogId - Blog ID
+ * @returns {Promise<{audioNarrationUrl?: string | undefined, audioGenerationStatus?: string | undefined}>}
+ */
+export const getAudioNarrationStatus = async (
+  blogId: mongoose.Types.ObjectId,
+): Promise<{ audioNarrationUrl?: string | undefined; audioGenerationStatus?: string | undefined }> => {
+  const blog = await Blog.findById(blogId).select('audioNarrationUrl audioGenerationStatus');
+  if (!blog) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
+  }
+
+  const result: { audioNarrationUrl?: string | undefined; audioGenerationStatus?: string | undefined } = {};
+  if (blog.audioNarrationUrl) {
+    result.audioNarrationUrl = blog.audioNarrationUrl;
+  }
+  if (blog.audioGenerationStatus) {
+    result.audioGenerationStatus = blog.audioGenerationStatus;
+  }
+  return result;
 };
