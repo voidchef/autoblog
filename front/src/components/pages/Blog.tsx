@@ -11,6 +11,7 @@ import { Helmet } from 'react-helmet-async';
 import { useLocation, useParams } from 'react-router-dom';
 import BlogLikeDislike from '../elements/BlogLikeDislike';
 import CommentSection from '../elements/CommentSection';
+import ShareButton from '../elements/ShareButton';
 
 export default function Blog() {
   const location = useLocation();
@@ -124,7 +125,7 @@ export default function Blog() {
             <Typography component={'div'} fontSize={{ xs: '2rem', sm: '3rem' }} textAlign={'center'}>
               {currentBlogData.title}
             </Typography>
-            <Box>
+            <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} flexWrap={'wrap'}>
               <Typography component={'div'} fontSize={'1rem'} textAlign={'left'}>
                 <span style={{ color: '#6D6E76' }}>By </span>
                 <span style={{ color: '#555FAC', fontWeight: 700 }}>{currentBlogData.author?.name || 'Unknown'}</span>
@@ -139,6 +140,9 @@ export default function Blog() {
                 <span style={{ color: '#6D6E76' }}> | </span>
                 <span style={{ color: '#6D6E76' }}>{currentBlogData.readingTime} mins</span>
               </Typography>
+              <Box>
+                <ShareButton blog={currentBlogData} size="medium" />
+              </Box>
             </Box>
             <Box height={{ xs: '15rem', sm: '23rem' }} maxWidth={'100%'} display={'flex'} justifyContent={'center'}>
               <img
@@ -173,8 +177,12 @@ export default function Blog() {
                 >
                   Was this article helpful?
                 </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
                   <BlogLikeDislike blog={currentBlogData} size="large" showCounts />
+                  <Box sx={{ borderLeft: '2px solid #E0E0E0', height: '40px', mx: 1 }} />
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <ShareButton blog={currentBlogData} size="large" />
+                  </Box>
                 </Box>
               </Paper>
             </Box>
