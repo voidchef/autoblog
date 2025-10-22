@@ -10,6 +10,7 @@ import {
   TableContainer,
   TablePagination,
   TableRow,
+  CircularProgress,
 } from '@mui/material';
 import { EnhancedTableHead, HeadCell, Data, Order } from './EnhancedTableHead';
 import { EnhancedTableToolbar } from './EnhancedTableToolbar';
@@ -25,8 +26,12 @@ interface EnhancedTableProps {
   handleEditBlog: (blogId: string) => void;
   handleDeleteBlog: (blogId: string) => void;
   handleChangePublishStatus: (blogId: string, isPublished: boolean) => void;
+  handlePublishToWordPress?: (blogId: string) => void;
+  handlePublishToMedium?: (blogId: string) => void;
   totalResults: number;
   isDraftTable?: boolean;
+  isPublishingWP?: boolean;
+  isPublishingMedium?: boolean;
 }
 
 function getComparator<Key extends keyof any>(order: Order, orderBy: Key): (a: Data, b: Data) => number {
@@ -36,6 +41,11 @@ function getComparator<Key extends keyof any>(order: Order, orderBy: Key): (a: D
   return (a, b) => {
     const valueA = a[stringOrNumberOrderBy];
     const valueB = b[stringOrNumberOrderBy];
+
+    // Handle undefined values
+    if (valueA === undefined && valueB === undefined) return 0;
+    if (valueA === undefined) return 1;
+    if (valueB === undefined) return -1;
 
     if (valueA instanceof Date && valueB instanceof Date) {
       // Compare dates directly for proper sorting
@@ -61,8 +71,12 @@ function EnhancedTable({
   handleEditBlog,
   handleDeleteBlog,
   handleChangePublishStatus,
+  handlePublishToWordPress,
+  handlePublishToMedium,
   totalResults,
   isDraftTable,
+  isPublishingWP,
+  isPublishingMedium,
 }: EnhancedTableProps) {
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<string>('title');
@@ -138,7 +152,7 @@ function EnhancedTable({
                     )}
                     {columns.map((column) => {
                       const cellValue = row[column.id];
-                      if (column.id === 'edit' || column.id === 'delete') {
+                      if (column.id === 'edit' || column.id === 'delete' || column.id === 'wordpress' || column.id === 'medium') {
                         return null;
                       }
                       return (
@@ -163,11 +177,63 @@ function EnhancedTable({
                               {isDraftTable ? 'Draft' : cellValue ? 'Published' : 'UnPublished'}
                             </Button>
                           ) : (
-                            String(cellValue)
+                            String(cellValue || '-')
                           )}
                         </TableCell>
                       );
                     })}
+                    {handlePublishToWordPress && (
+                      <TableCell align="right">
+                        {row.wordpressUrl ? (
+                          <Button
+                            variant={'outlined'}
+                            color={'success'}
+                            size={'small'}
+                            href={row.wordpressUrl as string}
+                            target="_blank"
+                          >
+                            View
+                          </Button>
+                        ) : (
+                          <Button
+                            variant={'contained'}
+                            color={'primary'}
+                            size={'small'}
+                            onClick={() => handlePublishToWordPress(row.id as string)}
+                            disabled={row.wordpressStatus === 'pending' || isPublishingWP}
+                            startIcon={row.wordpressStatus === 'pending' || isPublishingWP ? <CircularProgress size={16} color="inherit" /> : undefined}
+                          >
+                            {row.wordpressStatus === 'pending' || isPublishingWP ? 'Publishing...' : row.wordpressStatus === 'failed' ? 'Retry WP' : 'Publish'}
+                          </Button>
+                        )}
+                      </TableCell>
+                    )}
+                    {handlePublishToMedium && (
+                      <TableCell align="right">
+                        {row.mediumUrl ? (
+                          <Button
+                            variant={'outlined'}
+                            color={'success'}
+                            size={'small'}
+                            href={row.mediumUrl as string}
+                            target="_blank"
+                          >
+                            View
+                          </Button>
+                        ) : (
+                          <Button
+                            variant={'contained'}
+                            color={'primary'}
+                            size={'small'}
+                            onClick={() => handlePublishToMedium(row.id as string)}
+                            disabled={row.mediumStatus === 'pending' || isPublishingMedium}
+                            startIcon={row.mediumStatus === 'pending' || isPublishingMedium ? <CircularProgress size={16} color="inherit" /> : undefined}
+                          >
+                            {row.mediumStatus === 'pending' || isPublishingMedium ? 'Publishing...' : row.mediumStatus === 'failed' ? 'Retry Medium' : 'Publish'}
+                          </Button>
+                        )}
+                      </TableCell>
+                    )}
                     <TableCell align="right">
                       <Button
                         variant={'contained'}

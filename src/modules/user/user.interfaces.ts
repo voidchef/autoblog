@@ -9,6 +9,11 @@ export interface IUser {
   role: string;
   isEmailVerified: boolean;
   openAiKey: string;
+  googleApiKey?: string;
+  wordpressSiteUrl?: string;
+  wordpressUsername?: string;
+  wordpressAppPassword?: string;
+  mediumIntegrationToken?: string;
   bio?: string;
   socialLinks?: {
     twitter?: string;
@@ -24,6 +29,10 @@ export interface IUserDoc extends IUser, Document {
   isPasswordMatch(password: string): Promise<boolean>;
   hasOpenAiKey(): boolean;
   getDecryptedOpenAiKey(): string;
+  hasWordPressConfig(): boolean;
+  getDecryptedWordPressPassword(): string;
+  hasMediumConfig(): boolean;
+  getDecryptedMediumToken(): string;
 }
 
 export interface IUserModel extends Model<IUserDoc> {

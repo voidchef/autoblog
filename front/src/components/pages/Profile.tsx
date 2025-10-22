@@ -59,6 +59,11 @@ interface ProfileFormData {
   password: string;
   confirmPassword: string;
   openAiKey: string;
+  googleApiKey: string;
+  wordpressSiteUrl: string;
+  wordpressUsername: string;
+  wordpressAppPassword: string;
+  mediumIntegrationToken: string;
   socialLinks: {
     twitter: string;
     linkedin: string;
@@ -74,6 +79,11 @@ interface FormErrors {
   password?: string;
   confirmPassword?: string;
   openAiKey?: string;
+  googleApiKey?: string;
+  wordpressSiteUrl?: string;
+  wordpressUsername?: string;
+  wordpressAppPassword?: string;
+  mediumIntegrationToken?: string;
   twitter?: string;
   linkedin?: string;
   github?: string;
@@ -92,6 +102,11 @@ const Profile: React.FC = () => {
     password: '',
     confirmPassword: '',
     openAiKey: '',
+    googleApiKey: '',
+    wordpressSiteUrl: '',
+    wordpressUsername: '',
+    wordpressAppPassword: '',
+    mediumIntegrationToken: '',
     socialLinks: {
       twitter: '',
       linkedin: '',
@@ -104,6 +119,9 @@ const Profile: React.FC = () => {
   const [showPassword, setShowPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
   const [showOpenAiKey, setShowOpenAiKey] = React.useState(false);
+  const [showGoogleApiKey, setShowGoogleApiKey] = React.useState(false);
+  const [showWordPressPassword, setShowWordPressPassword] = React.useState(false);
+  const [showMediumToken, setShowMediumToken] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = React.useState(false);
   const [pendingChanges, setPendingChanges] = React.useState<any>(null);
@@ -118,6 +136,11 @@ const Profile: React.FC = () => {
         password: '',
         confirmPassword: '',
         openAiKey: '', // Always show empty field for security
+        googleApiKey: user.googleApiKey || '',
+        wordpressSiteUrl: user.wordpressSiteUrl || '',
+        wordpressUsername: user.wordpressUsername || '',
+        wordpressAppPassword: '', // Always show empty field for security
+        mediumIntegrationToken: '', // Always show empty field for security
         socialLinks: {
           twitter: user.socialLinks?.twitter || '',
           linkedin: user.socialLinks?.linkedin || '',
@@ -274,6 +297,29 @@ const Profile: React.FC = () => {
         updateData.openAiKey = await encrypt(formData.openAiKey, user.id);
       }
 
+      // Google API Key (not encrypted on backend, sent as plain text)
+      if (formData.googleApiKey !== (user.googleApiKey || '')) {
+        updateData.googleApiKey = formData.googleApiKey;
+      }
+
+      // WordPress credentials
+      if (formData.wordpressSiteUrl !== (user.wordpressSiteUrl || '')) {
+        updateData.wordpressSiteUrl = formData.wordpressSiteUrl;
+      }
+      if (formData.wordpressUsername !== (user.wordpressUsername || '')) {
+        updateData.wordpressUsername = formData.wordpressUsername;
+      }
+      if (formData.wordpressAppPassword) {
+        // Encrypt the WordPress app password before sending to backend
+        updateData.wordpressAppPassword = await encrypt(formData.wordpressAppPassword, user.id);
+      }
+
+      // Medium integration token
+      if (formData.mediumIntegrationToken) {
+        // Encrypt the Medium token before sending to backend
+        updateData.mediumIntegrationToken = await encrypt(formData.mediumIntegrationToken, user.id);
+      }
+
       // Only update if there are changes
       if (Object.keys(updateData).length === 1) {
         dispatch(showError('No changes to save'));
@@ -308,6 +354,28 @@ const Profile: React.FC = () => {
       optimisticUpdate.hasOpenAiKey = true;
     }
 
+    // Update Google API key if changed
+    if (formData.googleApiKey !== (user.googleApiKey || '')) {
+      optimisticUpdate.googleApiKey = formData.googleApiKey;
+      optimisticUpdate.hasGoogleApiKey = !!formData.googleApiKey;
+    }
+
+    // Update WordPress credentials if changed
+    if (formData.wordpressSiteUrl !== (user.wordpressSiteUrl || '')) {
+      optimisticUpdate.wordpressSiteUrl = formData.wordpressSiteUrl;
+    }
+    if (formData.wordpressUsername !== (user.wordpressUsername || '')) {
+      optimisticUpdate.wordpressUsername = formData.wordpressUsername;
+    }
+    if (formData.wordpressAppPassword) {
+      optimisticUpdate.hasWordPressConfig = true;
+    }
+
+    // Update Medium token if changed
+    if (formData.mediumIntegrationToken) {
+      optimisticUpdate.hasMediumConfig = true;
+    }
+
     dispatch(updateUserDataOptimistic(optimisticUpdate));
 
     const result = await updateUser(updateData).unwrap();
@@ -321,6 +389,8 @@ const Profile: React.FC = () => {
       password: '',
       confirmPassword: '',
       openAiKey: '',
+      wordpressAppPassword: '',
+      mediumIntegrationToken: '',
     }));
   };
 
@@ -347,6 +417,11 @@ const Profile: React.FC = () => {
         password: '',
         confirmPassword: '',
         openAiKey: '', // Always reset to empty for security
+        googleApiKey: user.googleApiKey || '',
+        wordpressSiteUrl: user.wordpressSiteUrl || '',
+        wordpressUsername: user.wordpressUsername || '',
+        wordpressAppPassword: '', // Always reset to empty for security
+        mediumIntegrationToken: '', // Always reset to empty for security
         socialLinks: {
           twitter: user.socialLinks?.twitter || '',
           linkedin: user.socialLinks?.linkedin || '',
@@ -1262,6 +1337,337 @@ const Profile: React.FC = () => {
                                     icon={user?.hasOpenAiKey ? <CheckCircleIcon /> : <WarningIcon />}
                                     label={user?.hasOpenAiKey ? 'API Key Configured' : 'API Key Required'}
                                     color={user?.hasOpenAiKey ? 'success' : 'warning'}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                                  />
+                                </Box>
+                              )}
+                            </Grid>
+
+                            {/* Google API Key Field */}
+                            <Grid size={12}>
+                              <TextField
+                                fullWidth
+                                label="Google API Key"
+                                type={showGoogleApiKey ? 'text' : 'password'}
+                                value={formData.googleApiKey}
+                                onChange={handleInputChange('googleApiKey')}
+                                error={!!errors.googleApiKey}
+                                helperText={
+                                  errors.googleApiKey ||
+                                  (isEditing
+                                    ? 'Enter your Google API key for text-to-speech and other services'
+                                    : user?.hasGoogleApiKey
+                                      ? 'API key is set'
+                                      : 'No API key set - optional for advanced features')
+                                }
+                                disabled={!isEditing}
+                                placeholder={isEditing ? 'Enter Google API key...' : ''}
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <KeyIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
+                                    </InputAdornment>
+                                  ),
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      <IconButton
+                                        onClick={() => setShowGoogleApiKey(!showGoogleApiKey)}
+                                        edge="end"
+                                        disabled={!isEditing}
+                                        size="small"
+                                      >
+                                        {showGoogleApiKey ? <VisibilityOff /> : <Visibility />}
+                                      </IconButton>
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                  },
+                                }}
+                              />
+
+                              {/* Google API Key Status Indicator */}
+                              {!isEditing && (
+                                <Box mt={1.5} display="flex" alignItems="center" gap={1}>
+                                  <Chip
+                                    icon={user?.hasGoogleApiKey ? <CheckCircleIcon /> : <InfoIcon />}
+                                    label={user?.hasGoogleApiKey ? 'Google API Key Set' : 'Optional'}
+                                    color={user?.hasGoogleApiKey ? 'success' : 'default'}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                                  />
+                                </Box>
+                              )}
+                            </Grid>
+                          </Grid>
+                        </Paper>
+                      </Grid>
+
+                      {/* WordPress Publishing Settings */}
+                      <Grid size={12}>
+                        <Paper
+                          elevation={2}
+                          sx={{
+                            p: { xs: 2, sm: 3 },
+                            borderRadius: 3,
+                            background: (theme) =>
+                              `linear-gradient(135deg, ${theme.palette.customColors.gradients.cardLight} 0%, ${theme.palette.customColors.gradients.cardDark} 100%)`,
+                            border: (theme) => `1px solid ${theme.palette.divider}`,
+                          }}
+                        >
+                          <Box mb={2} display="flex" alignItems="center" gap={1.5}>
+                            <SecurityIcon color="primary" sx={{ fontSize: { xs: 24, sm: 28 } }} />
+                            <Typography
+                              variant="h6"
+                              sx={{
+                                fontWeight: 600,
+                                fontSize: { xs: '1rem', sm: '1.25rem' },
+                              }}
+                            >
+                              WordPress Publishing
+                            </Typography>
+                          </Box>
+
+                          <Grid container spacing={{ xs: 2, sm: 3 }}>
+                            {/* WordPress Site URL */}
+                            <Grid size={12}>
+                              <TextField
+                                fullWidth
+                                label="WordPress Site URL"
+                                value={formData.wordpressSiteUrl}
+                                onChange={handleInputChange('wordpressSiteUrl')}
+                                error={!!errors.wordpressSiteUrl}
+                                helperText={
+                                  errors.wordpressSiteUrl ||
+                                  'Your WordPress site URL (e.g., https://yourblog.com)'
+                                }
+                                disabled={!isEditing}
+                                placeholder={isEditing ? 'https://yourblog.com' : ''}
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <LanguageIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                  },
+                                }}
+                              />
+                            </Grid>
+
+                            {/* WordPress Username */}
+                            <Grid size={12}>
+                              <TextField
+                                fullWidth
+                                label="WordPress Username"
+                                value={formData.wordpressUsername}
+                                onChange={handleInputChange('wordpressUsername')}
+                                error={!!errors.wordpressUsername}
+                                helperText={
+                                  errors.wordpressUsername ||
+                                  'Your WordPress admin username'
+                                }
+                                disabled={!isEditing}
+                                placeholder={isEditing ? 'Enter username...' : ''}
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <AccountCircleIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                  },
+                                }}
+                              />
+                            </Grid>
+
+                            {/* WordPress App Password */}
+                            <Grid size={12}>
+                              <TextField
+                                fullWidth
+                                label="WordPress App Password"
+                                type={showWordPressPassword ? 'text' : 'password'}
+                                value={formData.wordpressAppPassword}
+                                onChange={handleInputChange('wordpressAppPassword')}
+                                error={!!errors.wordpressAppPassword}
+                                helperText={
+                                  errors.wordpressAppPassword ||
+                                  (isEditing
+                                    ? 'Enter a new WordPress app password to update it'
+                                    : user?.hasWordPressConfig
+                                      ? 'App password is set (hidden for security)'
+                                      : 'No app password set - required for WordPress publishing')
+                                }
+                                disabled={!isEditing}
+                                placeholder={isEditing ? 'Enter app password...' : ''}
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <KeyIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
+                                    </InputAdornment>
+                                  ),
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      <IconButton
+                                        onClick={() => setShowWordPressPassword(!showWordPressPassword)}
+                                        edge="end"
+                                        disabled={!isEditing}
+                                        size="small"
+                                      >
+                                        {showWordPressPassword ? <VisibilityOff /> : <Visibility />}
+                                      </IconButton>
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                  },
+                                }}
+                              />
+
+                              {/* WordPress Config Status Indicator */}
+                              {!isEditing && (
+                                <Box mt={1.5} display="flex" alignItems="center" gap={1}>
+                                  <Chip
+                                    icon={user?.hasWordPressConfig ? <CheckCircleIcon /> : <WarningIcon />}
+                                    label={user?.hasWordPressConfig ? 'WordPress Configured' : 'WordPress Not Configured'}
+                                    color={user?.hasWordPressConfig ? 'success' : 'warning'}
+                                    size="small"
+                                    variant="outlined"
+                                    sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                                  />
+                                </Box>
+                              )}
+                            </Grid>
+                          </Grid>
+                        </Paper>
+                      </Grid>
+
+                      {/* Medium Publishing Settings */}
+                      <Grid size={12}>
+                        <Paper
+                          elevation={2}
+                          sx={{
+                            p: { xs: 2, sm: 3 },
+                            borderRadius: 3,
+                            background: (theme) =>
+                              `linear-gradient(135deg, ${theme.palette.customColors.gradients.cardLight} 0%, ${theme.palette.customColors.gradients.cardDark} 100%)`,
+                            border: (theme) => `1px solid ${theme.palette.divider}`,
+                          }}
+                        >
+                          <Box mb={2} display="flex" alignItems="center" gap={1.5}>
+                            <LinkIcon color="primary" sx={{ fontSize: { xs: 24, sm: 28 } }} />
+                            <Typography
+                              variant="h6"
+                              sx={{
+                                fontWeight: 600,
+                                fontSize: { xs: '1rem', sm: '1.25rem' },
+                              }}
+                            >
+                              Medium Publishing
+                            </Typography>
+                          </Box>
+
+                          <Grid container spacing={{ xs: 2, sm: 3 }}>
+                            {/* Medium Integration Token */}
+                            <Grid size={12}>
+                              <TextField
+                                fullWidth
+                                label="Medium Integration Token"
+                                type={showMediumToken ? 'text' : 'password'}
+                                value={formData.mediumIntegrationToken}
+                                onChange={handleInputChange('mediumIntegrationToken')}
+                                error={!!errors.mediumIntegrationToken}
+                                helperText={
+                                  errors.mediumIntegrationToken ||
+                                  (isEditing
+                                    ? 'Enter a new Medium integration token to update it'
+                                    : user?.hasMediumConfig
+                                      ? 'Integration token is set (hidden for security)'
+                                      : 'No integration token set - required for Medium publishing')
+                                }
+                                disabled={!isEditing}
+                                placeholder={isEditing ? 'Enter Medium token...' : ''}
+                                InputProps={{
+                                  startAdornment: (
+                                    <InputAdornment position="start">
+                                      <KeyIcon color="action" sx={{ fontSize: { xs: 20, sm: 24 } }} />
+                                    </InputAdornment>
+                                  ),
+                                  endAdornment: (
+                                    <InputAdornment position="end">
+                                      <IconButton
+                                        onClick={() => setShowMediumToken(!showMediumToken)}
+                                        edge="end"
+                                        disabled={!isEditing}
+                                        size="small"
+                                      >
+                                        {showMediumToken ? <VisibilityOff /> : <Visibility />}
+                                      </IconButton>
+                                    </InputAdornment>
+                                  ),
+                                }}
+                                sx={{
+                                  '& .MuiOutlinedInput-root': {
+                                    borderRadius: 2,
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiInputLabel-root': {
+                                    fontSize: { xs: '0.875rem', sm: '1rem' },
+                                  },
+                                  '& .MuiFormHelperText-root': {
+                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
+                                  },
+                                }}
+                              />
+
+                              {/* Medium Config Status Indicator */}
+                              {!isEditing && (
+                                <Box mt={1.5} display="flex" alignItems="center" gap={1}>
+                                  <Chip
+                                    icon={user?.hasMediumConfig ? <CheckCircleIcon /> : <WarningIcon />}
+                                    label={user?.hasMediumConfig ? 'Medium Configured' : 'Medium Not Configured'}
+                                    color={user?.hasMediumConfig ? 'success' : 'warning'}
                                     size="small"
                                     variant="outlined"
                                     sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}

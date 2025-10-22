@@ -30,6 +30,16 @@ export type IBlog = {
   selectedImage?: string;
   audioNarrationUrl?: string;
   audioGenerationStatus?: 'pending' | 'processing' | 'completed' | 'failed';
+  // WordPress publishing fields
+  wordpressPostId?: number;
+  wordpressPostUrl?: string;
+  wordpressPublishStatus?: 'pending' | 'published' | 'failed';
+  wordpressPublishedAt?: Date;
+  // Medium publishing fields
+  mediumPostId?: string;
+  mediumPostUrl?: string;
+  mediumPublishStatus?: 'pending' | 'published' | 'failed';
+  mediumPublishedAt?: Date;
   likes: string[];
   dislikes: string[];
   createdAt: Date;

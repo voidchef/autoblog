@@ -9,6 +9,14 @@ export interface UserData {
   isEmailVerified: boolean;
   openAiKey?: string;
   hasOpenAiKey?: boolean;
+  googleApiKey?: string;
+  hasGoogleApiKey?: boolean;
+  wordpressSiteUrl?: string;
+  wordpressUsername?: string;
+  wordpressAppPassword?: string;
+  hasWordPressConfig?: boolean;
+  mediumIntegrationToken?: string;
+  hasMediumConfig?: boolean;
   bio?: string;
   socialLinks?: {
     twitter?: string;

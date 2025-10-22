@@ -39,6 +39,16 @@ export interface IBlog {
   selectedImage?: string;
   audioNarrationUrl?: string;
   audioGenerationStatus?: 'pending' | 'processing' | 'completed' | 'failed';
+  // WordPress publishing fields
+  wordpressPostId?: number;
+  wordpressPostUrl?: string;
+  wordpressPublishStatus?: 'pending' | 'published' | 'failed';
+  wordpressPublishedAt?: Date;
+  // Medium publishing fields
+  mediumPostId?: string;
+  mediumPostUrl?: string;
+  mediumPublishStatus?: 'pending' | 'published' | 'failed';
+  mediumPublishedAt?: Date;
   likes: string[];
   dislikes: string[];
   createdAt: Date;
@@ -379,6 +389,24 @@ export const blogApi = api.injectEndpoints({
       query: (blogId) => `/blogs/${blogId}/audio`,
       providesTags: ['Blog'],
     }),
+
+    publishToWordPress: builder.mutation<IBlog, { blogId: string; wordpressConfig?: { siteUrl: string; username: string; applicationPassword: string } }>({
+      query: ({ blogId, wordpressConfig }) => ({
+        url: `/blogs/${blogId}/publish-wordpress`,
+        method: 'POST',
+        body: { wordpressConfig },
+      }),
+      invalidatesTags: ['Blog'],
+    }),
+
+    publishToMedium: builder.mutation<IBlog, { blogId: string; mediumConfig?: { integrationToken: string } }>({
+      query: ({ blogId, mediumConfig }) => ({
+        url: `/blogs/${blogId}/publish-medium`,
+        method: 'POST',
+        body: { mediumConfig },
+      }),
+      invalidatesTags: ['Blog'],
+    }),
   }),
 });
 
@@ -413,4 +441,6 @@ export const {
   useGenerateAudioNarrationMutation,
   useGetAudioNarrationStatusQuery,
   useLazyGetAudioNarrationStatusQuery,
+  usePublishToWordPressMutation,
+  usePublishToMediumMutation,
 } = blogApi;

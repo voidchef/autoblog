@@ -95,6 +95,7 @@
     "@langchain/core": "0.3.66",
     "@langchain/mistralai": "0.2.1",
     "@langchain/openai": "0.6.3",
+    "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "cross-env": "^10.0.0",

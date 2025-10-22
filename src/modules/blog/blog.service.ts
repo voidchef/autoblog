@@ -9,6 +9,10 @@ import runReport, { IRunReportResponse } from '../utils/analytics';
 import S3Utils from '../aws/s3utils';
 import { getUserById } from '../user/user.service';
 import { ttsService } from '../tts';
+import { wordpressService } from '../wordpress';
+import { mediumService } from '../medium';
+import logger from '../logger/logger';
+import config from '../../config/config';
 
 /**
  * Create a blog post
@@ -310,4 +314,209 @@ export const getAudioNarrationStatus = async (
     result.audioGenerationStatus = blog.audioGenerationStatus;
   }
   return result;
+};
+
+/**
+ * Publish a blog post to WordPress
+ * @param {mongoose.Types.ObjectId} blogId - Blog ID
+ * @param {mongoose.Types.ObjectId} userId - User ID
+ * @param {object} wordpressConfig - WordPress configuration (optional, uses user settings if not provided)
+ * @returns {Promise<IBlogDoc>}
+ */
+export const publishToWordPress = async (
+  blogId: mongoose.Types.ObjectId,
+  userId: mongoose.Types.ObjectId,
+  wordpressConfig?: { siteUrl: string; username: string; applicationPassword: string }
+): Promise<IBlogDoc> => {
+  const blog = await Blog.findById(blogId);
+  if (!blog) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
+  }
+
+  // Get WordPress config from user settings or provided config
+  let wpConfig = wordpressConfig;
+  
+  if (!wpConfig) {
+    const user = await getUserById(userId);
+    if (!user) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+    }
+    
+    if (!user.hasWordPressConfig()) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'WordPress configuration is not set. Please update your profile settings.');
+    }
+    
+    wpConfig = {
+      siteUrl: user.wordpressSiteUrl || '',
+      username: user.wordpressUsername || '',
+      applicationPassword: user.getDecryptedWordPressPassword(),
+    };
+  }
+
+  if (!wpConfig.siteUrl || !wpConfig.username || !wpConfig.applicationPassword) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'WordPress configuration is missing');
+  }
+
+  wordpressService.initialize(wpConfig);
+
+  try {
+    // Update status to pending
+    blog.wordpressPublishStatus = 'pending';
+    await blog.save();
+
+    // Upload featured image if available
+    let featuredMediaId: number | undefined;
+    if (blog.selectedImage) {
+      try {
+        const media = await wordpressService.uploadMedia(blog.selectedImage, blog.title);
+        featuredMediaId = media.id;
+      } catch (error) {
+        // Continue without featured image if upload fails
+        logger.info('Failed to upload featured image to WordPress, continuing without it');
+      }
+    }
+
+    // Get or create category
+    const categoryId = await wordpressService.getOrCreateCategory(blog.category);
+
+    // Get or create tags
+    const tagIds: number[] = [];
+    if (blog.tags && blog.tags.length > 0) {
+      for (const tag of blog.tags) {
+        try {
+          const tagId = await wordpressService.getOrCreateTag(tag);
+          tagIds.push(tagId);
+        } catch (error) {
+          // Continue if tag creation fails
+          logger.info(`Failed to create tag ${tag}, continuing without it`);
+        }
+      }
+    }
+
+    // Publish post
+    const wpPost = {
+      title: blog.title,
+      content: blog.content,
+      excerpt: blog.seoDescription,
+      status: blog.isPublished ? ('publish' as const) : ('draft' as const),
+      categories: [categoryId],
+      tags: tagIds.length > 0 ? tagIds : undefined,
+      featured_media: featuredMediaId,
+    };
+
+    let result;
+    if (blog.wordpressPostId) {
+      // Update existing post
+      const updateData: any = { ...wpPost };
+      if (updateData.tags === undefined) delete updateData.tags;
+      if (updateData.featured_media === undefined) delete updateData.featured_media;
+      result = await wordpressService.updatePost(blog.wordpressPostId, updateData);
+    } else {
+      // Create new post
+      const postData: any = { ...wpPost };
+      if (postData.tags === undefined) delete postData.tags;
+      if (postData.featured_media === undefined) delete postData.featured_media;
+      result = await wordpressService.publishPost(postData);
+    }
+
+    // Update blog with WordPress info
+    blog.wordpressPostId = result.id;
+    blog.wordpressPostUrl = result.link;
+    blog.wordpressPublishStatus = 'published';
+    blog.wordpressPublishedAt = new Date();
+    await blog.save();
+
+    return blog;
+  } catch (error) {
+    // Update status to failed
+    blog.wordpressPublishStatus = 'failed';
+    await blog.save();
+
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, `Failed to publish to WordPress: ${errorMessage}`);
+  }
+};
+
+/**
+ * Publish a blog post to Medium
+ * @param {mongoose.Types.ObjectId} blogId - Blog ID
+ * @param {mongoose.Types.ObjectId} userId - User ID
+ * @param {object} mediumConfig - Medium configuration (optional, uses user settings if not provided)
+ * @returns {Promise<IBlogDoc>}
+ */
+export const publishToMedium = async (
+  blogId: mongoose.Types.ObjectId,
+  userId: mongoose.Types.ObjectId,
+  mediumConfig?: { integrationToken: string }
+): Promise<IBlogDoc> => {
+  const blog = await Blog.findById(blogId);
+  if (!blog) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
+  }
+
+  // Get Medium config from user settings or provided config
+  let mdConfig = mediumConfig;
+  
+  if (!mdConfig) {
+    const user = await getUserById(userId);
+    if (!user) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+    }
+    
+    if (!user.hasMediumConfig()) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Medium configuration is not set. Please update your profile settings.');
+    }
+    
+    const userToken = user.getDecryptedMediumToken();
+    mdConfig = {
+      integrationToken: userToken,
+    };
+  }
+
+  if (!mdConfig.integrationToken) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Medium integration token is missing');
+  }
+
+  try {
+    // Update status to pending
+    blog.mediumPublishStatus = 'pending';
+    await blog.save();
+
+    await mediumService.initialize(mdConfig);
+
+    // Prepare post data
+    const mediumPost: any = {
+      title: blog.title,
+      content: blog.content,
+      contentFormat: 'html' as const,
+      tags: blog.tags?.slice(0, 5), // Medium allows max 5 tags
+      canonicalUrl: blog.wordpressPostUrl, // Use WordPress URL as canonical if available
+      publishStatus: blog.isPublished ? ('public' as const) : ('draft' as const),
+      license: 'all-rights-reserved' as const,
+      notifyFollowers: false,
+    };
+
+    // Remove undefined values
+    if (mediumPost.tags === undefined) delete mediumPost.tags;
+    if (mediumPost.canonicalUrl === undefined) delete mediumPost.canonicalUrl;
+
+    // Publish post
+    const result = await mediumService.publishPost(mediumPost);
+
+    // Update blog with Medium info
+    blog.mediumPostId = result.id;
+    blog.mediumPostUrl = result.url;
+    blog.mediumPublishStatus = 'published';
+    blog.mediumPublishedAt = new Date();
+    await blog.save();
+
+    return blog;
+  } catch (error) {
+    // Update status to failed
+    blog.mediumPublishStatus = 'failed';
+    await blog.save();
+
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, `Failed to publish to Medium: ${errorMessage}`);
+  }
 };

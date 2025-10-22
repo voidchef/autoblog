@@ -4,6 +4,7 @@ import request from 'supertest';
 import httpStatus from 'http-status';
 import bcrypt from 'bcryptjs';
 import moment from 'moment';
+import axios from 'axios';
 import app from '../../app';
 import setupTestDB from '../jest/setupTestDB';
 import User from '../user/user.model';
@@ -21,6 +22,9 @@ jest.mock('../tts', () => ({
     textToSpeech: jest.fn(),
   },
 }));
+
+// Mock axios for WordPress and Medium API calls
+jest.mock('axios');
 
 setupTestDB();
 
@@ -79,7 +83,7 @@ const blogTwo: NewCreatedBlog = {
 };
 
 const insertUsers = async (users: Record<string, any>[]) => {
-  await User.insertMany(users.map((user) => ({ ...user, password: hashedPassword })));
+  await User.create(users.map((user) => ({ ...user, password: hashedPassword })));
 };
 
 const insertBlogs = async (blogs: NewCreatedBlog[]) => {
@@ -1041,6 +1045,159 @@ describe('Blog routes', () => {
         const fakeId = new mongoose.Types.ObjectId();
 
         await expect(blogService.getAudioNarrationStatus(fakeId)).rejects.toThrow('Blog not found');
+      });
+    });
+
+    describe('Blog Service - publishToWordPress', () => {
+      const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+      beforeEach(() => {
+        jest.clearAllMocks();
+      });
+
+      test('should successfully publish blog to WordPress', async () => {
+        // Create user with WordPress configuration (credentials will be encrypted by pre-save hook)
+        const userWithWpConfig = {
+          ...admin,
+          wordpressSiteUrl: 'https://example.com',
+          wordpressUsername: 'testuser',
+          wordpressAppPassword: 'test-app-password',
+        };
+
+        // Create user (pre-save hook will encrypt the password)
+        const insertedUser = await User.create({ ...userWithWpConfig, password: hashedPassword });
+        
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+        const userId = insertedUser!._id as mongoose.Types.ObjectId;
+
+        // Mock WordPress API responses
+        const mockCategoriesResponse = { data: [{ id: 1, name: 'Technology' }] };
+        const mockTagsResponse = { data: [{ id: 10, name: 'test' }, { id: 11, name: 'blog' }] };
+        const mockPostResponse = {
+          data: {
+            id: 123,
+            link: 'https://example.com/test-blog-post',
+            title: { rendered: 'Test Blog Post' },
+            status: 'publish',
+          },
+        };
+
+        const mockClient = {
+          get: jest.fn()
+            .mockResolvedValueOnce(mockCategoriesResponse)
+            .mockResolvedValueOnce(mockTagsResponse),
+          post: jest.fn().mockResolvedValue(mockPostResponse),
+          put: jest.fn(),
+        };
+
+        mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;
+
+        const result = await blogService.publishToWordPress(blogId, userId);
+
+        expect(result.wordpressPostId).toBe(123);
+        expect(result.wordpressPostUrl).toBe('https://example.com/test-blog-post');
+        expect(result.wordpressPublishStatus).toBe('published');
+
+        // Verify blog was updated
+        const blog = await Blog.findById(blogId);
+        expect(blog?.wordpressPostId).toBe(123);
+        expect(blog?.wordpressPostUrl).toBe('https://example.com/test-blog-post');
+      });
+
+      test('should throw error if user has no WordPress configuration', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+        const userId = admin._id as mongoose.Types.ObjectId;
+
+        await expect(blogService.publishToWordPress(blogId, userId)).rejects.toThrow(
+          'WordPress configuration is not set'
+        );
+      });
+
+      test('should throw error if blog not found', async () => {
+        const fakeId = new mongoose.Types.ObjectId();
+        const userId = admin._id as mongoose.Types.ObjectId;
+
+        await expect(blogService.publishToWordPress(fakeId, userId)).rejects.toThrow('Blog not found');
+      });
+    });
+
+    describe('Blog Service - publishToMedium', () => {
+      const mockedAxios = axios as jest.Mocked<typeof axios>;
+
+      beforeEach(() => {
+        jest.clearAllMocks();
+      });
+
+      test('should successfully publish blog to Medium', async () => {
+        // Create user with Medium configuration (token will be encrypted by pre-save hook)
+        const userWithMediumConfig = {
+          ...admin,
+          mediumIntegrationToken: 'test-medium-token',
+        };
+
+        // Create user (pre-save hook will encrypt the token)
+        const insertedUser = await User.create({ ...userWithMediumConfig, password: hashedPassword });
+        
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+        const userId = insertedUser!._id as mongoose.Types.ObjectId;
+
+        // Mock Medium API responses
+        const mockUserResponse = {
+          data: { data: { id: 'user123' } },
+        };
+        const mockPostResponse = {
+          data: {
+            data: {
+              id: 'post123',
+              url: 'https://medium.com/@testuser/test-blog-post-abc123',
+              title: 'Test Blog Post',
+              authorId: 'user123',
+              publishStatus: 'public',
+            },
+          },
+        };
+
+        const mockClient = {
+          get: jest.fn().mockResolvedValue(mockUserResponse),
+          post: jest.fn().mockResolvedValue(mockPostResponse),
+          put: jest.fn(),
+          delete: jest.fn(),
+        };
+
+        mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;
+
+        const result = await blogService.publishToMedium(blogId, userId);
+
+        expect(result.mediumPostId).toBe('post123');
+        expect(result.mediumPostUrl).toBe('https://medium.com/@testuser/test-blog-post-abc123');
+        expect(result.mediumPublishStatus).toBe('published');
+
+        // Verify blog was updated
+        const blog = await Blog.findById(blogId);
+        expect(blog?.mediumPostId).toBe('post123');
+        expect(blog?.mediumPostUrl).toBe('https://medium.com/@testuser/test-blog-post-abc123');
+      });
+
+      test('should throw error if user has no Medium configuration', async () => {
+        await insertUsers([admin]);
+        const blogs = await insertBlogs([blogOne]);
+        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+        const userId = admin._id as mongoose.Types.ObjectId;
+
+        await expect(blogService.publishToMedium(blogId, userId)).rejects.toThrow(
+          'Medium configuration is not set'
+        );
+      });
+
+      test('should throw error if blog not found', async () => {
+        const fakeId = new mongoose.Types.ObjectId();
+        const userId = admin._id as mongoose.Types.ObjectId;
+
+        await expect(blogService.publishToMedium(fakeId, userId)).rejects.toThrow('Blog not found');
       });
     });
   });

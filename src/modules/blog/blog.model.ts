@@ -97,6 +97,34 @@ const blogSchema = new mongoose.Schema<IBlogDoc, IBlogModel>(
       type: String,
       enum: ['pending', 'processing', 'completed', 'failed'],
     },
+    // WordPress publishing fields
+    wordpressPostId: {
+      type: Number,
+    },
+    wordpressPostUrl: {
+      type: String,
+    },
+    wordpressPublishStatus: {
+      type: String,
+      enum: ['pending', 'published', 'failed'],
+    },
+    wordpressPublishedAt: {
+      type: Date,
+    },
+    // Medium publishing fields
+    mediumPostId: {
+      type: String,
+    },
+    mediumPostUrl: {
+      type: String,
+    },
+    mediumPublishStatus: {
+      type: String,
+      enum: ['pending', 'published', 'failed'],
+    },
+    mediumPublishedAt: {
+      type: Date,
+    },
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,

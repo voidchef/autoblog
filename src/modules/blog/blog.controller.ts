@@ -218,3 +218,27 @@ export const getAudioNarrationStatus = catchAsync(async (req: Request, res: Resp
     res.send(status);
   }
 });
+
+export const publishToWordPress = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+  if (typeof req.params['blogId'] === 'string') {
+    const blog = await blogService.publishToWordPress(
+      new mongoose.Types.ObjectId(req.params['blogId']),
+      user._id as mongoose.Types.ObjectId,
+      req.body.wordpressConfig
+    );
+    res.send(blog);
+  }
+});
+
+export const publishToMedium = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+  if (typeof req.params['blogId'] === 'string') {
+    const blog = await blogService.publishToMedium(
+      new mongoose.Types.ObjectId(req.params['blogId']),
+      user._id as mongoose.Types.ObjectId,
+      req.body.mediumConfig
+    );
+    res.send(blog);
+  }
+});

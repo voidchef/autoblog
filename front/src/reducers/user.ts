@@ -21,6 +21,14 @@ export type UserData = {
   lastLogin?: string;
   openAiKey?: string;
   hasOpenAiKey?: boolean;
+  googleApiKey?: string;
+  hasGoogleApiKey?: boolean;
+  wordpressSiteUrl?: string;
+  wordpressUsername?: string;
+  wordpressAppPassword?: string;
+  hasWordPressConfig?: boolean;
+  mediumIntegrationToken?: string;
+  hasMediumConfig?: boolean;
   followers?: string[];
   following?: string[];
   preferences?: {

@@ -2,11 +2,16 @@ import Joi from 'joi';
 import { password } from '../validate/custom.validation';
 import { NewRegisteredUser } from '../user/user.interfaces';
 
-const registerBody: Record<keyof NewRegisteredUser, any> = {
+const registerBody: Partial<Record<keyof NewRegisteredUser, any>> = {
   email: Joi.string().required().email(),
   password: Joi.string().required().custom(password),
   name: Joi.string().required(),
   openAiKey: Joi.string().optional(),
+  googleApiKey: Joi.string().optional(),
+  wordpressSiteUrl: Joi.string().optional(),
+  wordpressUsername: Joi.string().optional(),
+  wordpressAppPassword: Joi.string().optional(),
+  mediumIntegrationToken: Joi.string().optional(),
 };
 
 export const register = {

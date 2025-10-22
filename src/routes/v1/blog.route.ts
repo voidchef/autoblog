@@ -47,6 +47,10 @@ router.route('/:blogId/dislike').post(auth(), blogController.dislikeBlog);
 router.route('/:blogId/audio').post(auth('manageBlogs'), blogController.generateAudioNarration);
 router.route('/:blogId/audio').get(blogController.getAudioNarrationStatus);
 
+// Publishing routes
+router.route('/:blogId/publish-wordpress').post(auth('manageBlogs'), blogController.publishToWordPress);
+router.route('/:blogId/publish-medium').post(auth('manageBlogs'), blogController.publishToMedium);
+
 export default router;
 
 /**

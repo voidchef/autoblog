@@ -7,6 +7,11 @@ const createUserBody = {
   name: Joi.string().required(),
   role: Joi.string().required().valid('user', 'admin'),
   openAiKey: Joi.string().optional(),
+  googleApiKey: Joi.string().optional(),
+  wordpressSiteUrl: Joi.string().optional(),
+  wordpressUsername: Joi.string().optional(),
+  wordpressAppPassword: Joi.string().optional(),
+  mediumIntegrationToken: Joi.string().optional(),
 };
 
 export const createUser = {
@@ -40,6 +45,11 @@ export const updateUser = {
       password: Joi.string().custom(password),
       name: Joi.string(),
       openAiKey: Joi.string().optional(),
+      googleApiKey: Joi.string().optional(),
+      wordpressSiteUrl: Joi.string().optional(),
+      wordpressUsername: Joi.string().optional(),
+      wordpressAppPassword: Joi.string().optional(),
+      mediumIntegrationToken: Joi.string().optional(),
     })
     .min(1),
 };

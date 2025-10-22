@@ -52,6 +52,31 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
       trim: true,
       private: true, // used by the toJSON plugin to exclude from responses
     },
+    googleApiKey: {
+      type: String,
+      trim: true,
+      private: true,
+    },
+    wordpressSiteUrl: {
+      type: String,
+      trim: true,
+      private: true,
+    },
+    wordpressUsername: {
+      type: String,
+      trim: true,
+      private: true,
+    },
+    wordpressAppPassword: {
+      type: String,
+      trim: true,
+      private: true,
+    },
+    mediumIntegrationToken: {
+      type: String,
+      trim: true,
+      private: true,
+    },
     bio: {
       type: String,
       trim: true,
@@ -100,6 +125,11 @@ userSchema.virtual('hasOpenAiKey').get(function (this: IUserDoc) {
   return !!(this.openAiKey && this.openAiKey.length > 0);
 });
 
+// Virtual for hasGoogleApiKey
+userSchema.virtual('hasGoogleApiKey').get(function (this: IUserDoc) {
+  return !!(this.googleApiKey && this.googleApiKey.length > 0);
+});
+
 // add plugin that converts mongoose to json
 userSchema.plugin(toJSON);
 userSchema.plugin(paginate);
@@ -130,12 +160,24 @@ userSchema.pre('save', async function (next) {
   if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 8);
   }
-  // Don't re-encrypt if it's already encrypted (frontend sends encrypted data)
-  // Only encrypt if it's plain text (for backward compatibility or direct backend usage)
+  
+  const userId = (user._id as mongoose.Types.ObjectId).toString();
+  
+  // Encrypt OpenAI key if modified and not already encrypted
   if (user.isModified('openAiKey') && user.openAiKey && !isEncrypted(user.openAiKey)) {
-    // Use password-based encryption with user ID
-    user.openAiKey = encrypt(user.openAiKey, (user._id as mongoose.Types.ObjectId).toString());
+    user.openAiKey = encrypt(user.openAiKey, userId);
   }
+  
+  // Encrypt WordPress app password if modified and not already encrypted
+  if (user.isModified('wordpressAppPassword') && user.wordpressAppPassword && !isEncrypted(user.wordpressAppPassword)) {
+    user.wordpressAppPassword = encrypt(user.wordpressAppPassword, userId);
+  }
+  
+  // Encrypt Medium token if modified and not already encrypted
+  if (user.isModified('mediumIntegrationToken') && user.mediumIntegrationToken && !isEncrypted(user.mediumIntegrationToken)) {
+    user.mediumIntegrationToken = encrypt(user.mediumIntegrationToken, userId);
+  }
+  
   next();
 });
 
@@ -146,6 +188,46 @@ userSchema.pre('save', async function (next) {
 userSchema.method('getDecryptedOpenAiKey', function (): string {
   if (!this.openAiKey) return '';
   return decrypt(this.openAiKey, (this._id as mongoose.Types.ObjectId).toString());
+});
+
+/**
+ * Check if user has WordPress configuration
+ * @returns {boolean}
+ */
+userSchema.method('hasWordPressConfig', function (): boolean {
+  return !!(this.wordpressSiteUrl && this.wordpressUsername && this.wordpressAppPassword);
+});
+
+/**
+ * Method to get decrypted WordPress app password
+ * @returns {string}
+ */
+userSchema.method('getDecryptedWordPressPassword', function (): string {
+  if (!this.wordpressAppPassword) {
+    throw new Error('WordPress app password not set');
+  }
+  const userId = (this._id as mongoose.Types.ObjectId).toString();
+  return decrypt(this.wordpressAppPassword, userId);
+});
+
+/**
+ * Check if user has Medium configuration
+ * @returns {boolean}
+ */
+userSchema.method('hasMediumConfig', function (): boolean {
+  return !!this.mediumIntegrationToken;
+});
+
+/**
+ * Method to get decrypted Medium integration token
+ * @returns {string}
+ */
+userSchema.method('getDecryptedMediumToken', function (): string {
+  if (!this.mediumIntegrationToken) {
+    throw new Error('Medium integration token not set');
+  }
+  const userId = (this._id as mongoose.Types.ObjectId).toString();
+  return decrypt(this.mediumIntegrationToken, userId);
 });
 
 const User = mongoose.model<IUserDoc, IUserModel>('User', userSchema);

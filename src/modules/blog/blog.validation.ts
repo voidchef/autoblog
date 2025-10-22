@@ -13,7 +13,7 @@ export const generateBlog: Record<keyof IGenerateBlog, any> = {
   tags: Joi.array().optional(),
 };
 
-const createBlogBody: Record<keyof NewCreatedBlog, any> = {
+const createBlogBody: Partial<Record<keyof NewCreatedBlog, any>> = {
   ...generateBlog,
   title: Joi.string().required(),
   slug: Joi.string().required(),
@@ -25,6 +25,16 @@ const createBlogBody: Record<keyof NewCreatedBlog, any> = {
   tags: Joi.array().optional(),
   generatedImages: Joi.array().items(Joi.string()).optional(),
   selectedImage: Joi.string().optional(),
+  audioNarrationUrl: Joi.string().optional(),
+  audioGenerationStatus: Joi.string().valid('pending', 'processing', 'completed', 'failed').optional(),
+  wordpressPostId: Joi.number().optional(),
+  wordpressPostUrl: Joi.string().optional(),
+  wordpressPublishStatus: Joi.string().valid('pending', 'published', 'failed').optional(),
+  wordpressPublishedAt: Joi.date().optional(),
+  mediumPostId: Joi.string().optional(),
+  mediumPostUrl: Joi.string().optional(),
+  mediumPublishStatus: Joi.string().valid('pending', 'published', 'failed').optional(),
+  mediumPublishedAt: Joi.date().optional(),
 };
 
 export const createBlog = {

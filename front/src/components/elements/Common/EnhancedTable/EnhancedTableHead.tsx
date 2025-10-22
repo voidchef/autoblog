@@ -4,7 +4,7 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import { visuallyHidden } from '@mui/utils';
 
 export interface Data {
-  [key: string]: string | number | Date | boolean;
+  [key: string]: string | number | Date | boolean | undefined;
 }
 
 export interface HeadCell {

@@ -63,6 +63,7 @@ describe('Auth routes', () => {
         role: 'user',
         isEmailVerified: false,
         hasOpenAiKey: expect.any(Boolean),
+        hasGoogleApiKey: expect.any(Boolean),
         followers: expect.any(Array),
         following: expect.any(Array),
       });
@@ -124,6 +125,7 @@ describe('Auth routes', () => {
         role: userOne.role,
         isEmailVerified: userOne.isEmailVerified,
         hasOpenAiKey: expect.any(Boolean),
+        hasGoogleApiKey: expect.any(Boolean),
         followers: expect.any(Array),
         following: expect.any(Array),
       });
@@ -209,6 +211,7 @@ describe('Auth routes', () => {
         role: userOne.role,
         isEmailVerified: userOne.isEmailVerified,
         hasOpenAiKey: expect.any(Boolean),
+        hasGoogleApiKey: expect.any(Boolean),
         followers: expect.any(Array),
         following: expect.any(Array),
       });
