@@ -97,6 +97,44 @@ const Profile: React.FC = () => {
   const [updateUser, { isLoading: updateLoading }] = useUpdateUserMutation();
   const [sendVerificationEmail, { isLoading: isSendingVerification }] = useSendVerificationEmailMutation();
 
+  // Common TextField styles to prevent highlight on icon
+  const textFieldStyles = {
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 2,
+      fontSize: { xs: '0.875rem', sm: '1rem' },
+      '& input': {
+        backgroundColor: 'transparent !important',
+        boxShadow: 'none !important',
+      },
+      '& textarea': {
+        backgroundColor: 'transparent !important',
+        boxShadow: 'none !important',
+      },
+      '& input:-webkit-autofill': {
+        WebkitBoxShadow: '0 0 0 100px transparent inset !important',
+        WebkitTextFillColor: 'inherit !important',
+        transition: 'background-color 5000s ease-in-out 0s',
+      },
+      '&.Mui-focused': {
+        '& .MuiInputAdornment-root': {
+          color: 'primary.main',
+        },
+        '& input': {
+          backgroundColor: 'transparent !important',
+        },
+        '& textarea': {
+          backgroundColor: 'transparent !important',
+        },
+      },
+    },
+    '& .MuiInputLabel-root': {
+      fontSize: { xs: '0.875rem', sm: '1rem' },
+    },
+    '& .MuiFormHelperText-root': {
+      fontSize: { xs: '0.7rem', sm: '0.75rem' },
+    },
+  };
+
   const [formData, setFormData] = React.useState<ProfileFormData>({
     name: '',
     email: '',
@@ -955,18 +993,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
+                                sx={textFieldStyles}
                               />
                             </Grid>
 
@@ -988,18 +1015,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
+                                sx={textFieldStyles}
                               />
                             </Grid>
 
@@ -1023,18 +1039,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
+                                sx={textFieldStyles}
                               />
                             </Grid>
                           </Grid>
@@ -1083,18 +1088,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
+                                sx={textFieldStyles}
                               />
                             </Grid>
 
@@ -1116,18 +1110,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
+                                sx={textFieldStyles}
                               />
                             </Grid>
 
@@ -1149,18 +1132,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
+                                sx={textFieldStyles}
                               />
                             </Grid>
 
@@ -1182,19 +1154,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
-                              />
+                                sx={textFieldStyles}                              />
                             </Grid>
                           </Grid>
                         </Paper>
@@ -1254,18 +1214,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
+                                sx={textFieldStyles}
                               />
                               {isEditing && formData.password && <PasswordStrength password={formData.password} />}
                             </Grid>
@@ -1300,19 +1249,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
-                              />
+                                sx={textFieldStyles}                              />
                             </Grid>
 
                             {/* OpenAI API Key Field */}
@@ -1353,18 +1290,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
+                                sx={textFieldStyles}
                               />
 
                               {/* API Key Status Indicator */}
@@ -1420,19 +1346,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
-                              />
+                                sx={textFieldStyles}                              />
 
                               {/* Google API Key Status Indicator */}
                               {!isEditing && (
@@ -1499,18 +1413,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
+                                sx={textFieldStyles}
                               />
                             </Grid>
 
@@ -1535,19 +1438,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
-                              />
+                                sx={textFieldStyles}                              />
                             </Grid>
 
                             {/* WordPress App Password */}
@@ -1588,18 +1479,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
+                                sx={textFieldStyles}
                               />
 
                               {/* WordPress Config Status Indicator */}
@@ -1684,18 +1564,7 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={{
-                                  '& .MuiOutlinedInput-root': {
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiInputLabel-root': {
-                                    fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  },
-                                  '& .MuiFormHelperText-root': {
-                                    fontSize: { xs: '0.7rem', sm: '0.75rem' },
-                                  },
-                                }}
+                                sx={textFieldStyles}
                               />
 
                               {/* Medium Config Status Indicator */}

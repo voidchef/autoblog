@@ -246,22 +246,29 @@ export default function CreatePost() {
   };
 
   return (
-    <Box>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        bgcolor: (theme) => theme.palette.mode === 'dark' 
+          ? theme.palette.background.default
+          : theme.palette.customColors.pageBackground.light,
+      }}
+    >
       <Box
         display={'flex'}
         flexDirection={'column'}
         justifyContent={'space-between'}
         sx={{ 
           gap: { xs: 2, sm: 5 },
-          bgcolor: (theme) => theme.palette.mode === 'dark' 
-            ? theme.palette.background.default
-            : theme.palette.customColors.pageBackground.light,
+          pb: { xs: 3, sm: 5 },
+          background: (theme) => theme.palette.mode === 'dark'
+            ? `linear-gradient(180deg, ${theme.palette.background.paper} 0%, ${theme.palette.background.default} 100%)`
+            : `linear-gradient(180deg, ${theme.palette.background.paper} 0%, ${theme.palette.customColors.pageBackground.light} 100%)`,
         }}
       >
         <NavBar />
         <Title />
       </Box>
-      <Box sx={{ my: 4 }} />
       
       {/* OpenAI Key Banner */}
       <OpenAiKeyBanner hasOpenAiKey={hasOpenAiKey} />
@@ -275,13 +282,18 @@ export default function CreatePost() {
           handleSelectImage={handleSelectImage}
         />
       )}
+      
       <Box
         component="form"
-        sx={{ flexGrow: 1, marginX: { xs: '1rem', sm: '7rem' } }}
+        sx={{ 
+          flexGrow: 1, 
+          marginX: { xs: '1rem', sm: '7rem' },
+          mb: 4,
+        }}
         display={'flex'}
         flexDirection={{ xs: 'column', sm: 'row' }}
         justifyContent={'space-between'}
-        gap={{ xs: 3, sm: 5 }}
+        gap={{ xs: 3, sm: 3 }}
         onSubmit={handleSubmit}
       >
         <BlogFormFields
@@ -302,7 +314,7 @@ export default function CreatePost() {
           onPublishStatusChange={handlePublishStatusChange}
         />
       </Box>
-      <Box sx={{ my: 4 }} />
+      
       <BlogContentFields
         blogTitle={blogTitle}
         blogContent={blogContent}
@@ -311,6 +323,7 @@ export default function CreatePost() {
         onBlogTitleChange={handleBlogTitleChange}
         onBlogContentChange={handleBlogContentChange}
       />
+      
       <Box sx={{ my: 6 }} />
       <Footer />
     </Box>

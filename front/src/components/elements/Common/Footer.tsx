@@ -61,23 +61,23 @@ const Footer = () => {
         <Box
           sx={{
             mb: 6,
-            p: { xs: 3, md: 4 },
-            borderRadius: 3,
+            p: { xs: 2, sm: 2.5, md: 4 },
+            borderRadius: { xs: 2, md: 3 },
             background: (theme) => theme.palette.customColors.overlay.white.medium,
             backdropFilter: 'blur(10px)',
             border: (theme) => `1px solid ${theme.palette.customColors.overlay.white.strong}`,
             boxShadow: (theme) => `0 8px 32px ${theme.palette.customColors.overlay.black.medium}`,
           }}
         >
-          <Grid container spacing={{ xs: 2, md: 4 }} alignItems="center">
+          <Grid container spacing={{ xs: 1.5, sm: 2, md: 4 }} alignItems="center">
             <Grid size={{ xs: 12, md: 6 }}>
               <Typography
                 variant="h4"
                 sx={{
                   fontWeight: 700,
-                  mb: 1,
-                  fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' },
-                  lineHeight: 1.2,
+                  mb: { xs: 0.5, md: 1 },
+                  fontSize: { xs: '1rem', sm: '1.25rem', md: '2rem' },
+                  lineHeight: 1.3,
                 }}
               >
                 Subscribe to Our Newsletter
@@ -86,7 +86,8 @@ const Footer = () => {
                 variant="body1" 
                 sx={{ 
                   opacity: 0.95,
-                  fontSize: { xs: '0.9rem', md: '1rem' },
+                  fontSize: { xs: '0.8125rem', sm: '0.875rem', md: '1rem' },
+                  display: { xs: 'none', sm: 'block' },
                 }}
               >
                 Get the latest updates, articles, and news delivered to your inbox.
@@ -95,18 +96,22 @@ const Footer = () => {
             <Grid size={{ xs: 12, md: 6 }}>
               <Box sx={{ 
                 display: 'flex', 
-                gap: 1,
+                gap: { xs: 0.75, sm: 1 },
                 flexDirection: { xs: 'column', sm: 'row' },
               }}>
                 <TextField
                   placeholder="Enter your email"
                   variant="outlined"
                   fullWidth
-                  size="medium"
+                  size="small"
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       bgcolor: (theme) => theme.palette.customColors.overlay.white.full,
-                      borderRadius: 2,
+                      borderRadius: { xs: 1.5, md: 2 },
+                      fontSize: { xs: '0.875rem', md: '1rem' },
+                      color: (theme) => theme.palette.mode === 'dark' 
+                        ? theme.palette.customColors.textDark.primary 
+                        : theme.palette.customColors.textLight.primary,
                       '& fieldset': {
                         borderColor: 'transparent',
                       },
@@ -116,6 +121,18 @@ const Footer = () => {
                       '&.Mui-focused fieldset': {
                         borderColor: (theme) => theme.palette.customColors.overlay.white.almostOpaque,
                       },
+                      '& input': {
+                        py: { xs: 1, sm: 1.25, md: 1.5 },
+                        color: (theme) => theme.palette.mode === 'dark' 
+                          ? theme.palette.customColors.accent.slate.darker 
+                          : theme.palette.customColors.textLight.primary,
+                        '&::placeholder': {
+                          color: (theme) => theme.palette.mode === 'dark' 
+                            ? theme.palette.customColors.textDark.secondary 
+                            : theme.palette.customColors.textLight.secondary,
+                          opacity: 0.7,
+                        },
+                      },
                     },
                   }}
                 />
@@ -124,16 +141,16 @@ const Footer = () => {
                   sx={{
                     background: 'white',
                     color: (theme) => theme.palette.customColors.accent.blue.main,
-                    px: { xs: 3, sm: 4 },
-                    py: { xs: 1.75, sm: 1.5 },
-                    borderRadius: 2,
+                    px: { xs: 2.5, sm: 3, md: 4 },
+                    py: { xs: 1, sm: 1.25, md: 1.5 },
+                    borderRadius: { xs: 1.5, md: 2 },
                     fontWeight: 700,
-                    fontSize: { xs: '0.9375rem', sm: '1rem' },
+                    fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' },
                     whiteSpace: 'nowrap',
                     textTransform: 'none',
                     boxShadow: (theme) => `0 4px 14px ${theme.palette.customColors.overlay.black.veryStrong}`,
                     border: '2px solid transparent',
-                    minHeight: { xs: '48px', sm: '56px' },
+                    minHeight: { xs: '40px', sm: '44px', md: '56px' },
                     '&:hover': {
                       background: 'white',
                       transform: 'translateY(-2px)',

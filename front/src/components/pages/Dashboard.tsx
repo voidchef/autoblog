@@ -2,7 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
-import { Fab, MenuItem, Select, Typography } from '@mui/material';
+import { Fab, MenuItem, Select, Typography, Paper, Container, Card, alpha } from '@mui/material';
 import BlogsTable from '../elements/Dashboard/BlogsTable';
 import AddIcon from '@mui/icons-material/Add';
 import { ROUTES } from '../../utils/routing/routes';
@@ -13,6 +13,7 @@ import { useGetBlogViewsQuery } from '../../services/blogApi';
 import ViewsGraph from '../elements/Dashboard/ViewsGraph';
 import DraftsTable from '../elements/Dashboard/DraftsTable';
 import EngagementMetrics from '../elements/Dashboard/EngagementMetrics';
+import TimelineIcon from '@mui/icons-material/Timeline';
 
 const months = Array.from({ length: 12 }, (_, index) => ({
   value: index,
@@ -71,39 +72,106 @@ export default function Dashboard() {
   }
 
   return (
-    <Box>
-      <Box display={'flex'} flexDirection={'column'} justifyContent={'space-between'} sx={{ gap: { xs: 2, sm: 5 } }}>
-        <NavBar />
-      </Box>
-      <Box sx={{ my: 4 }} />
-      <Box
-        display={'flex'}
-        flexDirection={'column'}
-        justifyContent={'space-between'}
-        sx={{ marginX: { xs: '1rem', sm: '7rem' } }}
-      >
-        {/* Engagement Metrics Section - Overview of all blogs */}
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: (theme) =>
+          theme.palette.mode === 'dark'
+            ? 'linear-gradient(135deg, #0a0e1a 0%, #131827 50%, #1e293b 100%)'
+            : 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #dbeafe 100%)',
+      }}
+    >
+      <NavBar />
+      
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        {/* Page Header */}
+        <Box sx={{ mb: 5, mt: 2 }}>
+          <Typography
+            variant="h3"
+            component="h1"
+            fontWeight="bold"
+            sx={{
+              mb: 1,
+              background: (theme) =>
+                theme.palette.mode === 'dark'
+                  ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                  : 'linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%)',
+              backgroundClip: 'text',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            Dashboard
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ fontSize: '1.1rem' }}>
+            Monitor your blog performance and engagement metrics
+          </Typography>
+        </Box>
+
+        {/* Engagement Metrics Section */}
         <EngagementMetrics />
-        
-        <Box sx={{ my: { sm: 3, xs: 1 } }} />
-        
+
         {/* Blog Views Graph Section */}
-        <Box component={'div'} width={'100%'} height={{ sm: '35rem', xs: '15rem' }}>
+        <Card
+          sx={{
+            my: 4,
+            p: 3,
+            borderRadius: 3,
+            background: (theme) =>
+              theme.palette.mode === 'dark'
+                ? alpha(theme.palette.background.paper, 0.6)
+                : 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(10px)',
+            border: '1px solid',
+            borderColor: 'divider',
+            boxShadow: (theme) =>
+              theme.palette.mode === 'dark'
+                ? '0 8px 32px rgba(0, 0, 0, 0.4)'
+                : '0 8px 32px rgba(0, 0, 0, 0.08)',
+          }}
+        >
           <Box
             display="flex"
             justifyContent="space-between"
             alignItems="center"
-            mb={2}
-            sx={{ paddingRight: { sm: '3rem' } }}
+            mb={3}
+            flexWrap="wrap"
+            gap={2}
           >
-            <Typography component="h1" fontSize="1.3rem">
-              Total Visits
-            </Typography>
+            <Box display="flex" alignItems="center" gap={1.5}>
+              <Box
+                sx={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  borderRadius: '12px',
+                  p: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                }}
+              >
+                <TimelineIcon />
+              </Box>
+              <Typography variant="h5" fontWeight="bold">
+                Total Visits
+              </Typography>
+            </Box>
             <Select
-              label="Month"
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(Number(e.target.value))}
-              sx={{ minWidth: '10rem' }}
+              sx={{
+                minWidth: '10rem',
+                borderRadius: 2,
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: (theme) =>
+                    theme.palette.mode === 'dark'
+                      ? alpha(theme.palette.primary.main, 0.3)
+                      : 'rgba(0, 0, 0, 0.1)',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'primary.main',
+                },
+              }}
               size="small"
             >
               {months.map((month, index) => (
@@ -113,20 +181,47 @@ export default function Dashboard() {
               ))}
             </Select>
           </Box>
-          {blogViews.length === monthDays.length && <ViewsGraph blogViews={blogViews} monthDays={monthDays} />}
+          <Box width="100%" height={{ sm: '35rem', xs: '15rem' }}>
+            {blogViews.length === monthDays.length && <ViewsGraph blogViews={blogViews} monthDays={monthDays} />}
+          </Box>
+        </Card>
+
+        {/* Published Blogs Section */}
+        <Box sx={{ my: 4 }}>
+          <BlogsTable handleSelectBlog={handleSelectBlog} />
         </Box>
-        
-        <Box sx={{ my: { sm: 3, xs: 1 } }} />
-        <BlogsTable handleSelectBlog={handleSelectBlog} />
-        <Box sx={{ my: { sm: 3, xs: 1 } }} />
-        <DraftsTable />
-      </Box>
-      <Box sx={{ my: 6 }} />
-      <Box sx={{ '& > :not(style)': { m: 1 }, position: 'fixed', bottom: 20, right: 20, zIndex: 1000 }}>
-        <Fab color="primary" aria-label="add" onClick={handleClick}>
-          <AddIcon />
-        </Fab>
-      </Box>
+
+        {/* Drafts Section */}
+        <Box sx={{ my: 4 }}>
+          <DraftsTable />
+        </Box>
+      </Container>
+
+      {/* Floating Action Button */}
+      <Fab
+        color="primary"
+        aria-label="add"
+        onClick={handleClick}
+        sx={{
+          position: 'fixed',
+          bottom: 24,
+          right: 24,
+          zIndex: 1000,
+          width: 64,
+          height: 64,
+          boxShadow: (theme) =>
+            `0 8px 24px ${alpha(theme.palette.primary.main, 0.4)}`,
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:hover': {
+            transform: 'scale(1.1) rotate(90deg)',
+            boxShadow: (theme) =>
+              `0 12px 32px ${alpha(theme.palette.primary.main, 0.6)}`,
+          },
+        }}
+      >
+        <AddIcon sx={{ fontSize: 32 }} />
+      </Fab>
+
       <Footer />
     </Box>
   );

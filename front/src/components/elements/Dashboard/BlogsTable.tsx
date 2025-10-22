@@ -94,18 +94,6 @@ const headCells = [
     label: 'Status',
   },
   {
-    id: 'wordpress',
-    numeric: true,
-    disablePadding: false,
-    label: 'WordPress',
-  },
-  {
-    id: 'medium',
-    numeric: true,
-    disablePadding: false,
-    label: 'Medium',
-  },
-  {
     id: 'edit',
     numeric: true,
     disablePadding: false,
@@ -116,6 +104,12 @@ const headCells = [
     numeric: true,
     disablePadding: false,
     label: 'Delete',
+  },
+  {
+    id: 'actions',
+    numeric: true,
+    disablePadding: false,
+    label: 'Actions',
   },
 ];
 
@@ -227,17 +221,60 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
   return (
     <React.Fragment>
       {isLoading ? (
-        <Box>
-          <Typography component={'div'} fontSize={'1rem'} color={'#6D6E76'}>
+        <Box sx={{ textAlign: 'center', py: 4 }}>
+          <Typography variant="body1" color="text.secondary">
             Loading blogs...
           </Typography>
         </Box>
       ) : rows.length > 0 ? (
-        <Box>
-          <Typography component={'div'} fontSize={'1rem'} color={'#6D6E76'}>
-            Blogs
-          </Typography>
-          <Box sx={{ my: 1 }} />
+        <Box
+          sx={{
+            background: (theme) =>
+              theme.palette.mode === 'dark'
+                ? 'rgba(19, 24, 39, 0.6)'
+                : 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+            overflow: 'hidden',
+            boxShadow: (theme) =>
+              theme.palette.mode === 'dark'
+                ? '0 8px 32px rgba(0, 0, 0, 0.4)'
+                : '0 8px 32px rgba(0, 0, 0, 0.08)',
+          }}
+        >
+          <Box
+            sx={{
+              px: 3,
+              py: 2.5,
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+              background: (theme) =>
+                theme.palette.mode === 'dark'
+                  ? 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)'
+                  : 'linear-gradient(135deg, rgba(29, 78, 216, 0.05) 0%, rgba(124, 58, 237, 0.05) 100%)',
+            }}
+          >
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              sx={{
+                background: (theme) =>
+                  theme.palette.mode === 'dark'
+                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                    : 'linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              📝 Published Blogs
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Manage and track your published content
+            </Typography>
+          </Box>
           <EnhancedTable
             columns={headCells}
             rows={rows}
@@ -257,9 +294,25 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
           />
         </Box>
       ) : (
-        <Box>
-          <Typography component={'div'} fontSize={'1rem'} color={'#6D6E76'}>
-            No blogs found
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 8,
+            px: 3,
+            background: (theme) =>
+              theme.palette.mode === 'dark'
+                ? 'rgba(19, 24, 39, 0.4)'
+                : 'rgba(255, 255, 255, 0.7)',
+            borderRadius: 3,
+            border: '2px dashed',
+            borderColor: 'divider',
+          }}
+        >
+          <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+            No published blogs yet
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Start creating amazing content!
           </Typography>
         </Box>
       )}

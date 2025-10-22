@@ -11,7 +11,16 @@ import {
   TablePagination,
   TableRow,
   CircularProgress,
+  IconButton,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
 } from '@mui/material';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import PublishIcon from '@mui/icons-material/Publish';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { EnhancedTableHead, HeadCell, Data, Order } from './EnhancedTableHead';
 import { EnhancedTableToolbar } from './EnhancedTableToolbar';
 
@@ -82,6 +91,18 @@ function EnhancedTable({
   const [orderBy, setOrderBy] = useState<string>('title');
   const [selected, setSelected] = useState<number>(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
+  
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, rowId: string) => {
+    setAnchorEl(event.currentTarget);
+    setSelectedRowId(rowId);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+    setSelectedRowId(null);
+  };
 
   const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -152,7 +173,7 @@ function EnhancedTable({
                     )}
                     {columns.map((column) => {
                       const cellValue = row[column.id];
-                      if (column.id === 'edit' || column.id === 'delete' || column.id === 'wordpress' || column.id === 'medium') {
+                      if (column.id === 'edit' || column.id === 'delete' || column.id === 'wordpress' || column.id === 'medium' || column.id === 'actions') {
                         return null;
                       }
                       return (
@@ -182,58 +203,6 @@ function EnhancedTable({
                         </TableCell>
                       );
                     })}
-                    {handlePublishToWordPress && (
-                      <TableCell align="right">
-                        {row.wordpressUrl ? (
-                          <Button
-                            variant={'outlined'}
-                            color={'success'}
-                            size={'small'}
-                            href={row.wordpressUrl as string}
-                            target="_blank"
-                          >
-                            View
-                          </Button>
-                        ) : (
-                          <Button
-                            variant={'contained'}
-                            color={'primary'}
-                            size={'small'}
-                            onClick={() => handlePublishToWordPress(row.id as string)}
-                            disabled={row.wordpressStatus === 'pending' || isPublishingWP}
-                            startIcon={row.wordpressStatus === 'pending' || isPublishingWP ? <CircularProgress size={16} color="inherit" /> : undefined}
-                          >
-                            {row.wordpressStatus === 'pending' || isPublishingWP ? 'Publishing...' : row.wordpressStatus === 'failed' ? 'Retry WP' : 'Publish'}
-                          </Button>
-                        )}
-                      </TableCell>
-                    )}
-                    {handlePublishToMedium && (
-                      <TableCell align="right">
-                        {row.mediumUrl ? (
-                          <Button
-                            variant={'outlined'}
-                            color={'success'}
-                            size={'small'}
-                            href={row.mediumUrl as string}
-                            target="_blank"
-                          >
-                            View
-                          </Button>
-                        ) : (
-                          <Button
-                            variant={'contained'}
-                            color={'primary'}
-                            size={'small'}
-                            onClick={() => handlePublishToMedium(row.id as string)}
-                            disabled={row.mediumStatus === 'pending' || isPublishingMedium}
-                            startIcon={row.mediumStatus === 'pending' || isPublishingMedium ? <CircularProgress size={16} color="inherit" /> : undefined}
-                          >
-                            {row.mediumStatus === 'pending' || isPublishingMedium ? 'Publishing...' : row.mediumStatus === 'failed' ? 'Retry Medium' : 'Publish'}
-                          </Button>
-                        )}
-                      </TableCell>
-                    )}
                     <TableCell align="right">
                       <Button
                         variant={'contained'}
@@ -254,6 +223,21 @@ function EnhancedTable({
                         Delete
                       </Button>
                     </TableCell>
+                    {(handlePublishToWordPress || handlePublishToMedium) && (
+                      <TableCell align="right">
+                        <IconButton
+                          onClick={(e) => handleMenuOpen(e, row.id as string)}
+                          size="small"
+                          sx={{
+                            '&:hover': {
+                              backgroundColor: 'action.hover',
+                            },
+                          }}
+                        >
+                          <MoreVertIcon />
+                        </IconButton>
+                      </TableCell>
+                    )}
                   </TableRow>
                 );
               })}
@@ -279,6 +263,116 @@ function EnhancedTable({
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        PaperProps={{
+          sx: {
+            mt: 1,
+            minWidth: 200,
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+          },
+        }}
+      >
+        {selectedRowId && handlePublishToWordPress && (
+          <>
+            {rows.find(r => r.id === selectedRowId)?.wordpressUrl ? (
+              <MenuItem
+                component="a"
+                href={rows.find(r => r.id === selectedRowId)?.wordpressUrl as string}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleMenuClose}
+              >
+                <ListItemIcon>
+                  <OpenInNewIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>View on WordPress</ListItemText>
+              </MenuItem>
+            ) : (
+              <MenuItem
+                onClick={() => {
+                  handlePublishToWordPress(selectedRowId);
+                  handleMenuClose();
+                }}
+                disabled={
+                  rows.find(r => r.id === selectedRowId)?.wordpressStatus === 'pending' || 
+                  isPublishingWP
+                }
+              >
+                <ListItemIcon>
+                  {rows.find(r => r.id === selectedRowId)?.wordpressStatus === 'pending' || isPublishingWP ? (
+                    <CircularProgress size={20} />
+                  ) : (
+                    <PublishIcon fontSize="small" />
+                  )}
+                </ListItemIcon>
+                <ListItemText>
+                  {rows.find(r => r.id === selectedRowId)?.wordpressStatus === 'pending' || isPublishingWP
+                    ? 'Publishing to WordPress...'
+                    : rows.find(r => r.id === selectedRowId)?.wordpressStatus === 'failed'
+                    ? 'Retry WordPress'
+                    : 'Publish to WordPress'}
+                </ListItemText>
+              </MenuItem>
+            )}
+          </>
+        )}
+        {selectedRowId && handlePublishToWordPress && handlePublishToMedium && <Divider />}
+        {selectedRowId && handlePublishToMedium && (
+          <>
+            {rows.find(r => r.id === selectedRowId)?.mediumUrl ? (
+              <MenuItem
+                component="a"
+                href={rows.find(r => r.id === selectedRowId)?.mediumUrl as string}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleMenuClose}
+              >
+                <ListItemIcon>
+                  <OpenInNewIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText>View on Medium</ListItemText>
+              </MenuItem>
+            ) : (
+              <MenuItem
+                onClick={() => {
+                  handlePublishToMedium(selectedRowId);
+                  handleMenuClose();
+                }}
+                disabled={
+                  rows.find(r => r.id === selectedRowId)?.mediumStatus === 'pending' || 
+                  isPublishingMedium
+                }
+              >
+                <ListItemIcon>
+                  {rows.find(r => r.id === selectedRowId)?.mediumStatus === 'pending' || isPublishingMedium ? (
+                    <CircularProgress size={20} />
+                  ) : (
+                    <PublishIcon fontSize="small" />
+                  )}
+                </ListItemIcon>
+                <ListItemText>
+                  {rows.find(r => r.id === selectedRowId)?.mediumStatus === 'pending' || isPublishingMedium
+                    ? 'Publishing to Medium...'
+                    : rows.find(r => r.id === selectedRowId)?.mediumStatus === 'failed'
+                    ? 'Retry Medium'
+                    : 'Publish to Medium'}
+                </ListItemText>
+              </MenuItem>
+            )}
+          </>
+        )}
+      </Menu>
     </Box>
   );
 }

@@ -157,17 +157,60 @@ export default function DraftsTable() {
   return (
     <React.Fragment>
       {isLoading ? (
-        <Box>
-          <Typography component={'div'} fontSize={'1rem'} color={'#6D6E76'}>
+        <Box sx={{ textAlign: 'center', py: 4 }}>
+          <Typography variant="body1" color="text.secondary">
             Loading drafts...
           </Typography>
         </Box>
       ) : rows.length > 0 ? (
-        <Box>
-          <Typography component={'div'} fontSize={'1rem'} color={'#6D6E76'}>
-            Drafts
-          </Typography>
-          <Box sx={{ my: 1 }} />
+        <Box
+          sx={{
+            background: (theme) =>
+              theme.palette.mode === 'dark'
+                ? 'rgba(19, 24, 39, 0.6)'
+                : 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: 3,
+            border: '1px solid',
+            borderColor: 'divider',
+            overflow: 'hidden',
+            boxShadow: (theme) =>
+              theme.palette.mode === 'dark'
+                ? '0 8px 32px rgba(0, 0, 0, 0.4)'
+                : '0 8px 32px rgba(0, 0, 0, 0.08)',
+          }}
+        >
+          <Box
+            sx={{
+              px: 3,
+              py: 2.5,
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+              background: (theme) =>
+                theme.palette.mode === 'dark'
+                  ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 146, 60, 0.1) 100%)'
+                  : 'linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(251, 146, 60, 0.05) 100%)',
+            }}
+          >
+            <Typography
+              variant="h6"
+              fontWeight="bold"
+              sx={{
+                background: (theme) =>
+                  theme.palette.mode === 'dark'
+                    ? 'linear-gradient(135deg, #f59e0b 0%, #fb923c 100%)'
+                    : 'linear-gradient(135deg, #d97706 0%, #ea580c 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              📄 Draft Posts
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+              Continue working on your unpublished content
+            </Typography>
+          </Box>
           <EnhancedTable
             columns={headCells}
             rows={rows}
@@ -183,9 +226,25 @@ export default function DraftsTable() {
           />
         </Box>
       ) : (
-        <Box>
-          <Typography component={'div'} fontSize={'1rem'} color={'#6D6E76'}>
-            No drafts found
+        <Box
+          sx={{
+            textAlign: 'center',
+            py: 8,
+            px: 3,
+            background: (theme) =>
+              theme.palette.mode === 'dark'
+                ? 'rgba(19, 24, 39, 0.4)'
+                : 'rgba(255, 255, 255, 0.7)',
+            borderRadius: 3,
+            border: '2px dashed',
+            borderColor: 'divider',
+          }}
+        >
+          <Typography variant="h6" color="text.secondary" sx={{ mb: 1 }}>
+            No drafts available
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            All your posts are published!
           </Typography>
         </Box>
       )}

@@ -19,7 +19,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 
 export default function SignInSide() {
-  const [signUp, setSignUp] = React.useState(true);
+  const [signUp, setSignUp] = React.useState(false);
   const [formData, setFormData] = React.useState({
     firstName: '',
     lastName: '',
@@ -35,6 +35,34 @@ export default function SignInSide() {
 
   const [login, { isLoading: loginLoading, error: loginError }] = useLoginMutation();
   const [register, { isLoading: registerLoading, error: registerError }] = useRegisterMutation();
+
+  // Common TextField styles to prevent highlight issues
+  const textFieldStyles = {
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 2,
+      '& input': {
+        backgroundColor: 'transparent !important',
+        boxShadow: 'none !important',
+      },
+      '& textarea': {
+        backgroundColor: 'transparent !important',
+        boxShadow: 'none !important',
+      },
+      '& input:-webkit-autofill': {
+        WebkitBoxShadow: '0 0 0 100px transparent inset !important',
+        WebkitTextFillColor: 'inherit !important',
+        transition: 'background-color 5000s ease-in-out 0s',
+      },
+      '&.Mui-focused': {
+        '& input': {
+          backgroundColor: 'transparent !important',
+        },
+        '& textarea': {
+          backgroundColor: 'transparent !important',
+        },
+      },
+    },
+  };
 
   // Validate form
   const validateForm = () => {
@@ -123,7 +151,7 @@ export default function SignInSide() {
   const isLoading = signUp ? registerLoading : loginLoading;
 
   return (
-    <Grid container component="main" sx={{ height: '100vh' }}>
+    <Grid container component="main" sx={{ height: '100vh', overflow: 'hidden' }}>
       <Grid
         size={{ xs: 0, sm: 4, md: 7 }}
         sx={{
@@ -132,23 +160,59 @@ export default function SignInSide() {
           backgroundColor: (t) => (t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900]),
           backgroundSize: 'cover',
           backgroundPosition: 'center',
+          display: { xs: 'none', sm: 'block' },
         }}
       />
-      <Grid size={{ xs: 12, sm: 8, md: 5 }} component={Paper} elevation={6} square>
+      <Grid 
+        size={{ xs: 12, sm: 8, md: 5 }} 
+        component={Paper} 
+        elevation={6} 
+        square
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'auto',
+        }}
+      >
         <Box
           sx={{
-            my: 8,
-            mx: 4,
+            my: { xs: 4, sm: 6, md: 8 },
+            mx: { xs: 2, sm: 3, md: 4 },
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            width: { xs: 'calc(100% - 32px)', sm: 'calc(100% - 48px)', md: 'calc(100% - 64px)' },
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <LockOutlinedIcon />
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main', width: 56, height: 56 }}>
+            <LockOutlinedIcon sx={{ fontSize: 32 }} />
           </Avatar>
-          <Typography component="h1" variant="h4" sx={{ mb: 2 }}>
+          <Typography 
+            component="h1" 
+            variant="h4" 
+            sx={{ 
+              mb: 2, 
+              mt: 1,
+              fontSize: { xs: '1.75rem', sm: '2rem', md: '2.125rem' },
+              fontWeight: 600,
+              textAlign: 'center'
+            }}
+          >
             {signUp ? 'Create Account' : 'Sign In'}
+          </Typography>
+
+          <Typography 
+            variant="body2" 
+            color="text.secondary"
+            sx={{ 
+              mb: 3, 
+              textAlign: 'center',
+              fontSize: { xs: '0.875rem', sm: '0.95rem' }
+            }}
+          >
+            {signUp 
+              ? 'Create your account to get started' 
+              : 'Welcome back! Please sign in to continue'}
           </Typography>
 
           {currentError && (
@@ -175,6 +239,7 @@ export default function SignInSide() {
                       helperText={formErrors.firstName}
                       disabled={isLoading}
                       autoFocus
+                      sx={textFieldStyles}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
@@ -190,6 +255,7 @@ export default function SignInSide() {
                       error={!!formErrors.lastName}
                       helperText={formErrors.lastName}
                       disabled={isLoading}
+                      sx={textFieldStyles}
                     />
                   </Grid>
                 </Grid>
@@ -210,6 +276,7 @@ export default function SignInSide() {
               helperText={formErrors.email}
               disabled={isLoading}
               autoFocus={!signUp}
+              sx={textFieldStyles}
             />
 
             <TextField
@@ -226,6 +293,7 @@ export default function SignInSide() {
               error={!!formErrors.password}
               helperText={formErrors.password}
               disabled={isLoading}
+              sx={textFieldStyles}
             />
 
             {signUp && (
@@ -243,6 +311,7 @@ export default function SignInSide() {
                 error={!!formErrors.confirmPassword}
                 helperText={formErrors.confirmPassword}
                 disabled={isLoading}
+                sx={textFieldStyles}
               />
             )}
 
@@ -258,6 +327,12 @@ export default function SignInSide() {
                   />
                 }
                 label="Remember me"
+                sx={{ 
+                  mt: 1,
+                  '& .MuiFormControlLabel-label': {
+                    fontSize: { xs: '0.875rem', sm: '0.95rem' }
+                  }
+                }}
               />
             )}
 
@@ -265,22 +340,43 @@ export default function SignInSide() {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2, py: 1.5 }}
+              sx={{ 
+                mt: 3, 
+                mb: 2, 
+                py: { xs: 1.2, sm: 1.5 },
+                fontSize: { xs: '0.95rem', sm: '1rem' },
+                fontWeight: 600,
+                textTransform: 'none',
+                borderRadius: 2,
+                boxShadow: 2,
+                '&:hover': {
+                  boxShadow: 4,
+                }
+              }}
               disabled={isLoading}
-              startIcon={isLoading && <CircularProgress size={20} />}
+              startIcon={isLoading && <CircularProgress size={20} color="inherit" />}
             >
               {isLoading ? (signUp ? 'Creating Account...' : 'Signing In...') : signUp ? 'Create Account' : 'Sign In'}
             </Button>
 
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 'auto' }}>
+            <Grid container spacing={2} sx={{ mt: 1, justifyContent: 'space-between', alignItems: 'center' }}>
+              <Grid size={{ xs: 12, sm: 'auto' }}>
                 {!signUp && (
-                  <Link href="#" variant="body2">
+                  <Link 
+                    href="#" 
+                    variant="body2"
+                    sx={{ 
+                      display: 'block',
+                      textAlign: { xs: 'center', sm: 'left' },
+                      fontSize: { xs: '0.875rem', sm: '0.875rem' },
+                      fontWeight: 500
+                    }}
+                  >
                     Forgot password?
                   </Link>
                 )}
               </Grid>
-              <Grid>
+              <Grid size={{ xs: 12, sm: 'grow' }}>
                 <Link
                   component="button"
                   type="button"
@@ -299,6 +395,14 @@ export default function SignInSide() {
                     });
                   }}
                   disabled={isLoading}
+                  sx={{ 
+                    display: 'block',
+                    textAlign: { xs: 'center', sm: 'right' },
+                    fontSize: { xs: '0.875rem', sm: '0.875rem' },
+                    fontWeight: 500,
+                    width: '100%',
+                    mt: { xs: 1, sm: 0 }
+                  }}
                 >
                   {signUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
                 </Link>

@@ -18,9 +18,9 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
-// Add retry logic with exponential backoff
+// Retry logic disabled (maxRetries: 0)
 const baseQueryWithRetry = retry(baseQuery, {
-  maxRetries: 3,
+  maxRetries: 0,
 });
 
 // Enhanced base query with token refresh logic
