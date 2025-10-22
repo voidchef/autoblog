@@ -11,7 +11,6 @@
  * - eslint-plugin-node - Node.js best practices
  * - eslint-plugin-promise - Promise handling best practices
  * - eslint-plugin-security - Security vulnerability detection
- * - eslint-plugin-sonarjs - Code quality and complexity analysis
  * - eslint-plugin-prettier - Prettier integration for consistent formatting
  * 
  * Features:
@@ -32,7 +31,6 @@ import nodePlugin from 'eslint-plugin-node';
 import prettierPlugin from 'eslint-plugin-prettier';
 import promisePlugin from 'eslint-plugin-promise';
 import securityPlugin from 'eslint-plugin-security';
-import sonarPlugin from 'eslint-plugin-sonarjs';
 import globals from 'globals';
 
 export default [
@@ -75,7 +73,6 @@ export default [
       node: nodePlugin,
       promise: promisePlugin,
       security: securityPlugin,
-      sonarjs: sonarPlugin,
       prettier: prettierPlugin,
     },
     rules: {
@@ -109,12 +106,6 @@ export default [
       'promise/catch-or-return': 'error',
       'promise/no-nesting': 'warn',
       'promise/param-names': 'error',
-
-      // SonarJS - Code Quality
-      'sonarjs/cognitive-complexity': ['warn', 15],
-      'sonarjs/no-duplicate-string': ['warn', { threshold: 5 }],
-      'sonarjs/no-identical-functions': 'warn',
-      'sonarjs/no-nested-template-literals': 'warn',
 
       // Import best practices
       'import/order': [
@@ -161,8 +152,6 @@ export default [
       'jest/valid-expect': 'error',
       'jest/no-conditional-expect': 'warn',
       'no-console': 'off', // Allow console in tests
-      'sonarjs/no-duplicate-string': 'off', // Tests often have repetitive strings
-      'sonarjs/cognitive-complexity': 'off', // Tests can be complex
       '@typescript-eslint/no-explicit-any': 'off', // More lenient in tests
     },
   },
@@ -201,7 +190,6 @@ export default [
       import: importPlugin,
       promise: promisePlugin,
       security: securityPlugin,
-      sonarjs: sonarPlugin,
       prettier: prettierPlugin,
     },
     settings: {
@@ -263,11 +251,6 @@ export default [
       // Promise best practices
       'promise/always-return': 'off', // Too strict
       'promise/catch-or-return': 'warn',
-
-      // SonarJS - Code Quality
-      'sonarjs/cognitive-complexity': ['warn', 20],
-      'sonarjs/no-duplicate-string': 'off', // Can be noisy in tests and constants
-      'sonarjs/no-identical-functions': 'warn',
 
       // Import best practices
       'import/order': [
