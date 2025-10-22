@@ -1,12 +1,12 @@
-import httpStatus from 'http-status';
 import { Request, Response } from 'express';
+import httpStatus from 'http-status';
 import mongoose from 'mongoose';
-import catchAsync from '../utils/catchAsync';
 import ApiError from '../errors/ApiError';
-import pick from '../utils/pick';
 import { IOptions } from '../paginate/paginate';
-import * as commentService from './comment.service';
 import { IUserDoc } from '../user/user.interfaces';
+import catchAsync from '../utils/catchAsync';
+import pick from '../utils/pick';
+import * as commentService from './comment.service';
 
 export const createComment = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IUserDoc;
@@ -48,7 +48,10 @@ export const getReplies = catchAsync(async (req: Request, res: Response) => {
 
 export const updateComment = catchAsync(async (req: Request, res: Response) => {
   if (typeof req.params['commentId'] === 'string') {
-    const comment = await commentService.updateCommentById(new mongoose.Types.ObjectId(req.params['commentId']), req.body);
+    const comment = await commentService.updateCommentById(
+      new mongoose.Types.ObjectId(req.params['commentId']),
+      req.body
+    );
     res.send(comment);
   }
 });
@@ -65,7 +68,7 @@ export const likeComment = catchAsync(async (req: Request, res: Response) => {
   if (typeof req.params['commentId'] === 'string') {
     const comment = await commentService.likeComment(
       new mongoose.Types.ObjectId(req.params['commentId']),
-      user._id as mongoose.Types.ObjectId,
+      user._id as mongoose.Types.ObjectId
     );
     res.send(comment);
   }
@@ -76,7 +79,7 @@ export const dislikeComment = catchAsync(async (req: Request, res: Response) => 
   if (typeof req.params['commentId'] === 'string') {
     const comment = await commentService.dislikeComment(
       new mongoose.Types.ObjectId(req.params['commentId']),
-      user._id as mongoose.Types.ObjectId,
+      user._id as mongoose.Types.ObjectId
     );
     res.send(comment);
   }

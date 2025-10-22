@@ -1,16 +1,16 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
-import request from 'supertest';
 import { faker } from '@faker-js/faker';
+import bcrypt from 'bcryptjs';
 import httpStatus from 'http-status';
 import moment from 'moment';
-import config from '../../config/config';
-import tokenTypes from '../token/token.types';
-import * as tokenService from '../token/token.service';
+import mongoose from 'mongoose';
+import request from 'supertest';
 import app from '../../app';
+import config from '../../config/config';
 import setupTestDB from '../jest/setupTestDB';
-import User from './user.model';
+import * as tokenService from '../token/token.service';
+import tokenTypes from '../token/token.types';
 import { NewCreatedUser } from './user.interfaces';
+import User from './user.model';
 
 setupTestDB();
 
@@ -84,7 +84,7 @@ describe('User routes', () => {
           email: newUser.email,
           role: newUser.role,
           isEmailVerified: false,
-        }),
+        })
       );
 
       const dbUser = await User.findById(res.body.id);
@@ -92,7 +92,12 @@ describe('User routes', () => {
       if (!dbUser) return;
 
       expect(dbUser.password).not.toBe(newUser.password);
-      expect(dbUser).toMatchObject({ name: newUser.name, email: newUser.email, role: newUser.role, isEmailVerified: false });
+      expect(dbUser).toMatchObject({
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+        isEmailVerified: false,
+      });
     });
 
     test('should be able to create an admin as well', async () => {
@@ -216,7 +221,7 @@ describe('User routes', () => {
           email: userOne.email,
           role: userOne.role,
           isEmailVerified: userOne.isEmailVerified,
-        }),
+        })
       );
     });
 
@@ -345,10 +350,10 @@ describe('User routes', () => {
       expect(res.body.results).toHaveLength(3);
 
       const expectedOrder = [userOne, userTwo, admin].sort((a, b) => {
-        if (a.role! < b.role!) {
+        if (a.role < b.role) {
           return 1;
         }
-        if (a.role! > b.role!) {
+        if (a.role > b.role) {
           return -1;
         }
         return a.name < b.name ? -1 : 1;
@@ -421,7 +426,7 @@ describe('User routes', () => {
           name: userOne.name,
           role: userOne.role,
           isEmailVerified: userOne.isEmailVerified,
-        }),
+        })
       );
     });
 
@@ -556,7 +561,7 @@ describe('User routes', () => {
           email: updateBody.email,
           role: 'user',
           isEmailVerified: false,
-        }),
+        })
       );
 
       const dbUser = await User.findById(userOne._id);

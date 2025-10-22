@@ -17,7 +17,7 @@ module.exports = {
 
   // Test discovery pattern
   testMatch: ['**/__tests__/**/*.(spec|test).[tj]s', '**/?(*.)+(spec|test).[tj]s'],
-  
+
   // Exclude dist and node_modules from test discovery
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
 

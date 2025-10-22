@@ -70,7 +70,7 @@ ${allUrls
     <lastmod>${url.lastmod}</lastmod>
     <changefreq>${url.changefreq}</changefreq>
     <priority>${url.priority}</priority>
-  </url>`,
+  </url>`
   )
   .join('\n')}
 </urlset>`;

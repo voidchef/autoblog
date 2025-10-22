@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import toJSON from '../toJSON/toJSON';
 import paginate from '../paginate/paginate';
+import toJSON from '../toJSON/toJSON';
 import { IAppSettingsDoc, IAppSettingsModel } from './appSettings.interfaces';
 
 const categorySchema = new mongoose.Schema(
@@ -21,7 +21,7 @@ const categorySchema = new mongoose.Schema(
       required: true,
     },
   },
-  { _id: false },
+  { _id: false }
 );
 
 const selectFieldSchema = new mongoose.Schema(
@@ -37,7 +37,7 @@ const selectFieldSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { _id: false },
+  { _id: false }
 );
 
 const appSettingsSchema = new mongoose.Schema<IAppSettingsDoc, IAppSettingsModel>(
@@ -49,7 +49,7 @@ const appSettingsSchema = new mongoose.Schema<IAppSettingsDoc, IAppSettingsModel
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // add plugin that converts mongoose to json

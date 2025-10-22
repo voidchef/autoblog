@@ -1,5 +1,5 @@
-import { Document, Model } from 'mongoose';
 import { JwtPayload } from 'jsonwebtoken';
+import { Document, Model } from 'mongoose';
 
 export interface IToken {
   token: string;

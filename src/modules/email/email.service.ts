@@ -15,7 +15,7 @@ export const getTransport = (): Transporter => {
         .verify()
         .then(() => logger.info('Connected to email server'))
         .catch(() =>
-          logger.warn('Unable to connect to email server. Make sure you have configured the SMTP options in .env'),
+          logger.warn('Unable to connect to email server. Make sure you have configured the SMTP options in .env')
         );
     }
   }

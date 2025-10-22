@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
-import tokenTypes from './token.types';
 import toJSON from '../toJSON/toJSON';
 import { ITokenDoc, ITokenModel } from './token.interfaces';
+import tokenTypes from './token.types';
 
 const tokenSchema = new mongoose.Schema<ITokenDoc, ITokenModel>(
   {
@@ -31,7 +31,7 @@ const tokenSchema = new mongoose.Schema<ITokenDoc, ITokenModel>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // add plugin that converts mongoose to json

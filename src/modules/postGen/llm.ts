@@ -22,7 +22,9 @@ export function buildLLM(postPrompt: BasePostPrompt, forJson: boolean = false): 
 
 function buildOpenAI(postPrompt: BasePostPrompt, forJson: boolean = false) {
   if (!postPrompt.apiKey) {
-    throw new Error('OpenAI API key is required. Please ensure your user profile has a valid OpenAI API key configured.');
+    throw new Error(
+      'OpenAI API key is required. Please ensure your user profile has a valid OpenAI API key configured.'
+    );
   }
 
   const llmParams = {
@@ -38,7 +40,9 @@ function buildOpenAI(postPrompt: BasePostPrompt, forJson: boolean = false) {
 
 function buildMistral(postPrompt: BasePostPrompt, forJson: boolean = false) {
   if (!postPrompt.apiKey) {
-    throw new Error('Mistral API key is required. Please ensure your user profile has a valid Mistral API key configured.');
+    throw new Error(
+      'Mistral API key is required. Please ensure your user profile has a valid Mistral API key configured.'
+    );
   }
 
   const llmParams = {

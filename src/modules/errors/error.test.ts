@@ -1,12 +1,12 @@
-import mongoose from 'mongoose';
-import httpStatus from 'http-status';
-import httpMocks from 'node-mocks-http';
 import { jest } from '@jest/globals';
+import httpStatus from 'http-status';
+import mongoose from 'mongoose';
+import httpMocks from 'node-mocks-http';
 import winston from 'winston';
-import { errorConverter, errorHandler } from './error';
-import ApiError from './ApiError';
 import config from '../../config/config';
 import logger from '../logger/logger';
+import ApiError from './ApiError';
+import { errorConverter, errorHandler } from './error';
 
 describe('Error middlewares', () => {
   describe('Error converter', () => {
@@ -32,7 +32,7 @@ describe('Error middlewares', () => {
           statusCode: error.statusCode,
           message: error.message,
           isOperational: false,
-        }),
+        })
       );
     });
 
@@ -48,7 +48,7 @@ describe('Error middlewares', () => {
           statusCode: httpStatus.INTERNAL_SERVER_ERROR,
           message: error.message,
           isOperational: false,
-        }),
+        })
       );
     });
 
@@ -65,7 +65,7 @@ describe('Error middlewares', () => {
           statusCode: error.statusCode,
           message: httpStatus[error.statusCode as keyof typeof httpStatus],
           isOperational: false,
-        }),
+        })
       );
     });
 
@@ -81,7 +81,7 @@ describe('Error middlewares', () => {
           statusCode: httpStatus.BAD_REQUEST,
           message: error.message,
           isOperational: false,
-        }),
+        })
       );
     });
 
@@ -97,7 +97,7 @@ describe('Error middlewares', () => {
           statusCode: httpStatus.INTERNAL_SERVER_ERROR,
           message: httpStatus[httpStatus.INTERNAL_SERVER_ERROR],
           isOperational: false,
-        }),
+        })
       );
     });
   });
@@ -129,7 +129,7 @@ describe('Error middlewares', () => {
       errorHandler(error, httpMocks.createRequest(), res, next);
 
       expect(sendSpy).toHaveBeenCalledWith(
-        expect.objectContaining({ code: error.statusCode, message: error.message, stack: error.stack }),
+        expect.objectContaining({ code: error.statusCode, message: error.message, stack: error.stack })
       );
       config.env = process.env['NODE_ENV'] as typeof config.env;
     });
@@ -147,7 +147,7 @@ describe('Error middlewares', () => {
         expect.objectContaining({
           code: httpStatus.INTERNAL_SERVER_ERROR,
           message: httpStatus[httpStatus.INTERNAL_SERVER_ERROR],
-        }),
+        })
       );
       expect(res.locals['errorMessage']).toBe(error.message);
       config.env = process.env['NODE_ENV'] as typeof config.env;
@@ -166,7 +166,7 @@ describe('Error middlewares', () => {
         expect.objectContaining({
           code: error.statusCode,
           message: error.message,
-        }),
+        })
       );
       config.env = process.env['NODE_ENV'] as typeof config.env;
     });

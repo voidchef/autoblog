@@ -1,23 +1,22 @@
-/* eslint-disable jest/no-commented-out-tests */
 import { faker } from '@faker-js/faker';
-import mongoose from 'mongoose';
-import request from 'supertest';
-import httpStatus from 'http-status';
-import httpMocks from 'node-mocks-http';
-import moment from 'moment';
-import bcrypt from 'bcryptjs';
 import { jest } from '@jest/globals';
+import bcrypt from 'bcryptjs';
+import httpStatus from 'http-status';
+import moment from 'moment';
+import mongoose from 'mongoose';
+import httpMocks from 'node-mocks-http';
+import request from 'supertest';
 import app from '../../app';
-import setupTestDB from '../jest/setupTestDB';
-import User from '../user/user.model';
 import config from '../../config/config';
-import { IUserDoc, NewRegisteredUser } from '../user/user.interfaces';
+import * as emailService from '../email/email.service';
+import ApiError from '../errors/ApiError';
+import setupTestDB from '../jest/setupTestDB';
+import Token from '../token/token.model';
 import * as tokenService from '../token/token.service';
 import tokenTypes from '../token/token.types';
-import Token from '../token/token.model';
+import { IUserDoc, NewRegisteredUser } from '../user/user.interfaces';
+import User from '../user/user.model';
 import authMiddleware from './auth.middleware';
-import ApiError from '../errors/ApiError';
-import * as emailService from '../email/email.service';
 
 setupTestDB();
 
@@ -414,7 +413,12 @@ describe('Auth routes', () => {
 
       const dbUser = await User.findById(userOne._id);
       expect(dbUser).toBeDefined();
-      expect(dbUser).toMatchObject({ name: userOne.name, email: userOne.email, role: userOne.role, isEmailVerified: true });
+      expect(dbUser).toMatchObject({
+        name: userOne.name,
+        email: userOne.email,
+        role: userOne.role,
+        isEmailVerified: true,
+      });
     });
 
     test('should return 400 if verify email token is missing', async () => {
@@ -485,7 +489,7 @@ describe('Auth middleware', () => {
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
     expect(next).toHaveBeenCalledWith(
-      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' }),
+      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' })
     );
   });
 
@@ -498,7 +502,7 @@ describe('Auth middleware', () => {
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
     expect(next).toHaveBeenCalledWith(
-      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' }),
+      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' })
     );
   });
 
@@ -513,7 +517,7 @@ describe('Auth middleware', () => {
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
     expect(next).toHaveBeenCalledWith(
-      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' }),
+      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' })
     );
   });
 
@@ -528,7 +532,7 @@ describe('Auth middleware', () => {
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
     expect(next).toHaveBeenCalledWith(
-      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' }),
+      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' })
     );
   });
 
@@ -543,7 +547,7 @@ describe('Auth middleware', () => {
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
     expect(next).toHaveBeenCalledWith(
-      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' }),
+      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' })
     );
   });
 
@@ -555,7 +559,7 @@ describe('Auth middleware', () => {
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
     expect(next).toHaveBeenCalledWith(
-      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' }),
+      expect.objectContaining({ statusCode: httpStatus.UNAUTHORIZED, message: 'Please authenticate' })
     );
   });
 
@@ -567,7 +571,9 @@ describe('Auth middleware', () => {
     await authMiddleware('anyRight')(req, httpMocks.createResponse(), next);
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode: httpStatus.FORBIDDEN, message: 'Forbidden' }));
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({ statusCode: httpStatus.FORBIDDEN, message: 'Forbidden' })
+    );
   });
 
   test('should call next with no errors if user does not have required rights but userId is in params', async () => {

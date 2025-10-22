@@ -1,19 +1,19 @@
 import { faker } from '@faker-js/faker';
+import bcrypt from 'bcryptjs';
+import httpStatus from 'http-status';
+import moment from 'moment';
 import mongoose from 'mongoose';
 import request from 'supertest';
-import httpStatus from 'http-status';
-import bcrypt from 'bcryptjs';
-import moment from 'moment';
 import app from '../../app';
-import setupTestDB from '../jest/setupTestDB';
-import User from '../user/user.model';
-import Blog from '../blog/blog.model';
-import Comment from './comment.model';
 import config from '../../config/config';
+import { NewCreatedBlog } from '../blog/blog.interfaces';
+import Blog from '../blog/blog.model';
+import setupTestDB from '../jest/setupTestDB';
 import * as tokenService from '../token/token.service';
 import tokenTypes from '../token/token.types';
+import User from '../user/user.model';
 import { NewComment } from './comment.interfaces';
-import { NewCreatedBlog } from '../blog/blog.interfaces';
+import Comment from './comment.model';
 
 setupTestDB();
 
@@ -59,7 +59,7 @@ const blogOne: NewCreatedBlog = {
   slug: 'test-blog-post',
   seoTitle: 'Test Blog Post - SEO Title',
   seoDescription: 'This is a test blog post',
-  author: admin._id as mongoose.Types.ObjectId,
+  author: admin._id,
   content: 'This is the content of the test blog post. '.repeat(50),
   category: 'Technology',
   tags: ['test', 'blog'],
@@ -205,7 +205,11 @@ describe('Comment routes', () => {
       };
       await insertComments([commentOne]);
 
-      const res = await request(app).get('/v1/comments').query({ blog: blog._id.toString() }).send().expect(httpStatus.OK);
+      const res = await request(app)
+        .get('/v1/comments')
+        .query({ blog: blog._id.toString() })
+        .send()
+        .expect(httpStatus.OK);
 
       expect(res.body.results).toHaveLength(1);
       expect(res.body.results[0].blog).toBe(blog._id.toString());

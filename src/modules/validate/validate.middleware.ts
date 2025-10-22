@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import Joi from 'joi';
 import httpStatus from 'http-status';
-import pick from '../utils/pick';
+import Joi from 'joi';
 import ApiError from '../errors/ApiError';
+import pick from '../utils/pick';
 
 const validate =
   (schema: Record<string, any>) =>
@@ -21,7 +21,7 @@ const validate =
     // Only assign other validated properties if any
     const filteredValue = Object.keys(value || {}).reduce((acc: any, key) => {
       if (!['params', 'query', 'body'].includes(key)) {
-        acc[key] = (value as any)[key];
+        acc[key] = value[key];
       }
       return acc;
     }, {});

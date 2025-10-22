@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
-import AppSettings from './appSettings.model';
 import ApiError from '../errors/ApiError';
 import { ICategories, IAppSettingsDoc, ISelectFields, UpdateSelectOptions } from './appSettings.interfaces';
+import AppSettings from './appSettings.model';
 
 /**
  * Get App Settings

@@ -1,20 +1,20 @@
 import { faker } from '@faker-js/faker';
+import axios from 'axios';
+import bcrypt from 'bcryptjs';
+import httpStatus from 'http-status';
+import moment from 'moment';
 import mongoose from 'mongoose';
 import request from 'supertest';
-import httpStatus from 'http-status';
-import bcrypt from 'bcryptjs';
-import moment from 'moment';
-import axios from 'axios';
 import app from '../../app';
-import setupTestDB from '../jest/setupTestDB';
-import User from '../user/user.model';
-import Blog from './blog.model';
 import config from '../../config/config';
+import setupTestDB from '../jest/setupTestDB';
 import * as tokenService from '../token/token.service';
 import tokenTypes from '../token/token.types';
-import { NewCreatedBlog } from './blog.interfaces';
-import * as blogService from './blog.service';
 import { ttsService } from '../tts';
+import User from '../user/user.model';
+import { NewCreatedBlog } from './blog.interfaces';
+import Blog from './blog.model';
+import * as blogService from './blog.service';
 
 // Mock TTS service
 jest.mock('../tts', () => ({
@@ -60,7 +60,7 @@ const blogOne: NewCreatedBlog = {
   slug: 'test-blog-post',
   seoTitle: 'Test Blog Post - SEO Title',
   seoDescription: 'This is a test blog post for SEO',
-  author: admin._id as mongoose.Types.ObjectId,
+  author: admin._id,
   content: 'This is the content of the test blog post. '.repeat(50),
   category: 'Technology',
   tags: ['test', 'blog', 'technology'],
@@ -74,7 +74,7 @@ const blogTwo: NewCreatedBlog = {
   slug: 'another-blog-post',
   seoTitle: 'Another Blog Post - SEO Title',
   seoDescription: 'This is another test blog post',
-  author: admin._id as mongoose.Types.ObjectId,
+  author: admin._id,
   content: 'This is the content of another blog post. '.repeat(50),
   category: 'Health',
   tags: ['test', 'health'],
@@ -101,7 +101,7 @@ describe('Blog routes', () => {
         slug: 'new-blog-post',
         seoTitle: 'New Blog Post - SEO',
         seoDescription: 'New blog post description',
-        author: admin._id as mongoose.Types.ObjectId,
+        author: admin._id,
         content: 'This is a new blog post content. '.repeat(50),
         category: 'Technology',
         tags: ['new', 'test'],
@@ -881,7 +881,7 @@ describe('Blog routes', () => {
           blogId,
           expect.objectContaining({
             languageCode: 'en-US',
-          }),
+          })
         );
       });
     });
@@ -966,9 +966,9 @@ describe('Blog routes', () => {
                   resolve({
                     audioUrl: mockAudioUrl,
                   }),
-                100,
-              ),
-            ),
+                100
+              )
+            )
         );
 
         const promise = blogService.generateAudioNarration(blogId);
@@ -995,7 +995,7 @@ describe('Blog routes', () => {
         await Blog.findByIdAndUpdate(blogId, { audioGenerationStatus: 'processing' });
 
         await expect(blogService.generateAudioNarration(blogId)).rejects.toThrow(
-          'Audio narration is already being generated',
+          'Audio narration is already being generated'
         );
       });
 
@@ -1066,14 +1066,19 @@ describe('Blog routes', () => {
 
         // Create user (pre-save hook will encrypt the password)
         const insertedUser = await User.create({ ...userWithWpConfig, password: hashedPassword });
-        
+
         const blogs = await insertBlogs([blogOne]);
         const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
-        const userId = insertedUser!._id as mongoose.Types.ObjectId;
+        const userId = insertedUser._id as mongoose.Types.ObjectId;
 
         // Mock WordPress API responses
         const mockCategoriesResponse = { data: [{ id: 1, name: 'Technology' }] };
-        const mockTagsResponse = { data: [{ id: 10, name: 'test' }, { id: 11, name: 'blog' }] };
+        const mockTagsResponse = {
+          data: [
+            { id: 10, name: 'test' },
+            { id: 11, name: 'blog' },
+          ],
+        };
         const mockPostResponse = {
           data: {
             id: 123,
@@ -1084,9 +1089,7 @@ describe('Blog routes', () => {
         };
 
         const mockClient = {
-          get: jest.fn()
-            .mockResolvedValueOnce(mockCategoriesResponse)
-            .mockResolvedValueOnce(mockTagsResponse),
+          get: jest.fn().mockResolvedValueOnce(mockCategoriesResponse).mockResolvedValueOnce(mockTagsResponse),
           post: jest.fn().mockResolvedValue(mockPostResponse),
           put: jest.fn(),
         };
@@ -1109,7 +1112,7 @@ describe('Blog routes', () => {
         await insertUsers([admin]);
         const blogs = await insertBlogs([blogOne]);
         const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
-        const userId = admin._id as mongoose.Types.ObjectId;
+        const userId = admin._id;
 
         await expect(blogService.publishToWordPress(blogId, userId)).rejects.toThrow(
           'WordPress configuration is not set'
@@ -1118,7 +1121,7 @@ describe('Blog routes', () => {
 
       test('should throw error if blog not found', async () => {
         const fakeId = new mongoose.Types.ObjectId();
-        const userId = admin._id as mongoose.Types.ObjectId;
+        const userId = admin._id;
 
         await expect(blogService.publishToWordPress(fakeId, userId)).rejects.toThrow('Blog not found');
       });
@@ -1140,10 +1143,10 @@ describe('Blog routes', () => {
 
         // Create user (pre-save hook will encrypt the token)
         const insertedUser = await User.create({ ...userWithMediumConfig, password: hashedPassword });
-        
+
         const blogs = await insertBlogs([blogOne]);
         const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
-        const userId = insertedUser!._id as mongoose.Types.ObjectId;
+        const userId = insertedUser._id as mongoose.Types.ObjectId;
 
         // Mock Medium API responses
         const mockUserResponse = {
@@ -1186,16 +1189,14 @@ describe('Blog routes', () => {
         await insertUsers([admin]);
         const blogs = await insertBlogs([blogOne]);
         const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
-        const userId = admin._id as mongoose.Types.ObjectId;
+        const userId = admin._id;
 
-        await expect(blogService.publishToMedium(blogId, userId)).rejects.toThrow(
-          'Medium configuration is not set'
-        );
+        await expect(blogService.publishToMedium(blogId, userId)).rejects.toThrow('Medium configuration is not set');
       });
 
       test('should throw error if blog not found', async () => {
         const fakeId = new mongoose.Types.ObjectId();
-        const userId = admin._id as mongoose.Types.ObjectId;
+        const userId = admin._id;
 
         await expect(blogService.publishToMedium(fakeId, userId)).rejects.toThrow('Blog not found');
       });

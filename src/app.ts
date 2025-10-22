@@ -1,13 +1,13 @@
+import cors from 'cors';
 import express, { Express } from 'express';
 import helmet from 'helmet';
-import cors from 'cors';
-import passport from 'passport';
 import httpStatus from 'http-status';
+import passport from 'passport';
 import config from './config/config';
-import { morgan } from './modules/logger';
 import { jwtStrategy } from './modules/auth';
-import { authLimiter } from './modules/utils';
 import { ApiError, errorConverter, errorHandler } from './modules/errors';
+import { morgan } from './modules/logger';
+import { authLimiter } from './modules/utils';
 import routes from './routes/v1';
 
 const app: Express = express();

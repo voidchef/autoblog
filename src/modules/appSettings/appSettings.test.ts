@@ -1,17 +1,17 @@
 import { faker } from '@faker-js/faker';
+import bcrypt from 'bcryptjs';
+import httpStatus from 'http-status';
+import moment from 'moment';
 import mongoose from 'mongoose';
 import request from 'supertest';
-import httpStatus from 'http-status';
-import bcrypt from 'bcryptjs';
-import moment from 'moment';
 import app from '../../app';
-import setupTestDB from '../jest/setupTestDB';
-import User from '../user/user.model';
-import AppSettings from './appSettings.model';
 import config from '../../config/config';
+import setupTestDB from '../jest/setupTestDB';
 import * as tokenService from '../token/token.service';
 import tokenTypes from '../token/token.types';
+import User from '../user/user.model';
 import { ICategories, IFieldData } from './appSettings.interfaces';
+import AppSettings from './appSettings.model';
 
 setupTestDB();
 
@@ -90,7 +90,10 @@ describe('AppSettings routes', () => {
       const res = await request(app).get('/v1/appSettings').send().expect(httpStatus.OK);
 
       expect(res.body).toMatchObject({
-        categories: expect.arrayContaining([expect.objectContaining(categoryOne), expect.objectContaining(categoryTwo)]),
+        categories: expect.arrayContaining([
+          expect.objectContaining(categoryOne),
+          expect.objectContaining(categoryTwo),
+        ]),
         languages: expect.arrayContaining(languagesData),
         languageModels: expect.arrayContaining(languageModelsData),
         queryType: expect.arrayContaining(queryTypeData),
@@ -132,7 +135,7 @@ describe('AppSettings routes', () => {
 
       expect(res.body).toHaveLength(2);
       expect(res.body).toEqual(
-        expect.arrayContaining([expect.objectContaining(categoryOne), expect.objectContaining(categoryTwo)]),
+        expect.arrayContaining([expect.objectContaining(categoryOne), expect.objectContaining(categoryTwo)])
       );
 
       const dbSettings = await AppSettings.findOne();
@@ -157,7 +160,7 @@ describe('AppSettings routes', () => {
 
       expect(res.body).toHaveLength(2);
       expect(res.body).toEqual(
-        expect.arrayContaining([expect.objectContaining(categoryOne), expect.objectContaining(newCategory)]),
+        expect.arrayContaining([expect.objectContaining(categoryOne), expect.objectContaining(newCategory)])
       );
     });
 

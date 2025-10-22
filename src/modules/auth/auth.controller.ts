@@ -1,20 +1,20 @@
-import httpStatus from 'http-status';
 import { Request, Response } from 'express';
-import catchAsync from '../utils/catchAsync';
+import httpStatus from 'http-status';
+import { emailService } from '../email';
 import { tokenService } from '../token';
 import { userService } from '../user';
-import * as authService from './auth.service';
-import { emailService } from '../email';
 import { IUserDoc } from '../user/user.interfaces';
+import catchAsync from '../utils/catchAsync';
+import * as authService from './auth.service';
 
 export const register = catchAsync(async (req: Request, res: Response) => {
   const user = await userService.registerUser(req.body);
   const tokens = await tokenService.generateAuthTokens(user);
-  
+
   // Generate verification token and send email
   const verifyEmailToken = await tokenService.generateVerifyEmailToken(user);
   await emailService.sendSuccessfulRegistration(user.email, verifyEmailToken, user.name);
-  
+
   res.status(httpStatus.CREATED).send({ user, tokens });
 });
 

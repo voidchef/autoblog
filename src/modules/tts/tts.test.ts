@@ -1,8 +1,8 @@
-import { describe, expect, jest, beforeEach, afterEach, it } from '@jest/globals';
-import { TTSService } from './tts.service';
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
+import { describe, expect, jest, beforeEach, afterEach, it } from '@jest/globals';
 import S3Utils from '../aws/s3utils';
 import logger from '../logger/logger';
+import { TTSService } from './tts.service';
 
 // Mock dependencies
 jest.mock('@google-cloud/text-to-speech');
@@ -139,7 +139,7 @@ describe('TTS Service', () => {
         expect.objectContaining({
           blogId: mockBlogId,
           uploadPath: `blogs/${mockBlogId}/audio`,
-        }),
+        })
       );
     });
 
@@ -147,7 +147,7 @@ describe('TTS Service', () => {
       (mockSynthesizeSpeech as any).mockResolvedValue([{}]);
 
       await expect(ttsService.textToSpeech(mockText, mockBlogId)).rejects.toThrow(
-        'No audio content received from Google TTS',
+        'No audio content received from Google TTS'
       );
     });
 
@@ -164,7 +164,7 @@ describe('TTS Service', () => {
       (mockSynthesizeSpeech as any).mockRejectedValue(new Error('TTS API error'));
 
       await expect(ttsService.textToSpeech(mockText, mockBlogId)).rejects.toThrow(
-        'Failed to generate audio narration: TTS API error',
+        'Failed to generate audio narration: TTS API error'
       );
     });
 

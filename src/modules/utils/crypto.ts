@@ -67,6 +67,7 @@ export const decrypt = (encryptedText: string, password: string): string => {
 
     return decrypted;
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error('Decryption error:', error);
     return '';
   }

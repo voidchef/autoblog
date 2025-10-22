@@ -86,7 +86,7 @@ describe('ImageGenerator', () => {
     const prompt = ImageGenerator.createBlogImagePrompt(
       'AI in Healthcare',
       ['artificial intelligence', 'medical technology'],
-      'professional',
+      'professional'
     );
 
     expect(prompt).toContain('AI in Healthcare');

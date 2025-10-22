@@ -1,5 +1,5 @@
-import httpStatus from 'http-status';
 import { Request, Response } from 'express';
+import httpStatus from 'http-status';
 import catchAsync from '../utils/catchAsync';
 import * as appSettingsService from './appSettings.service';
 

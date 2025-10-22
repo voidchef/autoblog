@@ -1,6 +1,6 @@
 import axios from 'axios';
-import mediumService from './medium.service';
 import { IMediumConfig, IMediumPost } from './medium.interfaces';
+import mediumService from './medium.service';
 
 // Mock axios
 jest.mock('axios');
@@ -13,7 +13,7 @@ describe('Medium Service', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    
+
     // Mock axios.create to return a mock client
     mockedAxios.create = jest.fn().mockReturnValue({
       get: jest.fn(),

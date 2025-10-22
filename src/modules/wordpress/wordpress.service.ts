@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import httpStatus from 'http-status';
 import ApiError from '../errors/ApiError';
+import logger from '../logger/logger';
 import {
   IWordPressConfig,
   IWordPressPost,
@@ -8,7 +9,6 @@ import {
   IWordPressMedia,
   IWordPressCategoryTag,
 } from './wordpress.interfaces';
-import logger from '../logger/logger';
 
 class WordPressService {
   private client: AxiosInstance | null = null;
@@ -21,7 +21,7 @@ class WordPressService {
   initialize(config: IWordPressConfig): void {
     this.config = config;
     const auth = Buffer.from(`${config.username}:${config.applicationPassword}`).toString('base64');
-    
+
     this.client = axios.create({
       baseURL: `${config.siteUrl}/wp-json/wp/v2`,
       headers: {
@@ -54,22 +54,18 @@ class WordPressService {
       // Download image
       const imageResponse = await axios.get(imageUrl, { responseType: 'arraybuffer' });
       const imageBuffer = Buffer.from(imageResponse.data);
-      
+
       // Get file extension from URL or content type
       const contentType = imageResponse.headers['content-type'] || 'image/jpeg';
       const extension = contentType.split('/')[1] || 'jpg';
-      
+
       // Upload to WordPress
-      const response = await this.client!.post<IWordPressMedia>(
-        '/media',
-        imageBuffer,
-        {
-          headers: {
-            'Content-Type': contentType,
-            'Content-Disposition': `attachment; filename="${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${extension}"`,
-          },
-        }
-      );
+      const response = await this.client!.post<IWordPressMedia>('/media', imageBuffer, {
+        headers: {
+          'Content-Type': contentType,
+          'Content-Disposition': `attachment; filename="${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.${extension}"`,
+        },
+      });
 
       logger.info(`Image uploaded to WordPress: ${response.data.id}`);
       return response.data;

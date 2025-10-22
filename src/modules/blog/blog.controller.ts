@@ -1,13 +1,13 @@
-import httpStatus from 'http-status';
 import { Request, Response } from 'express';
+import httpStatus from 'http-status';
 import mongoose from 'mongoose';
-import catchAsync from '../utils/catchAsync';
 import ApiError from '../errors/ApiError';
-import pick from '../utils/pick';
 import { IOptions } from '../paginate/paginate';
-import * as blogService from './blog.service';
-import { IBlogDoc } from './blog.interfaces';
 import { IUserDoc } from '../user/user.interfaces';
+import catchAsync from '../utils/catchAsync';
+import pick from '../utils/pick';
+import { IBlogDoc } from './blog.interfaces';
+import * as blogService from './blog.service';
 
 export const generateBlog = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IUserDoc;
@@ -25,14 +25,14 @@ export const createBlog = catchAsync(async (req: Request, res: Response) => {
 export const getBlogs = catchAsync(async (req: Request, res: Response) => {
   const filter = pick(req.query, ['author', 'category', 'tags', 'isFeatured', 'isPublished', 'isDraft', 'views']);
   const options: IOptions = pick(req.query, ['sortBy', 'limit', 'page', 'projectBy', 'populate']);
-  
+
   // Always populate author field with id and name if not already specified
   if (!options.populate) {
     options.populate = 'author';
   } else if (!options.populate.includes('author')) {
     options.populate += ',author';
   }
-  
+
   const result = await blogService.queryBlogs(filter, options);
   result.results.forEach((blog: any) => {
     blog.excerpt = blog.generateExcerpt(160);
@@ -142,7 +142,6 @@ export const searchBlogs = catchAsync(async (req: Request, res: Response) => {
 
   const result = await blogService.queryBlogs(filter, options);
   result.results.forEach((blog: any) => {
-    // eslint-disable-next-line no-param-reassign
     blog.content = blog.content.split(' ').slice(0, 40).join(' ');
   });
   res.send(result);
@@ -171,7 +170,7 @@ export const likeBlog = catchAsync(async (req: Request, res: Response) => {
   if (typeof req.params['blogId'] === 'string') {
     const blog = await blogService.likeBlog(
       new mongoose.Types.ObjectId(req.params['blogId']),
-      user._id as mongoose.Types.ObjectId,
+      user._id as mongoose.Types.ObjectId
     );
     res.send(blog);
   }
@@ -182,7 +181,7 @@ export const dislikeBlog = catchAsync(async (req: Request, res: Response) => {
   if (typeof req.params['blogId'] === 'string') {
     const blog = await blogService.dislikeBlog(
       new mongoose.Types.ObjectId(req.params['blogId']),
-      user._id as mongoose.Types.ObjectId,
+      user._id as mongoose.Types.ObjectId
     );
     res.send(blog);
   }

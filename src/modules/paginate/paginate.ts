@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import { Schema, Document } from 'mongoose';
 
 export interface QueryResult {
@@ -62,7 +61,8 @@ const paginate = <T extends Document>(schema: Schema<T>): void => {
       project = '-updatedAt';
     }
 
-    const limit = options.limit && parseInt(options.limit.toString(), 10) > 0 ? parseInt(options.limit.toString(), 10) : 10;
+    const limit =
+      options.limit && parseInt(options.limit.toString(), 10) > 0 ? parseInt(options.limit.toString(), 10) : 10;
     const page = options.page && parseInt(options.page.toString(), 10) > 0 ? parseInt(options.page.toString(), 10) : 1;
     const skip = (page - 1) * limit;
 
@@ -75,7 +75,7 @@ const paginate = <T extends Document>(schema: Schema<T>): void => {
           populateOption
             .split('.')
             .reverse()
-            .reduce((a: string, b: string) => ({ path: b, populate: a })),
+            .reduce((a: string, b: string) => ({ path: b, populate: a }))
         );
       });
     }

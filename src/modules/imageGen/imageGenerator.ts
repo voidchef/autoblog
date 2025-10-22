@@ -1,8 +1,8 @@
-import { HumanMessage } from '@langchain/core/messages';
 import { BaseChatModel } from '@langchain/core/language_models/chat_models';
+import { HumanMessage } from '@langchain/core/messages';
 import { ChatOpenAI, DallEAPIWrapper } from '@langchain/openai';
-import { BasePostPrompt } from '../postGen/types';
 import logger from '../logger/logger';
+import { BasePostPrompt } from '../postGen/types';
 
 export interface ImageGenerationOptions {
   model: 'dall-e-2' | 'dall-e-3';
@@ -132,7 +132,7 @@ export class ImageGenerator {
   static createBlogImagePrompt(
     title: string,
     keywords?: string[],
-    style: 'professional' | 'creative' | 'minimal' = 'professional',
+    style: 'professional' | 'creative' | 'minimal' = 'professional'
   ): string {
     const keywordText = keywords && keywords.length > 0 ? `, ${keywords.join(', ')}` : '';
 

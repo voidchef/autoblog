@@ -1,9 +1,9 @@
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
-import Comment from './comment.model';
 import ApiError from '../errors/ApiError';
 import { IOptions, QueryResult } from '../paginate/paginate';
 import { NewComment, UpdateCommentBody, ICommentDoc } from './comment.interfaces';
+import Comment from './comment.model';
 
 /**
  * Create a comment
@@ -30,7 +30,7 @@ export const queryComments = async (filter: Record<string, any>, options: IOptio
     await Promise.all(
       comments.results.map(async (comment: any) => {
         await comment.populate('author', 'name');
-      }),
+      })
     );
   }
   return comments;
@@ -52,7 +52,7 @@ export const getCommentById = async (id: mongoose.Types.ObjectId): Promise<IComm
  */
 export const updateCommentById = async (
   commentId: mongoose.Types.ObjectId,
-  updateBody: UpdateCommentBody,
+  updateBody: UpdateCommentBody
 ): Promise<ICommentDoc | null> => {
   const comment = await getCommentById(commentId);
   if (!comment) {
@@ -86,7 +86,7 @@ export const deleteCommentById = async (commentId: mongoose.Types.ObjectId): Pro
  */
 export const likeComment = async (
   commentId: mongoose.Types.ObjectId,
-  userId: mongoose.Types.ObjectId,
+  userId: mongoose.Types.ObjectId
 ): Promise<ICommentDoc | null> => {
   const comment = await getCommentById(commentId);
   if (!comment) {
@@ -104,7 +104,7 @@ export const likeComment = async (
  */
 export const dislikeComment = async (
   commentId: mongoose.Types.ObjectId,
-  userId: mongoose.Types.ObjectId,
+  userId: mongoose.Types.ObjectId
 ): Promise<ICommentDoc | null> => {
   const comment = await getCommentById(commentId);
   if (!comment) {
@@ -131,7 +131,10 @@ export const getCommentsByBlogId = async (blogId: mongoose.Types.ObjectId, optio
  * @param {IOptions} options
  * @returns {Promise<QueryResult>}
  */
-export const getRepliesByCommentId = async (commentId: mongoose.Types.ObjectId, options: IOptions): Promise<QueryResult> => {
+export const getRepliesByCommentId = async (
+  commentId: mongoose.Types.ObjectId,
+  options: IOptions
+): Promise<QueryResult> => {
   const filter = { parentComment: commentId };
   return queryComments(filter, options);
 };

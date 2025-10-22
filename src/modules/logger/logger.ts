@@ -14,7 +14,7 @@ const logger = winston.createLogger({
     enumerateErrorFormat(),
     config.env === 'development' ? format.colorize() : format.uncolorize(),
     format.splat(),
-    format.printf((info: winston.Logform.TransformableInfo) => `${info.level}: ${info.message}`),
+    format.printf((info: winston.Logform.TransformableInfo) => `${info.level}: ${info.message}`)
   ),
   transports: [
     new winston.transports.Console({

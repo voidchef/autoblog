@@ -12,7 +12,6 @@ const pick = (object: Record<string, any>, keys: string[]): object =>
       Object.prototype.hasOwnProperty.call(object, key) || (['params', 'query', 'body'].includes(key) && key in object);
 
     if (object && hasProperty) {
-      // eslint-disable-next-line no-param-reassign
       obj[key] = object[key];
     }
     return obj;

@@ -1,14 +1,14 @@
+import httpStatus from 'http-status';
 import jwt from 'jsonwebtoken';
 import moment, { Moment } from 'moment';
 import mongoose from 'mongoose';
-import httpStatus from 'http-status';
 import config from '../../config/config';
-import Token from './token.model';
 import ApiError from '../errors/ApiError';
-import tokenTypes from './token.types';
-import { AccessAndRefreshTokens, ITokenDoc } from './token.interfaces';
-import { IUserDoc } from '../user/user.interfaces';
 import { userService } from '../user';
+import { IUserDoc } from '../user/user.interfaces';
+import { AccessAndRefreshTokens, ITokenDoc } from './token.interfaces';
+import Token from './token.model';
+import tokenTypes from './token.types';
 
 /**
  * Generate token
@@ -22,7 +22,7 @@ export const generateToken = (
   userId: mongoose.Types.ObjectId,
   expires: Moment,
   type: string,
-  secret: string = config.jwt.secret,
+  secret: string = config.jwt.secret
 ): string => {
   const payload = {
     sub: userId,
@@ -47,7 +47,7 @@ export const saveToken = async (
   userId: mongoose.Types.ObjectId,
   expires: Moment,
   type: string,
-  blacklisted: boolean = false,
+  blacklisted: boolean = false
 ): Promise<ITokenDoc> => {
   const tokenDoc = await Token.create({
     token,

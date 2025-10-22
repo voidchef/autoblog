@@ -1,6 +1,6 @@
 import { jest, describe, test, expect, beforeAll, beforeEach } from '@jest/globals';
-import * as emailService from './email.service';
 import config from '../../config/config';
+import * as emailService from './email.service';
 
 interface EmailOptions {
   from: string;
@@ -52,7 +52,7 @@ describe('Email Service', () => {
       mockSendMail.mockRejectedValueOnce(error as any);
 
       await expect(emailService.sendEmail('test@example.com', 'Subject', 'Text', 'HTML')).rejects.toThrow(
-        'Email send failed',
+        'Email send failed'
       );
     });
   });

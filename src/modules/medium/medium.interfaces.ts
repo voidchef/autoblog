@@ -17,7 +17,16 @@ export interface IMediumPost {
   tags?: string[];
   canonicalUrl?: string;
   publishStatus?: 'public' | 'draft' | 'unlisted';
-  license?: 'all-rights-reserved' | 'cc-40-by' | 'cc-40-by-sa' | 'cc-40-by-nd' | 'cc-40-by-nc' | 'cc-40-by-nc-nd' | 'cc-40-by-nc-sa' | 'cc-40-zero' | 'public-domain';
+  license?:
+    | 'all-rights-reserved'
+    | 'cc-40-by'
+    | 'cc-40-by-sa'
+    | 'cc-40-by-nd'
+    | 'cc-40-by-nc'
+    | 'cc-40-by-nc-nd'
+    | 'cc-40-by-nc-sa'
+    | 'cc-40-zero'
+    | 'public-domain';
   notifyFollowers?: boolean;
 }
 

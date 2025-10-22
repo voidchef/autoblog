@@ -1,6 +1,6 @@
 import axios from 'axios';
-import wordpressService from './wordpress.service';
 import { IWordPressConfig, IWordPressPost } from './wordpress.interfaces';
+import wordpressService from './wordpress.service';
 
 // Mock axios
 jest.mock('axios');
@@ -47,9 +47,7 @@ describe('WordPress Service', () => {
       };
 
       const mockClient = {
-        get: jest.fn()
-          .mockResolvedValueOnce(mockCategoriesResponse)
-          .mockResolvedValueOnce(mockTagsResponse),
+        get: jest.fn().mockResolvedValueOnce(mockCategoriesResponse).mockResolvedValueOnce(mockTagsResponse),
         post: jest.fn().mockResolvedValue(mockPostResponse),
         put: jest.fn(),
       };

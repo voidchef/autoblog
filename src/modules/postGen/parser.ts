@@ -1,6 +1,6 @@
 import { BaseOutputParser, StringOutputParser } from '@langchain/core/output_parsers';
-import { TemplatePostPrompt } from './types';
 import { isHTML, isMarkdown } from './template';
+import { TemplatePostPrompt } from './types';
 
 const HeadingSchema = {
   type: 'object',

@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import httpStatus from 'http-status';
 import ApiError from '../errors/ApiError';
+import logger from '../logger/logger';
 import {
   IMediumConfig,
   IMediumUser,
@@ -8,7 +9,6 @@ import {
   IMediumPublishResponse,
   IMediumApiResponse,
 } from './medium.interfaces';
-import logger from '../logger/logger';
 
 class MediumService {
   private client: AxiosInstance | null = null;
@@ -20,7 +20,7 @@ class MediumService {
    */
   initialize(config: IMediumConfig): void {
     this.config = config;
-    
+
     this.client = axios.create({
       baseURL: 'https://api.medium.com/v1',
       headers: {
@@ -124,7 +124,7 @@ class MediumService {
     try {
       // Get user ID first
       const user = await this.getUser();
-      
+
       // Convert content if needed
       let content = post.content;
       let contentFormat = post.contentFormat;

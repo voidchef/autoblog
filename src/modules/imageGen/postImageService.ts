@@ -1,13 +1,13 @@
-import { ImageGenerator, GeneratedImage } from './imageGenerator';
-import { Heading, PostOutline, AutoPostPrompt, TemplatePostPrompt } from '../postGen/types';
 import logger from '../logger/logger';
+import { Heading, PostOutline, AutoPostPrompt, TemplatePostPrompt } from '../postGen/types';
+import { ImageGenerator, GeneratedImage } from './imageGenerator';
 
 export class PostImageService {
   private imageGenerator: ImageGenerator;
 
   constructor(
     private postPrompt: AutoPostPrompt | TemplatePostPrompt,
-    imageGenerator?: ImageGenerator,
+    imageGenerator?: ImageGenerator
   ) {
     this.imageGenerator = imageGenerator || ImageGenerator.fromPostPrompt(postPrompt);
   }

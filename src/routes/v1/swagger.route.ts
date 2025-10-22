@@ -19,7 +19,7 @@ router.get(
   '/',
   swaggerUi.setup(specs, {
     explorer: true,
-  }),
+  })
 );
 
 export default router;

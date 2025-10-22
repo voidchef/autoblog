@@ -1,18 +1,18 @@
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
-import Blog from './blog.model';
-import ApiError from '../errors/ApiError';
-import { IOptions, QueryResult } from '../paginate/paginate';
-import { IGenerateBlog, NewCreatedBlog, UpdateBlogBody, IBlogDoc } from './blog.interfaces';
-import { PostGenerator, Post, AutoPostPrompt } from '../postGen';
-import runReport, { IRunReportResponse } from '../utils/analytics';
-import S3Utils from '../aws/s3utils';
-import { getUserById } from '../user/user.service';
-import { ttsService } from '../tts';
-import { wordpressService } from '../wordpress';
-import { mediumService } from '../medium';
-import logger from '../logger/logger';
 import config from '../../config/config';
+import S3Utils from '../aws/s3utils';
+import ApiError from '../errors/ApiError';
+import logger from '../logger/logger';
+import { mediumService } from '../medium';
+import { IOptions, QueryResult } from '../paginate/paginate';
+import { PostGenerator, Post, AutoPostPrompt } from '../postGen';
+import { ttsService } from '../tts';
+import { getUserById } from '../user/user.service';
+import runReport, { IRunReportResponse } from '../utils/analytics';
+import { wordpressService } from '../wordpress';
+import { IGenerateBlog, NewCreatedBlog, UpdateBlogBody, IBlogDoc } from './blog.interfaces';
+import Blog from './blog.model';
 
 /**
  * Create a blog post
@@ -43,7 +43,10 @@ export const createBlog = async (blogBody: NewCreatedBlog): Promise<IBlogDoc> =>
  * @param {mongoose.Types.ObjectId} author
  * @returns {Promise<IBlogDoc>}
  */
-export const generateBlog = async (generateBlogData: IGenerateBlog, author: mongoose.Types.ObjectId): Promise<IBlogDoc> => {
+export const generateBlog = async (
+  generateBlogData: IGenerateBlog,
+  author: mongoose.Types.ObjectId
+): Promise<IBlogDoc> => {
   // Get the user to retrieve the decrypted OpenAI key
   const user = await getUserById(author);
   if (!user) {
@@ -104,7 +107,8 @@ export const getBlogById = async (id: mongoose.Types.ObjectId): Promise<IBlogDoc
  * @param {mongoose.Types.ObjectId} slug
  * @returns {Promise<IBlogDoc | null>}
  */
-export const getBlogBySlug = async (slug: string): Promise<IBlogDoc | null> => Blog.findOne({ slug }).populate('author');
+export const getBlogBySlug = async (slug: string): Promise<IBlogDoc | null> =>
+  Blog.findOne({ slug }).populate('author');
 
 /**
  * Update blog by id
@@ -114,7 +118,7 @@ export const getBlogBySlug = async (slug: string): Promise<IBlogDoc | null> => B
  */
 export const updateBlogById = async (
   blogId: mongoose.Types.ObjectId,
-  updateBody: UpdateBlogBody,
+  updateBody: UpdateBlogBody
 ): Promise<IBlogDoc | null> => {
   const blog = await getBlogById(blogId);
   if (!blog) {
@@ -146,7 +150,11 @@ export const deleteBlogById = async (blogId: mongoose.Types.ObjectId): Promise<I
  * @param {string} endDate
  * @returns {Promise<IRunReportResponse | null>}
  */
-export const getBlogViews = async (startDate: string, endDate: string, slug: string): Promise<IRunReportResponse | null> => {
+export const getBlogViews = async (
+  startDate: string,
+  endDate: string,
+  slug: string
+): Promise<IRunReportResponse | null> => {
   const views = await runReport(startDate, endDate, slug);
   if (!views) {
     throw new Error('Error getting views');
@@ -162,7 +170,7 @@ export const getBlogViews = async (startDate: string, endDate: string, slug: str
  */
 export const likeBlog = async (
   blogId: mongoose.Types.ObjectId,
-  userId: mongoose.Types.ObjectId,
+  userId: mongoose.Types.ObjectId
 ): Promise<IBlogDoc | null> => {
   const blog = await getBlogById(blogId);
   if (!blog) {
@@ -180,7 +188,7 @@ export const likeBlog = async (
  */
 export const dislikeBlog = async (
   blogId: mongoose.Types.ObjectId,
-  userId: mongoose.Types.ObjectId,
+  userId: mongoose.Types.ObjectId
 ): Promise<IBlogDoc | null> => {
   const blog = await getBlogById(blogId);
   if (!blog) {
@@ -247,7 +255,8 @@ export const getAllBlogsEngagementStats = async (userId: mongoose.Types.ObjectId
     totalDislikes,
     totalComments,
     totalEngagement: totalLikes + totalDislikes + totalComments,
-    avgEngagementPerBlog: totalBlogs > 0 ? ((totalLikes + totalDislikes + totalComments) / totalBlogs).toFixed(2) : '0.00',
+    avgEngagementPerBlog:
+      totalBlogs > 0 ? ((totalLikes + totalDislikes + totalComments) / totalBlogs).toFixed(2) : '0.00',
   };
 };
 
@@ -299,7 +308,7 @@ export const generateAudioNarration = async (blogId: mongoose.Types.ObjectId): P
  * @returns {Promise<{audioNarrationUrl?: string | undefined, audioGenerationStatus?: string | undefined}>}
  */
 export const getAudioNarrationStatus = async (
-  blogId: mongoose.Types.ObjectId,
+  blogId: mongoose.Types.ObjectId
 ): Promise<{ audioNarrationUrl?: string | undefined; audioGenerationStatus?: string | undefined }> => {
   const blog = await Blog.findById(blogId).select('audioNarrationUrl audioGenerationStatus');
   if (!blog) {
@@ -335,17 +344,20 @@ export const publishToWordPress = async (
 
   // Get WordPress config from user settings or provided config
   let wpConfig = wordpressConfig;
-  
+
   if (!wpConfig) {
     const user = await getUserById(userId);
     if (!user) {
       throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
     }
-    
+
     if (!user.hasWordPressConfig()) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'WordPress configuration is not set. Please update your profile settings.');
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'WordPress configuration is not set. Please update your profile settings.'
+      );
     }
-    
+
     wpConfig = {
       siteUrl: user.wordpressSiteUrl || '',
       username: user.wordpressUsername || '',
@@ -456,17 +468,20 @@ export const publishToMedium = async (
 
   // Get Medium config from user settings or provided config
   let mdConfig = mediumConfig;
-  
+
   if (!mdConfig) {
     const user = await getUserById(userId);
     if (!user) {
       throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
     }
-    
+
     if (!user.hasMediumConfig()) {
-      throw new ApiError(httpStatus.BAD_REQUEST, 'Medium configuration is not set. Please update your profile settings.');
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        'Medium configuration is not set. Please update your profile settings.'
+      );
     }
-    
+
     const userToken = user.getDecryptedMediumToken();
     mdConfig = {
       integrationToken: userToken,

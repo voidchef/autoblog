@@ -1,9 +1,9 @@
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
-import User from './user.model';
 import ApiError from '../errors/ApiError';
 import { IOptions, QueryResult } from '../paginate/paginate';
 import { NewCreatedUser, UpdateUserBody, IUserDoc, NewRegisteredUser } from './user.interfaces';
+import User from './user.model';
 
 /**
  * Create a user
@@ -79,7 +79,10 @@ export const getUserByEmail = async (email: string): Promise<IUserDoc | null> =>
  * @param {UpdateUserBody} updateBody
  * @returns {Promise<any | null>}
  */
-export const updateUserById = async (userId: mongoose.Types.ObjectId, updateBody: UpdateUserBody): Promise<any | null> => {
+export const updateUserById = async (
+  userId: mongoose.Types.ObjectId,
+  updateBody: UpdateUserBody
+): Promise<any | null> => {
   const user = await getUserById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -114,7 +117,10 @@ export const deleteUserById = async (userId: mongoose.Types.ObjectId): Promise<I
  * @param {mongoose.Types.ObjectId} targetUserId - ID of the user to be followed
  * @returns {Promise<any>}
  */
-export const followUser = async (userId: mongoose.Types.ObjectId, targetUserId: mongoose.Types.ObjectId): Promise<any> => {
+export const followUser = async (
+  userId: mongoose.Types.ObjectId,
+  targetUserId: mongoose.Types.ObjectId
+): Promise<any> => {
   if (userId.toString() === targetUserId.toString()) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot follow yourself');
   }
@@ -148,7 +154,10 @@ export const followUser = async (userId: mongoose.Types.ObjectId, targetUserId: 
  * @param {mongoose.Types.ObjectId} targetUserId - ID of the user to be unfollowed
  * @returns {Promise<any>}
  */
-export const unfollowUser = async (userId: mongoose.Types.ObjectId, targetUserId: mongoose.Types.ObjectId): Promise<any> => {
+export const unfollowUser = async (
+  userId: mongoose.Types.ObjectId,
+  targetUserId: mongoose.Types.ObjectId
+): Promise<any> => {
   if (userId.toString() === targetUserId.toString()) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot unfollow yourself');
   }

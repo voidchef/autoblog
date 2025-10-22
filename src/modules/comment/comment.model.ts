@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import toJSON from '../toJSON/toJSON';
 import paginate from '../paginate/paginate';
+import toJSON from '../toJSON/toJSON';
 import { ICommentDoc, ICommentModel } from './comment.interfaces';
 
 const commentSchema = new mongoose.Schema<ICommentDoc, ICommentModel>(
@@ -44,7 +44,7 @@ const commentSchema = new mongoose.Schema<ICommentDoc, ICommentModel>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 // add plugin that converts mongoose to json
@@ -93,25 +93,28 @@ commentSchema.method('toggleLike', async function (this: ICommentDoc, userId: mo
  * Toggle dislike on comment
  * @param {mongoose.Types.ObjectId} userId
  */
-commentSchema.method('toggleDislike', async function (this: ICommentDoc, userId: mongoose.Types.ObjectId): Promise<void> {
-  const userIdString = userId.toString();
-  const likeIndex = this.likes.findIndex((id) => id.toString() === userIdString);
-  const dislikeIndex = this.dislikes.findIndex((id) => id.toString() === userIdString);
+commentSchema.method(
+  'toggleDislike',
+  async function (this: ICommentDoc, userId: mongoose.Types.ObjectId): Promise<void> {
+    const userIdString = userId.toString();
+    const likeIndex = this.likes.findIndex((id) => id.toString() === userIdString);
+    const dislikeIndex = this.dislikes.findIndex((id) => id.toString() === userIdString);
 
-  // Remove from likes if present
-  if (likeIndex !== -1) {
-    this.likes.splice(likeIndex, 1);
+    // Remove from likes if present
+    if (likeIndex !== -1) {
+      this.likes.splice(likeIndex, 1);
+    }
+
+    // Toggle dislike
+    if (dislikeIndex === -1) {
+      this.dislikes.push(userId);
+    } else {
+      this.dislikes.splice(dislikeIndex, 1);
+    }
+
+    await this.save();
   }
-
-  // Toggle dislike
-  if (dislikeIndex === -1) {
-    this.dislikes.push(userId);
-  } else {
-    this.dislikes.splice(dislikeIndex, 1);
-  }
-
-  await this.save();
-});
+);
 
 const Comment = mongoose.model<ICommentDoc, ICommentModel>('Comment', commentSchema);
 

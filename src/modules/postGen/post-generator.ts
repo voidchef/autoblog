@@ -1,21 +1,18 @@
-import * as dotenv from 'dotenv';
 import { readFile } from 'fs/promises';
-import { BufferMemory } from 'langchain/memory';
+import { BaseChatModel } from '@langchain/core/language_models/chat_models';
 import {
   ChatPromptTemplate,
   HumanMessagePromptTemplate,
   MessagesPlaceholder,
   PromptTemplate,
 } from '@langchain/core/prompts';
-
 import { RunnableSequence } from '@langchain/core/runnables';
-
-import { Heading, Post, PostOutline, AutoPostPrompt, TemplatePostPrompt, TemplatePost } from './types';
-
+import * as dotenv from 'dotenv';
+import { BufferMemory } from 'langchain/memory';
+import { PostImageService } from '../imageGen/index';
 import logger from '../logger/logger';
-
+import { buildLLM } from './llm';
 import { AudienceIntentSchema, getMarkdownParser, getParser, PostOutlineSchema, SeoInfoSchema } from './parser';
-
 import {
   getConclusionPrompt,
   getHeadingPrompt,
@@ -25,11 +22,8 @@ import {
   getAudienceIntentPrompt,
   getSeoInfoPrompt,
 } from './prompt';
-
 import { Template } from './template';
-import { buildLLM } from './llm';
-import { BaseChatModel } from '@langchain/core/language_models/chat_models';
-import { PostImageService } from '../imageGen/index';
+import { Heading, Post, PostOutline, AutoPostPrompt, TemplatePostPrompt, TemplatePost } from './types';
 
 dotenv.config();
 const PARSER_INSTRUCTIONS_TAG = '\n{formatInstructions}\n';
@@ -47,7 +41,7 @@ export class PostGenerator {
   private memory: BufferMemory;
 
   public constructor(private postPrompt: AutoPostPrompt) {
-    this.llm_content = buildLLM(postPrompt) as BaseChatModel;
+    this.llm_content = buildLLM(postPrompt);
     // For the outline, we use a different setting without frequencyPenalty and presencePenalty
     // in order to avoid some json format issue
     this.llm_json = buildLLM(postPrompt, true);
@@ -195,7 +189,10 @@ export class PostGenerator {
     ) {
       const prompt = PromptTemplate.fromTemplate(outlineTemplate);
       const outlineMessage = await prompt.format(inputVariables);
-      this.memory.saveContext({ input: outlineMessage }, { output: this.postOutlineToMarkdown(outline as PostOutline) });
+      this.memory.saveContext(
+        { input: outlineMessage },
+        { output: this.postOutlineToMarkdown(outline as PostOutline) }
+      );
       logger.debug(' ----------------------OUTLINE ----------------------');
       logger.debug(JSON.stringify(outline, null, 2));
       return outline as PostOutline;
@@ -472,7 +469,7 @@ export class PostTemplateGenerator {
 
     this.memory.saveContext(
       { input: 'Write the content for the blog post based on the following recommendations' },
-      { output: await systemPrompt.format(this.postPrompt.input) },
+      { output: await systemPrompt.format(this.postPrompt.input) }
     );
 
     const contents: string[] = [];
@@ -578,7 +575,7 @@ export class PostTemplateGenerator {
   }
 
   private async generateSeoInfo(
-    content: string,
+    content: string
   ): Promise<{ h1: string; seoTitle: string; seoDescription: string; slug: string }> {
     const humanTemplate = await getSeoInfoPrompt();
     const chatPrompt = ChatPromptTemplate.fromMessages([
@@ -610,7 +607,7 @@ export class PostTemplateGenerator {
     const seoInfo = await chain.invoke(inputVariables);
     this.memory.saveContext(
       { input: 'Generate the seo information : H1, title, description and slug' },
-      { output: JSON.stringify(content, null, 2) },
+      { output: JSON.stringify(content, null, 2) }
     );
 
     if (

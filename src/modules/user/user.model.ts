@@ -1,11 +1,11 @@
+import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 import validator from 'validator';
-import bcrypt from 'bcryptjs';
-import toJSON from '../toJSON/toJSON';
-import paginate from '../paginate/paginate';
 import { roles } from '../../config/roles';
-import { IUserDoc, IUserModel } from './user.interfaces';
+import paginate from '../paginate/paginate';
+import toJSON from '../toJSON/toJSON';
 import { encrypt, decrypt, isEncrypted } from '../utils/crypto';
+import { IUserDoc, IUserModel } from './user.interfaces';
 
 const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
   {
@@ -117,7 +117,7 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  },
+  }
 );
 
 // Virtual for hasOpenAiKey
@@ -160,24 +160,28 @@ userSchema.pre('save', async function (next) {
   if (user.isModified('password')) {
     user.password = await bcrypt.hash(user.password, 8);
   }
-  
+
   const userId = (user._id as mongoose.Types.ObjectId).toString();
-  
+
   // Encrypt OpenAI key if modified and not already encrypted
   if (user.isModified('openAiKey') && user.openAiKey && !isEncrypted(user.openAiKey)) {
     user.openAiKey = encrypt(user.openAiKey, userId);
   }
-  
+
   // Encrypt WordPress app password if modified and not already encrypted
   if (user.isModified('wordpressAppPassword') && user.wordpressAppPassword && !isEncrypted(user.wordpressAppPassword)) {
     user.wordpressAppPassword = encrypt(user.wordpressAppPassword, userId);
   }
-  
+
   // Encrypt Medium token if modified and not already encrypted
-  if (user.isModified('mediumIntegrationToken') && user.mediumIntegrationToken && !isEncrypted(user.mediumIntegrationToken)) {
+  if (
+    user.isModified('mediumIntegrationToken') &&
+    user.mediumIntegrationToken &&
+    !isEncrypted(user.mediumIntegrationToken)
+  ) {
     user.mediumIntegrationToken = encrypt(user.mediumIntegrationToken, userId);
   }
-  
+
   next();
 });
 

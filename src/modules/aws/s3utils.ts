@@ -1,10 +1,10 @@
 import { readFile, writeFile } from 'fs/promises';
 import * as path from 'path';
-import * as tmp from 'tmp';
 import { PutObjectCommand, DeleteObjectCommand, HeadBucketCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
-import s3Client from './aws-config';
+import * as tmp from 'tmp';
 import { v4 as generateUUID } from 'uuid';
 import logger from '../logger/logger';
+import s3Client from './aws-config';
 
 export interface UploadDetails {
   sources: string[];
@@ -157,7 +157,7 @@ export class S3Utils {
     bucketName: string,
     awsBaseUrl: string,
     uploadedUrls: string[],
-    errors: string[],
+    errors: string[]
   ): Promise<void> {
     const isUrl = this.isValidUrl(source);
     let tempFile: { path: string; cleanup: () => void } | null = null;
@@ -186,7 +186,7 @@ export class S3Utils {
           Bucket: bucketName,
           Body: fileContent,
           Key: uploadKey,
-        }),
+        })
       );
 
       const s3ImageUrl = `${awsBaseUrl}/${fileName}`;
@@ -205,7 +205,7 @@ export class S3Utils {
           tempFile.cleanup();
         } catch (cleanupError) {
           logger.warn(
-            `Failed to cleanup temporary file: ${cleanupError instanceof Error ? cleanupError.message : 'Unknown error'}`,
+            `Failed to cleanup temporary file: ${cleanupError instanceof Error ? cleanupError.message : 'Unknown error'}`
           );
         }
       }

@@ -1,10 +1,10 @@
-import { TextToSpeechClient, protos } from '@google-cloud/text-to-speech';
 import { writeFile } from 'fs/promises';
 import * as path from 'path';
+import { TextToSpeechClient, protos } from '@google-cloud/text-to-speech';
 import * as tmp from 'tmp';
+import { v4 as generateUUID } from 'uuid';
 import S3Utils from '../aws/s3utils';
 import logger from '../logger/logger';
-import { v4 as generateUUID } from 'uuid';
 
 export interface TTSConfig {
   languageCode?: string;
@@ -74,7 +74,7 @@ export class TTSService {
 
       // Create a temporary file to store the audio
       const tempFile = await this.createTempFile('.mp3');
-      
+
       try {
         // Write the binary audio content to a temporary file
         await writeFile(tempFile.path, response.audioContent);

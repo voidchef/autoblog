@@ -1,12 +1,12 @@
-import httpStatus from 'http-status';
 import { Request, Response } from 'express';
+import httpStatus from 'http-status';
 import mongoose from 'mongoose';
-import catchAsync from '../utils/catchAsync';
 import ApiError from '../errors/ApiError';
-import pick from '../utils/pick';
 import { IOptions } from '../paginate/paginate';
-import * as userService from './user.service';
+import catchAsync from '../utils/catchAsync';
+import pick from '../utils/pick';
 import { IUserDoc } from './user.interfaces';
+import * as userService from './user.service';
 
 export const createUser = catchAsync(async (req: Request, res: Response) => {
   const user = await userService.createUser(req.body);
@@ -49,7 +49,7 @@ export const followUser = catchAsync(async (req: Request, res: Response) => {
     const currentUser = req.user as IUserDoc;
     const user = await userService.followUser(
       currentUser._id as mongoose.Types.ObjectId,
-      new mongoose.Types.ObjectId(req.params['userId']),
+      new mongoose.Types.ObjectId(req.params['userId'])
     );
     res.send(user);
   }
@@ -60,7 +60,7 @@ export const unfollowUser = catchAsync(async (req: Request, res: Response) => {
     const currentUser = req.user as IUserDoc;
     const user = await userService.unfollowUser(
       currentUser._id as mongoose.Types.ObjectId,
-      new mongoose.Types.ObjectId(req.params['userId']),
+      new mongoose.Types.ObjectId(req.params['userId'])
     );
     res.send(user);
   }

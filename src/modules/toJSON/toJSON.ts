@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import { Document } from 'mongoose';
 
 /**
@@ -9,7 +8,6 @@ import { Document } from 'mongoose';
 
 const deleteAtPath = (obj: any, path: any, index: number) => {
   if (index === path.length - 1) {
-    // eslint-disable-next-line no-param-reassign
     delete obj[path[index]];
     return;
   }
@@ -18,29 +16,27 @@ const deleteAtPath = (obj: any, path: any, index: number) => {
 
 const toJSON = (schema: any) => {
   let transform: Function;
-  if (schema.options.toJSON && schema.options.toJSON.transform) {
+  if (schema.options.toJSON?.transform) {
     transform = schema.options.toJSON.transform;
   }
 
-  // eslint-disable-next-line no-param-reassign
   schema.options.toJSON = Object.assign(schema.options.toJSON || {}, {
     virtuals: true,
     transform(doc: Document, ret: any, options: Record<string, any>) {
       Object.keys(schema.paths).forEach((path) => {
-        if (schema.paths[path].options && schema.paths[path].options.private) {
+        if (schema.paths[path].options?.private) {
           deleteAtPath(ret, path.split('.'), 0);
         }
       });
 
-      // eslint-disable-next-line no-param-reassign
       ret.id = ret._id.toString();
-      // eslint-disable-next-line no-param-reassign
+
       delete ret._id;
-      // eslint-disable-next-line no-param-reassign
+
       delete ret.__v;
-      // eslint-disable-next-line no-param-reassign
+
       delete ret.createdAt;
-      // eslint-disable-next-line no-param-reassign
+
       delete ret.updatedAt;
       if (transform) {
         return transform(doc, ret, options);

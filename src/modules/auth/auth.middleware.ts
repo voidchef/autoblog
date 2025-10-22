@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import passport from 'passport';
 import httpStatus from 'http-status';
-import ApiError from '../errors/ApiError';
+import passport from 'passport';
 import { roleRights } from '../../config/roles';
+import ApiError from '../errors/ApiError';
 import { IUserDoc } from '../user/user.interfaces';
 
 const verifyCallback =
@@ -29,7 +29,11 @@ const authMiddleware =
   (...requiredRights: string[]) =>
   async (req: Request, res: Response, next: NextFunction) =>
     new Promise<void>((resolve, reject) => {
-      passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject, requiredRights))(req, res, next);
+      passport.authenticate('jwt', { session: false }, verifyCallback(req, resolve, reject, requiredRights))(
+        req,
+        res,
+        next
+      );
     })
       .then(() => next())
       .catch((err) => next(err));

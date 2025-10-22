@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
-import toJSON from '../toJSON/toJSON';
 import paginate from '../paginate/paginate';
+import toJSON from '../toJSON/toJSON';
 import { IBlogDoc, IBlogModel } from './blog.interfaces';
 
 const blogSchema = new mongoose.Schema<IBlogDoc, IBlogModel>(
@@ -142,7 +142,7 @@ const blogSchema = new mongoose.Schema<IBlogDoc, IBlogModel>(
     timestamps: true,
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-  },
+  }
 );
 
 // Virtual for excerpt
