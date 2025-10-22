@@ -23,7 +23,7 @@ export interface IAppSettingsResponse {
 export const appSettingsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getAppSettings: builder.query<IAppSettingsResponse, void>({
-      query: () => '/appSettings/',
+      query: () => '/appSettings',
       providesTags: ['AppSettings'],
       // Cache app settings for longer periods since they change infrequently
       keepUnusedDataFor: CACHE_TIMES.APP_SETTINGS,

@@ -1,7 +1,5 @@
 import * as React from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import Home from './components/pages/Home';
-import SignInSide from './components/pages/SignInSide';
 import setAuthToken from './utils/setAuthToken';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
@@ -11,19 +9,23 @@ import PrivateRoute from './utils/routing/PrivateRoute';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Loading from './components/elements/Common/Loading';
-import ContactUs from './components/pages/ContactUs';
-import AboutUs from './components/pages/AboutUs';
-import Category from './components/pages/Category';
-import AllPosts from './components/pages/AllPosts';
-import CreatePost from './components/pages/CreatePost';
-import Blog from './components/pages/Blog';
-import Dashboard from './components/pages/Dashboard';
-import Profile from './components/pages/Profile';
-import Author from './components/pages/Author';
-import VerifyEmail from './components/pages/VerifyEmail';
 import Alerts from './components/elements/Common/Alerts';
 import { useAuth, useAppSettings, useTheme } from './utils/hooks';
 import ReactGA from 'react-ga4';
+
+// Lazy load page components
+const Home = React.lazy(() => import('./components/pages/Home'));
+const SignInSide = React.lazy(() => import('./components/pages/SignInSide'));
+const ContactUs = React.lazy(() => import('./components/pages/ContactUs'));
+const AboutUs = React.lazy(() => import('./components/pages/AboutUs'));
+const Category = React.lazy(() => import('./components/pages/Category'));
+const AllPosts = React.lazy(() => import('./components/pages/AllPosts'));
+const CreatePost = React.lazy(() => import('./components/pages/CreatePost'));
+const Blog = React.lazy(() => import('./components/pages/Blog'));
+const Dashboard = React.lazy(() => import('./components/pages/Dashboard'));
+const Profile = React.lazy(() => import('./components/pages/Profile'));
+const Author = React.lazy(() => import('./components/pages/Author'));
+const VerifyEmail = React.lazy(() => import('./components/pages/VerifyEmail'));
 
 if (localStorage.tokens) {
   const tokens = JSON.parse(localStorage.getItem('tokens') || '');
