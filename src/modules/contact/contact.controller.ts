@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
 import { emailService } from '../email';
+import ApiError from '../errors/ApiError';
 import catchAsync from '../utils/catchAsync';
 import pick from '../utils/pick';
 import * as contactService from './contact.service';
@@ -43,7 +44,7 @@ export const getContact = catchAsync(async (req: Request, res: Response) => {
   if (typeof req.params['contactId'] === 'string') {
     const contact = await contactService.getContactById(new mongoose.Types.ObjectId(req.params['contactId']));
     if (!contact) {
-      throw new Error('Contact not found');
+      throw new ApiError(httpStatus.NOT_FOUND, 'Contact not found');
     }
     res.send(contact);
   }

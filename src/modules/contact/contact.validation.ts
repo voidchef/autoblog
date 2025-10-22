@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import { objectId } from '../validate/custom.validation';
 import { NewContact } from './contact.interfaces';
 
 const createContactBody: Record<keyof NewContact, any> = {
@@ -24,13 +25,13 @@ export const getContacts = {
 
 export const getContact = {
   params: Joi.object().keys({
-    contactId: Joi.string().required(),
+    contactId: Joi.string().required().custom(objectId),
   }),
 };
 
 export const updateContact = {
   params: Joi.object().keys({
-    contactId: Joi.required(),
+    contactId: Joi.string().required().custom(objectId),
   }),
   body: Joi.object()
     .keys({
@@ -41,6 +42,6 @@ export const updateContact = {
 
 export const deleteContact = {
   params: Joi.object().keys({
-    contactId: Joi.string().required(),
+    contactId: Joi.string().required().custom(objectId),
   }),
 };
