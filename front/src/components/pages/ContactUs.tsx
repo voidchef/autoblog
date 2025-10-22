@@ -3,16 +3,110 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
-import { Button, MenuItem, Typography, Container, Grid, Paper, Divider } from '@mui/material';
-import { useAppSelector } from '../../utils/reduxHooks';
-import { IFieldData } from '../../reducers/appSettings';
+import { Button, MenuItem, Typography, Container, Paper, Divider, Alert, CircularProgress, Snackbar } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import SendIcon from '@mui/icons-material/Send';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { useCreateContactMutation, useGetQueryTypesQuery } from '../../services/contactApi';
 
 export default function ContactUs() {
-  const queries = useAppSelector((state) => state.appSettings.queryType);
+  const { data: queryTypes = [], isLoading: isLoadingQueryTypes } = useGetQueryTypesQuery();
+  const [createContact, { isLoading, isSuccess, isError, error }] = useCreateContactMutation();
+  
+  // Form state
+  const [formData, setFormData] = React.useState({
+    name: '',
+    email: '',
+    queryType: '',
+    message: '',
+  });
+  
+  // Validation errors
+  const [errors, setErrors] = React.useState({
+    name: '',
+    email: '',
+    queryType: '',
+    message: '',
+  });
+  
+  // Snackbar state
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  
+  // Handle input changes
+  const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [field]: event.target.value });
+    // Clear error when user starts typing
+    if (errors[field as keyof typeof errors]) {
+      setErrors({ ...errors, [field]: '' });
+    }
+  };
+  
+  // Validate form
+  const validateForm = () => {
+    const newErrors = {
+      name: '',
+      email: '',
+      queryType: '',
+      message: '',
+    };
+    
+    let isValid = true;
+    
+    if (!formData.name.trim() || formData.name.trim().length < 2) {
+      newErrors.name = 'Name must be at least 2 characters';
+      isValid = false;
+    }
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim() || !emailRegex.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+      isValid = false;
+    }
+    
+    if (!formData.queryType) {
+      newErrors.queryType = 'Please select a query type';
+      isValid = false;
+    }
+    
+    if (!formData.message.trim() || formData.message.trim().length < 10) {
+      newErrors.message = 'Message must be at least 10 characters';
+      isValid = false;
+    }
+    
+    setErrors(newErrors);
+    return isValid;
+  };
+  
+  // Handle form submission
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    try {
+      await createContact(formData).unwrap();
+      // Reset form on success
+      setFormData({
+        name: '',
+        email: '',
+        queryType: '',
+        message: '',
+      });
+      setSnackbarOpen(true);
+    } catch (err) {
+      console.error('Failed to send message:', err);
+    }
+  };
+  
+  // Close snackbar
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
 
   const contactInfo = [
     {
@@ -80,7 +174,7 @@ export default function ContactUs() {
 
         <Grid container spacing={4} justifyContent="center">
           {/* Contact Information */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Box sx={{ mb: 4 }}>
               <Typography
                 variant="h5"
@@ -172,7 +266,7 @@ export default function ContactUs() {
           </Grid>
 
           {/* Contact Form */}
-          <Grid item xs={12} md={7}>
+          <Grid size={{ xs: 12, md: 7 }}>
             <Box>
               <Typography
                 variant="h5"
@@ -196,7 +290,14 @@ export default function ContactUs() {
                 Fill out the form and our team will get back to you within 24 hours
               </Typography>
 
-              <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                {/* Success/Error Alert */}
+                {isError && (
+                  <Alert severity="error" onClose={() => {}}>
+                    {(error as any)?.data?.message || 'Failed to send message. Please try again.'}
+                  </Alert>
+                )}
+                
                 <Box>
                   <Typography
                     variant="subtitle2"
@@ -215,6 +316,11 @@ export default function ContactUs() {
                     placeholder="Enter your full name"
                     variant="outlined"
                     size="medium"
+                    value={formData.name}
+                    onChange={handleChange('name')}
+                    error={!!errors.name}
+                    helperText={errors.name}
+                    disabled={isLoading}
                   />
                 </Box>
 
@@ -237,6 +343,11 @@ export default function ContactUs() {
                     placeholder="Enter your email address"
                     variant="outlined"
                     size="medium"
+                    value={formData.email}
+                    onChange={handleChange('email')}
+                    error={!!errors.email}
+                    helperText={errors.email}
+                    disabled={isLoading}
                   />
                 </Box>
 
@@ -256,16 +367,26 @@ export default function ContactUs() {
                     required
                     fullWidth
                     select
-                    defaultValue=""
+                    value={formData.queryType}
+                    onChange={handleChange('queryType')}
                     placeholder="Select query type"
                     variant="outlined"
                     size="medium"
+                    error={!!errors.queryType}
+                    helperText={errors.queryType}
+                    disabled={isLoading || isLoadingQueryTypes}
                   >
-                    {queries.map((option: IFieldData) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
+                    {isLoadingQueryTypes ? (
+                      <MenuItem disabled>Loading...</MenuItem>
+                    ) : queryTypes.length === 0 ? (
+                      <MenuItem disabled>No query types available</MenuItem>
+                    ) : (
+                      queryTypes.map((option) => (
+                        <MenuItem key={option.value} value={option.value}>
+                          {option.label}
+                        </MenuItem>
+                      ))
+                    )}
                   </TextField>
                 </Box>
 
@@ -288,13 +409,20 @@ export default function ContactUs() {
                     rows={6}
                     placeholder="Tell us more about your inquiry..."
                     variant="outlined"
+                    value={formData.message}
+                    onChange={handleChange('message')}
+                    error={!!errors.message}
+                    helperText={errors.message}
+                    disabled={isLoading}
                   />
                 </Box>
 
                 <Button
+                  type="submit"
                   variant="contained"
                   size="large"
-                  endIcon={<SendIcon />}
+                  endIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : <SendIcon />}
+                  disabled={isLoading}
                   sx={{
                     py: 1.5,
                     fontSize: '1rem',
@@ -303,7 +431,7 @@ export default function ContactUs() {
                     mt: 1,
                   }}
                 >
-                  Send Message
+                  {isLoading ? 'Sending...' : 'Send Message'}
                 </Button>
               </Box>
             </Box>
@@ -312,6 +440,24 @@ export default function ContactUs() {
       </Container>
 
       <Footer />
+      
+      {/* Success Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="success"
+          variant="filled"
+          icon={<CheckCircleIcon />}
+          sx={{ width: '100%' }}
+        >
+          Message sent successfully! We'll get back to you within 24 hours.
+        </Alert>
+      </Snackbar>
     </Box>
   );
 }

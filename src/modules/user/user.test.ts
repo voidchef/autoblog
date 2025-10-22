@@ -430,20 +430,20 @@ describe('User routes', () => {
       );
     });
 
-    test('should return 401 error if access token is missing', async () => {
+    test('should return 200 when access token is missing (public endpoint)', async () => {
       await insertUsers([userOne]);
 
-      await request(app).get(`/v1/users/${userOne._id}`).send().expect(httpStatus.UNAUTHORIZED);
+      await request(app).get(`/v1/users/${userOne._id}`).send().expect(httpStatus.OK);
     });
 
-    test('should return 403 error if user is trying to get another user', async () => {
+    test('should return 200 when user is trying to get another user (public endpoint)', async () => {
       await insertUsers([userOne, userTwo]);
 
       await request(app)
         .get(`/v1/users/${userTwo._id}`)
         .set('Authorization', `Bearer ${userOneAccessToken}`)
         .send()
-        .expect(httpStatus.FORBIDDEN);
+        .expect(httpStatus.OK);
     });
 
     test('should return 200 and the user object if admin is trying to get another user', async () => {

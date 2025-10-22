@@ -1,8 +1,8 @@
 /**
  * ESLint v9 Flat Configuration
- * 
+ *
  * Comprehensive ESLint setup with best practices for Node.js/TypeScript projects.
- * 
+ *
  * Plugins included:
  * - @eslint/js - Core ESLint recommended rules
  * - @typescript-eslint - TypeScript-specific linting
@@ -12,7 +12,7 @@
  * - eslint-plugin-promise - Promise handling best practices
  * - eslint-plugin-security - Security vulnerability detection
  * - eslint-plugin-prettier - Prettier integration for consistent formatting
- * 
+ *
  * Features:
  * - Separate configs for JS, TS, and test files
  * - Async/await and promise handling rules

@@ -4,6 +4,7 @@ import appSettingsRoute from './appSettings.route';
 import authRoute from './auth.route';
 import blogRoute from './blog.route';
 import commentRoute from './comment.route';
+import contactRoute from './contact.route';
 import docsRoute from './swagger.route';
 import userRoute from './user.route';
 
@@ -34,6 +35,10 @@ const defaultIRoute: IRoute[] = [
   {
     path: '/appSettings',
     route: appSettingsRoute,
+  },
+  {
+    path: '/contact',
+    route: contactRoute,
   },
 ];
 
