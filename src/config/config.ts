@@ -21,12 +21,6 @@ const envVarsSchema = Joi.object()
     SMTP_PASSWORD: Joi.string().description('password for email server'),
     EMAIL_FROM: Joi.string().description('the from field in the emails sent by the app'),
     CLIENT_URL: Joi.string().required().description('Client url'),
-    // WordPress configuration
-    WORDPRESS_SITE_URL: Joi.string().description('WordPress site URL'),
-    WORDPRESS_USERNAME: Joi.string().description('WordPress username'),
-    WORDPRESS_APP_PASSWORD: Joi.string().description('WordPress application password'),
-    // Medium configuration
-    MEDIUM_INTEGRATION_TOKEN: Joi.string().description('Medium integration token'),
   })
   .unknown();
 
@@ -71,14 +65,6 @@ const config = {
     from: envVars.EMAIL_FROM,
   },
   clientUrl: envVars.CLIENT_URL,
-  wordpress: {
-    siteUrl: envVars.WORDPRESS_SITE_URL,
-    username: envVars.WORDPRESS_USERNAME,
-    applicationPassword: envVars.WORDPRESS_APP_PASSWORD,
-  },
-  medium: {
-    integrationToken: envVars.MEDIUM_INTEGRATION_TOKEN,
-  },
 };
 
 export default config;
