@@ -22,16 +22,28 @@
 - **Automatic Upload**: Images are automatically uploaded to AWS S3
 - **Smart Selection**: Automatically select the best image for each post
 
+### 🎙️ Audio Narration
+- **Text-to-Speech**: Convert blog posts to natural-sounding audio using Google Cloud TTS
+- **High-Quality Voices**: WaveNet voices for professional audio narration
+- **Audio Player**: Full-featured player with play/pause, volume control, and playback speed
+- **On-Demand Generation**: Generate audio narration when needed
+- **AWS S3 Storage**: Audio files stored and delivered via CDN
+
 ### 📊 Analytics & Insights
-- **Google Analytics Integration**: Track performance and engagement
+- **Google Analytics Integration**: Track performance and engagement with GA4
 - **Content Analytics**: Monitor post performance and reader behavior
+- **Engagement Metrics**: Track views, likes, dislikes, and comments
 - **SEO Metrics**: Track search engine optimization effectiveness
+- **User-Specific Stats**: View engagement statistics for your own blog posts
 
 ### 🔐 User Management
 - **JWT Authentication**: Secure user authentication with JWT tokens
-- **Role-Based Access**: Different permission levels for users
+- **Role-Based Access**: Different permission levels for users (admin, user)
 - **Profile Management**: User profiles with customizable settings
+- **Follow System**: Users can follow and unfollow other users
 - **API Key Management**: Secure storage of user API keys
+- **Email Verification**: Optional email verification for new accounts
+- **Password Reset**: Secure password reset via email
 
 ### 🌐 Modern Web Interface
 - **React Frontend**: Modern, responsive React application
@@ -56,6 +68,16 @@
   - Loading states and error handling
   - Mobile-friendly touch interactions
 
+### 🚀 Multi-Platform Publishing
+- **WordPress Integration**: Publish directly to WordPress sites via REST API
+  - One-click publishing to connected WordPress sites
+  - Automatic formatting and media handling
+  - Support for custom WordPress installations
+- **Medium Publishing**: Export and publish to Medium platform
+  - Direct API integration with Medium
+  - Automatic content formatting for Medium
+  - Maintain author attribution and links
+
 ## 🛠️ Tech Stack
 
 ### Backend
@@ -65,8 +87,13 @@
 - **JWT** - Authentication
 - **LangChain** - AI/LLM integration
 - **OpenAI API** - Content and image generation
-- **AWS S3** - File storage
+- **Google Cloud Text-to-Speech** - Audio narration
+- **AWS S3** - File and audio storage
+- **Google Analytics Data API** - Analytics integration
+- **WordPress REST API** - WordPress publishing
+- **Medium API** - Medium publishing
 - **PM2** - Process management
+- **Swagger/OpenAPI** - API documentation
 
 ### Frontend
 - **React** 19+ with TypeScript
@@ -127,6 +154,12 @@
    AWS_SECRET_ACCESS_KEY=your-aws-secret-key
    AWS_S3_BUCKET=your-s3-bucket
    
+   # Google Cloud Text-to-Speech (for audio narration)
+   GOOGLE_APPLICATION_CREDENTIALS=./service-account.json
+   
+   # Google Analytics (optional)
+   GOOGLE_ANALYTICS_PROPERTY_ID=your-property-id
+   
    # Email Configuration (optional)
    SMTP_HOST=smtp.gmail.com
    SMTP_PORT=587
@@ -157,9 +190,37 @@ The API documentation is automatically generated using Swagger/OpenAPI and is av
 ### Key Endpoints
 
 - **Authentication**: `/v1/auth/*`
+  - Register, login, logout, refresh tokens
+  - Password reset and email verification
+  
 - **Blog Management**: `/v1/blogs/*`
+  - CRUD operations for blog posts
+  - AI-powered blog generation
+  - Publish/unpublish, featured toggle
+  - Like/dislike functionality
+  - Engagement statistics
+  - Search and filtering
+  
+- **Audio Narration**: `/v1/blogs/:id/audio`
+  - Generate text-to-speech audio
+  - Get audio status and URL
+  
+- **Publishing**: `/v1/blogs/:id/publish-*`
+  - Publish to WordPress
+  - Publish to Medium
+  
+- **Comments**: `/v1/comments/*`
+  - Create, read, update, delete comments
+  - Nested reply support
+  - Like/dislike comments
+  
 - **User Management**: `/v1/users/*`
+  - User profile management
+  - Role and permission management
+  
 - **App Settings**: `/v1/app-settings/*`
+  - Manage categories
+  - Configure application settings
 
 ## 🐳 Docker Deployment
 
@@ -248,6 +309,35 @@ pnpm release
 - **Heading Structure**: Proper H1-H6 tag hierarchy
 - **Internal Linking**: Suggestions for internal link opportunities
 - **Readability Analysis**: Content readability scoring
+- **XML Sitemap**: Automatically generated sitemap
+- **Robots.txt**: SEO-optimized robots configuration
+
+### Audio Narration Features
+- **Natural Voice**: High-quality WaveNet voices from Google Cloud
+- **Multi-Language Support**: Generate audio in multiple languages
+- **Audio Player**: Full-featured HTML5 audio player with:
+  - Play/pause controls
+  - Volume adjustment with mute
+  - Playback speed control (0.5x - 2x)
+  - Progress bar with seek functionality
+  - Time display (current/total duration)
+- **On-Demand Generation**: Audio generated only when requested
+- **CDN Delivery**: Fast audio delivery via AWS S3 and CloudFront
+- **Status Tracking**: Real-time status updates during generation
+
+### Publishing Features
+- **WordPress Integration**:
+  - Direct publishing to WordPress sites
+  - Supports custom WordPress installations
+  - Automatic image upload and formatting
+  - Category and tag mapping
+  - Custom post status (draft/published)
+  
+- **Medium Integration**:
+  - One-click publish to Medium
+  - Automatic content formatting
+  - Tag and category support
+  - Author attribution maintained
 
 ## 📁 Project Structure
 
@@ -255,27 +345,44 @@ pnpm release
 autoblog/
 ├── src/                          # Backend source code
 │   ├── config/                   # Configuration files
+│   │   ├── config.ts             # Main configuration
+│   │   └── roles.ts              # Role-based access control
 │   ├── modules/                  # Feature modules
-│   │   ├── auth/                 # Authentication
-│   │   ├── blog/                 # Blog management
+│   │   ├── auth/                 # Authentication & authorization
+│   │   ├── blog/                 # Blog management & CRUD
+│   │   ├── comment/              # Comment system with nested replies
 │   │   ├── user/                 # User management
-│   │   ├── postGen/              # AI post generation
-│   │   ├── imageGen/             # AI image generation
-│   │   ├── aws/                  # AWS integration
+│   │   ├── postGen/              # AI post generation (LangChain)
+│   │   ├── imageGen/             # AI image generation (DALL-E)
+│   │   ├── tts/                  # Text-to-speech audio narration
+│   │   ├── wordpress/            # WordPress publishing integration
+│   │   ├── medium/               # Medium publishing integration
+│   │   ├── aws/                  # AWS S3 integration
+│   │   ├── email/                # Email service
+│   │   ├── swagger/              # API documentation
 │   │   └── ...                   # Other modules
 │   └── routes/                   # API routes
+│       └── v1/                   # API v1 routes
+│           ├── auth.route.ts     # Authentication endpoints
+│           ├── blog.route.ts     # Blog endpoints
+│           ├── comment.route.ts  # Comment endpoints
+│           ├── user.route.ts     # User endpoints
+│           └── appSettings.route.ts  # App settings endpoints
 ├── front/                        # Frontend React application
 │   ├── src/
 │   │   ├── components/           # React components
 │   │   │   ├── elements/         # Reusable UI elements
-│   │   │   │   ├── CommentSection.tsx   # Comment system (NEW)
-│   │   │   │   └── BlogLikeDislike.tsx  # Like/dislike buttons (NEW)
+│   │   │   │   ├── CommentSection.tsx    # Comment system with threading
+│   │   │   │   ├── BlogLikeDislike.tsx   # Like/dislike buttons
+│   │   │   │   └── AudioPlayer.tsx       # Audio narration player
 │   │   │   └── pages/            # Page components
+│   │   │       └── Blog.tsx      # Blog post page with audio
 │   │   ├── services/             # API services
-│   │   │   ├── commentApi.ts     # Comment API (NEW)
-│   │   │   └── blogApi.ts        # Blog API (updated)
+│   │   │   ├── commentApi.ts     # Comment API integration
+│   │   │   └── blogApi.ts        # Blog API integration
 │   │   ├── reducers/             # Redux reducers
-│   │   │   └── comment.ts        # Comment state (NEW)
+│   │   │   ├── comment.ts        # Comment state management
+│   │   │   └── blog.ts           # Blog state management
 │   │   └── utils/                # Utility functions
 │   └── public/                   # Static assets
 ├── docs/                         # Documentation
@@ -310,7 +417,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Material-UI for the beautiful React components
 - The open-source community for the amazing tools and libraries
 
-## 📞 Support
+## 🔒 Security
+
+- **JWT Authentication**: Secure token-based authentication
+- **Role-Based Access Control**: Granular permissions system
+- **Password Hashing**: Bcrypt for secure password storage
+- **Email Verification**: Optional email verification for new users
+- **Rate Limiting**: API rate limiting to prevent abuse
+- **CORS Configuration**: Configurable cross-origin resource sharing
+- **Input Validation**: Comprehensive input validation using Joi
+- **XSS Protection**: Protection against cross-site scripting attacks
+
+## �📞 Support
 
 If you have any questions or need help, please:
 1. Check the [documentation](docs/)

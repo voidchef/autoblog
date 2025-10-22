@@ -811,3 +811,166 @@ export default router;
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  */
+
+/**
+ * @swagger
+ * /blogs/{blogId}/audio:
+ *   post:
+ *     summary: Generate audio narration for a blog post
+ *     description: Generate AI-powered audio narration using Google Cloud Text-to-Speech. The audio is stored in AWS S3. Only authenticated users with manageBlogs permission can access this.
+ *     tags: [Blogs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Blog ID
+ *     responses:
+ *       "200":
+ *         description: Audio narration generated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Audio narration generated successfully
+ *                 audioNarrationUrl:
+ *                   type: string
+ *                   example: https://s3.amazonaws.com/bucket/audio/blog-audio.mp3
+ *                 audioGenerationStatus:
+ *                   type: string
+ *                   enum: [completed, processing, pending, failed]
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *       "500":
+ *         $ref: '#/components/responses/InternalError'
+ *
+ *   get:
+ *     summary: Get audio narration status
+ *     description: Retrieve the audio narration status and URL for a blog post.
+ *     tags: [Blogs]
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Blog ID
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 audioNarrationUrl:
+ *                   type: string
+ *                   nullable: true
+ *                   example: https://s3.amazonaws.com/bucket/audio/blog-audio.mp3
+ *                 audioGenerationStatus:
+ *                   type: string
+ *                   enum: [completed, processing, pending, failed]
+ *                   example: completed
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
+ * /blogs/{blogId}/publish-wordpress:
+ *   post:
+ *     summary: Publish blog post to WordPress
+ *     description: Publish a blog post to a connected WordPress site using WordPress REST API. Only authenticated users with manageBlogs permission can access this.
+ *     tags: [Blogs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Blog ID
+ *     responses:
+ *       "200":
+ *         description: Blog published to WordPress successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Blog published to WordPress successfully
+ *                 wordpressPostId:
+ *                   type: string
+ *                   example: "12345"
+ *                 wordpressUrl:
+ *                   type: string
+ *                   example: https://example.wordpress.com/post-title
+ *       "400":
+ *         $ref: '#/components/responses/BadRequest'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *       "500":
+ *         $ref: '#/components/responses/InternalError'
+ */
+
+/**
+ * @swagger
+ * /blogs/{blogId}/publish-medium:
+ *   post:
+ *     summary: Publish blog post to Medium
+ *     description: Publish a blog post to Medium using the Medium API. Only authenticated users with manageBlogs permission can access this.
+ *     tags: [Blogs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: blogId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Blog ID
+ *     responses:
+ *       "200":
+ *         description: Blog published to Medium successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Blog published to Medium successfully
+ *                 mediumPostId:
+ *                   type: string
+ *                   example: "abc123def456"
+ *                 mediumUrl:
+ *                   type: string
+ *                   example: https://medium.com/@user/post-title-abc123def456
+ *       "400":
+ *         $ref: '#/components/responses/BadRequest'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ *       "500":
+ *         $ref: '#/components/responses/InternalError'
+ */

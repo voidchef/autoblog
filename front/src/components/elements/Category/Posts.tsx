@@ -5,10 +5,11 @@ import Grid from '@mui/material/Grid';
 import AllTags from './Tags';
 import TablePagination from '@mui/material/TablePagination';
 import { ThumbUp, ThumbDown } from '@mui/icons-material';
-import { useAppDispatch } from '../../../utils/reduxHooks';
 import { useGetBlogsByCategoryQuery } from '../../../services/blogApi';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
+import { stringAvatar } from '../../../utils/utils';
+import { Avatar } from '@mui/material';
 
 const AllPosts = ({ category }: { category: string }) => {
   const [page, setPage] = React.useState(0);
@@ -51,8 +52,14 @@ const AllPosts = ({ category }: { category: string }) => {
           <Grid container size={{ xs: 12, sm: 8 }} spacing={2}>
             {allBlogs.results.length > 0 ? (
               allBlogs.results.map((post: any, index: number) => (
-                <Grid size={{ xs: 12, sm: 6 }} key={index} onClick={() => handleClick(post.slug)}>
-                  <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'} marginBottom={4}>
+                <Grid size={{ xs: 12, sm: 6 }} key={index}>
+                  <Box
+                    sx={{ py: 1, cursor: 'pointer' }}
+                    height={{ xs: '15rem', sm: '18rem' }}
+                    maxWidth={'100%'}
+                    marginBottom={4}
+                    onClick={() => handleClick(post.slug)}
+                  >
                     <img
                       src={post.selectedImage}
                       alt={post.topic}
@@ -60,29 +67,83 @@ const AllPosts = ({ category }: { category: string }) => {
                     />
                   </Box>
                   <Box display="flex" flexDirection="column" justifyContent="space-between">
-                    <Typography fontSize={{ sm: 15 }} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
-                      By <span style={{ color: '#555FAC' }}>{post.author.name}</span> |{' '}
-                      {new Date(post.createdAt).toLocaleDateString('en-US', {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
-                    </Typography>
-                    <Typography fontSize={{ sm: 22 }} fontWeight={500} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Avatar
+                        {...stringAvatar(post.author.name)}
+                        sx={{
+                          width: 36,
+                          height: 36,
+                          fontWeight: 600,
+                          fontSize: '0.875rem',
+                          cursor: 'pointer',
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (post.author?.id) navigate(`${ROUTES.AUTHOR}/${post.author.id}`);
+                        }}
+                      />
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+                        <Typography
+                          variant="body2"
+                          fontWeight={600}
+                          fontSize="0.875rem"
+                          sx={{
+                            cursor: 'pointer',
+                            '&:hover': { color: 'primary.main' },
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (post.author?.id) navigate(`${ROUTES.AUTHOR}/${post.author.id}`);
+                          }}
+                        >
+                          {post.author.name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
+                          •
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
+                          {new Date(post.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Typography
+                      fontSize={{ sm: 22 }}
+                      fontWeight={500}
+                      component="div"
+                      sx={{
+                        flexGrow: 1,
+                        marginBottom: 1,
+                        cursor: 'pointer',
+                        '&:hover': { color: 'primary.main' },
+                      }}
+                      onClick={() => handleClick(post.slug)}
+                    >
                       {post.title}
                     </Typography>
-                    <Typography fontSize={{ sm: 18 }} component="div" sx={{ flexGrow: 1 }}>
+                    <Typography
+                      fontSize={{ sm: 18 }}
+                      component="div"
+                      sx={{
+                        flexGrow: 1,
+                        cursor: 'pointer',
+                      }}
+                      onClick={() => handleClick(post.slug)}
+                    >
                       {`${post.content.slice(0, 255)}...`}
                     </Typography>
-                    
+
                     {/* Engagement Stats */}
-                    <Box 
-                      sx={{ 
-                        display: 'flex', 
-                        gap: 2, 
-                        mt: 2, 
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        gap: 2,
+                        mt: 2,
                         alignItems: 'center',
-                        color: '#6D6E76'
+                        color: '#6D6E76',
                       }}
                     >
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

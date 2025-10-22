@@ -19,6 +19,7 @@ import CreatePost from './components/pages/CreatePost';
 import Blog from './components/pages/Blog';
 import Dashboard from './components/pages/Dashboard';
 import Profile from './components/pages/Profile';
+import Author from './components/pages/Author';
 import VerifyEmail from './components/pages/VerifyEmail';
 import Alerts from './components/elements/Common/Alerts';
 import { useAuth, useAppSettings, useTheme } from './utils/hooks';
@@ -103,6 +104,7 @@ export default function App() {
                 <Route path={`${ROUTES.CATEGORY}/:categoryName`} element={<Category />} />
                 <Route path={ROUTES.ALLPOSTS} element={<AllPosts />} />
                 <Route path={`${ROUTES.BLOG}/:slug`} element={<Blog />} />
+                <Route path={`${ROUTES.AUTHOR}/:authorId`} element={<Author />} />
                 <Route
                   path={`${ROUTES.PREVIEW}/:slug`}
                   element={

@@ -9,15 +9,17 @@ import { marked } from 'marked';
 import { useGetBlogQuery, useGenerateAudioNarrationMutation, IBlog as IBlogAPI } from '../../services/blogApi';
 import { useAppSelector } from '../../utils/reduxHooks';
 import { Helmet } from 'react-helmet-async';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import BlogLikeDislike from '../elements/BlogLikeDislike';
 import CommentSection from '../elements/CommentSection';
 import ShareButton from '../elements/ShareButton';
 import FollowButton from '../elements/FollowButton';
 import AudioPlayer from '../elements/AudioPlayer';
+import { ROUTES } from '../../utils/routing/routes';
 
 export default function Blog() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { preview } = useParams();
   const slug = location.pathname.split('/')[2];
 
@@ -158,11 +160,21 @@ export default function Blog() {
                     '& .text-primary': {
                       color: 'primary.main',
                       fontWeight: 700,
+                      cursor: 'pointer',
+                      textDecoration: 'none',
+                      '&:hover': {
+                        textDecoration: 'underline',
+                      },
                     },
                   }}
                 >
                   <span className="text-gray">By </span>
-                  <span className="text-primary">{currentBlogData.author?.name || 'Unknown'}</span>
+                  <span 
+                    className="text-primary"
+                    onClick={() => currentBlogData.author?.id && navigate(`${ROUTES.AUTHOR}/${currentBlogData.author.id}`)}
+                  >
+                    {currentBlogData.author?.name || 'Unknown'}
+                  </span>
                   <span className="text-gray"> | </span>
                   <span className="text-gray">
                     {new Date(currentBlogData.createdAt).toLocaleDateString('en-US', {

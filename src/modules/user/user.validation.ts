@@ -12,6 +12,15 @@ const createUserBody = {
   wordpressUsername: Joi.string().optional(),
   wordpressAppPassword: Joi.string().optional(),
   mediumIntegrationToken: Joi.string().optional(),
+  bio: Joi.string().max(500).allow('').optional(),
+  socialLinks: Joi.object()
+    .keys({
+      twitter: Joi.string().allow('').optional(),
+      linkedin: Joi.string().allow('').optional(),
+      github: Joi.string().allow('').optional(),
+      website: Joi.string().allow('').optional(),
+    })
+    .optional(),
 };
 
 export const createUser = {
@@ -50,6 +59,15 @@ export const updateUser = {
       wordpressUsername: Joi.string().optional(),
       wordpressAppPassword: Joi.string().optional(),
       mediumIntegrationToken: Joi.string().optional(),
+      bio: Joi.string().max(500).allow('').optional(),
+      socialLinks: Joi.object()
+        .keys({
+          twitter: Joi.string().allow('').optional(),
+          linkedin: Joi.string().allow('').optional(),
+          github: Joi.string().allow('').optional(),
+          website: Joi.string().allow('').optional(),
+        })
+        .optional(),
     })
     .min(1),
 };

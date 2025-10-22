@@ -167,10 +167,27 @@ const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
                       height: 32,
                       fontSize: '0.875rem',
                       fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (post.author?.id) navigate(`${ROUTES.AUTHOR}/${post.author.id}`);
                     }}
                   />
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
-                    <Typography variant="body2" fontWeight={600} fontSize="0.875rem">
+                    <Typography 
+                      variant="body2" 
+                      fontWeight={600} 
+                      fontSize="0.875rem"
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover': { color: 'primary.main' }
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (post.author?.id) navigate(`${ROUTES.AUTHOR}/${post.author.id}`);
+                      }}
+                    >
                       {post.author.name}
                     </Typography>
                     <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
@@ -178,6 +195,7 @@ const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
                     </Typography>
                     <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
                       {new Date(post.createdAt).toLocaleDateString('en-US', {
+                        year: 'numeric',
                         month: 'short',
                         day: 'numeric',
                       })}

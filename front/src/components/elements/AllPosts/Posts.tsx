@@ -51,8 +51,13 @@ const AllPosts = () => {
         <React.Fragment>
           <Grid container spacing={3}>
             {allBlogs.results.map((post: any, index: number) => (
-              <Grid size={{ xs: 12, sm: 4 }} key={index} onClick={() => handleClick(post.slug)}>
-                <Box sx={{ py: 1 }} height={{ xs: '15rem', sm: '18rem' }} maxWidth={'100%'}>
+              <Grid size={{ xs: 12, sm: 4 }} key={index}>
+                <Box 
+                  sx={{ py: 1, cursor: 'pointer' }} 
+                  height={{ xs: '15rem', sm: '18rem' }} 
+                  maxWidth={'100%'}
+                  onClick={() => handleClick(post.slug)}
+                >
                   <img
                     src={post.selectedImage}
                     alt={post.topic}
@@ -61,17 +66,46 @@ const AllPosts = () => {
                 </Box>
                 <Box display="flex" flexDirection="column" justifyContent="space-between">
                   <Typography fontSize={{ sm: 15 }} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
-                    By <span style={{ color: '#555FAC' }}>{post.author?.name || 'Unknown'}</span> |{' '}
+                    By <span 
+                      style={{ color: '#555FAC', cursor: 'pointer', textDecoration: 'none' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (post.author?.id) navigate(`${ROUTES.AUTHOR}/${post.author.id}`);
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
+                      onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
+                    >
+                      {post.author?.name || 'Unknown'}
+                    </span> |{' '}
                     {new Date(post.createdAt).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
                     })}
                   </Typography>
-                  <Typography fontSize={{ sm: 22 }} fontWeight={500} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
+                  <Typography 
+                    fontSize={{ sm: 22 }} 
+                    fontWeight={500} 
+                    component="div" 
+                    sx={{ 
+                      flexGrow: 1, 
+                      marginBottom: 1,
+                      cursor: 'pointer',
+                      '&:hover': { color: 'primary.main' }
+                    }}
+                    onClick={() => handleClick(post.slug)}
+                  >
                     {post.title}
                   </Typography>
-                  <Typography fontSize={{ sm: 18 }} component="div" sx={{ flexGrow: 1 }}>
+                  <Typography 
+                    fontSize={{ sm: 18 }} 
+                    component="div" 
+                    sx={{ 
+                      flexGrow: 1,
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => handleClick(post.slug)}
+                  >
                     {`${post.content.slice(0, 255)}...`}
                   </Typography>
                   

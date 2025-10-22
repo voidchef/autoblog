@@ -10,5 +10,6 @@ export enum ROUTES {
   PREVIEW = '/preview',
   DASHBOARD = '/dashboard',
   PROFILE = '/profile',
+  AUTHOR = '/author',
   VERIFY_EMAIL = '/verify-email',
 }

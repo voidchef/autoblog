@@ -97,7 +97,8 @@ function Carousel() {
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: 2,
+          gap: { xs: 1, sm: 2 },
+          position: 'relative',
         }}
       >
         <IconButton
@@ -118,12 +119,21 @@ function Carousel() {
               opacity: 0.5,
             },
             transition: 'all 0.3s ease',
+            // Mobile responsive sizing - perfectly circular
+            width: { xs: '40px', sm: '48px' },
+            height: { xs: '40px', sm: '48px' },
+            minWidth: { xs: '40px', sm: '48px' },
+            minHeight: { xs: '40px', sm: '48px' },
+            padding: 0,
+            borderRadius: '50%',
+            flexShrink: 0,
+            zIndex: 1,
           }}
         >
-          <NavigateBeforeIcon />
+          <NavigateBeforeIcon sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }} />
         </IconButton>
 
-        <Box sx={{ flexGrow: 1, maxWidth: '1200px' }}>
+        <Box sx={{ flexGrow: 1, maxWidth: { xs: 'calc(100vw - 120px)', sm: '1200px' }, overflow: 'hidden' }}>
           {categories.map((category: ICategory, index: number) => (
             <Box
               key={`card-${index}`}
@@ -140,7 +150,7 @@ function Carousel() {
                   justifyContent="center"
                   sx={{
                     width: '100%',
-                    px: 2,
+                    px: { xs: 0, sm: 2 },
                   }}
                 >
                   {categories
@@ -178,9 +188,18 @@ function Carousel() {
               opacity: 0.5,
             },
             transition: 'all 0.3s ease',
+            // Mobile responsive sizing - perfectly circular
+            width: { xs: '40px', sm: '48px' },
+            height: { xs: '40px', sm: '48px' },
+            minWidth: { xs: '40px', sm: '48px' },
+            minHeight: { xs: '40px', sm: '48px' },
+            padding: 0,
+            borderRadius: '50%',
+            flexShrink: 0,
+            zIndex: 1,
           }}
         >
-          <NavigateNextIcon />
+          <NavigateNextIcon sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }} />
         </IconButton>
       </Box>
     </Box>
