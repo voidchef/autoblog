@@ -19,6 +19,7 @@ import CreatePost from './components/pages/CreatePost';
 import Blog from './components/pages/Blog';
 import Dashboard from './components/pages/Dashboard';
 import Profile from './components/pages/Profile';
+import VerifyEmail from './components/pages/VerifyEmail';
 import Alerts from './components/elements/Common/Alerts';
 import { useAuth, useAppSettings, useTheme } from './utils/hooks';
 import ReactGA from 'react-ga4';
@@ -95,6 +96,7 @@ export default function App() {
             {appSettingsData && (
               <Routes>
                 <Route path={ROUTES.LOGIN} element={<SignInSide />} />
+                <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmail />} />
                 <Route path={ROUTES.ROOT} element={<Home />} />
                 <Route path={ROUTES.CONTACTUS} element={<ContactUs />} />
                 <Route path={ROUTES.ABOUTUS} element={<AboutUs />} />

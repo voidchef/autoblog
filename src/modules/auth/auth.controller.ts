@@ -10,6 +10,11 @@ import { IUserDoc } from '../user/user.interfaces';
 export const register = catchAsync(async (req: Request, res: Response) => {
   const user = await userService.registerUser(req.body);
   const tokens = await tokenService.generateAuthTokens(user);
+  
+  // Generate verification token and send email
+  const verifyEmailToken = await tokenService.generateVerifyEmailToken(user);
+  await emailService.sendSuccessfulRegistration(user.email, verifyEmailToken, user.name);
+  
   res.status(httpStatus.CREATED).send({ user, tokens });
 });
 

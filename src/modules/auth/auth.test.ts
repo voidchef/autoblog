@@ -17,8 +17,25 @@ import tokenTypes from '../token/token.types';
 import Token from '../token/token.model';
 import authMiddleware from './auth.middleware';
 import ApiError from '../errors/ApiError';
+import * as emailService from '../email/email.service';
 
 setupTestDB();
+
+// Mock email service
+const mockSendMail = jest.fn<() => Promise<any>>().mockResolvedValue(true);
+const mockVerify = jest.fn<() => Promise<boolean>>().mockResolvedValue(true);
+
+beforeAll(() => {
+  const mockTransport = {
+    sendMail: mockSendMail,
+    verify: mockVerify,
+  } as any;
+  emailService.setTransport(mockTransport);
+});
+
+beforeEach(() => {
+  mockSendMail.mockClear();
+});
 
 const password = 'password1';
 const salt = bcrypt.genSaltSync(8);

@@ -99,7 +99,7 @@ export default function SignInSide() {
           password: formData.password,
         }).unwrap();
 
-        dispatch(showSuccess('Registration successful! Welcome to AutoBlog!'));
+        dispatch(showSuccess('Registration successful! Please check your email to verify your account.'));
         navigate(ROUTES.ROOT);
       } else {
         const result = await login({

@@ -47,6 +47,7 @@ import ConfirmationDialog from '../elements/Common/ConfirmationDialog';
 import { useAuth } from '../../utils/hooks';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import { useUpdateUserMutation } from '../../services/userApi';
+import { useSendVerificationEmailMutation } from '../../services/authApi';
 import { showSuccess, showError } from '../../reducers/alert';
 import { stringAvatar as baseStringAvatar } from '../../utils/utils';
 import { updateUserDataOptimistic } from '../../reducers/user';
@@ -94,6 +95,7 @@ const Profile: React.FC = () => {
   const dispatch = useAppDispatch();
   const { user, isLoading: userLoading } = useAuth();
   const [updateUser, { isLoading: updateLoading }] = useUpdateUserMutation();
+  const [sendVerificationEmail, { isLoading: isSendingVerification }] = useSendVerificationEmailMutation();
 
   const [formData, setFormData] = React.useState<ProfileFormData>({
     name: '',
@@ -434,6 +436,15 @@ const Profile: React.FC = () => {
     setIsEditing(false);
   };
 
+  const handleResendVerificationEmail = async () => {
+    try {
+      await sendVerificationEmail().unwrap();
+      dispatch(showSuccess('Verification email sent! Please check your inbox.'));
+    } catch (error: any) {
+      dispatch(showError(error?.data?.message || 'Failed to send verification email. Please try again.'));
+    }
+  };
+
   // Custom avatar with larger size for profile page
   const profileAvatar = (name: string) => {
     const baseAvatar = baseStringAvatar(name);
@@ -625,6 +636,32 @@ const Profile: React.FC = () => {
                       sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
                     />
                   </Stack>
+
+                  {/* Email Verification Reminder */}
+                  {!user.isEmailVerified && (
+                    <Alert 
+                      severity="warning" 
+                      sx={{ 
+                        mt: 2, 
+                        mb: 1,
+                        fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                      }}
+                      action={
+                        <Button
+                          color="inherit"
+                          size="small"
+                          onClick={handleResendVerificationEmail}
+                          disabled={isSendingVerification}
+                          startIcon={isSendingVerification ? <CircularProgress size={16} color="inherit" /> : <EmailIcon />}
+                          sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                        >
+                          {isSendingVerification ? 'Sending...' : 'Resend'}
+                        </Button>
+                      }
+                    >
+                      Please verify your email to access all features
+                    </Alert>
+                  )}
 
                   {formData.bio && !isEditing && (
                     <>
