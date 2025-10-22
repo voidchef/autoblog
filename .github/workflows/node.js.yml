@@ -1,16 +1,12 @@
-
-# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: Node.js CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
-# Cancel in-progress runs when a new workflow with the same group name is triggered
+# Auto-cancel previous runs for same branch
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -29,93 +25,102 @@ env:
   CLIENT_URL: http://localhost:3000
 
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      node-version: ${{ steps.node-version.outputs.value }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        id: node-version
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Cache installed dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Upload workspace for downstream jobs
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace
+          path: |
+            .
+            !node_modules
 
   test:
-
     runs-on: ubuntu-latest
+    needs: setup
 
-    strategy:
-      matrix:
-        node-version: [22.x]
-        mongodb-version: [8.0]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    services:
+      mongodb:
+        image: mongo:8.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval=5s
+          --health-timeout=2s
+          --health-retries=5
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
+      - name: Download workspace
+        uses: actions/download-artifact@v4
+        with:
+          name: workspace
 
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: 9
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v6
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
+      - name: Run lint
+        run: pnpm lint
 
-    - name: Start MongoDB
-      uses: supercharge/mongodb-github-action@1.12.0
-      with:
-        mongodb-version: ${{ matrix.mongodb-version }}
+      - name: Run tests
+        run: pnpm test
 
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-
-    - name: Run linting tests
-      run: pnpm lint
-
-    - name: Run unit tests
-      run: pnpm test
+      - name: Upload coverage artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/lcov.info
 
   coverage:
-
     runs-on: ubuntu-latest
-
     needs: test
 
-    permissions:
-      contents: read
-
-    strategy:
-      matrix:
-        node-version: [22.x]
-        mongodb-version: [8.0]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v5
+      - name: Download coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage
 
-    - name: Install pnpm
-      uses: pnpm/action-setup@v4
-      with:
-        version: 9
-
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v6
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
-
-    - name: Start MongoDB
-      uses: supercharge/mongodb-github-action@1.12.0
-      with:
-        mongodb-version: ${{ matrix.mongodb-version }}
-
-    - name: Install dependencies
-      run: pnpm install --frozen-lockfile
-
-    - name: Generate coverage
-      run: pnpm coverage:coveralls
-
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v5
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        fail_ci_if_error: true
-        files: ./coverage/lcov.info
-        flags: unittests
-        name: codecov-umbrella
-        verbose: true
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: true
+          files: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          verbose: true
