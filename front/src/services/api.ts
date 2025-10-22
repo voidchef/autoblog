@@ -4,7 +4,7 @@ import { CACHE_TIMES } from '../utils/cacheConfig';
 
 // Enhanced base query with retry logic and better error handling
 const baseQuery = fetchBaseQuery({
-  baseUrl: '/v1',
+  baseUrl: import.meta.env.VITE_SERVER_URL + '/v1',
   prepareHeaders: (headers, { getState }) => {
     const state = getState() as RootState;
     const token = state.auth.tokens?.access?.token;
