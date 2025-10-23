@@ -99,6 +99,8 @@ function Carousel() {
           justifyContent: 'center',
           gap: { xs: 1, sm: 2 },
           position: 'relative',
+          py: 4,
+          overflow: 'visible',
         }}
       >
         <IconButton
@@ -133,13 +135,14 @@ function Carousel() {
           <NavigateBeforeIcon sx={{ fontSize: { xs: '1.5rem', sm: '1.75rem' } }} />
         </IconButton>
 
-        <Box sx={{ flexGrow: 1, maxWidth: { xs: 'calc(100vw - 120px)', sm: '1200px' }, overflow: 'hidden' }}>
+        <Box sx={{ flexGrow: 1, maxWidth: { xs: 'calc(100vw - 120px)', sm: '1200px' }, overflow: 'visible' }}>
           {categories.map((category: ICategory, index: number) => (
             <Box
               key={`card-${index}`}
               sx={{
                 width: '100%',
                 display: currentPage === index ? 'block' : 'none',
+                overflow: 'visible',
               }}
             >
               <Slide direction={slideDirection} in={currentPage === index}>
@@ -151,6 +154,7 @@ function Carousel() {
                   sx={{
                     width: '100%',
                     px: { xs: 0, sm: 2 },
+                    overflow: 'visible',
                   }}
                 >
                   {categories

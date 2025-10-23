@@ -174,9 +174,10 @@ const AllPosts = ({ category }: { category: string }) => {
               </Typography>
             )}
           </Grid>
-          <Grid size={{ xs: 12, sm: 4 }} sx={{ marginBottom: '2rem' }}>
+          {/* Tags temporarily hidden - will implement later */}
+          {/* <Grid size={{ xs: 12, sm: 4 }} sx={{ marginBottom: '2rem' }}>
             <AllTags />
-          </Grid>
+          </Grid> */}
         </Grid>
       )}
       {allBlogs.results.length >= 0 && (

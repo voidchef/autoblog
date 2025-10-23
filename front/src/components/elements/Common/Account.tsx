@@ -133,12 +133,19 @@ export default function AccountMenu() {
     <>
       {/* Compact Header with Gradient */}
       <Box
+        onClick={() => handleClose(`${ROUTES.AUTHOR}/${user.id}`)}
         sx={{
           background: (theme) => theme.palette.customColors.gradients.primary,
           borderRadius: '8px 8px 0 0',
           pt: 2.5,
           pb: 2,
           px: 2.5,
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+          '&:hover': {
+            opacity: 0.9,
+            transform: 'translateY(-2px)',
+          },
         }}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -259,6 +266,7 @@ export default function AccountMenu() {
 
       {/* User Info Card */}
       <Box
+        onClick={() => handleClose(`${ROUTES.AUTHOR}/${user.id}`)}
         sx={{
           mx: 2,
           mb: 2,
@@ -268,6 +276,15 @@ export default function AccountMenu() {
           display: 'flex',
           alignItems: 'center',
           gap: 2,
+          cursor: 'pointer',
+          transition: 'all 0.2s ease',
+          '&:hover': {
+            opacity: 0.9,
+            transform: 'translateY(-2px)',
+          },
+          '&:active': {
+            transform: 'scale(0.98)',
+          },
         }}
       >
         <Avatar

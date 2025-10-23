@@ -23,14 +23,14 @@ export interface IAppSettings {
   isLoading: boolean;
 }
 
-// Load theme from localStorage or default to 'light'
+// Load theme from localStorage or default to 'dark'
 const getInitialTheme = (): string => {
   try {
     const savedTheme = localStorage.getItem('themeMode');
-    return savedTheme && (savedTheme === 'light' || savedTheme === 'dark') ? savedTheme : 'light';
+    return savedTheme && (savedTheme === 'light' || savedTheme === 'dark') ? savedTheme : 'dark';
   } catch (error) {
     console.warn('Error reading theme from localStorage:', error);
-    return 'light';
+    return 'dark';
   }
 };
 

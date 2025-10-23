@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import { Button, Container, Stack } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
-import { AutoAwesome, TrendingUp, Speed } from '@mui/icons-material';
+import { AutoAwesome, TrendingUp, Speed, Explore, InfoOutlined } from '@mui/icons-material';
 
 const Headline = () => {
   const navigate = useNavigate();
@@ -12,10 +12,11 @@ const Headline = () => {
     <Box
       sx={{
         position: 'relative',
-        minHeight: 'calc(100vh - 64px)',
+        minHeight: { xs: '100vh', md: 'calc(100vh - 64px)' },
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',
+        py: { xs: 4, md: 0 },
         background: (theme) =>
           theme.palette.mode === 'dark'
             ? theme.palette.customColors.gradients.heroDark
@@ -89,7 +90,7 @@ const Headline = () => {
           justifyContent={'center'}
           alignItems={{ xs: 'center', md: 'flex-start' }}
           textAlign={{ xs: 'center', md: 'left' }}
-          sx={{ position: 'relative', zIndex: 1, py: { xs: 3, md: 3 } }}
+          sx={{ position: 'relative', zIndex: 1, py: { xs: 2, md: 3 } }}
         >
           {/* Enhanced Badge with animation */}
           <Box
@@ -100,7 +101,7 @@ const Headline = () => {
               gap: { xs: 1, md: 1.5 },
               px: { xs: 2, md: 3 },
               py: { xs: 1, md: 1.5 },
-              mb: { xs: 3, md: 4 },
+              mb: { xs: 5, md: 4 },
               borderRadius: 50,
               background: (theme) =>
                 theme.palette.mode === 'dark'
@@ -145,7 +146,7 @@ const Headline = () => {
               fontSize: { xs: '2rem', sm: '3rem', md: '4.5rem', lg: '5.5rem' },
               fontWeight: 900,
               lineHeight: { xs: 1.15, md: 1.05 },
-              mb: { xs: 2, md: 3 },
+              mb: { xs: 3, md: 3 },
               background: (theme) =>
                 theme.palette.mode === 'dark'
                   ? theme.palette.customColors.gradients.textDark
@@ -169,7 +170,7 @@ const Headline = () => {
             sx={{
               fontSize: { xs: '0.95rem', sm: '1.15rem', md: '1.35rem' },
               color: 'text.secondary',
-              mb: { xs: 3, md: 5 },
+              mb: { xs: 4, md: 5 },
               maxWidth: '750px',
               lineHeight: { xs: 1.6, md: 1.8 },
               fontWeight: 400,
@@ -181,7 +182,7 @@ const Headline = () => {
           </Typography>
 
           {/* Enhanced Feature Pills */}
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2.5} sx={{ mb: { xs: 4, md: 6 } }} className="animate-fade-in-up">
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2.5} sx={{ mb: { xs: 5, md: 6 } }} className="animate-fade-in-up">
             <Box
               sx={{
                 display: 'flex',
@@ -244,6 +245,7 @@ const Headline = () => {
               variant="contained"
               size="large"
               onClick={() => navigate(ROUTES.ALLPOSTS)}
+              startIcon={<Explore />}
               sx={{
                 px: { xs: 4, md: 5 },
                 py: { xs: 0.75, md: 1 },
@@ -285,6 +287,7 @@ const Headline = () => {
               variant="outlined"
               size="large"
               onClick={() => navigate(ROUTES.ABOUTUS)}
+              startIcon={<InfoOutlined />}
               sx={{
                 px: { xs: 4, md: 5 },
                 py: { xs: 0.75, md: 1 },

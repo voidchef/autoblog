@@ -17,8 +17,14 @@ interface Props {
 
 export default function CategoryCard({ categoryId, categoryIcon, categoryName, categoryDescription }: Props) {
   const navigate = useNavigate();
+  const [imageError, setImageError] = React.useState(false);
+  
   const handleClick = (categoryName: string) => {
     navigate(`/category/${categoryName}`);
+  };
+
+  const handleImageError = () => {
+    setImageError(true);
   };
 
   return (
@@ -28,13 +34,14 @@ export default function CategoryCard({ categoryId, categoryIcon, categoryName, c
         width: { xs: '280px', sm: '200px' },
         height: '100%',
         position: 'relative',
-        overflow: 'hidden',
+        overflow: 'visible',
         background: (theme) =>
           theme.palette.mode === 'dark'
             ? theme.palette.customColors.gradients.cardDark
             : theme.palette.customColors.gradients.cardLight,
         border: '2px solid',
         borderColor: (theme) => (theme.palette.mode === 'dark' ? theme.palette.customColors.borders.primaryDark : theme.palette.customColors.borders.primaryLight),
+        transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -45,6 +52,7 @@ export default function CategoryCard({ categoryId, categoryIcon, categoryName, c
           background: (theme) => theme.palette.customColors.gradients.iconLight,
           opacity: 0,
           transition: 'opacity 0.4s ease',
+          borderRadius: 'inherit',
         },
         '&:hover::before': {
           opacity: 1,
@@ -92,18 +100,35 @@ export default function CategoryCard({ categoryId, categoryIcon, categoryName, c
               transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
               position: 'relative',
               boxShadow: (theme) => `0 8px 24px ${theme.palette.customColors.shadows.primaryLight}`,
+              overflow: 'hidden',
             }}
           >
-            <SvgIcon
-              component={SpaceShip}
-              inheritViewBox
-              sx={{
-                fontSize: '3rem',
-                color: 'primary.main',
-                filter: (theme) => `drop-shadow(0 2px 8px ${theme.palette.customColors.shadows.primary})`,
-                transition: 'all 0.3s ease',
-              }}
-            />
+            {categoryIcon && !imageError ? (
+              <Box
+                component="img"
+                src={categoryIcon}
+                alt={categoryName}
+                onError={handleImageError}
+                sx={{
+                  width: '60%',
+                  height: '60%',
+                  objectFit: 'contain',
+                  filter: (theme) => `drop-shadow(0 2px 8px ${theme.palette.customColors.shadows.primary})`,
+                  transition: 'all 0.3s ease',
+                }}
+              />
+            ) : (
+              <SvgIcon
+                component={SpaceShip}
+                inheritViewBox
+                sx={{
+                  fontSize: '3rem',
+                  color: 'primary.main',
+                  filter: (theme) => `drop-shadow(0 2px 8px ${theme.palette.customColors.shadows.primary})`,
+                  transition: 'all 0.3s ease',
+                }}
+              />
+            )}
           </Box>
 
           <Box sx={{ textAlign: 'center', flexGrow: 1 }}>

@@ -932,8 +932,8 @@ const Profile: React.FC = () => {
                         variant="contained"
                         onClick={() => setIsEditing(true)}
                         startIcon={<EditIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
-                        fullWidth={false}
                         sx={{
+                          width: { xs: '100%', sm: 'auto' },
                           borderRadius: 2,
                           textTransform: 'none',
                           px: { xs: 2, sm: 3 },
@@ -1598,8 +1598,9 @@ const Profile: React.FC = () => {
                           >
                             <Stack 
                               direction={{ xs: 'column', sm: 'row' }}
-                              spacing={2} 
+                              spacing={{ xs: 2, sm: 2 }}
                               justifyContent="flex-end"
+                              sx={{ gap: { xs: 2, sm: 0 } }}
                             >
                               <Button
                                 variant="outlined"

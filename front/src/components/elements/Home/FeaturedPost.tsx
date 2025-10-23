@@ -306,6 +306,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
                     border: '2px solid',
                     borderColor: (theme) =>
                       theme.palette.mode === 'dark' ? 'rgba(29, 78, 216, 0.15)' : 'rgba(29, 78, 216, 0.1)',
+                    minHeight: { xs: 140, sm: 160 },
                     '&:hover': {
                       transform: 'translateX(12px) translateY(-4px)',
                       borderColor: 'primary.main',
@@ -321,31 +322,32 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
                     component="img"
                     className="secondary-featured-image"
                     sx={{
-                      width: { xs: 70, sm: 75 },
-                      height: { xs: 70, sm: 75 },
+                      width: { xs: 120, sm: 140 },
+                      minWidth: { xs: 120, sm: 140 },
+                      height: '100%',
                       objectFit: 'cover',
                       transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
                     }}
                     image={post.selectedImage}
                     alt={post.topic}
                   />
-                  <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', py: 0.75, px: 1.25 }}>
-                    <Box sx={{ mb: 0.25 }}>
+                  <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', py: { xs: 1.5, sm: 2 }, px: { xs: 1.5, sm: 2 } }}>
+                    <Box sx={{ mb: 0.5 }}>
                       {post.category && (
                         <Chip 
                           label={post.category} 
                           size="small" 
                           sx={{ 
-                            mb: 0.25,
-                            height: '16px',
-                            fontSize: '0.6rem',
+                            mb: 0.5,
+                            height: '18px',
+                            fontSize: '0.65rem',
                             background: (theme) => theme.palette.mode === 'dark'
                               ? 'linear-gradient(135deg, #0d9488 0%, #1d4ed8 100%)'
                               : 'linear-gradient(135deg, #0d9488 0%, #1d4ed8 100%)',
                             color: 'white',
                             fontWeight: 600,
                             '& .MuiChip-label': {
-                              px: 0.75,
+                              px: 1,
                             },
                           }} 
                         />
@@ -357,13 +359,13 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
                       component="h4"
                       sx={{
                         fontWeight: 600,
-                        fontSize: { xs: '0.75rem', sm: '0.8rem' },
-                        mb: 0.5,
+                        fontSize: { xs: '0.875rem', sm: '0.95rem' },
+                        mb: 1,
                         display: '-webkit-box',
                         WebkitLineClamp: 2,
                         WebkitBoxOrient: 'vertical',
                         overflow: 'hidden',
-                        lineHeight: 1.3,
+                        lineHeight: 1.4,
                       }}
                     >
                       {post.title || post.topic}
@@ -373,9 +375,9 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
                       <Avatar
                         {...stringAvatar(post.author.name)}
                         sx={{
-                          width: 28,
-                          height: 28,
-                          fontSize: '0.75rem',
+                          width: 32,
+                          height: 32,
+                          fontSize: '0.8rem',
                           fontWeight: 600,
                           cursor: 'pointer',
                         }}
@@ -388,7 +390,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
                         <Typography 
                           variant="caption" 
                           color="text.primary" 
-                          fontSize="0.75rem" 
+                          fontSize="0.8rem" 
                           fontWeight={600}
                           sx={{
                             cursor: 'pointer',
@@ -401,10 +403,10 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
                         >
                           {post.author.name}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary" fontSize="0.7rem">
+                        <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
                           •
                         </Typography>
-                        <Typography variant="caption" color="text.secondary" fontSize="0.7rem">
+                        <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
                           {new Date(post.createdAt).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'short',

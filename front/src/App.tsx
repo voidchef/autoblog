@@ -41,6 +41,11 @@ export default function App() {
   const { data: appSettingsData, isLoading: appSettingsLoading } = useAppSettings();
   const { themeMode } = useTheme();
 
+  // Scroll to top on route change
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   // Track page views with Google Analytics
   React.useEffect(() => {
     if (location.pathname.startsWith('/blog/') && import.meta.env.VITE_GA_ID) {
@@ -58,7 +63,7 @@ export default function App() {
     return (
       <ThemeProvider theme={themeMode === 'light' ? lightTheme : darkTheme}>
         <CssBaseline />
-        <Box height="100vh" display="flex" justifyContent="center" alignItems="center">
+        <Box height="100vh" display="flex" justifyContent="center" alignItems="center" flexDirection="column">
           <Box
             width={{
               xl: '55%',
@@ -69,6 +74,18 @@ export default function App() {
           >
             <Loading />
           </Box>
+          <Typography 
+            variant="body2" 
+            color="text.secondary" 
+            sx={{ 
+              mt: 3, 
+              textAlign: 'center',
+              px: 2,
+              maxWidth: '400px'
+            }}
+          >
+            Starting up the server... This may take a few moments as our service is hosted on Render's free tier.
+          </Typography>
         </Box>
       </ThemeProvider>
     );

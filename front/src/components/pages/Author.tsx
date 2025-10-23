@@ -205,39 +205,44 @@ const Author: React.FC = () => {
 
                 {/* Stats */}
                 <Stack
-                  direction={{ xs: 'column', sm: 'row' }}
-                  spacing={3}
-                  sx={{ mb: 3, justifyContent: { xs: 'center', md: 'flex-start' } }}
+                  direction="row"
+                  spacing={{ xs: 2, sm: 3 }}
+                  sx={{ 
+                    mb: 3, 
+                    justifyContent: { xs: 'center', md: 'flex-start' },
+                    flexWrap: 'wrap',
+                    rowGap: 2,
+                  }}
                 >
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="h4" sx={{ fontWeight: 700 }}>
+                  <Box sx={{ textAlign: 'center', minWidth: { xs: '70px', sm: 'auto' } }}>
+                    <Typography variant="h4" sx={{ fontWeight: 700, fontSize: { xs: '1.5rem', sm: '2rem' } }}>
                       {totalArticles}
                     </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                    <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                       Articles
                     </Typography>
                   </Box>
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="h4" sx={{ fontWeight: 700 }}>
+                  <Box sx={{ textAlign: 'center', minWidth: { xs: '70px', sm: 'auto' } }}>
+                    <Typography variant="h4" sx={{ fontWeight: 700, fontSize: { xs: '1.5rem', sm: '2rem' } }}>
                       {authorData.followers?.length || 0}
                     </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                    <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                       Followers
                     </Typography>
                   </Box>
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="h4" sx={{ fontWeight: 700 }}>
+                  <Box sx={{ textAlign: 'center', minWidth: { xs: '70px', sm: 'auto' } }}>
+                    <Typography variant="h4" sx={{ fontWeight: 700, fontSize: { xs: '1.5rem', sm: '2rem' } }}>
                       {authorData.following?.length || 0}
                     </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                    <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                       Following
                     </Typography>
                   </Box>
-                  <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="h4" sx={{ fontWeight: 700 }}>
+                  <Box sx={{ textAlign: 'center', minWidth: { xs: '70px', sm: 'auto' } }}>
+                    <Typography variant="h4" sx={{ fontWeight: 700, fontSize: { xs: '1.5rem', sm: '2rem' } }}>
                       {totalLikes}
                     </Typography>
-                    <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                    <Typography variant="body2" sx={{ opacity: 0.9, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
                       Total Likes
                     </Typography>
                   </Box>
