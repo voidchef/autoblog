@@ -168,6 +168,11 @@ userSchema.pre('save', async function (next) {
     user.openAiKey = encrypt(user.openAiKey, userId);
   }
 
+  // Encrypt Google API key if modified and not already encrypted
+  if (user.isModified('googleApiKey') && user.googleApiKey && !isEncrypted(user.googleApiKey)) {
+    user.googleApiKey = encrypt(user.googleApiKey, userId);
+  }
+
   // Encrypt WordPress app password if modified and not already encrypted
   if (user.isModified('wordpressAppPassword') && user.wordpressAppPassword && !isEncrypted(user.wordpressAppPassword)) {
     user.wordpressAppPassword = encrypt(user.wordpressAppPassword, userId);
@@ -192,6 +197,15 @@ userSchema.pre('save', async function (next) {
 userSchema.method('getDecryptedOpenAiKey', function (): string {
   if (!this.openAiKey) return '';
   return decrypt(this.openAiKey, (this._id as mongoose.Types.ObjectId).toString());
+});
+
+/**
+ * Method to get decrypted Google API key
+ * @returns {string}
+ */
+userSchema.method('getDecryptedGoogleApiKey', function (): string {
+  if (!this.googleApiKey) return '';
+  return decrypt(this.googleApiKey, (this._id as mongoose.Types.ObjectId).toString());
 });
 
 /**

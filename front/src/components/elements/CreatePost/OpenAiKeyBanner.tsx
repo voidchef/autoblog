@@ -12,6 +12,8 @@ import { alpha, keyframes } from '@mui/material/styles';
 
 interface OpenAiKeyBannerProps {
   hasOpenAiKey: boolean;
+  hasGoogleApiKey?: boolean;
+  modelProvider?: 'openai' | 'google' | 'mistral';
 }
 
 const pulse = keyframes`
@@ -23,16 +25,24 @@ const pulse = keyframes`
   }
 `;
 
-const OpenAiKeyBanner: React.FC<OpenAiKeyBannerProps> = ({ hasOpenAiKey }) => {
+const OpenAiKeyBanner: React.FC<OpenAiKeyBannerProps> = ({ hasOpenAiKey, hasGoogleApiKey = false, modelProvider }) => {
   const navigate = useNavigate();
 
   const handleGoToProfile = () => {
     navigate(ROUTES.PROFILE);
   };
 
-  if (hasOpenAiKey) {
+  // Determine which API key is needed based on the provider
+  const needsGoogleKey = modelProvider === 'google' && !hasGoogleApiKey;
+  const needsOpenAiKey = (modelProvider === 'openai' || modelProvider === 'mistral' || !modelProvider) && !hasOpenAiKey;
+
+  // Show banner if either key is missing for the selected provider
+  if (!needsGoogleKey && !needsOpenAiKey) {
     return null;
   }
+
+  const keyType = modelProvider === 'google' ? 'Google API' : 'OpenAI API';
+  const serviceName = modelProvider === 'google' ? 'Google Gemini' : modelProvider === 'mistral' ? 'Mistral AI' : 'OpenAI GPT';
 
   return (
     <Box sx={{ marginX: { xs: '0.5rem', sm: '7rem' }, marginBottom: 3 }}>
@@ -109,11 +119,11 @@ const OpenAiKeyBanner: React.FC<OpenAiKeyBannerProps> = ({ hasOpenAiKey }) => {
                   fontSize: { xs: '0.813rem', sm: '0.875rem' }
                 }}
               >
-                To unlock the power of AI-generated content, you need to add your OpenAI API key. 
+                To unlock the power of AI-generated content with {serviceName}, you need to add your {keyType} key. 
                 Don't have one? Get it from{' '}
                 <Typography
                   component="a"
-                  href="https://platform.openai.com/api-keys"
+                  href={modelProvider === 'google' ? 'https://aistudio.google.com/app/apikey' : 'https://platform.openai.com/api-keys'}
                   target="_blank"
                   rel="noopener noreferrer"
                   sx={{
@@ -126,7 +136,7 @@ const OpenAiKeyBanner: React.FC<OpenAiKeyBannerProps> = ({ hasOpenAiKey }) => {
                     },
                   }}
                 >
-                  OpenAI's platform
+                  {modelProvider === 'google' ? "Google AI Studio" : "OpenAI's platform"}
                 </Typography>
                 .
               </Typography>

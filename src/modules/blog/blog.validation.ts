@@ -9,6 +9,7 @@ export const generateBlog: Record<keyof IGenerateBlog, any> = {
   audience: Joi.string().optional(),
   language: Joi.string().required(),
   llmModel: Joi.string().required(),
+  llmProvider: Joi.string().valid('openai', 'google', 'mistral').optional(),
   category: Joi.string().required(),
   tags: Joi.array().optional(),
 };

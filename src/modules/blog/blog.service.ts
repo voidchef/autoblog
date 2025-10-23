@@ -47,19 +47,43 @@ export const generateBlog = async (
   generateBlogData: IGenerateBlog,
   author: mongoose.Types.ObjectId
 ): Promise<IBlogDoc> => {
-  // Get the user to retrieve the decrypted OpenAI key
+  // Get the user to retrieve the decrypted API key
   const user = await getUserById(author);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
 
-  if (!user.hasOpenAiKey()) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'OpenAI API key is required for blog generation');
-  }
+  const { llmProvider } = generateBlogData;
+  let decryptedApiKey: string;
 
-  const decryptedApiKey = user.getDecryptedOpenAiKey();
-  if (!decryptedApiKey) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to decrypt OpenAI API key');
+  // Determine which API key to use based on the provider field
+  if (llmProvider === 'google') {
+    // Google GenAI models
+    if (!user.hasGoogleApiKey) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Google API key is required for Gemini models');
+    }
+    decryptedApiKey = user.getDecryptedGoogleApiKey();
+    if (!decryptedApiKey) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to decrypt Google API key');
+    }
+  } else if (llmProvider === 'mistral') {
+    // Mistral models - using OpenAI key field for now, could be extended
+    if (!user.hasOpenAiKey()) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Mistral API key is required for Mistral models');
+    }
+    decryptedApiKey = user.getDecryptedOpenAiKey();
+    if (!decryptedApiKey) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to decrypt Mistral API key');
+    }
+  } else {
+    // OpenAI models (default)
+    if (!user.hasOpenAiKey()) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'OpenAI API key is required for blog generation');
+    }
+    decryptedApiKey = user.getDecryptedOpenAiKey();
+    if (!decryptedApiKey) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to decrypt OpenAI API key');
+    }
   }
 
   const { category, tags, ...prompt } = generateBlogData;

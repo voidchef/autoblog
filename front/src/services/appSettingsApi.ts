@@ -13,10 +13,16 @@ export interface IFieldData {
   label: string;
 }
 
+export interface ILanguageModel {
+  value: string;
+  label: string;
+  provider: 'openai' | 'google' | 'mistral';
+}
+
 export interface IAppSettingsResponse {
   categories: ICategory[];
   languages: IFieldData[];
-  languageModels: IFieldData[];
+  languageModels: ILanguageModel[];
   queryType: IFieldData[];
 }
 

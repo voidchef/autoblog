@@ -40,11 +40,32 @@ const selectFieldSchema = new mongoose.Schema(
   { _id: false }
 );
 
+const languageModelSchema = new mongoose.Schema(
+  {
+    label: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    value: {
+      type: String,
+      trim: true,
+      required: true,
+    },
+    provider: {
+      type: String,
+      enum: ['openai', 'google', 'mistral'],
+      required: true,
+    },
+  },
+  { _id: false }
+);
+
 const appSettingsSchema = new mongoose.Schema<IAppSettingsDoc, IAppSettingsModel>(
   {
     categories: [categorySchema],
     languages: [selectFieldSchema],
-    languageModels: [selectFieldSchema],
+    languageModels: [languageModelSchema],
     queryType: [selectFieldSchema],
   },
   {

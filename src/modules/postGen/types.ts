@@ -6,6 +6,9 @@ export type llm =
   | 'mistral-small-latest'
   | 'mistral-medium-latest'
   | 'mistral-large-latest'
+  | 'gemini-2.5-flash'
+  | 'gemini-2.5-pro'
+  | 'gemini-2.0-flash'
   | 'claude'
   | 'groq';
 
@@ -20,6 +23,9 @@ export function getLLMs(): llm[] {
     'mistral-small-latest',
     'mistral-medium-latest',
     'mistral-large-latest',
+    'gemini-2.5-flash',
+    'gemini-2.5-pro',
+    'gemini-2.0-flash',
     'claude',
     'groq',
   ];

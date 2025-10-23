@@ -9,6 +9,7 @@ export interface IGenerateBlog {
   audience?: string;
   language: string;
   llmModel: llm;
+  llmProvider?: 'openai' | 'google' | 'mistral';
   category: string;
   tags?: string[];
 }

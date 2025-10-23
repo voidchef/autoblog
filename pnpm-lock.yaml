@@ -19,10 +19,13 @@ importers:
         version: 6.3.1
       '@langchain/community':
         specifier: 0.3.57
-        version: 0.3.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.914.0)(@aws-sdk/credential-provider-node@3.914.0)(@browserbasehq/sdk@2.6.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.54.1)(deepmerge@4.3.1)(dotenv@17.2.3)(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(zod@3.25.76))(@ibm-cloud/watsonx-ai@1.6.9)(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))(@langchain/mistralai@0.2.3(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(@smithy/util-utf8@2.3.0)(axios@1.12.2)(fast-xml-parser@5.2.5)(google-auth-library@10.4.1)(handlebars@4.7.8)(ibm-cloud-sdk-core@5.4.2)(ignore@5.3.2)(jsonwebtoken@9.0.2)(lodash@4.17.21)(mongodb@6.20.0(socks@2.8.7))(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(playwright@1.54.1)(weaviate-client@3.9.0)(ws@8.18.3)
+        version: 0.3.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.914.0)(@aws-sdk/credential-provider-node@3.914.0)(@browserbasehq/sdk@2.6.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.54.1)(deepmerge@4.3.1)(dotenv@17.2.3)(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(zod@3.25.76))(@ibm-cloud/watsonx-ai@1.6.9)(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))(@langchain/google-genai@0.2.18(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(@langchain/mistralai@0.2.3(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(@smithy/util-utf8@2.3.0)(axios@1.12.2)(fast-xml-parser@5.2.5)(google-auth-library@10.4.1)(handlebars@4.7.8)(ibm-cloud-sdk-core@5.4.2)(ignore@5.3.2)(jsonwebtoken@9.0.2)(lodash@4.17.21)(mongodb@6.20.0(socks@2.8.7))(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(playwright@1.54.1)(weaviate-client@3.9.0)(ws@8.18.3)
       '@langchain/core':
         specifier: 0.3.78
         version: 0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))
+      '@langchain/google-genai':
+        specifier: 0.2.18
+        version: 0.2.18(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))
       '@langchain/mistralai':
         specifier: 0.2.3
         version: 0.2.3(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))
@@ -50,9 +53,6 @@ importers:
       express-rate-limit:
         specifier: ^8.1.0
         version: 8.1.0(express@5.1.0)
-      google-genai:0.2.18:
-        specifier: link:@langchain/google-genai:0.2.18
-        version: link:@langchain/google-genai:0.2.18
       helmet:
         specifier: ^8.1.0
         version: 8.1.0
@@ -73,7 +73,7 @@ importers:
         version: 9.0.2
       langchain:
         specifier: ^0.3.36
-        version: 0.3.36(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))(@langchain/mistralai@0.2.3(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(axios@1.12.2)(handlebars@4.7.8)(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(ws@8.18.3)
+        version: 0.3.36(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))(@langchain/google-genai@0.2.18(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(@langchain/mistralai@0.2.3(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(axios@1.12.2)(handlebars@4.7.8)(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(ws@8.18.3)
       moment:
         specifier: ^2.30.1
         version: 2.30.1
@@ -757,6 +757,10 @@ packages:
     resolution: {integrity: sha512-gAcNqVL6E6V+d7yZbv5pQAPh5ZTE66UB0n2AZB3QaVaQDo9H8yalja3u2v3NE4QTVt03DkpoIuyvzs4i3w/b7A==}
     engines: {node: '>=18'}
 
+  '@google/generative-ai@0.24.1':
+    resolution: {integrity: sha512-MqO+MLfM6kjxcKoy0p1wRzG3b4ZZXtPI+z2IE26UogS2Cm/XHO+7gGRBh6gcJsOiIVoH93UwKvW4HdgiOZCy9Q==}
+    engines: {node: '>=18.0.0'}
+
   '@graphql-typed-document-node/core@3.2.0':
     resolution: {integrity: sha512-mB9oAsNCm9aM3/SOv4YtBMqZbYj10R7dkq8byBqxGY/ncFwhf2oQzMV+LCRlWoDSEBJ3COiR1yeDvMtsoOsuFQ==}
     peerDependencies:
@@ -1318,6 +1322,12 @@ packages:
   '@langchain/core@0.3.78':
     resolution: {integrity: sha512-Nn0x9erQlK3zgtRU1Z8NUjLuyW0gzdclMsvLQ6wwLeDqV91pE+YKl6uQb+L2NUDs4F0N7c2Zncgz46HxrvPzuA==}
     engines: {node: '>=18'}
+
+  '@langchain/google-genai@0.2.18':
+    resolution: {integrity: sha512-m9EiN3VKC01A7/625YQ6Q1Lqq8zueewADX4W5Tcme4RImN75zkg2Z7FYbD1Fo6Zwolc4wBNO6LUtbg3no4rv1Q==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@langchain/core': '>=0.3.58 <0.4.0'
 
   '@langchain/mistralai@0.2.3':
     resolution: {integrity: sha512-U2gaoRF7zilpc5pvdSoPTpYWo/vF47PPeHwCwd98RSFBracEZ3WGJ4zoXTqM7+4/WF3bTbDZ5f6+YO2PDX66qQ==}
@@ -5923,6 +5933,10 @@ packages:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
     hasBin: true
 
+  uuid@11.1.0:
+    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
+    hasBin: true
+
   uuid@3.4.0:
     resolution: {integrity: sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==}
     deprecated: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
@@ -7113,6 +7127,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@google/generative-ai@0.24.1': {}
+
   '@graphql-typed-document-node/core@3.2.0(graphql@16.11.0)':
     dependencies:
       graphql: 16.11.0
@@ -7389,7 +7405,7 @@ snapshots:
 
   '@jsdevtools/ono@7.1.3': {}
 
-  '@langchain/community@0.3.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.914.0)(@aws-sdk/credential-provider-node@3.914.0)(@browserbasehq/sdk@2.6.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.54.1)(deepmerge@4.3.1)(dotenv@17.2.3)(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(zod@3.25.76))(@ibm-cloud/watsonx-ai@1.6.9)(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))(@langchain/mistralai@0.2.3(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(@smithy/util-utf8@2.3.0)(axios@1.12.2)(fast-xml-parser@5.2.5)(google-auth-library@10.4.1)(handlebars@4.7.8)(ibm-cloud-sdk-core@5.4.2)(ignore@5.3.2)(jsonwebtoken@9.0.2)(lodash@4.17.21)(mongodb@6.20.0(socks@2.8.7))(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(playwright@1.54.1)(weaviate-client@3.9.0)(ws@8.18.3)':
+  '@langchain/community@0.3.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.914.0)(@aws-sdk/credential-provider-node@3.914.0)(@browserbasehq/sdk@2.6.0)(@browserbasehq/stagehand@1.14.0(@playwright/test@1.54.1)(deepmerge@4.3.1)(dotenv@17.2.3)(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(zod@3.25.76))(@ibm-cloud/watsonx-ai@1.6.9)(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))(@langchain/google-genai@0.2.18(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(@langchain/mistralai@0.2.3(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(@smithy/util-utf8@2.3.0)(axios@1.12.2)(fast-xml-parser@5.2.5)(google-auth-library@10.4.1)(handlebars@4.7.8)(ibm-cloud-sdk-core@5.4.2)(ignore@5.3.2)(jsonwebtoken@9.0.2)(lodash@4.17.21)(mongodb@6.20.0(socks@2.8.7))(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(playwright@1.54.1)(weaviate-client@3.9.0)(ws@8.18.3)':
     dependencies:
       '@browserbasehq/stagehand': 1.14.0(@playwright/test@1.54.1)(deepmerge@4.3.1)(dotenv@17.2.3)(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(zod@3.25.76)
       '@ibm-cloud/watsonx-ai': 1.6.9
@@ -7401,7 +7417,7 @@ snapshots:
       flat: 5.0.2
       ibm-cloud-sdk-core: 5.4.2
       js-yaml: 4.1.0
-      langchain: 0.3.36(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))(@langchain/mistralai@0.2.3(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(axios@1.12.2)(handlebars@4.7.8)(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(ws@8.18.3)
+      langchain: 0.3.36(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))(@langchain/google-genai@0.2.18(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(@langchain/mistralai@0.2.3(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(axios@1.12.2)(handlebars@4.7.8)(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(ws@8.18.3)
       langsmith: 0.3.74(openai@6.6.0(ws@8.18.3)(zod@3.25.76))
       openai: 6.6.0(ws@8.18.3)(zod@3.25.76)
       uuid: 10.0.0
@@ -7461,6 +7477,12 @@ snapshots:
       - '@opentelemetry/exporter-trace-otlp-proto'
       - '@opentelemetry/sdk-trace-base'
       - openai
+
+  '@langchain/google-genai@0.2.18(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))':
+    dependencies:
+      '@google/generative-ai': 0.24.1
+      '@langchain/core': 0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))
+      uuid: 11.1.0
 
   '@langchain/mistralai@0.2.3(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))':
     dependencies:
@@ -10970,7 +10992,7 @@ snapshots:
 
   kuler@2.0.0: {}
 
-  langchain@0.3.36(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))(@langchain/mistralai@0.2.3(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(axios@1.12.2)(handlebars@4.7.8)(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(ws@8.18.3):
+  langchain@0.3.36(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))(@langchain/google-genai@0.2.18(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(@langchain/mistralai@0.2.3(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))))(axios@1.12.2)(handlebars@4.7.8)(openai@6.6.0(ws@8.18.3)(zod@3.25.76))(ws@8.18.3):
     dependencies:
       '@langchain/core': 0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76))
       '@langchain/openai': 0.6.16(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))(ws@8.18.3)
@@ -10985,6 +11007,7 @@ snapshots:
       yaml: 2.8.1
       zod: 3.25.76
     optionalDependencies:
+      '@langchain/google-genai': 0.2.18(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))
       '@langchain/mistralai': 0.2.3(@langchain/core@0.3.78(openai@6.6.0(ws@8.18.3)(zod@3.25.76)))
       axios: 1.12.2
       handlebars: 4.7.8
@@ -12755,6 +12778,8 @@ snapshots:
   utils-merge@1.0.1: {}
 
   uuid@10.0.0: {}
+
+  uuid@11.1.0: {}
 
   uuid@3.4.0: {}
 

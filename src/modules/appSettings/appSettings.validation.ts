@@ -28,6 +28,7 @@ export const updateSelectFields = {
       languageModels: Joi.array().items({
         value: Joi.string().trim(),
         label: Joi.string().trim(),
+        provider: Joi.string().valid('openai', 'google', 'mistral').required(),
       }),
       tones: Joi.array().items({
         value: Joi.string().trim(),

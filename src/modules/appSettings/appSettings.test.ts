@@ -10,7 +10,7 @@ import setupTestDB from '../jest/setupTestDB';
 import * as tokenService from '../token/token.service';
 import tokenTypes from '../token/token.types';
 import User from '../user/user.model';
-import { ICategories, IFieldData } from './appSettings.interfaces';
+import { ICategories, IFieldData, ILanguageModel } from './appSettings.interfaces';
 import AppSettings from './appSettings.model';
 
 setupTestDB();
@@ -58,9 +58,9 @@ const languagesData: IFieldData[] = [
   { label: 'Spanish', value: 'es' },
 ];
 
-const languageModelsData: IFieldData[] = [
-  { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo' },
-  { label: 'GPT-4', value: 'gpt-4' },
+const languageModelsData: ILanguageModel[] = [
+  { label: 'GPT-3.5 Turbo', value: 'gpt-3.5-turbo', provider: 'openai' },
+  { label: 'GPT-4', value: 'gpt-4', provider: 'openai' },
 ];
 
 const queryTypeData: IFieldData[] = [
@@ -315,7 +315,7 @@ describe('AppSettings routes', () => {
       await insertUsers([admin]);
       await insertAppSettings({
         languages: languagesData,
-        languageModels: [{ label: 'Claude', value: 'claude-3' }],
+        languageModels: [{ label: 'Claude', value: 'claude-3', provider: 'openai' }],
         queryType: queryTypeData,
       });
 

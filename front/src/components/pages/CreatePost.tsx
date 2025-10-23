@@ -57,10 +57,6 @@ export default function CreatePost() {
   const { data: blog, isLoading } = useGetBlogQuery(blogId, { skip: !blogId });
   const [updateBlog] = useUpdateBlogMutation();
 
-  // Check if user has OpenAI key
-  const hasOpenAiKey = user?.hasOpenAiKey || false;
-  const isFormDisabled = !hasOpenAiKey;
-
   React.useEffect(() => {
     if (!blogId) {
       dispatch(clearBlog());
@@ -83,6 +79,22 @@ export default function CreatePost() {
   const [images, setImages] = React.useState<string[]>([]);
   const [blogImage, setBlogImage] = React.useState<string>('');
   const [isPublished, setIsPublished] = React.useState(false);
+
+  // Check if user has API keys
+  const hasOpenAiKey = user?.hasOpenAiKey || false;
+  const hasGoogleApiKey = user?.hasGoogleApiKey || false;
+  
+  // Get the provider for the selected model
+  const selectedModelData = appSettings.languageModels.find(
+    (model) => model.value === formData.languageModel
+  );
+  const modelProvider = selectedModelData?.provider;
+  
+  // Determine if form should be disabled based on selected model provider
+  const isFormDisabled = 
+    modelProvider === 'google' ? !hasGoogleApiKey :
+    modelProvider === 'mistral' ? !hasOpenAiKey :
+    !hasOpenAiKey; // Default to OpenAI
 
   const handleOpen = () => {
     setOpen(true);
@@ -187,6 +199,7 @@ export default function CreatePost() {
         audience: formData.audience || undefined,
         language: formData.language,
         llmModel: formData.languageModel,
+        llmProvider: modelProvider,
         category: formData.category,
         tags: formData.tags,
       };
@@ -271,7 +284,11 @@ export default function CreatePost() {
       </Box>
       
       {/* OpenAI Key Banner */}
-      <OpenAiKeyBanner hasOpenAiKey={hasOpenAiKey} />
+      <OpenAiKeyBanner 
+        hasOpenAiKey={hasOpenAiKey} 
+        hasGoogleApiKey={hasGoogleApiKey}
+        modelProvider={modelProvider}
+      />
       
       {images.length > 0 && (
         <ImagePicker

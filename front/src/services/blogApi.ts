@@ -7,6 +7,7 @@ export interface IBlogData {
   audience?: string;
   language: string;
   llmModel: string;
+  llmProvider?: 'openai' | 'google' | 'mistral';
   category: string;
   tags?: string;
 }
@@ -35,6 +36,7 @@ export interface IBlog {
   audience?: string;
   language: string;
   llmModel: string;
+  llmProvider?: 'openai' | 'google' | 'mistral';
   generatedImages?: string[];
   selectedImage?: string;
   audioNarrationUrl?: string;

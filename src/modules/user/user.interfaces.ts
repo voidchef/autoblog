@@ -29,6 +29,8 @@ export interface IUserDoc extends IUser, Document {
   isPasswordMatch(password: string): Promise<boolean>;
   hasOpenAiKey(): boolean;
   getDecryptedOpenAiKey(): string;
+  hasGoogleApiKey?: boolean;
+  getDecryptedGoogleApiKey(): string;
   hasWordPressConfig(): boolean;
   getDecryptedWordPressPassword(): string;
   hasMediumConfig(): boolean;
