@@ -7,7 +7,7 @@ const OAuthLinkButtons: React.FC = () => {
   const { data, isLoading } = useGetOAuthConnectionsQuery();
 
   const handleOAuthLink = (provider: 'google' | 'apple') => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+    const apiUrl = import.meta.env.VITE_SERVER_URL;
     const redirectUrl = `${apiUrl}/v1/auth/${provider}?link=true`;
     window.location.href = redirectUrl;
   };

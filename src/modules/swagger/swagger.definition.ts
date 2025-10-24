@@ -15,6 +15,8 @@ Features:
 - Multi-platform publishing (WordPress, Medium)
 - Comment system with nested replies
 - Like/dislike functionality
+- Contact form and message management
+- OAuth integration (Google, Apple)
 - User follow system
 - Google Analytics integration
 - SEO optimization tools`,
@@ -54,6 +56,14 @@ Features:
     {
       name: 'Comments',
       description: 'Comment system with nested replies',
+    },
+    {
+      name: 'Contact',
+      description: 'Contact form and message management',
+    },
+    {
+      name: 'OAuth Connections',
+      description: 'OAuth connection management for Google and Apple',
     },
     {
       name: 'AppSettings',

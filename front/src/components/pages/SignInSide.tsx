@@ -155,11 +155,11 @@ export default function SignInSide() {
   const isLoading = signUp ? registerLoading : loginLoading;
 
   const handleGoogleSignIn = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/v1/auth/google`;
+    window.location.href = `${import.meta.env.VITE_SERVER_URL}/v1/auth/google`;
   };
 
   const handleAppleSignIn = () => {
-    window.location.href = `${import.meta.env.VITE_API_URL}/v1/auth/apple`;
+    window.location.href = `${import.meta.env.VITE_SERVER_URL}/v1/auth/apple`;
   };
 
   return (

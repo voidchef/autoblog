@@ -8,7 +8,7 @@ This guide explains how to set up Google and Apple OAuth authentication.
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project or select existing one
-3. Enable Google+ API
+3. Enable **Google+ API**
 
 ### 2. Configure OAuth Consent Screen
 
@@ -21,23 +21,42 @@ This guide explains how to set up Google and Apple OAuth authentication.
 4. Add scopes:
    - `userinfo.email`
    - `userinfo.profile`
+5. Save and continue
 
 ### 3. Create OAuth 2.0 Credentials
 
 1. Navigate to **APIs & Services** > **Credentials**
 2. Click **Create Credentials** > **OAuth client ID**
 3. Choose **Web application**
-4. Add authorized redirect URIs:
-   - `http://localhost:3000/v1/auth/google/callback` (development)
-   - `https://yourapp.com/v1/auth/google/callback` (production)
-5. Save the **Client ID** and **Client Secret**
+4. Configure:
 
-### 4. Update Environment Variables
+   **Authorized JavaScript origins:**
+   ```
+   http://localhost:3000
+   http://localhost:5173
+   ```
+   
+   **Authorized redirect URIs:**
+   ```
+   http://localhost:3000/v1/auth/google/callback
+   ```
+   
+   For production, add:
+   ```
+   https://yourdomain.com/v1/auth/google/callback
+   ```
 
-```bash
-GOOGLE_CLIENT_ID=123456789-abcdefghijk.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=GOCSPX-abcdefghijklmnop
-```
+5. Click **CREATE**
+6. Copy the **Client ID** and **Client Secret**
+7. Add them to your backend `.env` file
+
+### 4. Important Notes for Google OAuth
+
+- Use `http://` (not `https://`) for localhost
+- Port numbers must match exactly (`3000` for backend, `5173` for frontend)
+- No trailing slashes in URLs
+- Changes may take a few minutes to propagate
+- The callback URL must point to your **backend server**, not frontend
 
 ## Apple OAuth Setup
 
@@ -64,8 +83,8 @@ GOOGLE_CLIENT_SECRET=GOCSPX-abcdefghijklmnop
    - Primary App ID: Your registered App ID
    - Website URLs: `https://yourapp.com`
    - Return URLs: 
-     - `http://localhost:3000/v1/auth/apple/callback` (dev)
-     - `https://yourapp.com/v1/auth/apple/callback` (prod)
+     - `https://localhost:3000/v1/auth/apple/callback` (development)
+     - `https://yourdomain.com/v1/auth/apple/callback` (production)
 
 ### 4. Create a Private Key
 
@@ -83,13 +102,20 @@ GOOGLE_CLIENT_SECRET=GOCSPX-abcdefghijklmnop
 
 ### 6. Update Environment Variables
 
+Add to your backend `.env` file:
+
 ```bash
 APPLE_CLIENT_ID=com.yourapp.service
 APPLE_TEAM_ID=ABC123DEF4
 APPLE_KEY_ID=XYZ789GHI0
 APPLE_PRIVATE_KEY_PATH=./AuthKey_XYZ789GHI0.p8
 ```
-   
+
 ### 7. Apple OAuth Development Tips
+
 1. Apple OAuth requires HTTPS even in development
-2. Use tools like ngrok to create HTTPS tunnel:
+2. For local development with HTTPS, use tools like [ngrok](https://ngrok.com/):
+   ```bash
+   ngrok http 3000
+   ```
+   Then update your Apple Services ID return URL to the ngrok HTTPS URL

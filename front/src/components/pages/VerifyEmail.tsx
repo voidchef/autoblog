@@ -44,7 +44,7 @@ const VerifyEmail: React.FC = () => {
       }
 
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_URL}/v1/auth/verify-email?token=${token}`, {
+        const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/v1/auth/verify-email?token=${token}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

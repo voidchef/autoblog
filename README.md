@@ -68,7 +68,28 @@
   - Loading states and error handling
   - Mobile-friendly touch interactions
 
-### 🚀 Multi-Platform Publishing
+### � Contact Management
+- **Contact Form**: Public contact form for visitor inquiries
+  - Email validation and confirmation
+  - Query type categorization
+  - Status tracking (new, in-progress, resolved)
+  - Admin dashboard for message management
+- **Query Types**: Customizable inquiry categories
+  - Support, feedback, sales, and custom types
+  - Admin-managed query type configuration
+  - Active/inactive status control
+
+### 🔗 OAuth Integration
+- **Multi-Provider Authentication**: Connect accounts with OAuth providers
+  - Google OAuth integration
+  - Apple Sign-In support
+- **Connection Management**: Manage connected OAuth accounts
+  - View all connected accounts
+  - Token refresh and renewal
+  - Connection status monitoring
+  - Unlink accounts when needed
+
+### �🚀 Multi-Platform Publishing
 - **WordPress Integration**: Publish directly to WordPress sites via REST API
   - One-click publishing to connected WordPress sites
   - Automatic formatting and media handling
@@ -145,20 +166,31 @@
    MONGODB_URL=mongodb://localhost:27017/autoblog
    JWT_SECRET=your-jwt-secret
    CLIENT_URL=http://localhost:5173
+   SERVER_URL=http://localhost:3000
    
    # OpenAI Configuration
    OPENAI_API_KEY=your-openai-api-key
    
    # AWS Configuration
+   AWS_REGION=us-east-1
    AWS_ACCESS_KEY_ID=your-aws-access-key
    AWS_SECRET_ACCESS_KEY=your-aws-secret-key
-   AWS_S3_BUCKET=your-s3-bucket
+   AWS_BUCKET_NAME=your-s3-bucket
    
    # Google Cloud Text-to-Speech (for audio narration)
    GOOGLE_APPLICATION_CREDENTIALS=./service-account.json
    
    # Google Analytics (optional)
-   GOOGLE_ANALYTICS_PROPERTY_ID=your-property-id
+   GA_PROPERTY_ID=your-property-id
+   GA_KEY_FILENAME=./service-account.json
+   
+   # OAuth Configuration (optional)
+   GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+   APPLE_CLIENT_ID=com.yourapp.service
+   APPLE_TEAM_ID=YOUR_TEAM_ID
+   APPLE_KEY_ID=YOUR_KEY_ID
+   APPLE_PRIVATE_KEY_PATH=./AuthKey_YOUR_KEY_ID.p8
    
    # Email Configuration (optional)
    SMTP_HOST=smtp.gmail.com
@@ -217,6 +249,16 @@ The API documentation is automatically generated using Swagger/OpenAPI and is av
 - **User Management**: `/v1/users/*`
   - User profile management
   - Role and permission management
+
+- **Contact**: `/v1/contact/*`
+  - Submit contact messages (public)
+  - Manage contact inquiries (admin)
+  - Query type management
+
+- **OAuth Connections**: `/v1/oauth-connections/*`
+  - View connected OAuth accounts
+  - Refresh OAuth tokens
+  - Unlink OAuth connections
   
 - **App Settings**: `/v1/app-settings/*`
   - Manage categories
@@ -351,7 +393,9 @@ autoblog/
 │   │   ├── auth/                 # Authentication & authorization
 │   │   ├── blog/                 # Blog management & CRUD
 │   │   ├── comment/              # Comment system with nested replies
+│   │   ├── contact/              # Contact form and message management
 │   │   ├── user/                 # User management
+│   │   ├── oauthConnection/      # OAuth connection management
 │   │   ├── postGen/              # AI post generation (LangChain)
 │   │   ├── imageGen/             # AI image generation (DALL-E)
 │   │   ├── tts/                  # Text-to-speech audio narration
@@ -366,6 +410,7 @@ autoblog/
 │           ├── auth.route.ts     # Authentication endpoints
 │           ├── blog.route.ts     # Blog endpoints
 │           ├── comment.route.ts  # Comment endpoints
+│           ├── contact.route.ts  # Contact form endpoints
 │           ├── user.route.ts     # User endpoints
 │           └── appSettings.route.ts  # App settings endpoints
 ├── front/                        # Frontend React application
