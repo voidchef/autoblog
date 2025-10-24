@@ -7,6 +7,13 @@ const router: Router = express.Router();
 
 router.get('/', appSettingsController.getAppSettings);
 
+router.put(
+  '/',
+  auth('manageAppSettings'),
+  validate(appSettingsValidation.updateAllAppSettings),
+  appSettingsController.updateAllAppSettings
+);
+
 router
   .route('/categories')
   .post(

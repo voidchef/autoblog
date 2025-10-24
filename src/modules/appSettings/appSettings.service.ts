@@ -1,6 +1,12 @@
 import httpStatus from 'http-status';
 import ApiError from '../errors/ApiError';
-import { ICategories, IAppSettingsDoc, ISelectFields, UpdateSelectOptions } from './appSettings.interfaces';
+import {
+  ICategories,
+  IAppSettingsDoc,
+  ISelectFields,
+  UpdateSelectOptions,
+  UpdateAppSettings,
+} from './appSettings.interfaces';
 import AppSettings from './appSettings.model';
 
 /**
@@ -60,6 +66,33 @@ export const updateSelectFields = async (selectFields: UpdateSelectOptions): Pro
     }
     if (queryType) {
       appSettings.queryType = queryType;
+    }
+  }
+  await appSettings.save();
+  return appSettings;
+};
+
+/**
+ * Update All App Settings
+ * @param {UpdateAppSettings} settings
+ * @returns {Promise<IAppSettingsDoc | null>}
+ */
+export const updateAllAppSettings = async (settings: UpdateAppSettings): Promise<IAppSettingsDoc | null> => {
+  let appSettings = await AppSettings.findOne();
+  if (!appSettings) {
+    appSettings = new AppSettings(settings);
+  } else {
+    if (settings.categories !== undefined) {
+      appSettings.categories = settings.categories;
+    }
+    if (settings.languages !== undefined) {
+      appSettings.languages = settings.languages;
+    }
+    if (settings.languageModels !== undefined) {
+      appSettings.languageModels = settings.languageModels;
+    }
+    if (settings.queryType !== undefined) {
+      appSettings.queryType = settings.queryType;
     }
   }
   await appSettings.save();

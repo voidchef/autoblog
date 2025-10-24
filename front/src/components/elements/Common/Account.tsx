@@ -18,6 +18,7 @@ import BookIcon from '@mui/icons-material/Book';
 import EmailIcon from '@mui/icons-material/Email';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
+import TuneIcon from '@mui/icons-material/Tune';
 import { clearBlog } from '../../../reducers/blog';
 import { logoutUser } from '../../../reducers/auth';
 import { useAppDispatch } from '../../../utils/reduxHooks';
@@ -90,6 +91,15 @@ export default function AccountMenu() {
             label: 'Analytics',
             icon: <AnalyticsIcon fontSize="small" />,
             onClick: () => handleClose(ROUTES.ANALYTICS),
+          },
+        ]
+      : []),
+    ...(user.role === 'admin'
+      ? [
+          {
+            label: 'App Settings',
+            icon: <TuneIcon fontSize="small" />,
+            onClick: () => handleClose(ROUTES.SETTINGS),
           },
         ]
       : []),

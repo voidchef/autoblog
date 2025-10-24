@@ -14,4 +14,5 @@ export enum ROUTES {
   AUTHOR = '/author',
   VERIFY_EMAIL = '/verify-email',
   OAUTH_CALLBACK = '/auth/callback',
+  SETTINGS = '/settings',
 }

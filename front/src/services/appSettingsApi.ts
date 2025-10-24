@@ -2,7 +2,7 @@ import { api } from './api';
 import { CACHE_TIMES } from '../utils/cacheConfig';
 
 export interface ICategory {
-  _id: string;
+  _id?: string;
   categoryName: string;
   categoryDescription: string;
   categoryPicUrl: string;
@@ -26,6 +26,13 @@ export interface IAppSettingsResponse {
   queryType: IFieldData[];
 }
 
+export interface IUpdateAppSettingsRequest {
+  categories?: ICategory[];
+  languages?: IFieldData[];
+  languageModels?: ILanguageModel[];
+  queryType?: IFieldData[];
+}
+
 export const appSettingsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getAppSettings: builder.query<IAppSettingsResponse, void>({
@@ -34,7 +41,15 @@ export const appSettingsApi = api.injectEndpoints({
       // Cache app settings for longer periods since they change infrequently
       keepUnusedDataFor: CACHE_TIMES.APP_SETTINGS,
     }),
+    updateAllAppSettings: builder.mutation<IAppSettingsResponse, IUpdateAppSettingsRequest>({
+      query: (data) => ({
+        url: '/appSettings',
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['AppSettings'],
+    }),
   }),
 });
 
-export const { useGetAppSettingsQuery, useLazyGetAppSettingsQuery } = appSettingsApi;
+export const { useGetAppSettingsQuery, useLazyGetAppSettingsQuery, useUpdateAllAppSettingsMutation } = appSettingsApi;

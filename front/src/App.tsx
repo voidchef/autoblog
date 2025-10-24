@@ -6,6 +6,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { lightTheme, darkTheme } from './theme';
 import { ROUTES } from './utils/routing/routes';
 import PrivateRoute from './utils/routing/PrivateRoute';
+import AdminRoute from './utils/routing/AdminRoute';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Loading from './components/elements/Common/Loading';
@@ -28,6 +29,7 @@ const Profile = React.lazy(() => import('./components/pages/Profile'));
 const Author = React.lazy(() => import('./components/pages/Author'));
 const VerifyEmail = React.lazy(() => import('./components/pages/VerifyEmail'));
 const OAuthCallback = React.lazy(() => import('./components/pages/OAuthCallback'));
+const AppSettings = React.lazy(() => import('./components/pages/AppSettings'));
 
 if (localStorage.tokens) {
   const tokens = JSON.parse(localStorage.getItem('tokens') || '');
@@ -204,6 +206,14 @@ export default function App() {
                     <PrivateRoute>
                       <Profile />
                     </PrivateRoute>
+                  }
+                />
+                <Route
+                  path={ROUTES.SETTINGS}
+                  element={
+                    <AdminRoute>
+                      <AppSettings />
+                    </AdminRoute>
                   }
                 />
                 {/* Catch-all route for 404 pages */}

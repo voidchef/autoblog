@@ -41,3 +41,28 @@ export const updateSelectFields = {
     })
     .min(1),
 };
+
+export const updateAllAppSettings = {
+  body: Joi.object()
+    .keys({
+      categories: Joi.array().items({
+        categoryName: Joi.string().trim(),
+        categoryDescription: Joi.string().trim(),
+        categoryPicUrl: Joi.string().trim(),
+      }),
+      languages: Joi.array().items({
+        value: Joi.string().trim(),
+        label: Joi.string().trim(),
+      }),
+      languageModels: Joi.array().items({
+        value: Joi.string().trim(),
+        label: Joi.string().trim(),
+        provider: Joi.string().valid('openai', 'google', 'mistral').required(),
+      }),
+      queryType: Joi.array().items({
+        value: Joi.string().trim(),
+        label: Joi.string().trim(),
+      }),
+    })
+    .min(1),
+};

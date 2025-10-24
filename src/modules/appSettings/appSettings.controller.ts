@@ -23,3 +23,8 @@ export const getAppSettings = catchAsync(async (_req: Request, res: Response) =>
   const result = await appSettingsService.getAppSettings();
   res.send(result);
 });
+
+export const updateAllAppSettings = catchAsync(async (req: Request, res: Response) => {
+  const result = await appSettingsService.updateAllAppSettings(req.body);
+  res.send(result);
+});
