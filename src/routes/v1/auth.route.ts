@@ -1,4 +1,5 @@
 import express, { Router } from 'express';
+import passport from 'passport';
 import { authValidation, authController, auth } from '../../modules/auth';
 import { validate } from '../../modules/validate';
 
@@ -12,6 +13,22 @@ router.post('/forgot-password', validate(authValidation.forgotPassword), authCon
 router.post('/reset-password', validate(authValidation.resetPassword), authController.resetPassword);
 router.post('/send-verification-email', auth(), authController.sendVerificationEmail);
 router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
+
+// Google OAuth routes
+router.get('/google', passport.authenticate('google', { session: false }));
+router.get(
+  '/google/callback',
+  passport.authenticate('google', { session: false, failureRedirect: '/login' }),
+  authController.googleCallback
+);
+
+// Apple OAuth routes
+router.post('/apple', passport.authenticate('apple', { session: false }));
+router.post(
+  '/apple/callback',
+  passport.authenticate('apple', { session: false, failureRedirect: '/login' }),
+  authController.appleCallback
+);
 
 export default router;
 
@@ -290,4 +307,92 @@ export default router;
  *             example:
  *               code: 401
  *               message: verify email failed
+ */
+
+/**
+ * @swagger
+ * /auth/google:
+ *   get:
+ *     summary: Initiate Google OAuth login
+ *     description: Redirects user to Google OAuth consent screen. Can be used for both login and linking accounts (use ?link=true query parameter to link to existing account).
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: link
+ *         schema:
+ *           type: boolean
+ *         description: Set to true to link Google account to existing authenticated user
+ *     responses:
+ *       "302":
+ *         description: Redirect to Google OAuth consent screen
+ */
+
+/**
+ * @swagger
+ * /auth/google/callback:
+ *   get:
+ *     summary: Google OAuth callback
+ *     description: Callback endpoint for Google OAuth. Exchanges authorization code for tokens and creates or logs in user.
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: code
+ *         schema:
+ *           type: string
+ *         description: Authorization code from Google
+ *       - in: query
+ *         name: state
+ *         schema:
+ *           type: string
+ *         description: State parameter for CSRF protection
+ *     responses:
+ *       "302":
+ *         description: Redirect to client application with JWT tokens in query parameters
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+
+/**
+ * @swagger
+ * /auth/apple:
+ *   post:
+ *     summary: Initiate Apple Sign In
+ *     description: Redirects user to Apple Sign In. Can be used for both login and linking accounts (use ?link=true query parameter to link to existing account).
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: link
+ *         schema:
+ *           type: boolean
+ *         description: Set to true to link Apple account to existing authenticated user
+ *     responses:
+ *       "302":
+ *         description: Redirect to Apple Sign In
+ */
+
+/**
+ * @swagger
+ * /auth/apple/callback:
+ *   post:
+ *     summary: Apple Sign In callback
+ *     description: Callback endpoint for Apple Sign In. Exchanges authorization code for tokens and creates or logs in user.
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               code:
+ *                 type: string
+ *                 description: Authorization code from Apple
+ *               state:
+ *                 type: string
+ *                 description: State parameter for CSRF protection
+ *     responses:
+ *       "302":
+ *         description: Redirect to client application with JWT tokens in query parameters
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
  */

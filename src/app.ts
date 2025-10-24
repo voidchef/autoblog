@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import httpStatus from 'http-status';
 import passport from 'passport';
 import config from './config/config';
-import { jwtStrategy } from './modules/auth';
+import { jwtStrategy, googleStrategy, appleStrategy } from './modules/auth';
 import { ApiError, errorConverter, errorHandler } from './modules/errors';
 import { morgan } from './modules/logger';
 import { authLimiter } from './modules/utils';
@@ -33,6 +33,10 @@ app.use(express.urlencoded({ extended: true }));
 // jwt authentication
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
+passport.use('google', googleStrategy);
+if (appleStrategy) {
+  passport.use('apple', appleStrategy);
+}
 
 // limit repeated failed requests to auth endpoints
 if (config.env === 'production') {

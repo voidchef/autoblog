@@ -8,6 +8,7 @@ export interface IUser {
   password: string;
   role: string;
   isEmailVerified: boolean;
+  hasOAuthConnection?: boolean;
   openAiKey: string;
   googleApiKey?: string;
   wordpressSiteUrl?: string;

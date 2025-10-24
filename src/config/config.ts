@@ -21,6 +21,12 @@ const envVarsSchema = Joi.object()
     SMTP_PASSWORD: Joi.string().description('password for email server'),
     EMAIL_FROM: Joi.string().description('the from field in the emails sent by the app'),
     CLIENT_URL: Joi.string().required().description('Client url'),
+    GOOGLE_CLIENT_ID: Joi.string().description('Google OAuth client ID'),
+    GOOGLE_CLIENT_SECRET: Joi.string().description('Google OAuth client secret'),
+    APPLE_CLIENT_ID: Joi.string().description('Apple OAuth client ID (Service ID)'),
+    APPLE_TEAM_ID: Joi.string().description('Apple Team ID'),
+    APPLE_KEY_ID: Joi.string().description('Apple Key ID'),
+    APPLE_PRIVATE_KEY_PATH: Joi.string().description('Path to Apple private key file'),
   })
   .unknown();
 
@@ -65,6 +71,20 @@ const config = {
     from: envVars.EMAIL_FROM,
   },
   clientUrl: envVars.CLIENT_URL,
+  oauth: {
+    google: {
+      clientId: envVars.GOOGLE_CLIENT_ID,
+      clientSecret: envVars.GOOGLE_CLIENT_SECRET,
+      callbackUrl: `${envVars.CLIENT_URL}/api/v1/auth/google/callback`,
+    },
+    apple: {
+      clientId: envVars.APPLE_CLIENT_ID,
+      teamId: envVars.APPLE_TEAM_ID,
+      keyId: envVars.APPLE_KEY_ID,
+      privateKeyPath: envVars.APPLE_PRIVATE_KEY_PATH,
+      callbackUrl: `${envVars.CLIENT_URL}/api/v1/auth/apple/callback`,
+    },
+  },
 };
 
 export default config;

@@ -28,10 +28,14 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
     },
     password: {
       type: String,
-      required: true,
+      required: function (this: IUserDoc) {
+        // Password is optional if user has any OAuth connections
+        return !this.hasOAuthConnection;
+      },
       trim: true,
       minlength: 8,
       validate(value: string) {
+        if (!value) return; // Skip validation if password is not provided (OAuth users)
         if (!value.match(/\d/) || !value.match(/[a-zA-Z]/)) {
           throw new Error('Password must contain at least one letter and one number');
         }
@@ -44,6 +48,10 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
       default: 'user',
     },
     isEmailVerified: {
+      type: Boolean,
+      default: false,
+    },
+    hasOAuthConnection: {
       type: Boolean,
       default: false,
     },

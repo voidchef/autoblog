@@ -74,7 +74,7 @@ const baseQueryWithReauth = async (args: any, api: any, extraOptions: any) => {
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['User', 'Blog', 'AppSettings', 'Auth', 'Category', 'Draft', 'Comment', 'QueryTypes'],
+  tagTypes: ['User', 'Blog', 'AppSettings', 'Auth', 'Category', 'Draft', 'Comment', 'QueryTypes', 'OAuthConnections'],
   endpoints: () => ({}),
   // More conservative refetch policies to prevent excessive API calls
   refetchOnMountOrArgChange: false, // Only refetch when explicitly triggered

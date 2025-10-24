@@ -1,17 +1,7 @@
-import { IUserDoc } from './modules/user/user.interfaces';
-
-declare module 'express-serve-static-core' {
-  export interface Request {
-    user: IUserDoc;
-  }
-}
-
 declare module 'passport-apple' {
-  import { Request } from 'express';
-  import { Strategy as PassportStrategy } from 'passport';
+  import { Strategy as PassportStrategy } from 'passport-strategy';
 
   export interface Profile {
-    id?: string;
     sub: string;
     email?: string;
     name?: {
@@ -27,22 +17,21 @@ declare module 'passport-apple' {
     privateKeyString: string;
     callbackURL: string;
     scope?: string[];
-    passReqToCallback?: boolean;
   }
-
-  export type VerifyCallback = (error: any, user?: any, info?: any) => void;
 
   export type VerifyFunction = (
     accessToken: string,
     refreshToken: string,
     idToken: string,
     profile: Profile,
-    done: VerifyCallback
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    done: (error: Error | null, user?: any | false) => void
   ) => void;
 
-  export default class Strategy extends PassportStrategy {
+  class Strategy extends PassportStrategy {
     constructor(options: StrategyOptions, verify: VerifyFunction);
     name: string;
-    authenticate(req: Request, options?: any): void;
   }
+
+  export default Strategy;
 }

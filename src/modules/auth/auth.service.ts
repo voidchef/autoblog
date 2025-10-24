@@ -95,3 +95,13 @@ export const verifyEmail = async (verifyEmailToken: any): Promise<IUserDoc | nul
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Email verification failed');
   }
 };
+
+/**
+ * OAuth login/signup
+ * @param {IUserDoc} user - User from OAuth strategy
+ * @returns {Promise<IUserWithTokens>}
+ */
+export const oauthLogin = async (user: IUserDoc): Promise<IUserWithTokens> => {
+  const tokens = await generateAuthTokens(user);
+  return { user, tokens };
+};

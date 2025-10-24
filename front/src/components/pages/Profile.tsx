@@ -44,6 +44,7 @@ import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
 import PasswordStrength from '../elements/Common/PasswordStrength';
 import ConfirmationDialog from '../elements/Common/ConfirmationDialog';
+import ConnectedAccounts from '../elements/ConnectedAccounts';
 import { useAuth } from '../../utils/hooks';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import { useUpdateUserMutation } from '../../services/userApi';
@@ -1582,6 +1583,22 @@ const Profile: React.FC = () => {
                               )}
                             </Grid>
                           </Grid>
+                        </Paper>
+                      </Grid>
+
+                      {/* OAuth Connected Accounts Section */}
+                      <Grid size={12}>
+                        <Paper
+                          elevation={0}
+                          sx={{
+                            p: { xs: 2, sm: 2.5 },
+                            bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
+                            borderRadius: 2,
+                            border: '1px solid',
+                            borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
+                          }}
+                        >
+                          <ConnectedAccounts />
                         </Paper>
                       </Grid>
 

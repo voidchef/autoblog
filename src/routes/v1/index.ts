@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
 import config from '../../config/config';
+import oauthConnectionRoute from '../../modules/oauthConnection/oauthConnection.route';
 import appSettingsRoute from './appSettings.route';
 import authRoute from './auth.route';
 import blogRoute from './blog.route';
@@ -39,6 +40,10 @@ const defaultIRoute: IRoute[] = [
   {
     path: '/contact',
     route: contactRoute,
+  },
+  {
+    path: '/oauth-connections',
+    route: oauthConnectionRoute,
   },
 ];
 

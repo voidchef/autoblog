@@ -26,6 +26,7 @@ const Dashboard = React.lazy(() => import('./components/pages/Dashboard'));
 const Profile = React.lazy(() => import('./components/pages/Profile'));
 const Author = React.lazy(() => import('./components/pages/Author'));
 const VerifyEmail = React.lazy(() => import('./components/pages/VerifyEmail'));
+const OAuthCallback = React.lazy(() => import('./components/pages/OAuthCallback'));
 
 if (localStorage.tokens) {
   const tokens = JSON.parse(localStorage.getItem('tokens') || '');
@@ -117,6 +118,7 @@ export default function App() {
               <Routes>
                 <Route path={ROUTES.LOGIN} element={<SignInSide />} />
                 <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmail />} />
+                <Route path={ROUTES.OAUTH_CALLBACK} element={<OAuthCallback />} />
                 <Route path={ROUTES.ROOT} element={<Home />} />
                 <Route path={ROUTES.CONTACTUS} element={<ContactUs />} />
                 <Route path={ROUTES.ABOUTUS} element={<AboutUs />} />

@@ -9,6 +9,8 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import GoogleIcon from '@mui/icons-material/Google';
+import AppleIcon from '@mui/icons-material/Apple';
 import Typography from '@mui/material/Typography';
 import { useLoginMutation, useRegisterMutation } from '../../services/authApi';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +19,7 @@ import { useAppDispatch } from '../../utils/reduxHooks';
 import { showSuccess, showError } from '../../reducers/alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
+import Divider from '@mui/material/Divider';
 
 export default function SignInSide() {
   const [signUp, setSignUp] = React.useState(false);
@@ -149,6 +152,14 @@ export default function SignInSide() {
 
   const currentError = signUp ? registerError : loginError;
   const isLoading = signUp ? registerLoading : loginLoading;
+
+  const handleGoogleSignIn = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL}/v1/auth/google`;
+  };
+
+  const handleAppleSignIn = () => {
+    window.location.href = `${import.meta.env.VITE_API_URL}/v1/auth/apple`;
+  };
 
   return (
     <Grid container component="main" sx={{ height: '100vh', overflow: 'hidden' }}>
@@ -357,6 +368,60 @@ export default function SignInSide() {
               startIcon={isLoading && <CircularProgress size={20} color="inherit" />}
             >
               {isLoading ? (signUp ? 'Creating Account...' : 'Signing In...') : signUp ? 'Create Account' : 'Sign In'}
+            </Button>
+
+            <Divider sx={{ my: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                OR
+              </Typography>
+            </Divider>
+
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
+              startIcon={<GoogleIcon />}
+              sx={{ 
+                mb: 1.5, 
+                py: { xs: 1, sm: 1.2 },
+                fontSize: { xs: '0.9rem', sm: '0.95rem' },
+                fontWeight: 500,
+                textTransform: 'none',
+                borderRadius: 2,
+                borderColor: 'divider',
+                color: 'text.primary',
+                '&:hover': {
+                  borderColor: 'primary.main',
+                  backgroundColor: 'action.hover',
+                }
+              }}
+            >
+              Continue with Google
+            </Button>
+
+            <Button
+              fullWidth
+              variant="outlined"
+              onClick={handleAppleSignIn}
+              disabled={isLoading}
+              startIcon={<AppleIcon />}
+              sx={{ 
+                mb: 2, 
+                py: { xs: 1, sm: 1.2 },
+                fontSize: { xs: '0.9rem', sm: '0.95rem' },
+                fontWeight: 500,
+                textTransform: 'none',
+                borderRadius: 2,
+                borderColor: 'divider',
+                color: 'text.primary',
+                '&:hover': {
+                  borderColor: 'primary.main',
+                  backgroundColor: 'action.hover',
+                }
+              }}
+            >
+              Continue with Apple
             </Button>
 
             <Grid container spacing={2} sx={{ mt: 1, justifyContent: 'space-between', alignItems: 'center' }}>

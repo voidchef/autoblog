@@ -57,3 +57,51 @@ export const verifyEmail = catchAsync(async (req: Request, res: Response) => {
   await authService.verifyEmail(req.query['token'] as string);
   res.status(httpStatus.NO_CONTENT).send();
 });
+
+// Google OAuth handlers
+export const googleAuth = catchAsync(async (_req: Request, _res: Response) => {
+  // This will redirect to Google OAuth consent screen
+  // Actual handler is in passport strategy
+});
+
+export const googleCallback = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+  if (!user) {
+    return res.redirect(`${process.env['CLIENT_URL']}/login?error=authentication_failed`);
+  }
+
+  const userWithTokens = await authService.oauthLogin(user);
+
+  // Redirect to frontend with tokens in URL params (frontend should extract and store them)
+  const redirectUrl =
+    `${process.env['CLIENT_URL']}/auth/callback?` +
+    `token=${userWithTokens.tokens.access.token}&` +
+    `refreshToken=${userWithTokens.tokens.refresh.token}&` +
+    `userId=${user.id}`;
+
+  res.redirect(redirectUrl);
+});
+
+// Apple OAuth handlers
+export const appleAuth = catchAsync(async (_req: Request, _res: Response) => {
+  // This will redirect to Apple OAuth consent screen
+  // Actual handler is in passport strategy
+});
+
+export const appleCallback = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+  if (!user) {
+    return res.redirect(`${process.env['CLIENT_URL']}/login?error=authentication_failed`);
+  }
+
+  const userWithTokens = await authService.oauthLogin(user);
+
+  // Redirect to frontend with tokens in URL params (frontend should extract and store them)
+  const redirectUrl =
+    `${process.env['CLIENT_URL']}/auth/callback?` +
+    `token=${userWithTokens.tokens.access.token}&` +
+    `refreshToken=${userWithTokens.tokens.refresh.token}&` +
+    `userId=${user.id}`;
+
+  res.redirect(redirectUrl);
+});

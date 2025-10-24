@@ -28,6 +28,29 @@ export interface ResetPasswordData {
   password: string;
 }
 
+export interface OAuthConnection {
+  id: string;
+  provider: 'google' | 'apple';
+  email: string;
+  displayName?: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OAuthConnectionsResponse {
+  connections: OAuthConnection[];
+}
+
+export interface OAuthConnectionStatus {
+  provider: string;
+  email: string;
+  isActive: boolean;
+  isTokenExpired: boolean;
+  tokenExpiry?: string;
+  hasRefreshToken: boolean;
+}
+
 export interface AuthResponse {
   user: {
     id: string;
@@ -129,6 +152,32 @@ export const authApi = api.injectEndpoints({
         method: 'POST',
       }),
     }),
+
+    // OAuth Connections Management
+    getOAuthConnections: builder.query<OAuthConnectionsResponse, void>({
+      query: () => '/oauth-connections',
+      providesTags: ['OAuthConnections'],
+    }),
+
+    getOAuthConnectionStatus: builder.query<OAuthConnectionStatus, string>({
+      query: (connectionId) => `/oauth-connections/${connectionId}/status`,
+    }),
+
+    refreshOAuthConnection: builder.mutation<{ message: string; tokenExpiry: string }, string>({
+      query: (connectionId) => ({
+        url: `/oauth-connections/${connectionId}/refresh`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['OAuthConnections'],
+    }),
+
+    unlinkOAuthConnection: builder.mutation<void, string>({
+      query: (connectionId) => ({
+        url: `/oauth-connections/${connectionId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['OAuthConnections', 'User'],
+    }),
   }),
 });
 
@@ -141,4 +190,8 @@ export const {
   useResetPasswordMutation,
   useVerifyEmailMutation,
   useSendVerificationEmailMutation,
+  useGetOAuthConnectionsQuery,
+  useGetOAuthConnectionStatusQuery,
+  useRefreshOAuthConnectionMutation,
+  useUnlinkOAuthConnectionMutation,
 } = authApi;
