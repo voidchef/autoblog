@@ -98,16 +98,24 @@ export default function BlogContentFields({
             <Box
               sx={{
                 display: 'flex',
-                alignItems: 'center',
+                alignItems: { xs: 'flex-start', sm: 'center' },
                 gap: 1,
-                p: 2,
+                p: { xs: 1.5, sm: 2 },
                 borderRadius: 2,
                 bgcolor: (theme) => alpha(theme.palette.info.main, 0.1),
                 border: (theme) => `1px solid ${alpha(theme.palette.info.main, 0.2)}`,
               }}
             >
-              <InfoIcon fontSize="small" color="info" />
-              <Typography variant="body2" color="text.secondary">
+              <InfoIcon fontSize="small" color="info" sx={{ flexShrink: 0, mt: { xs: 0.25, sm: 0 } }} />
+              <Typography 
+                variant="body2" 
+                color="text.secondary"
+                sx={{
+                  fontSize: { xs: '0.875rem', sm: '0.875rem' },
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                }}
+              >
                 {isEditMode 
                   ? "Edit your blog content below. Changes will be saved to draft."
                   : "Fill in the configuration and click 'Generate with AI' to create content automatically!"
@@ -119,16 +127,24 @@ export default function BlogContentFields({
           <Box
             sx={{
               display: 'flex',
-              alignItems: 'center',
+              alignItems: { xs: 'flex-start', sm: 'center' },
               gap: 1,
-              p: 2,
+              p: { xs: 1.5, sm: 2 },
               borderRadius: 2,
               bgcolor: (theme) => alpha(theme.palette.secondary.main, 0.08),
               border: (theme) => `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`,
             }}
           >
-            <ArticleIcon fontSize="small" sx={{ color: 'secondary.main' }} />
-            <Typography variant="body2" color="text.secondary">
+            <ArticleIcon fontSize="small" sx={{ color: 'secondary.main', flexShrink: 0, mt: { xs: 0.25, sm: 0 } }} />
+            <Typography 
+              variant="body2" 
+              color="text.secondary"
+              sx={{
+                fontSize: { xs: '0.875rem', sm: '0.875rem' },
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
+              }}
+            >
               <strong style={{ color: 'inherit', fontWeight: 600 }}>Note:</strong> Content should be written in{' '}
               <Typography
                 component="span"
@@ -171,18 +187,34 @@ export default function BlogContentFields({
             <Box
               sx={{
                 display: 'flex',
+                flexDirection: { xs: 'column', sm: 'row' },
                 justifyContent: 'space-between',
-                alignItems: 'center',
-                p: 2,
+                alignItems: { xs: 'flex-start', sm: 'center' },
+                gap: { xs: 1, sm: 0 },
+                p: { xs: 1.5, sm: 2 },
                 borderRadius: 2,
                 bgcolor: (theme) => alpha(theme.palette.success.main, 0.08),
                 border: (theme) => `1px solid ${alpha(theme.palette.success.main, 0.2)}`,
               }}
             >
-              <Typography variant="body2" color="text.secondary">
+              <Typography 
+                variant="body2" 
+                color="text.secondary"
+                sx={{
+                  fontSize: { xs: '0.8125rem', sm: '0.875rem' },
+                  wordBreak: 'break-word',
+                }}
+              >
                 {charCount} characters • {wordCount} words • ~{readingTime} min read
               </Typography>
-              <Typography variant="caption" color="success.main" fontWeight={600}>
+              <Typography 
+                variant="caption" 
+                color="success.main" 
+                fontWeight={600}
+                sx={{
+                  fontSize: { xs: '0.8125rem', sm: '0.75rem' },
+                }}
+              >
                 Looking good! 🎉
               </Typography>
             </Box>

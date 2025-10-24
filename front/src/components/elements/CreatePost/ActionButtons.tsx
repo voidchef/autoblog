@@ -33,10 +33,12 @@ export default function ActionButtons({
 }: ActionButtonsProps) {
   return (
     <Box
-      width={{ sm: '40%' }}
-      display={'flex'}
-      flexDirection={'column'}
-      sx={{ gap: 2 }}
+      sx={{ 
+        width: { xs: '100%', sm: '35%' },
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2
+      }}
     >
       <Paper
         elevation={0}

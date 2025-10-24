@@ -12,6 +12,25 @@ export interface IBlogData {
   tags?: string;
 }
 
+export interface ITemplateBlogData {
+  template: File;
+  input: Record<string, string | number | boolean>;
+  llmModel: string;
+  llmProvider?: 'openai' | 'google' | 'mistral';
+  category: string;
+  tags?: string[];
+  generateImages?: boolean;
+  generateHeadingImages?: boolean;
+  imagesPerSection?: number;
+}
+
+export interface ITemplatePreview {
+  systemPrompt: string;
+  contentPromptCount: number;
+  imagePromptCount: number;
+  variables: string[];
+}
+
 export interface IBlog {
   id: string;
   title: string;
@@ -101,6 +120,47 @@ export const blogApi = api.injectEndpoints({
       invalidatesTags: ['Blog', 'Draft'],
       transformErrorResponse: (response: { status: number; data: any }) => {
         return response.data?.message || 'Blog generation failed';
+      },
+    }),
+
+    generateBlogFromTemplate: builder.mutation<IBlog, ITemplateBlogData>({
+      query: ({ template, input, llmModel, llmProvider, category, tags, generateImages, generateHeadingImages, imagesPerSection }) => {
+        const formData = new FormData();
+        formData.append('template', template);
+        formData.append('input', JSON.stringify(input));
+        formData.append('llmModel', llmModel);
+        if (llmProvider) formData.append('llmProvider', llmProvider);
+        formData.append('category', category);
+        if (tags) formData.append('tags', JSON.stringify(tags));
+        if (generateImages !== undefined) formData.append('generateImages', String(generateImages));
+        if (generateHeadingImages !== undefined) formData.append('generateHeadingImages', String(generateHeadingImages));
+        if (imagesPerSection !== undefined) formData.append('imagesPerSection', String(imagesPerSection));
+
+        return {
+          url: '/blogs/generate-from-template',
+          method: 'POST',
+          body: formData,
+        };
+      },
+      invalidatesTags: ['Blog', 'Draft'],
+      transformErrorResponse: (response: { status: number; data: any }) => {
+        return response.data?.message || 'Template blog generation failed';
+      },
+    }),
+
+    getTemplatePreview: builder.mutation<ITemplatePreview, File>({
+      query: (template) => {
+        const formData = new FormData();
+        formData.append('template', template);
+
+        return {
+          url: '/blogs/template-preview',
+          method: 'POST',
+          body: formData,
+        };
+      },
+      transformErrorResponse: (response: { status: number; data: any }) => {
+        return response.data?.message || 'Template preview failed';
       },
     }),
 
@@ -414,6 +474,8 @@ export const blogApi = api.injectEndpoints({
 
 export const {
   useGenerateBlogMutation,
+  useGenerateBlogFromTemplateMutation,
+  useGetTemplatePreviewMutation,
   useCreateBlogMutation,
   useGetBlogsQuery,
   useGetFeaturedBlogsQuery,

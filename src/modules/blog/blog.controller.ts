@@ -8,11 +8,92 @@ import catchAsync from '../utils/catchAsync';
 import pick from '../utils/pick';
 import { IBlogDoc } from './blog.interfaces';
 import * as blogService from './blog.service';
+import { cleanupTemplateFile } from './template-upload.middleware';
+import { validateTemplateFile, getTemplatePreview } from './template.utils';
 
 export const generateBlog = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IUserDoc;
   const blog = await blogService.generateBlog(req.body, user._id as mongoose.Types.ObjectId);
   res.status(httpStatus.CREATED).send(blog);
+});
+
+export const generateBlogFromTemplate = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+
+  if (!req.file) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Template file is required');
+  }
+
+  const templateFile = req.file.path;
+
+  try {
+    // Validate the template file
+    await validateTemplateFile(templateFile);
+
+    // Parse template parameters from request body with error handling
+    let input = {};
+    let tags;
+
+    try {
+      input = JSON.parse(req.body.input || '{}');
+    } catch {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid JSON in input field');
+    }
+
+    if (req.body.tags) {
+      try {
+        tags = JSON.parse(req.body.tags);
+      } catch {
+        throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid JSON in tags field');
+      }
+    }
+
+    const templateData = {
+      templateFile,
+      input,
+      llmModel: req.body.llmModel,
+      llmProvider: req.body.llmProvider,
+      category: req.body.category,
+      tags,
+      generateImages: req.body.generateImages === 'true',
+      generateHeadingImages: req.body.generateHeadingImages === 'true',
+      imagesPerSection: req.body.imagesPerSection ? parseInt(req.body.imagesPerSection, 10) : 2,
+    };
+
+    const blog = await blogService.generateBlogFromTemplate(templateData, user._id as mongoose.Types.ObjectId);
+
+    // Clean up the uploaded template file after successful generation
+    cleanupTemplateFile(templateFile);
+
+    res.status(httpStatus.CREATED).send(blog);
+  } catch (error) {
+    // Clean up the template file in case of error
+    cleanupTemplateFile(templateFile);
+    throw error;
+  }
+});
+
+export const getTemplatePreviewFromFile = catchAsync(async (req: Request, res: Response) => {
+  if (!req.file) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Template file is required');
+  }
+
+  const templateFile = req.file.path;
+
+  try {
+    // Validate and get preview of the template
+    await validateTemplateFile(templateFile);
+    const preview = await getTemplatePreview(templateFile);
+
+    // Clean up the template file after preview
+    cleanupTemplateFile(templateFile);
+
+    res.status(httpStatus.OK).send(preview);
+  } catch (error) {
+    // Clean up the template file in case of error
+    cleanupTemplateFile(templateFile);
+    throw error;
+  }
 });
 
 export const createBlog = catchAsync(async (req: Request, res: Response) => {

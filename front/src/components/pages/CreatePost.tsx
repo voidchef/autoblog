@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
+import { ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
 import { 
@@ -8,10 +9,20 @@ import {
   ActionButtons, 
   BlogContentFields, 
   ImagePicker,
-  OpenAiKeyBanner
+  OpenAiKeyBanner,
+  TemplateUpload,
+  TemplateParametersForm,
 } from '../elements/CreatePost';
 import { useAppSelector } from '../../utils/reduxHooks';
-import { useGenerateBlogMutation, useGetBlogQuery, useUpdateBlogMutation, IBlogData } from '../../services/blogApi';
+import { 
+  useGenerateBlogMutation, 
+  useGetBlogQuery, 
+  useUpdateBlogMutation, 
+  useGenerateBlogFromTemplateMutation,
+  IBlogData, 
+  ITemplateBlogData,
+  ITemplatePreview,
+} from '../../services/blogApi';
 import { setBlogData, clearBlog, IBlog, generateBlogWithProgress } from '../../reducers/blog';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import { useAuth } from '../../utils/hooks';
@@ -80,6 +91,14 @@ export default function CreatePost() {
   const [blogImage, setBlogImage] = React.useState<string>('');
   const [isPublished, setIsPublished] = React.useState(false);
 
+  // Template mode state
+  const [generationMode, setGenerationMode] = React.useState<'regular' | 'template'>('regular');
+  const [templateFile, setTemplateFile] = React.useState<File | null>(null);
+  const [templatePreview, setTemplatePreview] = React.useState<ITemplatePreview | null>(null);
+  const [templateVariables, setTemplateVariables] = React.useState<Record<string, string | number | boolean>>({});
+
+  const [generateBlogFromTemplate] = useGenerateBlogFromTemplateMutation();
+
   // Check if user has API keys
   const hasOpenAiKey = user?.hasOpenAiKey || false;
   const hasGoogleApiKey = user?.hasGoogleApiKey || false;
@@ -111,6 +130,36 @@ export default function CreatePost() {
 
   const handlePublishStatusChange = () => {
     setIsPublished(!isPublished);
+  };
+
+  const handleModeChange = (_event: React.MouseEvent<HTMLElement>, newMode: 'regular' | 'template' | null) => {
+    if (newMode !== null) {
+      setGenerationMode(newMode);
+      // Reset template-related state when switching modes
+      if (newMode === 'regular') {
+        setTemplateFile(null);
+        setTemplatePreview(null);
+        setTemplateVariables({});
+      }
+    }
+  };
+
+  const handleTemplateSelect = (file: File, preview: ITemplatePreview) => {
+    setTemplateFile(file);
+    setTemplatePreview(preview);
+    // Initialize template variables with empty values
+    const initialVariables: Record<string, string> = {};
+    preview.variables.forEach((variable) => {
+      initialVariables[variable] = '';
+    });
+    setTemplateVariables(initialVariables);
+  };
+
+  const handleTemplateVariableChange = (name: string, value: string | number | boolean) => {
+    setTemplateVariables((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const initialFormData = () => {
@@ -191,7 +240,47 @@ export default function CreatePost() {
           console.error('Failed to update blog:', error);
         });
       return;
+    }
+
+    // Generation mode
+    if (generationMode === 'template') {
+      // Template-based generation
+      if (!templateFile) {
+        alert('Please upload a template file');
+        return;
+      }
+
+      // Validate all variables are filled
+      const missingVariables = templatePreview?.variables.filter((v) => !templateVariables[v]);
+      if (missingVariables && missingVariables.length > 0) {
+        alert(`Please fill in all template variables: ${missingVariables.join(', ')}`);
+        return;
+      }
+
+      const templateData: ITemplateBlogData = {
+        template: templateFile,
+        input: templateVariables,
+        llmModel: formData.languageModel,
+        llmProvider: modelProvider,
+        category: formData.category,
+        tags: formData.tags.split(',').map((tag) => tag.trim()).filter((tag) => tag),
+        generateImages: true,
+        generateHeadingImages: false,
+        imagesPerSection: 2,
+      };
+
+      generateBlogFromTemplate(templateData)
+        .unwrap()
+        .then((newBlog) => {
+          if (newBlog) {
+            navigate(`${ROUTES.PREVIEW}/${newBlog.slug}?preview=${true}`);
+          }
+        })
+        .catch((error) => {
+          console.error('Failed to generate blog from template:', error);
+        });
     } else {
+      // Regular generation
       const generateData: IBlogData = {
         topic: formData.topic,
         country: formData.country || undefined,
@@ -289,6 +378,47 @@ export default function CreatePost() {
         hasGoogleApiKey={hasGoogleApiKey}
         modelProvider={modelProvider}
       />
+
+      {/* Generation Mode Toggle - Only show when creating new blog */}
+      {!blog?.id && (
+        <Box sx={{ marginX: { xs: '1rem', sm: '7rem' }, mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Typography variant="h6">Generation Mode</Typography>
+            <ToggleButtonGroup
+              value={generationMode}
+              exclusive
+              onChange={handleModeChange}
+              aria-label="generation mode"
+              size="small"
+            >
+              <ToggleButton value="regular" aria-label="regular generation">
+                Regular
+              </ToggleButton>
+              <ToggleButton value="template" aria-label="template generation">
+                Template
+              </ToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+
+          {generationMode === 'template' && (
+            <Box sx={{ mb: 3 }}>
+              <TemplateUpload
+                onTemplateSelect={handleTemplateSelect}
+                selectedTemplate={templateFile}
+              />
+              {templatePreview && (
+                <Box sx={{ mt: 3 }}>
+                  <TemplateParametersForm
+                    variables={templatePreview.variables}
+                    values={templateVariables}
+                    onChange={handleTemplateVariableChange}
+                  />
+                </Box>
+              )}
+            </Box>
+          )}
+        </Box>
+      )}
       
       {images.length > 0 && (
         <ImagePicker
@@ -313,13 +443,28 @@ export default function CreatePost() {
         gap={{ xs: 3, sm: 3 }}
         onSubmit={handleSubmit}
       >
-        <BlogFormFields
-          formData={formData}
-          appSettings={appSettings}
-          isEditMode={!!blog?.id}
-          disabled={isFormDisabled}
-          onFormDataChange={handleFormDataChange}
-        />
+        {/* Only show regular form fields in regular mode or when editing */}
+        {(generationMode === 'regular' || blog?.id) && (
+          <BlogFormFields
+            formData={formData}
+            appSettings={appSettings}
+            isEditMode={!!blog?.id}
+            disabled={isFormDisabled}
+            onFormDataChange={handleFormDataChange}
+          />
+        )}
+        {/* In template mode, show minimal fields (category, tags, model) */}
+        {generationMode === 'template' && !blog?.id && (
+          <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <BlogFormFields
+              formData={formData}
+              appSettings={appSettings}
+              isEditMode={false}
+              disabled={isFormDisabled}
+              onFormDataChange={handleFormDataChange}
+            />
+          </Box>
+        )}
         <ActionButtons
           isEditMode={!!blog?.id}
           isPublished={isPublished}

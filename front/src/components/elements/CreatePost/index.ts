@@ -4,3 +4,5 @@ export { default as BlogContentFields } from './BlogContentFields';
 export { default as ImagePicker } from './ImagePicker';
 export { default as Title } from './Title';
 export { default as OpenAiKeyBanner } from './OpenAiKeyBanner';
+export { TemplateUpload } from './TemplateUpload';
+export { TemplateParametersForm } from './TemplateParametersForm';

@@ -1,17 +1,23 @@
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
-import config from '../../config/config';
 import S3Utils from '../aws/s3utils';
 import ApiError from '../errors/ApiError';
 import logger from '../logger/logger';
 import { mediumService } from '../medium';
 import { IOptions, QueryResult } from '../paginate/paginate';
-import { PostGenerator, Post, AutoPostPrompt } from '../postGen';
+import {
+  PostGenerator,
+  Post,
+  AutoPostPrompt,
+  PostTemplateGenerator,
+  TemplatePost,
+  TemplatePostPrompt,
+} from '../postGen';
 import { ttsService } from '../tts';
 import { getUserById } from '../user/user.service';
 import runReport, { IRunReportResponse } from '../utils/analytics';
 import { wordpressService } from '../wordpress';
-import { IGenerateBlog, NewCreatedBlog, UpdateBlogBody, IBlogDoc } from './blog.interfaces';
+import { IGenerateBlog, IGenerateTemplateBlog, NewCreatedBlog, UpdateBlogBody, IBlogDoc } from './blog.interfaces';
 import Blog from './blog.model';
 
 /**
@@ -105,6 +111,96 @@ export const generateBlog = async (
           .map((tag: string) => tag.trim());
   }
   return createBlog({ ...post, ...generateBlogData, ...additionalData } as NewCreatedBlog);
+};
+
+/**
+ * Generate a blog post from a template file
+ * @param {IGenerateTemplateBlog} generateTemplateData
+ * @param {mongoose.Types.ObjectId} author
+ * @returns {Promise<IBlogDoc>}
+ */
+export const generateBlogFromTemplate = async (
+  generateTemplateData: IGenerateTemplateBlog,
+  author: mongoose.Types.ObjectId
+): Promise<IBlogDoc> => {
+  // Get the user to retrieve the decrypted API key
+  const user = await getUserById(author);
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
+  }
+
+  const { llmProvider } = generateTemplateData;
+  let decryptedApiKey: string;
+
+  // Determine which API key to use based on the provider field
+  if (llmProvider === 'google') {
+    if (!user.hasGoogleApiKey) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Google API key is required for Gemini models');
+    }
+    decryptedApiKey = user.getDecryptedGoogleApiKey();
+    if (!decryptedApiKey) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to decrypt Google API key');
+    }
+  } else if (llmProvider === 'mistral') {
+    if (!user.hasOpenAiKey()) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Mistral API key is required for Mistral models');
+    }
+    decryptedApiKey = user.getDecryptedOpenAiKey();
+    if (!decryptedApiKey) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to decrypt Mistral API key');
+    }
+  } else {
+    // OpenAI models (default)
+    if (!user.hasOpenAiKey()) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'OpenAI API key is required for template blog generation');
+    }
+    decryptedApiKey = user.getDecryptedOpenAiKey();
+    if (!decryptedApiKey) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to decrypt OpenAI API key');
+    }
+  }
+
+  const { category, tags, templateFile, input, generateImages, generateHeadingImages, imagesPerSection, ...rest } =
+    generateTemplateData;
+
+  // Create TemplatePostPrompt for PostTemplateGenerator
+  const postPrompt: TemplatePostPrompt = {
+    ...rest,
+    model: generateTemplateData.llmModel,
+    apiKey: decryptedApiKey,
+    templateFile,
+    input,
+    generateImages: generateImages ?? true,
+    generateHeadingImages: generateHeadingImages ?? false,
+    imagesPerSection: imagesPerSection ?? 2,
+  };
+
+  const postGenerator = new PostTemplateGenerator(postPrompt);
+  const post: TemplatePost = await postGenerator.generate();
+
+  const additionalData: {
+    category: string;
+    author: mongoose.Types.ObjectId;
+    tags?: string[];
+    // Add empty values for required IGenerateBlog fields that don't apply to templates
+    topic: string;
+    language: string;
+  } = {
+    category,
+    author,
+    topic: post.title, // Use generated title as topic
+    language: 'en', // Default language, could be passed in generateTemplateData if needed
+  };
+
+  if (tags) {
+    additionalData.tags = Array.isArray(tags)
+      ? tags.map((tag: string) => tag.trim())
+      : String(tags)
+          .split(/\s*,\s*/)
+          .map((tag: string) => tag.trim());
+  }
+
+  return createBlog({ ...post, ...generateTemplateData, ...additionalData } as NewCreatedBlog);
 };
 
 /**

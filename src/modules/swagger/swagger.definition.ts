@@ -9,6 +9,7 @@ const swaggerDefinition = {
     
 Features:
 - AI-powered blog generation using OpenAI GPT models
+- Template-based blog generation with custom markdown templates
 - Image generation with DALL-E
 - Audio narration with Google Cloud Text-to-Speech
 - Multi-platform publishing (WordPress, Medium)

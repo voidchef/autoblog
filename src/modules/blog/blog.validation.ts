@@ -14,6 +14,19 @@ export const generateBlog: Record<keyof IGenerateBlog, any> = {
   tags: Joi.array().optional(),
 };
 
+export const generateBlogFromTemplate = {
+  body: Joi.object().keys({
+    input: Joi.string().required(), // JSON string of template variables
+    llmModel: Joi.string().required(),
+    llmProvider: Joi.string().valid('openai', 'google', 'mistral').optional(),
+    category: Joi.string().required(),
+    tags: Joi.string().optional(), // JSON string of tags array
+    generateImages: Joi.string().valid('true', 'false').optional(),
+    generateHeadingImages: Joi.string().valid('true', 'false').optional(),
+    imagesPerSection: Joi.string().optional(),
+  }),
+};
+
 const createBlogBody: Partial<Record<keyof NewCreatedBlog, any>> = {
   ...generateBlog,
   title: Joi.string().required(),

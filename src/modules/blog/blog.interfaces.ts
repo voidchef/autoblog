@@ -14,6 +14,18 @@ export interface IGenerateBlog {
   tags?: string[];
 }
 
+export interface IGenerateTemplateBlog {
+  templateFile: string; // Path to uploaded template file
+  input: Record<string, string | number | boolean>; // Key-value pairs for template variables
+  llmModel: llm;
+  llmProvider?: 'openai' | 'google' | 'mistral';
+  category: string;
+  tags?: string[];
+  generateImages?: boolean;
+  generateHeadingImages?: boolean;
+  imagesPerSection?: number;
+}
+
 export interface IBlog extends IGenerateBlog {
   title: string;
   slug: string;

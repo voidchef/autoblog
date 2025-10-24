@@ -36,7 +36,7 @@ interface BlogFormFieldsProps {
 
 export default function BlogFormFields({ formData, appSettings, isEditMode, disabled = false, onFormDataChange }: BlogFormFieldsProps) {
   return (
-    <Box width={{ sm: '60%' }} display={'flex'} flexDirection={'column'} sx={{ gap: { xs: 2, sm: 3 } }}>
+    <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 } }}>
       <Paper
         elevation={0}
         sx={{

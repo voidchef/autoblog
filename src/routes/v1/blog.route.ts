@@ -1,6 +1,7 @@
 import express, { Router } from 'express';
 import { auth } from '../../modules/auth';
 import { blogController, blogValidation } from '../../modules/blog';
+import { uploadTemplate } from '../../modules/blog/template-upload.middleware';
 import { validate } from '../../modules/validate';
 
 const router: Router = express.Router();
@@ -9,6 +10,20 @@ router
   .route('/')
   .post(auth('generateBlogs'), validate(blogValidation.generateBlog), blogController.generateBlog)
   .get(validate(blogValidation.getBlogs), blogController.getBlogs);
+
+// Template-based blog generation routes
+router
+  .route('/generate-from-template')
+  .post(
+    auth('generateBlogs'),
+    uploadTemplate.single('template'),
+    validate(blogValidation.generateBlogFromTemplate),
+    blogController.generateBlogFromTemplate
+  );
+
+router
+  .route('/template-preview')
+  .post(auth('generateBlogs'), uploadTemplate.single('template'), blogController.getTemplatePreviewFromFile);
 
 router.route('/create').post(auth('manageBlogs'), validate(blogValidation.createBlog), blogController.createBlog);
 router
@@ -410,6 +425,193 @@ export default router;
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
  *         $ref: '#/components/responses/Forbidden'
+ */
+
+/**
+ * @swagger
+ * /blogs/generate-from-template:
+ *   post:
+ *     summary: Generate a blog post from a template file
+ *     description: Upload a markdown template file with special tags ({{s:}}, {{c:}}, {{i:}}) and generate a blog post using AI. Variables in the template (e.g., {variableName}) will be replaced with provided values. Only authenticated users with generateBlogs permission can access this.
+ *     tags: [Blogs]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - template
+ *               - input
+ *               - llmModel
+ *               - category
+ *             properties:
+ *               template:
+ *                 type: string
+ *                 format: binary
+ *                 description: Markdown template file (.md or .markdown) with template tags
+ *               input:
+ *                 type: string
+ *                 description: JSON string of key-value pairs for template variables (e.g., '{"breed":"Labrador","country":"USA"}')
+ *                 example: '{"breed":"Golden Retriever","audience":"dog owners"}'
+ *               llmModel:
+ *                 type: string
+ *                 description: Language model to use for generation
+ *                 enum: [gpt-4o, gpt-4o-mini, o1-preview, o1-mini, mistral-small-latest, mistral-medium-latest, mistral-large-latest, gemini-2.5-flash, gemini-2.5-pro, gemini-2.0-flash, claude, groq]
+ *                 example: gpt-4o
+ *               llmProvider:
+ *                 type: string
+ *                 description: AI provider for the model
+ *                 enum: [openai, google, mistral]
+ *                 example: openai
+ *               category:
+ *                 type: string
+ *                 description: Blog category
+ *                 example: Pets
+ *               tags:
+ *                 type: string
+ *                 description: JSON string array of blog tags
+ *                 example: '["dogs","breeds","pets"]'
+ *               generateImages:
+ *                 type: string
+ *                 enum: ['true', 'false']
+ *                 description: Whether to generate images for the blog post
+ *                 default: 'true'
+ *               generateHeadingImages:
+ *                 type: string
+ *                 enum: ['true', 'false']
+ *                 description: Whether to generate images for each heading
+ *                 default: 'false'
+ *               imagesPerSection:
+ *                 type: string
+ *                 description: Number of images to generate per section
+ *                 example: '2'
+ *           encoding:
+ *             template:
+ *               contentType: text/markdown, application/octet-stream
+ *     responses:
+ *       "201":
+ *         description: Blog post generated successfully from template
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Blog'
+ *       "400":
+ *         $ref: '#/components/responses/BadRequest'
+ *         description: Bad request - Invalid template file, missing required fields, or invalid JSON input
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "500":
+ *         description: Internal server error - AI generation failed
+ *     x-codeSamples:
+ *       - lang: cURL
+ *         source: |
+ *           curl -X POST "http://localhost:3000/api/v1/blogs/generate-from-template" \
+ *             -H "Authorization: Bearer YOUR_TOKEN" \
+ *             -F "template=@dog-breed-template.md" \
+ *             -F 'input={"breed":"Golden Retriever"}' \
+ *             -F "llmModel=gpt-4o" \
+ *             -F "llmProvider=openai" \
+ *             -F "category=Pets" \
+ *             -F 'tags=["dogs","breeds"]' \
+ *             -F "generateImages=true"
+ *       - lang: JavaScript
+ *         source: |
+ *           const formData = new FormData();
+ *           formData.append('template', templateFile);
+ *           formData.append('input', JSON.stringify({ breed: 'Labrador' }));
+ *           formData.append('llmModel', 'gpt-4o');
+ *           formData.append('category', 'Pets');
+ *
+ *           const response = await fetch('/api/v1/blogs/generate-from-template', {
+ *             method: 'POST',
+ *             headers: {
+ *               'Authorization': 'Bearer YOUR_TOKEN'
+ *             },
+ *             body: formData
+ *           });
+ */
+
+/**
+ * @swagger
+ * /blogs/template-preview:
+ *   post:
+ *     summary: Preview a template file
+ *     description: Upload a template file to extract and preview its structure - system prompt, number of content/image sections, and required variables. This is useful for validating templates before generation. Only authenticated users with generateBlogs permission can access this.
+ *     tags: [Blogs]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - template
+ *             properties:
+ *               template:
+ *                 type: string
+ *                 format: binary
+ *                 description: Markdown template file (.md or .markdown)
+ *           encoding:
+ *             template:
+ *               contentType: text/markdown, application/octet-stream
+ *     responses:
+ *       "200":
+ *         description: Template preview retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 systemPrompt:
+ *                   type: string
+ *                   description: The system prompt extracted from the template ({{s:...}} tag)
+ *                   example: "You are an SEO specialist writing about {breed}. Use a neutral tone."
+ *                 contentPromptCount:
+ *                   type: integer
+ *                   description: Number of content sections ({{c:...}} tags) in the template
+ *                   example: 5
+ *                 imagePromptCount:
+ *                   type: integer
+ *                   description: Number of image sections ({{i:...}} tags) in the template
+ *                   example: 2
+ *                 variables:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                   description: List of unique variable names found in the template (e.g., {variableName})
+ *                   example: ["breed", "audience", "country"]
+ *       "400":
+ *         $ref: '#/components/responses/BadRequest'
+ *         description: Bad request - Invalid template file or format
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *     x-codeSamples:
+ *       - lang: cURL
+ *         source: |
+ *           curl -X POST "http://localhost:3000/api/v1/blogs/template-preview" \
+ *             -H "Authorization: Bearer YOUR_TOKEN" \
+ *             -F "template=@my-template.md"
+ *       - lang: JavaScript
+ *         source: |
+ *           const formData = new FormData();
+ *           formData.append('template', templateFile);
+ *
+ *           const response = await fetch('/api/v1/blogs/template-preview', {
+ *             method: 'POST',
+ *             headers: {
+ *               'Authorization': 'Bearer YOUR_TOKEN'
+ *             },
+ *             body: formData
+ *           });
+ *           const preview = await response.json();
+ *           console.log('Variables:', preview.variables);
  */
 
 /**
