@@ -11,7 +11,7 @@ import Typography from '@mui/material/Typography';
 import Loading from './components/elements/Common/Loading';
 import Alerts from './components/elements/Common/Alerts';
 import { useAuth, useAppSettings, useTheme } from './utils/hooks';
-import ReactGA from 'react-ga4';
+import * as analytics from './utils/analytics';
 
 // Lazy load page components
 const Home = React.lazy(() => import('./components/pages/Home'));
@@ -23,6 +23,7 @@ const AllPosts = React.lazy(() => import('./components/pages/AllPosts'));
 const CreatePost = React.lazy(() => import('./components/pages/CreatePost'));
 const Blog = React.lazy(() => import('./components/pages/Blog'));
 const Dashboard = React.lazy(() => import('./components/pages/Dashboard'));
+const Analytics = React.lazy(() => import('./components/pages/Analytics'));
 const Profile = React.lazy(() => import('./components/pages/Profile'));
 const Author = React.lazy(() => import('./components/pages/Author'));
 const VerifyEmail = React.lazy(() => import('./components/pages/VerifyEmail'));
@@ -33,8 +34,6 @@ if (localStorage.tokens) {
   setAuthToken(tokens.access.token);
 }
 
-ReactGA.initialize(import.meta.env.VITE_GA_ID);
-
 export default function App() {
   const location = useLocation();
 
@@ -42,20 +41,61 @@ export default function App() {
   const { data: appSettingsData, isLoading: appSettingsLoading } = useAppSettings();
   const { themeMode } = useTheme();
 
+  // Initialize Google Analytics once on app mount
+  React.useEffect(() => {
+    analytics.initializeGA(import.meta.env.VITE_GA_ID, {
+      debug: import.meta.env.DEV,
+    });
+  }, []);
+
+  // Set user ID when user authentication state changes
+  React.useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      analytics.setUserID(user.id);
+    } else {
+      analytics.clearUserData();
+    }
+  }, [isAuthenticated, user?.id]);
+
   // Scroll to top on route change
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  // Track page views with Google Analytics
+  // Track page views with Google Analytics - ALL pages
   React.useEffect(() => {
-    if (location.pathname.startsWith('/blog/') && import.meta.env.VITE_GA_ID) {
-      ReactGA.send({
-        hitType: 'pageview',
-        page: window.location.pathname + window.location.search,
-      });
+    if (!analytics.isGAInitialized()) return;
+
+    const path = location.pathname + location.search;
+    const title = document.title;
+
+    // Determine content category for better analytics grouping
+    let contentCategory: string | undefined;
+    if (location.pathname.startsWith('/blog/')) {
+      contentCategory = analytics.ContentCategory.BLOG;
+    } else if (location.pathname.startsWith('/dashboard')) {
+      contentCategory = analytics.ContentCategory.DASHBOARD;
+    } else if (location.pathname.startsWith('/category/')) {
+      contentCategory = analytics.ContentCategory.CATEGORY;
+    } else if (location.pathname.startsWith('/author/')) {
+      contentCategory = analytics.ContentCategory.AUTHOR;
+    } else if (location.pathname.startsWith('/profile')) {
+      contentCategory = analytics.ContentCategory.PROFILE;
+    } else if (location.pathname === '/login' || location.pathname === '/register') {
+      contentCategory = analytics.ContentCategory.AUTH;
+    } else if (location.pathname === '/contact') {
+      contentCategory = analytics.ContentCategory.CONTACT;
+    } else if (location.pathname === '/about') {
+      contentCategory = analytics.ContentCategory.ABOUT;
+    } else if (location.pathname === '/') {
+      contentCategory = analytics.ContentCategory.HOME;
     }
-  }, [location.pathname]);
+
+    analytics.trackPageView(path, title, {
+      content_group: contentCategory,
+      user_authenticated: isAuthenticated,
+    });
+  }, [location.pathname, location.search, isAuthenticated]);
 
   // Show loading screen while essential data is loading
   const isInitialLoading = appSettingsLoading;
@@ -147,6 +187,14 @@ export default function App() {
                   element={
                     <PrivateRoute>
                       <Dashboard />
+                    </PrivateRoute>
+                  }
+                />
+                <Route
+                  path={ROUTES.ANALYTICS}
+                  element={
+                    <PrivateRoute>
+                      <Analytics />
                     </PrivateRoute>
                   }
                 />

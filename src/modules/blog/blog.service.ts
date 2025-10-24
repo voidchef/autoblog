@@ -15,7 +15,15 @@ import {
 } from '../postGen';
 import { ttsService } from '../tts';
 import { getUserById } from '../user/user.service';
-import runReport, { IRunReportResponse } from '../utils/analytics';
+import runReport, {
+  IRunReportResponse,
+  getAnalyticsOverview,
+  getBlogPageViews,
+  getTrafficSources,
+  getDailyTrends,
+  getEventAnalytics,
+  getTopPages,
+} from '../utils/analytics';
 import { wordpressService } from '../wordpress';
 import { IGenerateBlog, IGenerateTemplateBlog, NewCreatedBlog, UpdateBlogBody, IBlogDoc } from './blog.interfaces';
 import Blog from './blog.model';
@@ -653,5 +661,197 @@ export const publishToMedium = async (
 
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, `Failed to publish to Medium: ${errorMessage}`);
+  }
+};
+
+/**
+ * Get comprehensive analytics overview
+ * @param {string} startDate - Start date (YYYY-MM-DD)
+ * @param {string} endDate - End date (YYYY-MM-DD)
+ * @param {mongoose.Types.ObjectId} userId - User ID
+ * @returns {Promise<any>}
+ */
+export const getComprehensiveAnalytics = async (
+  startDate: string,
+  endDate: string,
+  userId: mongoose.Types.ObjectId
+): Promise<any> => {
+  try {
+    // Get Google Analytics data
+    const [gaOverview, blogPageViews, trafficSources, dailyTrends] = await Promise.all([
+      getAnalyticsOverview(startDate, endDate),
+      getBlogPageViews(startDate, endDate),
+      getTrafficSources(startDate, endDate),
+      getDailyTrends(startDate, endDate),
+    ]);
+
+    // Get database engagement data
+    const engagementStats = await getAllBlogsEngagementStats(userId);
+
+    // Get user's published blogs
+    const userBlogs = await Blog.find({ author: userId, isPublished: true })
+      .select('slug title category likes dislikes createdAt')
+      .lean();
+
+    // Match GA views with blog data
+    const blogsWithViews = userBlogs.map((blog) => {
+      const gaData = blogPageViews.find((bpv) => bpv.slug === blog.slug);
+      return {
+        id: blog._id?.toString() || '',
+        title: blog.title,
+        slug: blog.slug,
+        category: blog.category || 'Uncategorized',
+        publishedAt: blog.createdAt,
+        views: gaData?.views || 0,
+        likes: blog.likes?.length || 0,
+        dislikes: blog.dislikes?.length || 0,
+        engagementRate: gaData?.views
+          ? ((((blog.likes?.length || 0) + (blog.dislikes?.length || 0)) / gaData.views) * 100).toFixed(2)
+          : '0.00',
+      };
+    });
+
+    // Sort by views
+    blogsWithViews.sort((a, b) => b.views - a.views);
+
+    return {
+      overview: {
+        ...gaOverview,
+        totalBlogs: engagementStats.totalBlogs,
+        totalLikes: engagementStats.totalLikes,
+        totalDislikes: engagementStats.totalDislikes,
+        totalComments: engagementStats.totalComments,
+        totalEngagement: engagementStats.totalEngagement,
+        avgEngagementPerBlog: engagementStats.avgEngagementPerBlog,
+      },
+      blogsPerformance: blogsWithViews,
+      trafficSources,
+      dailyTrends,
+      topPerformers: blogsWithViews.slice(0, 5),
+    };
+  } catch (error) {
+    logger.error('Error fetching comprehensive analytics:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to fetch analytics data');
+  }
+};
+
+/**
+ * Get analytics for a specific time range
+ * @param {mongoose.Types.ObjectId} userId - User ID
+ * @param {string} timeRange - Time range (7d, 30d, 90d, 1y)
+ * @returns {Promise<any>}
+ */
+export const getAnalyticsByTimeRange = async (
+  userId: mongoose.Types.ObjectId,
+  timeRange: '7d' | '30d' | '90d' | '1y' = '30d'
+): Promise<any> => {
+  const endDate = new Date();
+  const startDate = new Date();
+
+  switch (timeRange) {
+    case '7d':
+      startDate.setDate(endDate.getDate() - 7);
+      break;
+    case '30d':
+      startDate.setDate(endDate.getDate() - 30);
+      break;
+    case '90d':
+      startDate.setDate(endDate.getDate() - 90);
+      break;
+    case '1y':
+      startDate.setFullYear(endDate.getFullYear() - 1);
+      break;
+  }
+
+  const startDateStr = startDate.toISOString().split('T')[0] || startDate.toISOString();
+  const endDateStr = endDate.toISOString().split('T')[0] || endDate.toISOString();
+
+  return getComprehensiveAnalytics(startDateStr, endDateStr, userId);
+};
+
+/**
+ * Get event-based analytics (likes, shares, audio plays)
+ * @param {string} startDate - Start date (YYYY-MM-DD)
+ * @param {string} endDate - End date (YYYY-MM-DD)
+ * @param {mongoose.Types.ObjectId} userId - User ID
+ * @returns {Promise<any>}
+ */
+export const getEventBasedAnalytics = async (
+  startDate: string,
+  endDate: string,
+  userId: mongoose.Types.ObjectId
+): Promise<any> => {
+  try {
+    // Get event data from Google Analytics
+    const [likeEvents, shareEvents, audioEvents] = await Promise.all([
+      getEventAnalytics(startDate, endDate, 'blog_like'),
+      getEventAnalytics(startDate, endDate, 'blog_share'),
+      getEventAnalytics(startDate, endDate, 'audio_play'),
+    ]);
+
+    // Get user's blogs
+    const userBlogs = await Blog.find({ author: userId, isPublished: true }).select('_id slug title').lean();
+
+    const blogMap = new Map(userBlogs.map((b) => [b.slug, b]));
+
+    // Aggregate event counts by blog
+    const blogEventCounts = new Map();
+
+    likeEvents.forEach((event: any) => {
+      const blog = blogMap.get(event.blogId);
+      if (blog) {
+        if (!blogEventCounts.has(blog.slug)) {
+          blogEventCounts.set(blog.slug, { likes: 0, shares: 0, audioPlays: 0, title: blog.title });
+        }
+        blogEventCounts.get(blog.slug).likes += event.count;
+      }
+    });
+
+    shareEvents.forEach((event: any) => {
+      const blog = blogMap.get(event.blogId);
+      if (blog) {
+        if (!blogEventCounts.has(blog.slug)) {
+          blogEventCounts.set(blog.slug, { likes: 0, shares: 0, audioPlays: 0, title: blog.title });
+        }
+        blogEventCounts.get(blog.slug).shares += event.count;
+      }
+    });
+
+    audioEvents.forEach((event: any) => {
+      const blog = blogMap.get(event.blogId);
+      if (blog) {
+        if (!blogEventCounts.has(blog.slug)) {
+          blogEventCounts.set(blog.slug, { likes: 0, shares: 0, audioPlays: 0, title: blog.title });
+        }
+        blogEventCounts.get(blog.slug).audioPlays += event.count;
+      }
+    });
+
+    const totalLikes = likeEvents.reduce((sum: number, e: any) => sum + e.count, 0);
+    const totalShares = shareEvents.reduce((sum: number, e: any) => sum + e.count, 0);
+    const totalAudioPlays = audioEvents.reduce((sum: number, e: any) => sum + e.count, 0);
+
+    return {
+      summary: {
+        totalLikes,
+        totalShares,
+        totalAudioPlays,
+      },
+      byBlog: Array.from(blogEventCounts.entries()).map(([slug, counts]) => ({
+        slug,
+        ...counts,
+      })),
+    };
+  } catch (error) {
+    logger.error('Error fetching event-based analytics:', error);
+    // Return empty data if GA events aren't set up yet
+    return {
+      summary: {
+        totalLikes: 0,
+        totalShares: 0,
+        totalAudioPlays: 0,
+      },
+      byBlog: [],
+    };
   }
 };

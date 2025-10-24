@@ -16,15 +16,17 @@ import {
   VolumeOff as VolumeMuteIcon,
   Speed as SpeedIcon,
 } from '@mui/icons-material';
+import * as analytics from '../../utils/analytics';
 
 interface AudioPlayerProps {
   audioUrl?: string;
   title?: string;
+  blogId?: string;
   loading?: boolean;
   onGenerateAudio?: () => void;
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, loading, onGenerateAudio }) => {
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, blogId, loading, onGenerateAudio }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -32,6 +34,8 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, loading, onG
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
+  const [hasTrackedPlay, setHasTrackedPlay] = useState(false);
+  const [hasTrackedComplete, setHasTrackedComplete] = useState(false);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -39,7 +43,15 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, loading, onG
 
     const updateTime = () => setCurrentTime(audio.currentTime);
     const updateDuration = () => setDuration(audio.duration);
-    const handleEnded = () => setIsPlaying(false);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      
+      // Track audio completion
+      if (blogId && title && !hasTrackedComplete) {
+        analytics.trackAudioComplete(blogId, title, duration);
+        setHasTrackedComplete(true);
+      }
+    };
 
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
@@ -50,7 +62,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, loading, onG
       audio.removeEventListener('loadedmetadata', updateDuration);
       audio.removeEventListener('ended', handleEnded);
     };
-  }, [audioUrl]);
+  }, [audioUrl, blogId, title, duration, hasTrackedComplete]);
 
   const togglePlay = () => {
     const audio = audioRef.current;
@@ -60,8 +72,25 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, loading, onG
       audio.pause();
     } else {
       audio.play();
+      
+      // Track audio play event (only once per session)
+      if (blogId && title && !hasTrackedPlay) {
+        analytics.trackAudioPlay(blogId, title);
+        setHasTrackedPlay(true);
+      }
     }
     setIsPlaying(!isPlaying);
+  };
+
+  const handleGenerateAudio = () => {
+    if (onGenerateAudio) {
+      onGenerateAudio();
+      
+      // Track audio generation request
+      if (blogId && title) {
+        analytics.trackAudioGenerate(blogId, title);
+      }
+    }
   };
 
   const handleSeek = (_event: Event, value: number | number[]) => {
@@ -136,7 +165,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, loading, onG
             Audio narration not available
           </Typography>
           {onGenerateAudio && (
-            <IconButton onClick={onGenerateAudio} color="primary" size="small">
+            <IconButton onClick={handleGenerateAudio} color="primary" size="small">
               <VolumeUpIcon />
             </IconButton>
           )}

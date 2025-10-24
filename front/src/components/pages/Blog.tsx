@@ -16,6 +16,7 @@ import ShareButton from '../elements/ShareButton';
 import FollowButton from '../elements/FollowButton';
 import AudioPlayer from '../elements/AudioPlayer';
 import { ROUTES } from '../../utils/routing/routes';
+import * as analytics from '../../utils/analytics';
 
 export default function Blog() {
   const location = useLocation();
@@ -30,6 +31,17 @@ export default function Blog() {
   // For preview mode, get data from Redux state
   const previewBlogData = useAppSelector((state) => state.blog.blogData);
   const currentBlogData = (preview ? previewBlogData : blogData) as IBlogAPI | null;
+
+  // Track blog view when blog loads (only for non-preview mode)
+  React.useEffect(() => {
+    if (!preview && currentBlogData && analytics.isGAInitialized()) {
+      analytics.trackBlogView(
+        currentBlogData.id,
+        currentBlogData.title,
+        currentBlogData.category
+      );
+    }
+  }, [preview, currentBlogData?.id]);
 
   // Audio narration mutation
   const [generateAudio, { isLoading: isGeneratingAudio }] = useGenerateAudioNarrationMutation();
@@ -213,6 +225,7 @@ export default function Blog() {
                 <AudioPlayer 
                   audioUrl={currentBlogData.audioNarrationUrl}
                   title={currentBlogData.title}
+                  blogId={currentBlogData.id}
                   loading={isGeneratingAudio || currentBlogData.audioGenerationStatus === 'processing'}
                 />
               ) : (

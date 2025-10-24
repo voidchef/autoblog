@@ -19,6 +19,7 @@ import {
   Email as EmailIcon,
 } from '@mui/icons-material';
 import { IBlog } from '../../services/blogApi';
+import * as analytics from '../../utils/analytics';
 
 interface ShareButtonProps {
   blog: IBlog;
@@ -78,6 +79,10 @@ const ShareButton: React.FC<ShareButtonProps> = ({ blog, size = 'medium' }) => {
     try {
       await navigator.clipboard.writeText(shareUrl);
       showSnackbar('Link copied to clipboard!');
+      
+      // Track share event
+      analytics.trackBlogShare(blog.id, blog.title, 'copy_link');
+      
       handleClose();
     } catch (error) {
       console.error('Failed to copy link:', error);
@@ -90,18 +95,30 @@ const ShareButton: React.FC<ShareButtonProps> = ({ blog, size = 'medium' }) => {
       shareTitle
     )}&url=${encodeURIComponent(shareUrl)}`;
     window.open(twitterUrl, '_blank', 'width=550,height=420');
+    
+    // Track share event
+    analytics.trackBlogShare(blog.id, blog.title, 'twitter');
+    
     handleClose();
   };
 
   const handleShareFacebook = () => {
     const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
     window.open(facebookUrl, '_blank', 'width=550,height=420');
+    
+    // Track share event
+    analytics.trackBlogShare(blog.id, blog.title, 'facebook');
+    
     handleClose();
   };
 
   const handleShareLinkedIn = () => {
     const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
     window.open(linkedInUrl, '_blank', 'width=550,height=420');
+    
+    // Track share event
+    analytics.trackBlogShare(blog.id, blog.title, 'linkedin');
+    
     handleClose();
   };
 
@@ -109,6 +126,10 @@ const ShareButton: React.FC<ShareButtonProps> = ({ blog, size = 'medium' }) => {
     const emailSubject = encodeURIComponent(shareTitle);
     const emailBody = encodeURIComponent(`Check out this article: ${shareTitle}\n\n${shareUrl}`);
     window.location.href = `mailto:?subject=${emailSubject}&body=${emailBody}`;
+    
+    // Track share event
+    analytics.trackBlogShare(blog.id, blog.title, 'email');
+    
     handleClose();
   };
 

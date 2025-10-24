@@ -125,3 +125,31 @@ export const getBlogEngagementStats = {
 export const getAllBlogsEngagementStats = {
   // No params needed - uses authenticated user
 };
+
+export const getComprehensiveAnalytics = {
+  query: Joi.object().keys({
+    startDate: Joi.string()
+      .pattern(/^\d{4}-\d{2}-\d{2}$/)
+      .required(),
+    endDate: Joi.string()
+      .pattern(/^\d{4}-\d{2}-\d{2}$/)
+      .required(),
+  }),
+};
+
+export const getAnalyticsByTimeRange = {
+  query: Joi.object().keys({
+    timeRange: Joi.string().valid('7d', '30d', '90d', '1y').default('30d'),
+  }),
+};
+
+export const getEventBasedAnalytics = {
+  query: Joi.object().keys({
+    startDate: Joi.string()
+      .pattern(/^\d{4}-\d{2}-\d{2}$/)
+      .required(),
+    endDate: Joi.string()
+      .pattern(/^\d{4}-\d{2}-\d{2}$/)
+      .required(),
+  }),
+};

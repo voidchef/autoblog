@@ -322,3 +322,50 @@ export const publishToMedium = catchAsync(async (req: Request, res: Response) =>
     res.send(blog);
   }
 });
+
+/**
+ * Get comprehensive analytics overview
+ */
+export const getComprehensiveAnalytics = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+  const { startDate, endDate } = req.query;
+
+  const analytics = await blogService.getComprehensiveAnalytics(
+    startDate as string,
+    endDate as string,
+    user._id as mongoose.Types.ObjectId
+  );
+
+  res.send(analytics);
+});
+
+/**
+ * Get analytics by time range
+ */
+export const getAnalyticsByTimeRange = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+  const { timeRange } = req.query;
+
+  const analytics = await blogService.getAnalyticsByTimeRange(
+    user._id as mongoose.Types.ObjectId,
+    timeRange as '7d' | '30d' | '90d' | '1y'
+  );
+
+  res.send(analytics);
+});
+
+/**
+ * Get event-based analytics
+ */
+export const getEventBasedAnalytics = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+  const { startDate, endDate } = req.query;
+
+  const analytics = await blogService.getEventBasedAnalytics(
+    startDate as string,
+    endDate as string,
+    user._id as mongoose.Types.ObjectId
+  );
+
+  res.send(analytics);
+});

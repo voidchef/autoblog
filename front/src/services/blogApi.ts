@@ -109,6 +109,70 @@ export interface AllBlogsEngagementStats {
   avgEngagementPerBlog: string;
 }
 
+export interface AnalyticsOverview {
+  pageViews: number;
+  totalUsers: number;
+  sessions: number;
+  avgSessionDuration: number;
+  bounceRate: number;
+  engagementRate: number;
+  totalBlogs: number;
+  totalLikes: number;
+  totalDislikes: number;
+  totalComments: number;
+  totalEngagement: number;
+  avgEngagementPerBlog: string;
+}
+
+export interface BlogPerformance {
+  id: string;
+  title: string;
+  slug: string;
+  category: string;
+  publishedAt: Date;
+  views: number;
+  likes: number;
+  dislikes: number;
+  engagementRate: string;
+}
+
+export interface TrafficSource {
+  channel: string;
+  source: string;
+  sessions: number;
+  users: number;
+}
+
+export interface DailyTrend {
+  date: string;
+  pageViews: number;
+  users: number;
+  sessions: number;
+}
+
+export interface ComprehensiveAnalytics {
+  overview: AnalyticsOverview;
+  blogsPerformance: BlogPerformance[];
+  trafficSources: TrafficSource[];
+  dailyTrends: DailyTrend[];
+  topPerformers: BlogPerformance[];
+}
+
+export interface EventAnalytics {
+  summary: {
+    totalLikes: number;
+    totalShares: number;
+    totalAudioPlays: number;
+  };
+  byBlog: Array<{
+    slug: string;
+    title: string;
+    likes: number;
+    shares: number;
+    audioPlays: number;
+  }>;
+}
+
 export const blogApi = api.injectEndpoints({
   endpoints: (builder) => ({
     generateBlog: builder.mutation<IBlog, IBlogData>({
@@ -270,6 +334,30 @@ export const blogApi = api.injectEndpoints({
       query: () => '/blogs/my-engagement-stats',
       providesTags: [{ type: 'Blog', id: 'MY_ENGAGEMENT' }],
       keepUnusedDataFor: 600, // Keep engagement data for 10 minutes
+    }),
+
+    getComprehensiveAnalytics: builder.query<ComprehensiveAnalytics, { startDate: string; endDate: string }>({
+      query: ({ startDate, endDate }) => ({
+        url: '/blogs/analytics/comprehensive',
+        params: { startDate, endDate },
+      }),
+      keepUnusedDataFor: 3600, // Cache for 1 hour
+    }),
+
+    getAnalyticsByTimeRange: builder.query<ComprehensiveAnalytics, string>({
+      query: (timeRange = '30d') => ({
+        url: '/blogs/analytics/overview',
+        params: { timeRange },
+      }),
+      keepUnusedDataFor: 1800, // Cache for 30 minutes
+    }),
+
+    getEventBasedAnalytics: builder.query<EventAnalytics, { startDate: string; endDate: string }>({
+      query: ({ startDate, endDate }) => ({
+        url: '/blogs/analytics/events',
+        params: { startDate, endDate },
+      }),
+      keepUnusedDataFor: 3600, // Cache for 1 hour
     }),
 
     updateBlog: builder.mutation<IBlog, { id: string; data: Partial<IBlog>; preview?: boolean }>({
@@ -485,6 +573,9 @@ export const {
   useGetBlogBySlugQuery,
   useGetBlogViewsQuery,
   useGetAllBlogsEngagementStatsQuery,
+  useGetComprehensiveAnalyticsQuery,
+  useGetAnalyticsByTimeRangeQuery,
+  useGetEventBasedAnalyticsQuery,
   useUpdateBlogMutation,
   usePublishBlogMutation,
   useUnpublishBlogMutation,

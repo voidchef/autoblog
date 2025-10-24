@@ -3,6 +3,7 @@ import { Box, IconButton, Typography, Tooltip } from '@mui/material';
 import { ThumbUp, ThumbDown } from '@mui/icons-material';
 import { useLikeBlogMutation, useDislikeBlogMutation, IBlog } from '../../services/blogApi';
 import { useAppSelector } from '../../utils/reduxHooks';
+import * as analytics from '../../utils/analytics';
 
 interface BlogLikeDislikeProps {
   blog: IBlog;
@@ -34,6 +35,9 @@ const BlogLikeDislike: React.FC<BlogLikeDislikeProps> = ({
 
     try {
       await likeBlog(blog.id).unwrap();
+      
+      // Track like event in Google Analytics
+      analytics.trackBlogLike(blog.id, blog.title);
     } catch (error) {
       console.error('Failed to like blog:', error);
     }
@@ -51,6 +55,9 @@ const BlogLikeDislike: React.FC<BlogLikeDislikeProps> = ({
 
     try {
       await dislikeBlog(blog.id).unwrap();
+      
+      // Track dislike event in Google Analytics
+      analytics.trackBlogDislike(blog.id, blog.title);
     } catch (error) {
       console.error('Failed to dislike blog:', error);
     }

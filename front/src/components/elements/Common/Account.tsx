@@ -17,6 +17,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import BookIcon from '@mui/icons-material/Book';
 import EmailIcon from '@mui/icons-material/Email';
 import VerifiedIcon from '@mui/icons-material/Verified';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
 import { clearBlog } from '../../../reducers/blog';
 import { logoutUser } from '../../../reducers/auth';
 import { useAppDispatch } from '../../../utils/reduxHooks';
@@ -83,6 +84,15 @@ export default function AccountMenu() {
       icon: <Settings fontSize="small" />,
       onClick: () => handleClose(ROUTES.DASHBOARD),
     },
+    ...(user.role === 'admin' || user.role === 'user'
+      ? [
+          {
+            label: 'Analytics',
+            icon: <AnalyticsIcon fontSize="small" />,
+            onClick: () => handleClose(ROUTES.ANALYTICS),
+          },
+        ]
+      : []),
   ];
 
   // User info section component

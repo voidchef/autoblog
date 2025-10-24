@@ -35,6 +35,19 @@ router.route('/robots.txt').get(blogController.generateRobots);
 
 router.route('/views').get(auth('getViews'), validate(blogValidation.getViews), blogController.getViews);
 
+// Analytics routes
+router
+  .route('/analytics/comprehensive')
+  .get(auth('getViews'), validate(blogValidation.getComprehensiveAnalytics), blogController.getComprehensiveAnalytics);
+
+router
+  .route('/analytics/overview')
+  .get(auth('getViews'), validate(blogValidation.getAnalyticsByTimeRange), blogController.getAnalyticsByTimeRange);
+
+router
+  .route('/analytics/events')
+  .get(auth('getViews'), validate(blogValidation.getEventBasedAnalytics), blogController.getEventBasedAnalytics);
+
 router
   .route('/my-engagement-stats')
   .get(auth(), validate(blogValidation.getAllBlogsEngagementStats), blogController.getAllBlogsEngagementStats);
@@ -1175,4 +1188,127 @@ export default router;
  *         $ref: '#/components/responses/NotFound'
  *       "500":
  *         $ref: '#/components/responses/InternalError'
+ */
+
+/**
+ * @swagger
+ * /blogs/analytics/comprehensive:
+ *   get:
+ *     summary: Get comprehensive analytics
+ *     description: Get comprehensive analytics including GA data and database engagement stats for a custom date range
+ *     tags: [Blogs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: startDate
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Start date (YYYY-MM-DD)
+ *       - in: query
+ *         name: endDate
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: End date (YYYY-MM-DD)
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 overview:
+ *                   type: object
+ *                 blogsPerformance:
+ *                   type: array
+ *                 trafficSources:
+ *                   type: array
+ *                 dailyTrends:
+ *                   type: array
+ *                 topPerformers:
+ *                   type: array
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ */
+
+/**
+ * @swagger
+ * /blogs/analytics/overview:
+ *   get:
+ *     summary: Get analytics by time range
+ *     description: Get analytics for a predefined time range (7d, 30d, 90d, 1y)
+ *     tags: [Blogs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: timeRange
+ *         schema:
+ *           type: string
+ *           enum: [7d, 30d, 90d, 1y]
+ *           default: 30d
+ *         description: Time range for analytics
+ *     responses:
+ *       "200":
+ *         description: OK
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ */
+
+/**
+ * @swagger
+ * /blogs/analytics/events:
+ *   get:
+ *     summary: Get event-based analytics
+ *     description: Get analytics for custom events (likes, shares, audio plays) from Google Analytics
+ *     tags: [Blogs]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: startDate
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Start date (YYYY-MM-DD)
+ *       - in: query
+ *         name: endDate
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: End date (YYYY-MM-DD)
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 summary:
+ *                   type: object
+ *                   properties:
+ *                     totalLikes:
+ *                       type: number
+ *                     totalShares:
+ *                       type: number
+ *                     totalAudioPlays:
+ *                       type: number
+ *                 byBlog:
+ *                   type: array
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
  */
