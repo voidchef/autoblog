@@ -16,7 +16,7 @@
 		"@mui/utils": "^7.2.0",
 		"@mui/x-charts": "^8.9.0",
 		"@reduxjs/toolkit": "^2.8.2",
-		"axios": "^1.11.0",
+		"axios": "^1.12.0",
 		"lottie-react": "^2.4.1",
 		"marked": "^16.1.1",
 		"react": "^19.1.0",
@@ -34,6 +34,6 @@
 		"@types/uuid": "^10.0.0",
 		"@vitejs/plugin-react-swc": "^4.0.2",
 		"typescript": "^5.8.3",
-		"vite": "^7.0.6"
+		"vite": "^7.0.8"
 	}
 }
