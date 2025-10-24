@@ -123,7 +123,7 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
   return (
     <Card
       sx={{
-        borderRadius: 3,
+        borderRadius: { xs: 2, sm: 3 },
         border: '1px solid',
         borderColor: theme.palette.mode === 'dark' 
           ? alpha(theme.palette.divider, 0.1)
@@ -132,18 +132,30 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
     >
       <CardContent sx={{ p: 0 }}>
         {/* Header */}
-        <Box sx={{ p: 3, pb: 2 }}>
-          <Typography variant="h6" component="h3" fontWeight="bold" gutterBottom>
+        <Box sx={{ p: { xs: 2, sm: 3 }, pb: { xs: 1.5, sm: 2 } }}>
+          <Typography variant="h6" component="h3" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.125rem', sm: '1.25rem' } }}>
             Blog Performance
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
             Detailed analytics for each blog post
           </Typography>
         </Box>
 
         {/* Table */}
-        <TableContainer>
-          <Table>
+        <TableContainer sx={{ 
+          overflowX: 'auto',
+          '&::-webkit-scrollbar': {
+            height: 8,
+          },
+          '&::-webkit-scrollbar-track': {
+            bgcolor: 'transparent',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            bgcolor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)',
+            borderRadius: 4,
+          },
+        }}>
+          <Table sx={{ minWidth: { xs: 800, sm: 'auto' } }}>
             <TableHead>
               <TableRow
                 sx={{
@@ -152,38 +164,38 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
                     : alpha(theme.palette.primary.main, 0.02),
                 }}
               >
-                <TableCell sx={{ fontWeight: 700, fontSize: '0.875rem' }}>Blog Post</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
+                <TableCell sx={{ fontWeight: 700, fontSize: { xs: '0.75rem', sm: '0.875rem' }, whiteSpace: 'nowrap' }}>Blog Post</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 700, fontSize: { xs: '0.75rem', sm: '0.875rem' }, whiteSpace: 'nowrap' }}>
                   <Box display="flex" alignItems="center" justifyContent="center" gap={0.5}>
                     <VisibilityIcon fontSize="small" />
-                    Views
+                    <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Views</Box>
                   </Box>
                 </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
+                <TableCell align="center" sx={{ fontWeight: 700, fontSize: { xs: '0.75rem', sm: '0.875rem' }, whiteSpace: 'nowrap' }}>
                   <Box display="flex" alignItems="center" justifyContent="center" gap={0.5}>
                     <ThumbUpIcon fontSize="small" />
-                    Likes
+                    <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Likes</Box>
                   </Box>
                 </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
+                <TableCell align="center" sx={{ fontWeight: 700, fontSize: { xs: '0.75rem', sm: '0.875rem' }, whiteSpace: 'nowrap' }}>
                   <Box display="flex" alignItems="center" justifyContent="center" gap={0.5}>
                     <ShareIcon fontSize="small" />
-                    Shares
+                    <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Shares</Box>
                   </Box>
                 </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
+                <TableCell align="center" sx={{ fontWeight: 700, fontSize: { xs: '0.75rem', sm: '0.875rem' }, whiteSpace: 'nowrap' }}>
                   <Box display="flex" alignItems="center" justifyContent="center" gap={0.5}>
                     <CommentIcon fontSize="small" />
-                    Comments
+                    <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Comments</Box>
                   </Box>
                 </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
+                <TableCell align="center" sx={{ fontWeight: 700, fontSize: { xs: '0.75rem', sm: '0.875rem' }, whiteSpace: 'nowrap' }}>
                   <Box display="flex" alignItems="center" justifyContent="center" gap={0.5}>
                     <TrendingUpIcon fontSize="small" />
-                    Engagement
+                    <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Engagement</Box>
                   </Box>
                 </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 700, fontSize: '0.875rem' }}>
+                <TableCell align="center" sx={{ fontWeight: 700, fontSize: { xs: '0.75rem', sm: '0.875rem' }, whiteSpace: 'nowrap' }}>
                   Actions
                 </TableCell>
               </TableRow>
@@ -209,13 +221,13 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
                     }}
                   >
                     {/* Blog Post Info */}
-                    <TableCell>
-                      <Box display="flex" alignItems="center" gap={2}>
+                    <TableCell sx={{ minWidth: { xs: 200, sm: 250 } }}>
+                      <Box display="flex" alignItems="center" gap={{ xs: 1.5, sm: 2 }}>
                         {blog.thumbnail && (
                           <Avatar
                             src={blog.thumbnail}
                             variant="rounded"
-                            sx={{ width: 48, height: 48 }}
+                            sx={{ width: { xs: 40, sm: 48 }, height: { xs: 40, sm: 48 } }}
                           />
                         )}
                         <Box>
@@ -229,6 +241,7 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
                               WebkitLineClamp: 2,
                               WebkitBoxOrient: 'vertical',
                               mb: 0.5,
+                              fontSize: { xs: '0.8125rem', sm: '0.875rem' },
                             }}
                           >
                             {blog.title}
@@ -238,13 +251,13 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
                               label={blog.category}
                               size="small"
                               sx={{
-                                height: 20,
-                                fontSize: '0.7rem',
+                                height: { xs: 18, sm: 20 },
+                                fontSize: { xs: '0.65rem', sm: '0.7rem' },
                                 fontWeight: 600,
                               }}
                             />
-                            <Typography variant="caption" color="text.secondary">
-                              {new Date(blog.publishedAt).toLocaleDateString()}
+                            <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: '0.65rem', sm: '0.75rem' } }}>
+                              {new Date(blog.publishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
                             </Typography>
                           </Box>
                         </Box>
@@ -253,7 +266,7 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
 
                     {/* Views */}
                     <TableCell align="center">
-                      <Typography variant="body2" fontWeight={600}>
+                      <Typography variant="body2" fontWeight={600} sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
                         {blog.views.toLocaleString()}
                       </Typography>
                     </TableCell>
@@ -261,11 +274,11 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
                     {/* Likes */}
                     <TableCell align="center">
                       <Box display="flex" flexDirection="column" alignItems="center">
-                        <Typography variant="body2" fontWeight={600} color="success.main">
+                        <Typography variant="body2" fontWeight={600} color="success.main" sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
                           {blog.likes}
                         </Typography>
                         {blog.dislikes > 0 && (
-                          <Typography variant="caption" color="error.main">
+                          <Typography variant="caption" color="error.main" sx={{ fontSize: { xs: '0.65rem', sm: '0.75rem' } }}>
                             -{blog.dislikes}
                           </Typography>
                         )}
@@ -274,25 +287,29 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
 
                     {/* Shares */}
                     <TableCell align="center">
-                      <Typography variant="body2" fontWeight={600}>
+                      <Typography variant="body2" fontWeight={600} sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
                         {blog.shares}
                       </Typography>
                     </TableCell>
 
                     {/* Comments */}
                     <TableCell align="center">
-                      <Typography variant="body2" fontWeight={600}>
+                      <Typography variant="body2" fontWeight={600} sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
                         {blog.comments}
                       </Typography>
                     </TableCell>
 
                     {/* Engagement Rate */}
-                    <TableCell align="center">
+                    <TableCell align="center" sx={{ minWidth: { xs: 80, sm: 100 } }}>
                       <Box>
                         <Typography
                           variant="body2"
                           fontWeight={700}
-                          sx={{ color: getEngagementColor(blog.engagementRate), mb: 0.5 }}
+                          sx={{ 
+                            color: getEngagementColor(blog.engagementRate), 
+                            mb: 0.5,
+                            fontSize: { xs: '0.8125rem', sm: '0.875rem' }
+                          }}
                         >
                           {blog.engagementRate.toFixed(1)}%
                         </Typography>
@@ -300,7 +317,7 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
                           variant="determinate"
                           value={Math.min(blog.engagementRate * 5, 100)}
                           sx={{
-                            height: 4,
+                            height: { xs: 3, sm: 4 },
                             borderRadius: 2,
                             bgcolor: alpha(getEngagementColor(blog.engagementRate), 0.1),
                             '& .MuiLinearProgress-bar': {
@@ -314,6 +331,7 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
                           sx={{
                             color: getEngagementColor(blog.engagementRate),
                             fontWeight: 600,
+                            fontSize: { xs: '0.65rem', sm: '0.75rem' },
                           }}
                         >
                           {getEngagementLabel(blog.engagementRate)}
@@ -358,6 +376,13 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
             sx={{
               borderTop: '1px solid',
               borderColor: theme.palette.divider,
+              '& .MuiTablePagination-toolbar': {
+                px: { xs: 1, sm: 2 },
+                minHeight: { xs: 52, sm: 64 },
+              },
+              '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+                fontSize: { xs: '0.8125rem', sm: '0.875rem' },
+              },
             }}
           />
         )}

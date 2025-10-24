@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowForward } from '@mui/icons-material';
 
 interface Props {
-  categoryId: string;
+  categoryId?: string;
   categoryIcon: any;
   categoryName: string;
   categoryDescription: string;

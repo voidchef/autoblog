@@ -49,7 +49,7 @@ function TabPanel(props: TabPanelProps) {
       aria-labelledby={`analytics-tab-${index}`}
       {...other}
     >
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ py: { xs: 2, sm: 3 } }}>{children}</Box>}
     </div>
   );
 }
@@ -267,10 +267,17 @@ export default function Analytics() {
     >
       <NavBar />
 
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Container maxWidth="xl" sx={{ py: { xs: 2, sm: 4 }, px: { xs: 2, sm: 3 } }}>
         {/* Page Header */}
-        <Box sx={{ mb: 4, mt: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+        <Box sx={{ mb: { xs: 3, sm: 4 }, mt: { xs: 1, sm: 2 } }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: { xs: 'column', md: 'row' },
+            alignItems: { xs: 'flex-start', md: 'center' }, 
+            justifyContent: 'space-between', 
+            mb: 2,
+            gap: { xs: 2, md: 0 }
+          }}>
             <Box>
               <Typography
                 variant="h3"
@@ -278,6 +285,7 @@ export default function Analytics() {
                 fontWeight="bold"
                 sx={{
                   mb: 1,
+                  fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' },
                   background: theme.palette.mode === 'dark'
                     ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
                     : 'linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%)',
@@ -288,52 +296,64 @@ export default function Analytics() {
               >
                 Analytics Dashboard
               </Typography>
-              <Typography variant="body1" color="text.secondary">
+              <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
                 Comprehensive insights into your blog's performance
               </Typography>
             </Box>
 
             {/* Time Range Selector */}
-            <ButtonGroup variant="outlined" size="small">
+            <ButtonGroup 
+              variant="outlined" 
+              size="small"
+              sx={{
+                width: { xs: '100%', md: 'auto' },
+                '& .MuiButton-root': {
+                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                  px: { xs: 1, sm: 2 },
+                  flex: { xs: 1, md: 'initial' }
+                }
+              }}
+            >
               <Button
                 variant={timeRange === '7d' ? 'contained' : 'outlined'}
                 onClick={() => setTimeRange('7d')}
               >
-                7 Days
+                7D
               </Button>
               <Button
                 variant={timeRange === '30d' ? 'contained' : 'outlined'}
                 onClick={() => setTimeRange('30d')}
               >
-                30 Days
+                30D
               </Button>
               <Button
                 variant={timeRange === '90d' ? 'contained' : 'outlined'}
                 onClick={() => setTimeRange('90d')}
               >
-                90 Days
+                90D
               </Button>
               <Button
                 variant={timeRange === '1y' ? 'contained' : 'outlined'}
                 onClick={() => setTimeRange('1y')}
               >
-                1 Year
+                1Y
               </Button>
             </ButtonGroup>
           </Box>
 
-          <Divider sx={{ my: 3 }} />
+          <Divider sx={{ my: { xs: 2, sm: 3 } }} />
 
           {/* Navigation Tabs */}
           <Paper
             elevation={0}
             sx={{
-              borderRadius: 3,
+              borderRadius: { xs: 2, sm: 3 },
               bgcolor: theme.palette.mode === 'dark'
                 ? alpha(theme.palette.background.paper, 0.6)
                 : theme.palette.background.paper,
               border: '1px solid',
               borderColor: theme.palette.divider,
+              overflow: 'hidden',
             }}
           >
             <Tabs
@@ -341,32 +361,38 @@ export default function Analytics() {
               onChange={handleTabChange}
               variant="scrollable"
               scrollButtons="auto"
+              allowScrollButtonsMobile
               sx={{
                 '& .MuiTab-root': {
-                  minHeight: 64,
+                  minHeight: { xs: 56, sm: 64 },
                   textTransform: 'none',
-                  fontSize: '1rem',
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
                   fontWeight: 600,
+                  px: { xs: 2, sm: 3 },
+                  minWidth: { xs: 'auto', sm: 120 },
+                },
+                '& .MuiTabs-scrollButtons': {
+                  '&.Mui-disabled': { opacity: 0.3 },
                 },
               }}
             >
               <Tab
-                icon={<DashboardIcon />}
+                icon={<DashboardIcon sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />}
                 iconPosition="start"
                 label="Overview"
               />
               <Tab
-                icon={<TableChartIcon />}
+                icon={<TableChartIcon sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />}
                 iconPosition="start"
-                label="Blog Performance"
+                label="Performance"
               />
               <Tab
-                icon={<PieChartIcon />}
+                icon={<PieChartIcon sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />}
                 iconPosition="start"
-                label="Traffic & Engagement"
+                label="Traffic"
               />
               <Tab
-                icon={<TimelineIcon />}
+                icon={<TimelineIcon sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />}
                 iconPosition="start"
                 label="Trends"
               />
@@ -392,16 +418,16 @@ export default function Analytics() {
 
         <TabPanel value={tabValue} index={3}>
           <Box>
-            <Typography variant="h5" fontWeight="bold" gutterBottom>
+            <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>
               View Trends
             </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: { xs: 2, sm: 3 }, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
               Daily views over the selected time period
             </Typography>
             <Paper
               sx={{
-                p: 3,
-                borderRadius: 3,
+                p: { xs: 2, sm: 3 },
+                borderRadius: { xs: 2, sm: 3 },
                 border: '1px solid',
                 borderColor: theme.palette.divider,
               }}

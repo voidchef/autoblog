@@ -119,35 +119,35 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
           xs: 'repeat(1, 1fr)',
           md: 'repeat(2, 1fr)',
         },
-        gap: 3,
+        gap: { xs: 2, sm: 3 },
       }}
     >
       {/* Traffic Sources Pie Chart */}
       <Card
         sx={{
-          borderRadius: 3,
+          borderRadius: { xs: 2, sm: 3 },
           border: '1px solid',
           borderColor: theme.palette.mode === 'dark' 
             ? alpha(theme.palette.divider, 0.1)
             : theme.palette.divider,
         }}
       >
-        <CardContent>
-          <Typography variant="h6" component="h3" fontWeight="bold" gutterBottom>
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+          <Typography variant="h6" component="h3" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.125rem', sm: '1.25rem' } }}>
             Traffic Sources
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: { xs: 2, sm: 3 }, fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
             Where your visitors come from
           </Typography>
 
-          <Box sx={{ height: 300, mb: 2 }}>
+          <Box sx={{ height: { xs: 250, sm: 300 }, mb: 2 }}>
             <PieChart
               series={[{
                 data: pieChartData,
                 highlightScope: { fade: 'global', highlight: 'item' },
               }]}
               colors={COLORS}
-              height={300}
+              height={250}
             />
           </Box>
 
@@ -159,36 +159,39 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'space-between',
-                  py: 1,
+                  py: { xs: 0.75, sm: 1 },
                   borderBottom: index < data.sources.length - 1 ? '1px solid' : 'none',
                   borderColor: theme.palette.divider,
                 }}
               >
-                <Box display="flex" alignItems="center" gap={1.5}>
+                <Box display="flex" alignItems="center" gap={{ xs: 1, sm: 1.5 }}>
                   <Box
                     sx={{
-                      width: 12,
-                      height: 12,
+                      width: { xs: 10, sm: 12 },
+                      height: { xs: 10, sm: 12 },
                       borderRadius: '50%',
                       bgcolor: COLORS[index % COLORS.length],
                     }}
                   />
                   <Box display="flex" alignItems="center" gap={1}>
-                    {getSourceIcon(source.name)}
-                    <Typography variant="body2" fontWeight={500}>
+                    <Box sx={{ '& .MuiSvgIcon-root': { fontSize: { xs: '1rem', sm: '1.25rem' } } }}>
+                      {getSourceIcon(source.name)}
+                    </Box>
+                    <Typography variant="body2" fontWeight={500} sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
                       {source.name}
                     </Typography>
                   </Box>
                 </Box>
-                <Box display="flex" alignItems="center" gap={2}>
-                  <Typography variant="body2" color="text.secondary">
+                <Box display="flex" alignItems="center" gap={{ xs: 1, sm: 2 }}>
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
                     {source.value.toLocaleString()}
                   </Typography>
                   <Chip
-                    label={`${source.percentage}%`}
+                    label={`${source.percentage.toFixed(0)}%`}
                     size="small"
                     sx={{
-                      height: 24,
+                      height: { xs: 20, sm: 24 },
+                      fontSize: { xs: '0.7rem', sm: '0.75rem' },
                       fontWeight: 600,
                       bgcolor: alpha(COLORS[index % COLORS.length], 0.1),
                       color: COLORS[index % COLORS.length],
@@ -204,26 +207,27 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
       {/* Share Platforms */}
       <Card
         sx={{
-          borderRadius: 3,
+          borderRadius: { xs: 2, sm: 3 },
           border: '1px solid',
           borderColor: theme.palette.mode === 'dark' 
             ? alpha(theme.palette.divider, 0.1)
             : theme.palette.divider,
         }}
       >
-        <CardContent>
-          <Typography variant="h6" component="h3" fontWeight="bold" gutterBottom>
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+          <Typography variant="h6" component="h3" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.125rem', sm: '1.25rem' } }}>
             Share Platforms
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: { xs: 2, sm: 3 }, fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
             How users share your content
           </Typography>
 
-          <Box sx={{ height: 300, mb: 2 }}>
+          <Box sx={{ height: { xs: 250, sm: 300 }, mb: 2 }}>
             <BarChart
               xAxis={[{ scaleType: 'band', data: barChartLabels }]}
               series={[{ data: barChartData, color: theme.palette.primary.main }]}
-              height={300}
+              height={250}
+              margin={{ top: 10, right: 10, bottom: 30, left: 40 }}
             />
           </Box>
 
@@ -232,24 +236,24 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
               <Box
                 key={index}
                 sx={{
-                  py: 1.5,
+                  py: { xs: 1, sm: 1.5 },
                   borderBottom: index < data.sharePlatforms.length - 1 ? '1px solid' : 'none',
                   borderColor: theme.palette.divider,
                 }}
               >
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={0.5}>
-                  <Typography variant="body2" fontWeight={600}>
+                  <Typography variant="body2" fontWeight={600} sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
                     {platform.platform}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {platform.shares} shares ({platform.percentage}%)
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>
+                    {platform.shares} ({platform.percentage.toFixed(0)}%)
                   </Typography>
                 </Box>
                 <LinearProgress
                   variant="determinate"
                   value={platform.percentage}
                   sx={{
-                    height: 6,
+                    height: { xs: 5, sm: 6 },
                     borderRadius: 3,
                     bgcolor: alpha(theme.palette.primary.main, 0.1),
                     '& .MuiLinearProgress-bar': {
@@ -267,18 +271,18 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
       {/* User Behavior Metrics */}
       <Card
         sx={{
-          borderRadius: 3,
+          borderRadius: { xs: 2, sm: 3 },
           border: '1px solid',
           borderColor: theme.palette.mode === 'dark' 
             ? alpha(theme.palette.divider, 0.1)
             : theme.palette.divider,
         }}
       >
-        <CardContent>
-          <Typography variant="h6" component="h3" fontWeight="bold" gutterBottom>
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+          <Typography variant="h6" component="h3" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.125rem', sm: '1.25rem' } }}>
             User Behavior
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: { xs: 2, sm: 3 }, fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
             Key engagement metrics
           </Typography>
 
@@ -289,7 +293,7 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
                 xs: 'repeat(1, 1fr)',
                 sm: 'repeat(3, 1fr)',
               },
-              gap: 3,
+              gap: { xs: 2, sm: 3 },
             }}
           >
             <Box textAlign="center">
@@ -297,6 +301,7 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
                 variant="h4"
                 fontWeight="bold"
                 sx={{
+                  fontSize: { xs: '1.75rem', sm: '2.125rem' },
                   background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
@@ -305,7 +310,7 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
               >
                 {data.totalSessions.toLocaleString()}
               </Typography>
-              <Typography variant="body2" color="text.secondary" fontWeight={500}>
+              <Typography variant="body2" color="text.secondary" fontWeight={500} sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
                 Total Sessions
               </Typography>
             </Box>
@@ -314,6 +319,7 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
                 variant="h4"
                 fontWeight="bold"
                 sx={{
+                  fontSize: { xs: '1.75rem', sm: '2.125rem' },
                   background: 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)',
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
@@ -322,7 +328,7 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
               >
                 {Math.floor(data.avgSessionDuration / 60)}:{(data.avgSessionDuration % 60).toString().padStart(2, '0')}
               </Typography>
-              <Typography variant="body2" color="text.secondary" fontWeight={500}>
+              <Typography variant="body2" color="text.secondary" fontWeight={500} sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
                 Avg. Duration
               </Typography>
             </Box>
@@ -331,6 +337,7 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
                 variant="h4"
                 fontWeight="bold"
                 sx={{
+                  fontSize: { xs: '1.75rem', sm: '2.125rem' },
                   color: data.bounceRate < 50 ? theme.palette.success.main : 
                          data.bounceRate < 70 ? theme.palette.warning.main : 
                          theme.palette.error.main,
@@ -338,7 +345,7 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
               >
                 {data.bounceRate.toFixed(1)}%
               </Typography>
-              <Typography variant="body2" color="text.secondary" fontWeight={500}>
+              <Typography variant="body2" color="text.secondary" fontWeight={500} sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
                 Bounce Rate
               </Typography>
             </Box>
@@ -349,18 +356,18 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
       {/* Top Performing Content */}
       <Card
         sx={{
-          borderRadius: 3,
+          borderRadius: { xs: 2, sm: 3 },
           border: '1px solid',
           borderColor: theme.palette.mode === 'dark' 
             ? alpha(theme.palette.divider, 0.1)
             : theme.palette.divider,
         }}
       >
-        <CardContent>
-          <Typography variant="h6" component="h3" fontWeight="bold" gutterBottom>
+        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+          <Typography variant="h6" component="h3" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.125rem', sm: '1.25rem' } }}>
             Top Performing Content
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: { xs: 2, sm: 3 }, fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
             Most viewed blog posts
           </Typography>
 
@@ -371,16 +378,16 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 2,
-                  py: 2,
+                  gap: { xs: 1.5, sm: 2 },
+                  py: { xs: 1.5, sm: 2 },
                   borderBottom: index < data.topContent.length - 1 ? '1px solid' : 'none',
                   borderColor: theme.palette.divider,
                 }}
               >
                 <Box
                   sx={{
-                    minWidth: 32,
-                    height: 32,
+                    minWidth: { xs: 28, sm: 32 },
+                    height: { xs: 28, sm: 32 },
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
@@ -394,11 +401,12 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
                            index === 2 ? theme.palette.warning.dark :
                            theme.palette.primary.main,
                     fontWeight: 'bold',
+                    fontSize: { xs: '0.875rem', sm: '1rem' },
                   }}
                 >
                   {index + 1}
                 </Box>
-                <Box flex={1}>
+                <Box flex={1} minWidth={0}>
                   <Typography
                     variant="body2"
                     fontWeight={600}
@@ -407,6 +415,7 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',
                       mb: 0.5,
+                      fontSize: { xs: '0.8125rem', sm: '0.875rem' },
                     }}
                   >
                     {content.title}
@@ -415,14 +424,14 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
                     label={content.category}
                     size="small"
                     sx={{
-                      height: 20,
-                      fontSize: '0.7rem',
+                      height: { xs: 18, sm: 20 },
+                      fontSize: { xs: '0.65rem', sm: '0.7rem' },
                     }}
                   />
                 </Box>
-                <Box display="flex" alignItems="center" gap={0.5}>
-                  <TrendingUpIcon fontSize="small" color="success" />
-                  <Typography variant="body2" fontWeight={600} color="success.main">
+                <Box display="flex" alignItems="center" gap={0.5} flexShrink={0}>
+                  <TrendingUpIcon fontSize="small" color="success" sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />
+                  <Typography variant="body2" fontWeight={600} color="success.main" sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
                     {content.views.toLocaleString()}
                   </Typography>
                 </Box>

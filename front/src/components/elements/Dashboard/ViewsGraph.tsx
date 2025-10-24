@@ -1,19 +1,27 @@
 import * as React from 'react';
 import { LineChart } from '@mui/x-charts/LineChart';
 import { useTheme } from '@mui/material/styles';
+import { useMediaQuery } from '@mui/material';
 
 const yearFormatter = (date: Date) => date.getDate().toString();
 
 export default function ViewsGraph({ blogViews, monthDays }: { blogViews: number[]; monthDays: Array<Date> }) {
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === 'dark';
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('md'));
 
   const lineChartsParams = {
     series: [
       {
         id: 'visits',
         data: blogViews,
-        showMark: ({ index }: { index: number }) => index % 3 === 0 || index === blogViews.length - 1,
+        showMark: ({ index }: { index: number }) => {
+          if (isMobile) {
+            return index % 5 === 0 || index === blogViews.length - 1;
+          }
+          return index % 3 === 0 || index === blogViews.length - 1;
+        },
         area: true,
         color: isDarkMode ? '#667eea' : '#1d4ed8',
         curve: 'catmullRom' as const,
@@ -26,7 +34,7 @@ export default function ViewsGraph({ blogViews, monthDays }: { blogViews: number
       {...lineChartsParams}
       sx={{
         '& .MuiLineElement-root': {
-          strokeWidth: 2.5,
+          strokeWidth: isMobile ? 2 : 2.5,
           filter: 'drop-shadow(0 2px 6px rgba(102, 126, 234, 0.25))',
         },
         '& .MuiAreaElement-series-visits': {
@@ -41,22 +49,22 @@ export default function ViewsGraph({ blogViews, monthDays }: { blogViews: number
         },
         '& .MuiChartsAxis-tickLabel': {
           fill: isDarkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
-          fontSize: '0.75rem',
+          fontSize: isMobile ? '0.65rem' : '0.75rem',
           fontWeight: 500,
         },
         '& .MuiChartsAxis-label': {
           fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
-          fontSize: '0.8125rem',
+          fontSize: isMobile ? '0.75rem' : '0.8125rem',
           fontWeight: 600,
         },
         '& .MuiMarkElement-root': {
           fill: isDarkMode ? '#667eea' : '#1d4ed8',
           stroke: isDarkMode ? '#0f172a' : '#ffffff',
           strokeWidth: 2,
-          r: 4,
+          r: isMobile ? 3 : 4,
           transition: 'all 0.2s ease',
           '&:hover': {
-            r: 6,
+            r: isMobile ? 5 : 6,
             stroke: isDarkMode ? '#667eea' : '#1d4ed8',
             fill: '#ffffff',
           },
@@ -71,17 +79,22 @@ export default function ViewsGraph({ blogViews, monthDays }: { blogViews: number
         scaleType: 'time', 
         valueFormatter: yearFormatter,
         tickLabelStyle: {
-          fontSize: 11,
+          fontSize: isMobile ? 9 : 11,
           fontWeight: 500,
         },
       }]}
       yAxis={[{
         tickLabelStyle: {
-          fontSize: 11,
+          fontSize: isMobile ? 9 : 11,
           fontWeight: 500,
         },
       }]}
-      margin={{ top: 10, right: 20, bottom: 30, left: 50 }}
+      margin={{ 
+        top: 10, 
+        right: isMobile ? 10 : 20, 
+        bottom: isMobile ? 25 : 30, 
+        left: isMobile ? 35 : 50 
+      }}
       grid={{ vertical: false, horizontal: true }}
       series={lineChartsParams.series.map((s) => ({
         ...s,

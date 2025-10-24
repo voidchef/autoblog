@@ -157,12 +157,19 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
   return (
     <Box>
       {/* Header */}
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box sx={{ 
+        mb: { xs: 3, sm: 4 }, 
+        display: 'flex', 
+        flexDirection: { xs: 'column', sm: 'row' },
+        alignItems: { xs: 'flex-start', sm: 'center' }, 
+        justifyContent: 'space-between',
+        gap: { xs: 1.5, sm: 0 }
+      }}>
         <Box>
-          <Typography variant="h5" component="h2" fontWeight="bold" gutterBottom>
+          <Typography variant="h5" component="h2" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>
             Analytics Overview
           </Typography>
-          <Typography variant="body2" color="text.secondary">
+          <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
             {timeRange}
           </Typography>
         </Box>
@@ -170,7 +177,11 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
           label="Real-time Data" 
           color="primary" 
           size="small"
-          sx={{ fontWeight: 600 }}
+          sx={{ 
+            fontWeight: 600,
+            fontSize: { xs: '0.75rem', sm: '0.8125rem' },
+            height: { xs: 24, sm: 28 }
+          }}
         />
       </Box>
 
@@ -183,7 +194,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
             sm: 'repeat(2, 1fr)',
             md: 'repeat(3, 1fr)',
           },
-          gap: 3,
+          gap: { xs: 2, sm: 3 },
         }}
       >
         {metrics.map((metric, index) => (
@@ -193,7 +204,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
                 height: '100%',
                 position: 'relative',
                 overflow: 'hidden',
-                borderRadius: 3,
+                borderRadius: { xs: 2, sm: 3 },
                 transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                 border: '1px solid',
                 borderColor: theme.palette.mode === 'dark' 
@@ -215,18 +226,18 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
                   top: 0,
                   left: 0,
                   right: 0,
-                  height: '4px',
+                  height: { xs: '3px', sm: '4px' },
                   background: metric.gradient,
                 },
               }}
             >
-              <CardContent sx={{ p: 3 }}>
+              <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
                 {/* Icon and Trend */}
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: { xs: 1.5, sm: 2 } }}>
                   <Box
                     sx={{
-                      width: 56,
-                      height: 56,
+                      width: { xs: 48, sm: 56 },
+                      height: { xs: 48, sm: 56 },
                       borderRadius: 2,
                       display: 'flex',
                       alignItems: 'center',
@@ -234,6 +245,9 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
                       background: metric.gradient,
                       color: 'white',
                       boxShadow: `0 8px 16px ${alpha(metric.color, 0.25)}`,
+                      '& .MuiSvgIcon-root': {
+                        fontSize: { xs: '1.25rem', sm: '1.5rem' }
+                      }
                     }}
                   >
                     {metric.icon}
@@ -244,8 +258,8 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         gap: 0.5,
-                        px: 1.5,
-                        py: 0.5,
+                        px: { xs: 1, sm: 1.5 },
+                        py: { xs: 0.25, sm: 0.5 },
                         borderRadius: 1.5,
                         bgcolor: alpha(
                           metric.change > 0 ? theme.palette.success.main : 
@@ -257,7 +271,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
                       }}
                     >
                       {getTrendIcon(metric.change)}
-                      <Typography variant="caption" fontWeight="bold">
+                      <Typography variant="caption" fontWeight="bold" sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}>
                         {Math.abs(metric.change).toFixed(1)}%
                       </Typography>
                     </Box>
@@ -271,6 +285,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
                   fontWeight="bold"
                   sx={{
                     mb: 0.5,
+                    fontSize: { xs: '1.5rem', sm: '2rem', md: '2.125rem' },
                     background: metric.gradient,
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
@@ -281,13 +296,27 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
                 </Typography>
 
                 {/* Label */}
-                <Typography variant="body2" color="text.secondary" fontWeight={500} gutterBottom>
+                <Typography 
+                  variant="body2" 
+                  color="text.secondary" 
+                  fontWeight={500} 
+                  gutterBottom
+                  sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}
+                >
                   {metric.label}
                 </Typography>
 
                 {/* Description */}
                 {metric.description && (
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
+                  <Typography 
+                    variant="caption" 
+                    color="text.secondary" 
+                    sx={{ 
+                      display: 'block', 
+                      mt: 1,
+                      fontSize: { xs: '0.7rem', sm: '0.75rem' }
+                    }}
+                  >
                     {metric.description}
                   </Typography>
                 )}

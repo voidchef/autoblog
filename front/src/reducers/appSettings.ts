@@ -2,7 +2,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { appSettingsApi } from '../services/appSettingsApi';
 
 export interface ICategory {
-  _id: string;
+  _id?: string;
   categoryName: string;
   categoryDescription: string;
   categoryPicUrl: string;
