@@ -22,6 +22,7 @@ export const login = {
   body: Joi.object().keys({
     email: Joi.string().required(),
     password: Joi.string().required(),
+    rememberMe: Joi.boolean().optional(),
   }),
 };
 

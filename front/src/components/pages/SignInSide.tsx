@@ -136,6 +136,7 @@ export default function SignInSide() {
         const result = await login({
           email: formData.email,
           password: formData.password,
+          rememberMe: formData.rememberMe,
         }).unwrap();
 
         dispatch(showSuccess('Login successful! Welcome back!'));

@@ -85,13 +85,21 @@ export const verifyToken = async (token: string, type: string): Promise<ITokenDo
 /**
  * Generate auth tokens
  * @param {IUserDoc} user
+ * @param {boolean} rememberMe - Whether to use extended expiration for refresh token
  * @returns {Promise<AccessAndRefreshTokens>}
  */
-export const generateAuthTokens = async (user: IUserDoc): Promise<AccessAndRefreshTokens> => {
+export const generateAuthTokens = async (
+  user: IUserDoc,
+  rememberMe: boolean = false
+): Promise<AccessAndRefreshTokens> => {
   const accessTokenExpires = moment().add(config.jwt.accessExpirationMinutes, 'minutes');
   const accessToken = generateToken(user.id, accessTokenExpires, tokenTypes.ACCESS);
 
-  const refreshTokenExpires = moment().add(config.jwt.refreshExpirationDays, 'days');
+  // Use extended expiration if remember me is enabled
+  const refreshTokenExpirationDays = rememberMe
+    ? config.jwt.rememberMeExpirationDays
+    : config.jwt.refreshExpirationDays;
+  const refreshTokenExpires = moment().add(refreshTokenExpirationDays, 'days');
   const refreshToken = generateToken(user.id, refreshTokenExpires, tokenTypes.REFRESH);
   await saveToken(refreshToken, user.id, refreshTokenExpires, tokenTypes.REFRESH);
 
