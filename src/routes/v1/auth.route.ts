@@ -1,5 +1,6 @@
 import express, { Router } from 'express';
 import passport from 'passport';
+import config from '../../config/config';
 import { authValidation, authController, auth } from '../../modules/auth';
 import { validate } from '../../modules/validate';
 
@@ -14,21 +15,25 @@ router.post('/reset-password', validate(authValidation.resetPassword), authContr
 router.post('/send-verification-email', auth(), authController.sendVerificationEmail);
 router.post('/verify-email', validate(authValidation.verifyEmail), authController.verifyEmail);
 
-// Google OAuth routes
-router.get('/google', passport.authenticate('google', { session: false }));
-router.get(
-  '/google/callback',
-  passport.authenticate('google', { session: false, failureRedirect: '/login' }),
-  authController.googleCallback
-);
+// Google OAuth routes - only register if credentials are configured
+if (config.oauth.google.clientId && config.oauth.google.clientSecret) {
+  router.get('/google', passport.authenticate('google', { session: false }));
+  router.get(
+    '/google/callback',
+    passport.authenticate('google', { session: false, failureRedirect: '/login' }),
+    authController.googleCallback
+  );
+}
 
-// Apple OAuth routes
-router.post('/apple', passport.authenticate('apple', { session: false }));
-router.post(
-  '/apple/callback',
-  passport.authenticate('apple', { session: false, failureRedirect: '/login' }),
-  authController.appleCallback
-);
+// Apple OAuth routes - only register if credentials are configured
+if (config.oauth.apple.clientId && config.oauth.apple.privateKeyPath) {
+  router.post('/apple', passport.authenticate('apple', { session: false }));
+  router.post(
+    '/apple/callback',
+    passport.authenticate('apple', { session: false, failureRedirect: '/login' }),
+    authController.appleCallback
+  );
+}
 
 export default router;
 

@@ -33,7 +33,9 @@ app.use(express.urlencoded({ extended: true }));
 // jwt authentication
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
-passport.use('google', googleStrategy);
+if (googleStrategy) {
+  passport.use('google', googleStrategy);
+}
 if (appleStrategy) {
   passport.use('apple', appleStrategy);
 }

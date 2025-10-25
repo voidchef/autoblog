@@ -31,88 +31,92 @@ const jwtStrategy = new JwtStrategy(
 );
 
 // Google OAuth Strategy
-const googleStrategy = new GoogleStrategy(
-  {
-    clientID: config.oauth.google.clientId || '',
-    clientSecret: config.oauth.google.clientSecret || '',
-    callbackURL: config.oauth.google.callbackUrl,
-    scope: ['profile', 'email'],
-  },
-  async (accessToken: string, refreshToken: string, params: any, profile: any, done: any) => {
-    try {
-      const email = profile.emails?.[0]?.value;
-      if (!email) {
-        return done(new Error('No email found in Google profile'), false);
-      }
+let googleStrategy: GoogleStrategy | null = null;
 
-      // Check if OAuth connection already exists
-      let oauthConnection = await OAuthConnection.findOne({
-        provider: 'google',
-        providerId: profile.id,
-      });
-
-      let user: IUserDoc | null = null;
-
-      if (oauthConnection) {
-        // Update existing connection with new tokens
-        oauthConnection.accessToken = accessToken;
-        if (refreshToken) {
-          oauthConnection.refreshToken = refreshToken;
-        }
-        if (params.expires_in) {
-          oauthConnection.tokenExpiry = new Date(Date.now() + params.expires_in * 1000);
-        }
-        oauthConnection.email = email;
-        oauthConnection.displayName = profile.displayName;
-        oauthConnection.profileData = profile._json;
-        await oauthConnection.save();
-
-        user = await User.findById(oauthConnection.userId);
-      } else {
-        // Check if user exists with same email
-        user = await User.findOne({ email });
-
-        if (!user) {
-          // Create new user
-          user = await User.create({
-            name: profile.displayName || 'Google User',
-            email,
-            isEmailVerified: true,
-            hasOAuthConnection: true,
-            password: Math.random().toString(36).slice(-8) + 'A1!', // Random password (won't be used)
-          });
-        } else {
-          // Link to existing user
-          user.isEmailVerified = true;
-          user.hasOAuthConnection = true;
-          await user.save();
+if (config.oauth.google.clientId && config.oauth.google.clientSecret) {
+  googleStrategy = new GoogleStrategy(
+    {
+      clientID: config.oauth.google.clientId,
+      clientSecret: config.oauth.google.clientSecret,
+      callbackURL: config.oauth.google.callbackUrl,
+      scope: ['profile', 'email'],
+    },
+    async (accessToken: string, refreshToken: string, params: any, profile: any, done: any) => {
+      try {
+        const email = profile.emails?.[0]?.value;
+        if (!email) {
+          return done(new Error('No email found in Google profile'), false);
         }
 
-        // Create OAuth connection
-        await OAuthConnection.create({
-          userId: user._id,
+        // Check if OAuth connection already exists
+        let oauthConnection = await OAuthConnection.findOne({
           provider: 'google',
           providerId: profile.id,
-          email,
-          displayName: profile.displayName,
-          accessToken,
-          refreshToken,
-          tokenExpiry: params.expires_in ? new Date(Date.now() + params.expires_in * 1000) : undefined,
-          scopes: ['profile', 'email'],
-          profileData: profile._json,
         });
-      }
 
-      if (!user) {
-        return done(new Error('Failed to create or find user'), false);
-      }
+        let user: IUserDoc | null = null;
 
-      done(null, user);
-    } catch (error) {
-      done(error as Error, false);
+        if (oauthConnection) {
+          // Update existing connection with new tokens
+          oauthConnection.accessToken = accessToken;
+          if (refreshToken) {
+            oauthConnection.refreshToken = refreshToken;
+          }
+          if (params.expires_in) {
+            oauthConnection.tokenExpiry = new Date(Date.now() + params.expires_in * 1000);
+          }
+          oauthConnection.email = email;
+          oauthConnection.displayName = profile.displayName;
+          oauthConnection.profileData = profile._json;
+          await oauthConnection.save();
+
+          user = await User.findById(oauthConnection.userId);
+        } else {
+          // Check if user exists with same email
+          user = await User.findOne({ email });
+
+          if (!user) {
+            // Create new user
+            user = await User.create({
+              name: profile.displayName || 'Google User',
+              email,
+              isEmailVerified: true,
+              hasOAuthConnection: true,
+              password: Math.random().toString(36).slice(-8) + 'A1!', // Random password (won't be used)
+            });
+          } else {
+            // Link to existing user
+            user.isEmailVerified = true;
+            user.hasOAuthConnection = true;
+            await user.save();
+          }
+
+          // Create OAuth connection
+          await OAuthConnection.create({
+            userId: user._id,
+            provider: 'google',
+            providerId: profile.id,
+            email,
+            displayName: profile.displayName,
+            accessToken,
+            refreshToken,
+            tokenExpiry: params.expires_in ? new Date(Date.now() + params.expires_in * 1000) : undefined,
+            scopes: ['profile', 'email'],
+            profileData: profile._json,
+          });
+        }
+
+        if (!user) {
+          return done(new Error('Failed to create or find user'), false);
+        }
+
+        done(null, user);
+      } catch (error) {
+        done(error as Error, false);
+      }
     }
-  }
-);
+  );
+}
 
 // Apple OAuth Strategy
 let appleStrategy: AppleStrategy | null = null;
