@@ -8,8 +8,8 @@ import { jwtStrategy, googleStrategy, appleStrategy } from './modules/auth';
 import { ApiError, errorConverter, errorHandler } from './modules/errors';
 import { morgan } from './modules/logger';
 import { authLimiter } from './modules/utils';
+import rootRoute from './routes/root.route';
 import routes from './routes/v1';
-import rootRoute from './routes/v1/root.route';
 
 const app: Express = express();
 

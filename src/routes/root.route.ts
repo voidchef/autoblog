@@ -1,7 +1,7 @@
 import express, { Router } from 'express';
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
-import config from '../../config/config';
+import config from '../config/config';
 
 const router: Router = express.Router();
 
