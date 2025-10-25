@@ -90,6 +90,10 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
       trim: true,
       maxlength: 500,
     },
+    profilePicture: {
+      type: String,
+      trim: true,
+    },
     socialLinks: {
       twitter: {
         type: String,

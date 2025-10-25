@@ -165,7 +165,8 @@ const Author: React.FC = () => {
           <Grid container spacing={4} alignItems="center">
             <Grid size={{ xs: 12, md: 4 }} sx={{ textAlign: { xs: 'center', md: 'left' } }}>
               <Avatar
-                {...stringAvatar(authorData.name)}
+                src={authorData.profilePicture || undefined}
+                {...(!authorData.profilePicture ? stringAvatar(authorData.name) : {})}
                 sx={{
                   width: 180,
                   height: 180,

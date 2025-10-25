@@ -18,6 +18,7 @@ export interface UserData {
   mediumIntegrationToken?: string;
   hasMediumConfig?: boolean;
   bio?: string;
+  profilePicture?: string;
   socialLinks?: {
     twitter?: string;
     linkedin?: string;
@@ -96,6 +97,18 @@ export const userApi = api.injectEndpoints({
         { type: 'User', id: userId },
       ],
     }),
+    uploadProfilePicture: builder.mutation<UserData, { userId: string; file: File }>({
+      query: ({ userId, file }) => {
+        const formData = new FormData();
+        formData.append('profilePicture', file);
+        return {
+          url: `/users/${userId}/profile-picture`,
+          method: 'POST',
+          body: formData,
+        };
+      },
+      invalidatesTags: (result, error, { userId }) => [{ type: 'User', id: userId }],
+    }),
   }),
 });
 
@@ -105,4 +118,5 @@ export const {
   useLazyGetUserQuery,
   useFollowUserMutation,
   useUnfollowUserMutation,
+  useUploadProfilePictureMutation,
 } = userApi;

@@ -13,7 +13,10 @@ const baseQuery = fetchBaseQuery({
       headers.set('authorization', `Bearer ${token}`);
     }
 
-    headers.set('Content-Type', 'application/json');
+    // Note: We intentionally don't set Content-Type here
+    // For JSON requests, fetchBaseQuery will set it automatically
+    // For FormData requests, the browser sets it with the correct boundary
+    
     return headers;
   },
 });

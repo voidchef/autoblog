@@ -45,6 +45,7 @@ import Footer from '../elements/Common/Footer';
 import PasswordStrength from '../elements/Common/PasswordStrength';
 import ConfirmationDialog from '../elements/Common/ConfirmationDialog';
 import ConnectedAccounts from '../elements/ConnectedAccounts';
+import ProfilePictureUpload from '../elements/ProfilePictureUpload';
 import { useAuth } from '../../utils/hooks';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import { useUpdateUserMutation } from '../../services/userApi';
@@ -614,7 +615,8 @@ const Profile: React.FC = () => {
                       }
                     >
                       <Avatar
-                        {...profileAvatar(formData.name || 'User')}
+                        src={user.profilePicture || undefined}
+                        {...(!user.profilePicture ? profileAvatar(formData.name || 'User') : {})}
                         sx={{
                           width: { xs: 80, sm: 100 },
                           height: { xs: 80, sm: 100 },
@@ -976,6 +978,30 @@ const Profile: React.FC = () => {
                               Basic Information
                             </Typography>
                           </Stack>
+
+                          {/* Profile Picture Upload Section */}
+                          {isEditing && (
+                            <Box sx={{ mb: 3, pb: 3, borderBottom: '1px solid', borderColor: 'divider' }}>
+                              <Typography 
+                                variant="subtitle2" 
+                                color="text.secondary" 
+                                gutterBottom
+                                sx={{ mb: 2, fontSize: { xs: '0.875rem', sm: '1rem' } }}
+                              >
+                                Profile Picture
+                              </Typography>
+                              <ProfilePictureUpload
+                                userId={user.id}
+                                currentPicture={user.profilePicture}
+                                userName={formData.name}
+                                onUploadSuccess={(url) => {
+                                  // Update form data with new profile picture URL
+                                  setFormData((prev) => ({ ...prev, profilePicture: url }));
+                                }}
+                              />
+                            </Box>
+                          )}
+
                           <Grid container spacing={2}>
                             {/* Name Field */}
                             <Grid size={{ xs: 12, sm: 6 }}>

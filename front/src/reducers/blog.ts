@@ -11,7 +11,7 @@ export type IBlog = {
   author: {
     id: string;
     name: string;
-    avatar: string;
+    profilePicture?: string;
   };
   readingTime: number;
   content: string;

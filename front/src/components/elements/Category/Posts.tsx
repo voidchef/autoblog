@@ -69,7 +69,8 @@ const AllPosts = ({ category }: { category: string }) => {
                   <Box display="flex" flexDirection="column" justifyContent="space-between">
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Avatar
-                        {...stringAvatar(post.author.name)}
+                        src={post.author.profilePicture || undefined}
+                        {...(!post.author.profilePicture ? stringAvatar(post.author.name) : {})}
                         sx={{
                           width: 36,
                           height: 36,

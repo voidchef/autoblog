@@ -117,7 +117,8 @@ export default function AccountMenu() {
       }}
     >
       <Avatar
-        {...stringAvatar(user.name!)}
+        src={user.profilePicture || undefined}
+        {...(!user.profilePicture ? stringAvatar(user.name!) : {})}
         sx={{
           width: 64,
           height: 64,
@@ -170,7 +171,8 @@ export default function AccountMenu() {
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <Avatar
-            {...stringAvatar(user.name!)}
+            src={user.profilePicture || undefined}
+            {...(!user.profilePicture ? stringAvatar(user.name!) : {})}
             sx={{
               width: 56,
               height: 56,
@@ -308,7 +310,8 @@ export default function AccountMenu() {
         }}
       >
         <Avatar
-          {...stringAvatar(user.name!)}
+          src={user.profilePicture || undefined}
+          {...(!user.profilePicture ? stringAvatar(user.name!) : {})}
           sx={{
             width: 56,
             height: 56,
@@ -429,7 +432,8 @@ export default function AccountMenu() {
             aria-expanded={open ? 'true' : undefined}
           >
             <Avatar
-              {...stringAvatar(user.name!)}
+              src={user.profilePicture || undefined}
+              {...(!user.profilePicture ? stringAvatar(user.name!) : {})}
               sx={{
                 border: '2px solid transparent',
                 transition: 'all 0.2s ease',

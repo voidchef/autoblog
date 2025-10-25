@@ -16,6 +16,7 @@ export interface IUser {
   wordpressAppPassword?: string;
   mediumIntegrationToken?: string;
   bio?: string;
+  profilePicture?: string;
   socialLinks?: {
     twitter?: string;
     linkedin?: string;

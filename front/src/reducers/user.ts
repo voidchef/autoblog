@@ -10,6 +10,7 @@ export type UserData = {
   isEmailVerified?: boolean;
   avatar?: string;
   bio?: string;
+  profilePicture?: string;
   socialLinks?: {
     twitter?: string;
     linkedin?: string;

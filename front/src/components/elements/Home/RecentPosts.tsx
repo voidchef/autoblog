@@ -161,7 +161,8 @@ const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
               <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', py: 1.25, px: 1.75 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
                   <Avatar
-                    {...stringAvatar(post.author.name)}
+                    src={post.author.profilePicture || undefined}
+                    {...(!post.author.profilePicture ? stringAvatar(post.author.name) : {})}
                     sx={{
                       width: 32,
                       height: 32,

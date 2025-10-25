@@ -202,7 +202,8 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.75 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Avatar
-                    {...stringAvatar(featuredBlogs[0].author.name)}
+                    src={featuredBlogs[0].author.profilePicture || undefined}
+                    {...(!featuredBlogs[0].author.profilePicture ? stringAvatar(featuredBlogs[0].author.name) : {})}
                     sx={{
                       width: 36,
                       height: 36,
@@ -373,7 +374,8 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
 
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mt: 'auto' }}>
                       <Avatar
-                        {...stringAvatar(post.author.name)}
+                        src={post.author.profilePicture || undefined}
+                        {...(!post.author.profilePicture ? stringAvatar(post.author.name) : {})}
                         sx={{
                           width: 32,
                           height: 32,

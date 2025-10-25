@@ -1,6 +1,7 @@
 import express, { Router } from 'express';
 import { auth } from '../../modules/auth';
 import { userController, userValidation } from '../../modules/user';
+import { uploadProfilePicture } from '../../modules/user/profile-picture-upload.middleware';
 import { validate } from '../../modules/validate';
 
 const router: Router = express.Router();
@@ -13,6 +14,10 @@ router
 router.route('/:userId/follow').post(auth(), validate(userValidation.followUser), userController.followUser);
 
 router.route('/:userId/unfollow').post(auth(), validate(userValidation.unfollowUser), userController.unfollowUser);
+
+router
+  .route('/:userId/profile-picture')
+  .post(auth(), uploadProfilePicture.single('profilePicture'), userController.uploadProfilePictureFile);
 
 router
   .route('/:userId')

@@ -60,6 +60,7 @@ export const updateUser = {
       wordpressAppPassword: Joi.string().optional(),
       mediumIntegrationToken: Joi.string().optional(),
       bio: Joi.string().max(500).allow('').optional(),
+      profilePicture: Joi.string().uri().allow('').optional(),
       socialLinks: Joi.object()
         .keys({
           twitter: Joi.string().allow('').optional(),
