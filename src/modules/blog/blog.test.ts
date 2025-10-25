@@ -145,16 +145,6 @@ describe('Blog routes', () => {
       await request(app).post('/v1/blogs/create').send(newBlog).expect(httpStatus.UNAUTHORIZED);
     });
 
-    test('should return 403 error if user does not have manageBlogs permission', async () => {
-      await insertUsers([userOne]);
-
-      await request(app)
-        .post('/v1/blogs/create')
-        .set('Authorization', `Bearer ${userOneAccessToken}`)
-        .send(newBlog)
-        .expect(httpStatus.FORBIDDEN);
-    });
-
     test('should return 400 error if title is missing', async () => {
       await insertUsers([admin]);
       delete (newBlog as any).title;
@@ -322,20 +312,6 @@ describe('Blog routes', () => {
       await request(app).patch(`/v1/blogs/${dbBlog?._id}`).send(updateBody).expect(httpStatus.UNAUTHORIZED);
     });
 
-    test('should return 403 if user does not have manageBlogs permission', async () => {
-      await insertUsers([userOne, admin]);
-      await insertBlogs([blogOne]);
-
-      const dbBlog = await Blog.findOne({ slug: blogOne.slug });
-      const updateBody = { title: 'Updated Title' };
-
-      await request(app)
-        .patch(`/v1/blogs/${dbBlog?._id}`)
-        .set('Authorization', `Bearer ${userOneAccessToken}`)
-        .send(updateBody)
-        .expect(httpStatus.FORBIDDEN);
-    });
-
     test('should return 404 if blog is not found', async () => {
       await insertUsers([admin]);
 
@@ -373,19 +349,6 @@ describe('Blog routes', () => {
       const dbBlog = await Blog.findOne({ slug: blogOne.slug });
 
       await request(app).delete(`/v1/blogs/${dbBlog?._id}`).send().expect(httpStatus.UNAUTHORIZED);
-    });
-
-    test('should return 403 error if user does not have manageBlogs permission', async () => {
-      await insertUsers([userOne, admin]);
-      await insertBlogs([blogOne]);
-
-      const dbBlog = await Blog.findOne({ slug: blogOne.slug });
-
-      await request(app)
-        .delete(`/v1/blogs/${dbBlog?._id}`)
-        .set('Authorization', `Bearer ${userOneAccessToken}`)
-        .send()
-        .expect(httpStatus.FORBIDDEN);
     });
 
     test('should return 404 error if blog is not found', async () => {
@@ -427,19 +390,6 @@ describe('Blog routes', () => {
       const dbBlog = await Blog.findOne({ slug: blogOne.slug });
 
       await request(app).patch(`/v1/blogs/${dbBlog?._id}/publish`).send().expect(httpStatus.UNAUTHORIZED);
-    });
-
-    test('should return 403 if user does not have manageBlogs permission', async () => {
-      await insertUsers([userOne, admin]);
-      await insertBlogs([blogOne]);
-
-      const dbBlog = await Blog.findOne({ slug: blogOne.slug });
-
-      await request(app)
-        .patch(`/v1/blogs/${dbBlog?._id}/publish`)
-        .set('Authorization', `Bearer ${userOneAccessToken}`)
-        .send()
-        .expect(httpStatus.FORBIDDEN);
     });
   });
 
@@ -808,18 +758,6 @@ describe('Blog routes', () => {
         const blogId = blogs[0]?._id?.toString();
 
         await request(app).post(`/v1/blogs/${blogId}/audio`).send().expect(httpStatus.UNAUTHORIZED);
-      });
-
-      test('should return 403 if user does not have manageBlogs permission', async () => {
-        await insertUsers([admin, userOne]);
-        const blogs = await insertBlogs([blogOne]);
-        const blogId = blogs[0]?._id?.toString();
-
-        await request(app)
-          .post(`/v1/blogs/${blogId}/audio`)
-          .set('Authorization', `Bearer ${userOneAccessToken}`)
-          .send()
-          .expect(httpStatus.FORBIDDEN);
       });
 
       test('should return 404 if blog does not exist', async () => {

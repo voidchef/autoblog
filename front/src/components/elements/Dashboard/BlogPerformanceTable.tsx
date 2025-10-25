@@ -29,6 +29,8 @@ import {
   Comment as CommentIcon,
   TrendingUp as TrendingUpIcon,
   Launch as LaunchIcon,
+  Star as StarIcon,
+  StarBorder as StarBorderIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
@@ -46,6 +48,7 @@ export interface BlogPerformanceData {
   audioPlays: number;
   engagementRate: number;
   thumbnail?: string;
+  isFeatured?: boolean;
 }
 
 interface BlogPerformanceTableProps {
@@ -53,6 +56,7 @@ interface BlogPerformanceTableProps {
   isLoading?: boolean;
   error?: any;
   showPagination?: boolean;
+  onToggleFeatured?: (blogId: string) => void;
 }
 
 const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
@@ -60,11 +64,21 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
   isLoading,
   error,
   showPagination = true,
+  onToggleFeatured,
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  // Debug: Log data when it changes
+  React.useEffect(() => {
+    console.log('BlogPerformanceTable data updated:', data.map(blog => ({ 
+      id: blog.id, 
+      title: blog.title, 
+      isFeatured: blog.isFeatured 
+    })));
+  }, [data]);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -341,20 +355,42 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
 
                     {/* Actions */}
                     <TableCell align="center">
-                      <Tooltip title="View Blog">
-                        <IconButton
-                          size="small"
-                          onClick={() => handleViewBlog(blog.slug)}
-                          sx={{
-                            color: theme.palette.primary.main,
-                            '&:hover': {
-                              bgcolor: alpha(theme.palette.primary.main, 0.1),
-                            },
-                          }}
-                        >
-                          <LaunchIcon fontSize="small" />
-                        </IconButton>
-                      </Tooltip>
+                      <Box display="flex" gap={0.5} justifyContent="center">
+                        {onToggleFeatured && (
+                          <Tooltip title={blog.isFeatured ? "Unmark as Featured" : "Mark as Featured"}>
+                            <IconButton
+                              size="small"
+                              onClick={() => {
+                                console.log(`Toggling featured for blog ${blog.id}, current: ${blog.isFeatured}`);
+                                onToggleFeatured(blog.id);
+                              }}
+                              sx={{
+                                color: blog.isFeatured ? '#FFD700' : theme.palette.action.active,
+                                '&:hover': {
+                                  color: '#FFD700',
+                                  bgcolor: alpha('#FFD700', 0.1),
+                                },
+                              }}
+                            >
+                              {blog.isFeatured ? <StarIcon fontSize="small" /> : <StarBorderIcon fontSize="small" />}
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        <Tooltip title="View Blog">
+                          <IconButton
+                            size="small"
+                            onClick={() => handleViewBlog(blog.slug)}
+                            sx={{
+                              color: theme.palette.primary.main,
+                              '&:hover': {
+                                bgcolor: alpha(theme.palette.primary.main, 0.1),
+                              },
+                            }}
+                          >
+                            <LaunchIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))

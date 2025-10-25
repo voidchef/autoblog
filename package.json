@@ -33,7 +33,7 @@
     "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest -i --watchAll",
     "coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules jest -i --coverage",
     "coverage:coveralls": "cross-env NODE_OPTIONS=--experimental-vm-modules jest -i --coverage --coverageReporters=lcov",
-    "lint": "eslint . --max-warnings=200",
+    "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prettier": "prettier --check **/*.ts",
     "prettier:fix": "prettier --write **/*.ts",

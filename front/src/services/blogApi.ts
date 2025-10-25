@@ -135,6 +135,7 @@ export interface BlogPerformance {
   views: number;
   likes: number;
   dislikes: number;
+  isFeatured: boolean;
   engagementRate: string;
 }
 

@@ -28,9 +28,11 @@ import AnalyticsOverview from '../elements/Dashboard/AnalyticsOverview';
 import BlogPerformanceTable, { BlogPerformanceData } from '../elements/Dashboard/BlogPerformanceTable';
 import TrafficSources from '../elements/Dashboard/TrafficSources';
 import ViewsGraph from '../elements/Dashboard/ViewsGraph';
-import { useGetAnalyticsByTimeRangeQuery } from '../../services/blogApi';
+import { useGetAnalyticsByTimeRangeQuery, useToggleFeaturedMutation } from '../../services/blogApi';
 import { useAuth } from '../../utils/hooks';
 import { ROUTES } from '../../utils/routing/routes';
+import { useAppDispatch } from '../../utils/reduxHooks';
+import { showError, showSuccess } from '../../reducers/alert';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -59,9 +61,11 @@ type TimeRange = '7d' | '30d' | '90d' | '1y';
 export default function Analytics() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { user, isLoading: authLoading } = useAuth();
   const [tabValue, setTabValue] = React.useState(0);
   const [timeRange, setTimeRange] = React.useState<TimeRange>('30d');
+  const [blogPerformanceData, setBlogPerformanceData] = React.useState<BlogPerformanceData[]>([]);
 
   // Check if user is admin
   const isAdmin = user?.role === 'admin';
@@ -71,12 +75,34 @@ export default function Analytics() {
     skip: !isAdmin, // Don't fetch if not admin
   });
 
+  // Toggle featured mutation
+  const [toggleFeatured] = useToggleFeaturedMutation();
+
   // Redirect non-admin users to dashboard
   React.useEffect(() => {
     if (!authLoading && !isAdmin) {
       navigate(ROUTES.DASHBOARD);
     }
   }, [isAdmin, authLoading, navigate]);
+
+  // Handler for toggling featured status
+  const handleToggleFeatured = async (blogId: string) => {
+    try {
+      const result = await toggleFeatured(blogId).unwrap();
+      dispatch(showSuccess(`Blog ${result.isFeatured ? 'marked as featured' : 'unmarked as featured'}!`));
+      
+      // Update local state immediately for better UX
+      setBlogPerformanceData(prevData => 
+        prevData.map(blog => 
+          blog.id === blogId 
+            ? { ...blog, isFeatured: result.isFeatured }
+            : blog
+        )
+      );
+    } catch (error: any) {
+      dispatch(showError(error?.data?.message || 'Failed to toggle featured status'));
+    }
+  };
 
   // Show loading while checking auth
   if (authLoading) {
@@ -160,21 +186,30 @@ export default function Analytics() {
     engagementRateChange: 0,
   } : undefined;
 
-  // Transform blogs performance data
-  const blogPerformanceData: BlogPerformanceData[] = analyticsData?.blogsPerformance?.map(blog => ({
-    id: blog.id,
-    title: blog.title,
-    slug: blog.slug,
-    category: blog.category,
-    publishedAt: new Date(blog.publishedAt).toISOString(),
-    views: blog.views,
-    likes: blog.likes,
-    dislikes: blog.dislikes,
-    comments: 0, // Not in current response
-    shares: 0, // Not available yet
-    audioPlays: 0, // Not available yet
-    engagementRate: parseFloat(blog.engagementRate || '0'),
-  })) || [];
+  // Update blog performance data when analytics data changes
+  React.useEffect(() => {
+    if (analyticsData?.blogsPerformance) {
+      const transformedData: BlogPerformanceData[] = analyticsData.blogsPerformance.map(blog => ({
+        id: blog.id,
+        title: blog.title,
+        slug: blog.slug,
+        category: blog.category,
+        publishedAt: new Date(blog.publishedAt).toISOString(),
+        views: blog.views,
+        likes: blog.likes,
+        dislikes: blog.dislikes,
+        comments: 0, // Not in current response
+        shares: 0, // Not available yet
+        audioPlays: 0, // Not available yet
+        engagementRate: parseFloat(blog.engagementRate || '0'),
+        isFeatured: Boolean(blog.isFeatured), // Ensure it's a boolean
+      }));
+      console.log('Analytics - Transformed blog performance data:', transformedData.map(b => ({ id: b.id, title: b.title, isFeatured: b.isFeatured })));
+      setBlogPerformanceData(transformedData);
+    } else {
+      setBlogPerformanceData([]);
+    }
+  }, [analyticsData?.blogsPerformance]);
 
   // Transform traffic sources data
   const trafficSourcesData = analyticsData?.trafficSources ? {
@@ -409,7 +444,7 @@ export default function Analytics() {
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
-          <BlogPerformanceTable data={blogPerformanceData} />
+          <BlogPerformanceTable data={blogPerformanceData} onToggleFeatured={handleToggleFeatured} />
         </TabPanel>
 
         <TabPanel value={tabValue} index={2}>

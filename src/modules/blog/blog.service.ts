@@ -814,7 +814,7 @@ export const getComprehensiveAnalytics = async (
 
     // Get user's published blogs
     const userBlogs = await Blog.find({ author: userId, isPublished: true })
-      .select('slug title category likes dislikes createdAt')
+      .select('slug title category likes dislikes createdAt isFeatured')
       .lean();
 
     // Match GA views with blog data
@@ -829,6 +829,7 @@ export const getComprehensiveAnalytics = async (
         views: gaData?.views || 0,
         likes: blog.likes?.length || 0,
         dislikes: blog.dislikes?.length || 0,
+        isFeatured: blog.isFeatured,
         engagementRate: gaData?.views
           ? ((((blog.likes?.length || 0) + (blog.dislikes?.length || 0)) / gaData.views) * 100).toFixed(2)
           : '0.00',

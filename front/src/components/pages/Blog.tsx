@@ -2,12 +2,12 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
-import { Typography, Paper, Divider, Button, Snackbar, Alert, CircularProgress } from '@mui/material';
-import { VolumeUp as VolumeUpIcon } from '@mui/icons-material';
+import { Typography, Paper, Divider, Button, Snackbar, Alert, CircularProgress, IconButton, Tooltip } from '@mui/material';
+import { VolumeUp as VolumeUpIcon, Star as StarIcon, StarBorder as StarBorderIcon } from '@mui/icons-material';
 import Title from '../elements/Blog/Title';
 import { marked } from 'marked';
-import { useGetBlogQuery, useGenerateAudioNarrationMutation, IBlog as IBlogAPI } from '../../services/blogApi';
-import { useAppSelector } from '../../utils/reduxHooks';
+import { useGetBlogQuery, useGenerateAudioNarrationMutation, useToggleFeaturedMutation, IBlog as IBlogAPI } from '../../services/blogApi';
+import { useAppSelector, useAppDispatch } from '../../utils/reduxHooks';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import BlogLikeDislike from '../elements/BlogLikeDislike';
@@ -17,12 +17,23 @@ import FollowButton from '../elements/FollowButton';
 import AudioPlayer from '../elements/AudioPlayer';
 import { ROUTES } from '../../utils/routing/routes';
 import * as analytics from '../../utils/analytics';
+import { useAuth } from '../../utils/hooks';
+import { showSuccess, showError } from '../../reducers/alert';
 
 export default function Blog() {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const { preview } = useParams();
   const slug = location.pathname.split('/')[2];
+  const { user } = useAuth();
+
+  // Check if in preview mode from query params or route params
+  const searchParams = new URLSearchParams(location.search);
+  const isPreviewMode = preview === 'true' || searchParams.get('preview') === 'true';
+
+  // Check if user is admin
+  const isAdmin = user?.role === 'admin';
 
   // For preview mode, get data from Redux state
   const previewBlogData = useAppSelector((state) => state.blog.blogData);
@@ -31,11 +42,17 @@ export default function Blog() {
   const [shouldPoll, setShouldPoll] = React.useState(false);
 
   const { data: blogData, isLoading, refetch } = useGetBlogQuery(slug, {
-    skip: !!preview, // Skip query if in preview mode
+    skip: !!isPreviewMode, // Skip query if in preview mode
     pollingInterval: shouldPoll ? 3000 : 0, // Poll every 3s when processing
   });
 
-  const currentBlogData = (preview ? previewBlogData : blogData) as IBlogAPI | null;
+  const currentBlogData = (isPreviewMode ? previewBlogData : blogData) as IBlogAPI | null;
+
+  // Audio narration mutation
+  const [generateAudio, { isLoading: isGeneratingAudio }] = useGenerateAudioNarrationMutation();
+  
+  // Toggle featured mutation
+  const [toggleFeatured] = useToggleFeaturedMutation();
 
   // Update polling state based on audio generation status
   React.useEffect(() => {
@@ -55,14 +72,14 @@ export default function Blog() {
 
   // Track blog view when blog loads (only for non-preview mode)
   React.useEffect(() => {
-    if (!preview && currentBlogData && analytics.isGAInitialized()) {
+    if (!isPreviewMode && currentBlogData && analytics.isGAInitialized()) {
       analytics.trackBlogView(
         currentBlogData.id,
         currentBlogData.title,
         currentBlogData.category
       );
     }
-  }, [preview, currentBlogData?.id]);
+  }, [isPreviewMode, currentBlogData?.id]);
 
   // Track audio generation completion
   const prevAudioStatusRef = React.useRef<string | undefined>(undefined);
@@ -86,9 +103,6 @@ export default function Blog() {
     
     prevAudioStatusRef.current = currentStatus;
   }, [currentBlogData?.audioGenerationStatus]);
-
-  // Audio narration mutation
-  const [generateAudio, { isLoading: isGeneratingAudio }] = useGenerateAudioNarrationMutation();
 
   const handleGenerateAudio = async () => {
     if (currentBlogData?.id) {
@@ -121,6 +135,19 @@ export default function Blog() {
     }
   };
 
+  const handleToggleFeatured = async () => {
+    if (currentBlogData?.id) {
+      try {
+        const result = await toggleFeatured(currentBlogData.id).unwrap();
+        dispatch(showSuccess(`Blog ${result.isFeatured ? 'marked as featured' : 'unmarked as featured'}!`));
+        // Trigger a refetch to update the UI
+        refetch();
+      } catch (error: any) {
+        dispatch(showError(error?.data?.message || 'Failed to toggle featured status'));
+      }
+    }
+  };
+
   const handleCloseSnackbar = () => {
     setSnackbar({ ...snackbar, open: false });
   };
@@ -148,7 +175,7 @@ export default function Blog() {
         justifyContent={'space-between'}
         sx={{ marginX: { xs: '1rem', sm: '3rem', md: '10rem', lg: '22rem' }, px: { xs: 1, sm: 0 } }}
       >
-        {isLoading && !preview ? (
+        {isLoading && !isPreviewMode ? (
           <Box textAlign={'center'}>
             <Typography component={'div'} fontSize={'1.5rem'}>
               Loading blog...
@@ -276,8 +303,26 @@ export default function Blog() {
                   />
                 )}
               </Box>
-              <Box>
-                <ShareButton blog={currentBlogData} size="medium" />
+              <Box display="flex" gap={1} alignItems="center">
+                {isAdmin && currentBlogData && !isPreviewMode && (
+                  <Tooltip title={currentBlogData.isFeatured ? "Unmark as Featured" : "Mark as Featured"}>
+                    <IconButton
+                      onClick={handleToggleFeatured}
+                      sx={{
+                        color: currentBlogData.isFeatured ? '#FFD700' : 'text.secondary',
+                        '&:hover': {
+                          color: '#FFD700',
+                          bgcolor: (theme) => theme.palette.mode === 'dark' 
+                            ? 'rgba(255, 215, 0, 0.1)' 
+                            : 'rgba(255, 215, 0, 0.1)',
+                        },
+                      }}
+                    >
+                      {currentBlogData.isFeatured ? <StarIcon /> : <StarBorderIcon />}
+                    </IconButton>
+                  </Tooltip>
+                )}
+                {!isPreviewMode && <ShareButton blog={currentBlogData} size="medium" />}
               </Box>
             </Box>
             <Box height={{ xs: '15rem', sm: '23rem' }} maxWidth={'100%'} display={'flex'} justifyContent={'center'}>
@@ -340,63 +385,67 @@ export default function Blog() {
               <div dangerouslySetInnerHTML={{ __html: marked(currentBlogData.content) }} />
             </Typography>
 
-            {/* Like/Dislike Section */}
-            <Box sx={{ my: 4 }}>
-              <Paper 
-                elevation={0} 
-                sx={{ 
-                  p: 3, 
-                  borderRadius: 2,
-                  textAlign: 'center',
-                  border: '1px solid',
-                  borderColor: 'divider',
-                }}
-              >
-                <Typography 
-                  variant="h6" 
-                  gutterBottom 
+            {/* Like/Dislike Section - Hidden in preview mode */}
+            {!isPreviewMode && (
+              <Box sx={{ my: 4 }}>
+                <Paper 
+                  elevation={0} 
                   sx={{ 
-                    fontWeight: 600,
-                    mb: 2
+                    p: 3, 
+                    borderRadius: 2,
+                    textAlign: 'center',
+                    border: '1px solid',
+                    borderColor: 'divider',
                   }}
                 >
-                  Was this article helpful?
-                </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
-                  <BlogLikeDislike blog={currentBlogData} size="large" showCounts />
-                  <Box sx={{ borderLeft: '2px solid', borderColor: 'divider', height: '40px', mx: 1 }} />
-                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <ShareButton blog={currentBlogData} size="large" />
+                  <Typography 
+                    variant="h6" 
+                    gutterBottom 
+                    sx={{ 
+                      fontWeight: 600,
+                      mb: 2
+                    }}
+                  >
+                    Was this article helpful?
+                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+                    <BlogLikeDislike blog={currentBlogData} size="large" showCounts />
+                    <Box sx={{ borderLeft: '2px solid', borderColor: 'divider', height: '40px', mx: 1 }} />
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                      <ShareButton blog={currentBlogData} size="large" />
+                    </Box>
                   </Box>
-                </Box>
-              </Paper>
-            </Box>
+                </Paper>
+              </Box>
+            )}
 
-            {/* Comment Section */}
-            <Box sx={{ my: 4 }}>
-              <Paper 
-                elevation={0} 
-                sx={{ 
-                  p: { xs: 2, sm: 3 },
-                  borderRadius: 2,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                }}
-              >
-                <Typography 
-                  variant="h5" 
-                  gutterBottom 
+            {/* Comment Section - Hidden in preview mode */}
+            {!isPreviewMode && (
+              <Box sx={{ my: 4 }}>
+                <Paper 
+                  elevation={0} 
                   sx={{ 
-                    fontWeight: 600,
-                    mb: 3
+                    p: { xs: 2, sm: 3 },
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'divider',
                   }}
                 >
-                  Comments
-                </Typography>
-                <Divider sx={{ mb: 3 }} />
-                <CommentSection blogId={currentBlogData.id} />
-              </Paper>
-            </Box>
+                  <Typography 
+                    variant="h5" 
+                    gutterBottom 
+                    sx={{ 
+                      fontWeight: 600,
+                      mb: 3
+                    }}
+                  >
+                    Comments
+                  </Typography>
+                  <Divider sx={{ mb: 3 }} />
+                  <CommentSection blogId={currentBlogData.id} />
+                </Paper>
+              </Box>
+            )}
           </Box>
         ) : (
           <Box textAlign={'center'}>
