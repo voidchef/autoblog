@@ -49,24 +49,7 @@ export default router;
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - content
- *               - blog
- *             properties:
- *               content:
- *                 type: string
- *                 minLength: 1
- *                 maxLength: 5000
- *               blog:
- *                 type: string
- *                 description: Blog post ID
- *               parentComment:
- *                 type: string
- *                 description: Parent comment ID for replies
- *             example:
- *               content: "Great article! Very informative."
- *               blog: "507f1f77bcf86cd799439011"
+ *             $ref: '#/components/schemas/CreateCommentRequest'
  *     responses:
  *       "201":
  *         description: Created
@@ -124,24 +107,7 @@ export default router;
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 results:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Comment'
- *                 page:
- *                   type: integer
- *                   example: 1
- *                 limit:
- *                   type: integer
- *                   example: 10
- *                 totalPages:
- *                   type: integer
- *                   example: 1
- *                 totalResults:
- *                   type: integer
- *                   example: 1
+ *               $ref: '#/components/schemas/CommentsResponse'
  */
 
 /**
@@ -178,6 +144,10 @@ export default router;
  *     responses:
  *       "200":
  *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/CommentsResponse'
  *       "404":
  *         $ref: '#/components/responses/NotFound'
  */

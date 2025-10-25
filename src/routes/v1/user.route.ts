@@ -72,12 +72,30 @@ export default router;
  *               openAiKey:
  *                 type: string
  *                 description: OpenAI API key (optional)
+ *               googleApiKey:
+ *                 type: string
+ *                 description: Google API key (optional)
+ *               bio:
+ *                 type: string
+ *                 maxLength: 500
+ *                 description: User biography (optional)
+ *               socialLinks:
+ *                 type: object
+ *                 properties:
+ *                   twitter:
+ *                     type: string
+ *                   linkedin:
+ *                     type: string
+ *                   github:
+ *                     type: string
+ *                   website:
+ *                     type: string
  *             example:
  *               name: fake name
  *               email: fake@example.com
  *               password: password1
  *               role: user
- *               openAiKey: sk-1234567890abcdef
+ *               bio: "Full-stack developer and tech enthusiast"
  *     responses:
  *       "201":
  *         description: Created
@@ -231,6 +249,52 @@ export default router;
 
 /**
  * @swagger
+ * /users/{userId}/profile-picture:
+ *   post:
+ *     summary: Upload profile picture
+ *     description: Authenticated users can upload their own profile picture. Admins can upload for any user.
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User id
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - profilePicture
+ *             properties:
+ *               profilePicture:
+ *                 type: string
+ *                 format: binary
+ *                 description: Profile picture image file (jpg, jpeg, png, gif, webp - max 5MB)
+ *     responses:
+ *       "200":
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       "400":
+ *         $ref: '#/components/responses/BadRequest'
+ *       "401":
+ *         $ref: '#/components/responses/Unauthorized'
+ *       "403":
+ *         $ref: '#/components/responses/Forbidden'
+ *       "404":
+ *         $ref: '#/components/responses/NotFound'
+ */
+
+/**
+ * @swagger
  * /users/{id}:
  *   get:
  *     summary: Get a user
@@ -277,23 +341,7 @@ export default router;
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *                 format: email
- *                 description: must be unique
- *               password:
- *                 type: string
- *                 format: password
- *                 minLength: 8
- *                 description: At least one number and one letter
- *             example:
- *               name: fake name
- *               email: fake@example.com
- *               password: password1
+ *             $ref: '#/components/schemas/UpdateUserRequest'
  *     responses:
  *       "200":
  *         description: OK

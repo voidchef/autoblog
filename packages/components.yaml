@@ -15,15 +15,66 @@ components:
           enum: [user, admin]
         isEmailVerified:
           type: boolean
-        openAiKey:
+        hasOAuthConnection:
+          type: boolean
+        hasOpenAiKey:
+          type: boolean
+          description: Virtual field indicating if user has OpenAI key configured
+        hasGoogleApiKey:
+          type: boolean
+          description: Virtual field indicating if user has Google API key configured
+        bio:
           type: string
+          maxLength: 500
+        profilePicture:
+          type: string
+        socialLinks:
+          type: object
+          properties:
+            twitter:
+              type: string
+            linkedin:
+              type: string
+            github:
+              type: string
+            website:
+              type: string
+        followers:
+          type: array
+          items:
+            type: string
+          description: Array of user IDs who follow this user
+        following:
+          type: array
+          items:
+            type: string
+          description: Array of user IDs this user follows
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
       example:
         id: 5ebac534954b54139806c112
         email: fake@example.com
         name: fake name
         role: user
         isEmailVerified: true
-        openAiKey: sk-1234567890abcdef
+        hasOAuthConnection: false
+        hasOpenAiKey: true
+        hasGoogleApiKey: true
+        bio: "Full-stack developer and tech enthusiast"
+        profilePicture: "https://example.com/profile.jpg"
+        socialLinks:
+          twitter: "https://twitter.com/username"
+          linkedin: "https://linkedin.com/in/username"
+          github: "https://github.com/username"
+          website: "https://example.com"
+        followers: []
+        following: []
+        createdAt: "2023-06-25T10:30:00.000Z"
+        updatedAt: "2023-06-25T10:30:00.000Z"
 
     Blog:
       type: object
@@ -40,6 +91,9 @@ components:
           type: string
         content:
           type: string
+        excerpt:
+          type: string
+          description: Auto-generated excerpt from content (virtual field)
         author:
           type: string
         topic:
@@ -75,6 +129,53 @@ components:
             type: string
         selectedImage:
           type: string
+        audioNarrationUrl:
+          type: string
+          description: URL to the generated audio narration file
+        audioGenerationStatus:
+          type: string
+          enum: [pending, processing, completed, failed]
+        generationStatus:
+          type: string
+          enum: [pending, processing, completed, failed]
+          description: Overall blog generation status
+        generationError:
+          type: string
+          description: Error message if generation failed
+        wordpressPostId:
+          type: number
+          description: WordPress post ID if published to WordPress
+        wordpressPostUrl:
+          type: string
+          description: URL of the WordPress post
+        wordpressPublishStatus:
+          type: string
+          enum: [pending, published, failed]
+        wordpressPublishedAt:
+          type: string
+          format: date-time
+        mediumPostId:
+          type: string
+          description: Medium post ID if published to Medium
+        mediumPostUrl:
+          type: string
+          description: URL of the Medium post
+        mediumPublishStatus:
+          type: string
+          enum: [pending, published, failed]
+        mediumPublishedAt:
+          type: string
+          format: date-time
+        likes:
+          type: array
+          items:
+            type: string
+          description: Array of user IDs who liked the blog
+        dislikes:
+          type: array
+          items:
+            type: string
+          description: Array of user IDs who disliked the blog
         createdAt:
           type: string
           format: date-time
@@ -88,6 +189,7 @@ components:
         seoTitle: "Complete Guide to Node.js Development - 2024"
         seoDescription: "Learn Node.js from basics to advanced concepts"
         content: "Node.js is a powerful runtime environment..."
+        excerpt: "Node.js is a powerful runtime environment for building scalable applications..."
         author: 5ebac534954b54139806c112
         topic: "Node.js Development"
         category: "Programming"
@@ -103,6 +205,13 @@ components:
         isDraft: false
         generatedImages: ["image1.jpg", "image2.jpg"]
         selectedImage: "image1.jpg"
+        audioNarrationUrl: "https://example.com/audio/blog-123.mp3"
+        audioGenerationStatus: "completed"
+        generationStatus: "completed"
+        wordpressPublishStatus: "published"
+        wordpressPostUrl: "https://myblog.com/complete-guide-nodejs-development"
+        likes: []
+        dislikes: []
         createdAt: "2023-06-25T10:30:00.000Z"
         updatedAt: "2023-06-25T10:30:00.000Z"
 
@@ -133,6 +242,10 @@ components:
           type: string
           enum: [gpt-3.5-turbo, gpt-4, gpt-4-turbo, claude-3-sonnet, claude-3-haiku]
           description: LLM model to use for generation
+        llmProvider:
+          type: string
+          enum: [openai, google, mistral]
+          description: LLM provider
         category:
           type: string
           description: Blog category
@@ -148,8 +261,144 @@ components:
         audience: "beginner developers"
         language: "English"
         llmModel: "gpt-4"
+        llmProvider: "openai"
         category: "Frontend Development"
         tags: ["react", "hooks", "javascript"]
+
+    GenerateBlogFromTemplateRequest:
+      type: object
+      required:
+        - input
+        - llmModel
+        - category
+      properties:
+        input:
+          type: string
+          description: JSON string of template variables
+        llmModel:
+          type: string
+          description: LLM model to use
+        llmProvider:
+          type: string
+          enum: [openai, google, mistral]
+          description: LLM provider
+        category:
+          type: string
+          description: Blog category
+        tags:
+          type: string
+          description: JSON string of tags array
+        generateImages:
+          type: string
+          enum: ["true", "false"]
+          description: Whether to generate images
+        generateHeadingImages:
+          type: string
+          enum: ["true", "false"]
+          description: Whether to generate images for headings
+        imagesPerSection:
+          type: string
+          description: Number of images per section
+      example:
+        input: '{"breed": "Golden Retriever", "origin": "Scotland"}'
+        llmModel: "gpt-4"
+        llmProvider: "openai"
+        category: "Pets"
+        tags: '["dogs", "breeds"]'
+        generateImages: "true"
+        generateHeadingImages: "false"
+        imagesPerSection: "1"
+
+    CreateCommentRequest:
+      type: object
+      required:
+        - content
+        - blog
+      properties:
+        content:
+          type: string
+          description: Comment content
+        blog:
+          type: string
+          description: Blog post ID
+        parentComment:
+          type: string
+          nullable: true
+          description: Parent comment ID for nested replies
+      example:
+        content: "Great article! Very helpful."
+        blog: "60d5ecb54b20f20d5c4b5c72"
+        parentComment: null
+
+    CreateContactRequest:
+      type: object
+      required:
+        - name
+        - email
+        - queryType
+        - message
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        queryType:
+          type: string
+        message:
+          type: string
+      example:
+        name: "John Doe"
+        email: "john@example.com"
+        queryType: "general"
+        message: "I have a question about your service"
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+          description: Must contain at least one letter and one number
+        bio:
+          type: string
+          maxLength: 500
+        profilePicture:
+          type: string
+        socialLinks:
+          type: object
+          properties:
+            twitter:
+              type: string
+            linkedin:
+              type: string
+            github:
+              type: string
+            website:
+              type: string
+        openAiKey:
+          type: string
+        googleApiKey:
+          type: string
+        wordpressSiteUrl:
+          type: string
+        wordpressUsername:
+          type: string
+        wordpressAppPassword:
+          type: string
+        mediumIntegrationToken:
+          type: string
+      example:
+        name: "John Doe"
+        bio: "Software developer passionate about AI"
+        socialLinks:
+          twitter: "https://twitter.com/johndoe"
+          github: "https://github.com/johndoe"
 
     BlogsResponse:
       type: object
@@ -239,6 +488,176 @@ components:
             label: "Tutorial"
           - value: "review"
             label: "Review"
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        content:
+          type: string
+        author:
+          oneOf:
+            - type: string
+            - $ref: '#/components/schemas/User'
+          description: Author user ID or populated User object
+        blog:
+          type: string
+          description: Blog post ID
+        parentComment:
+          type: string
+          nullable: true
+          description: Parent comment ID for nested replies
+        likes:
+          type: array
+          items:
+            type: string
+          description: Array of user IDs who liked the comment
+        dislikes:
+          type: array
+          items:
+            type: string
+          description: Array of user IDs who disliked the comment
+        isDeleted:
+          type: boolean
+          default: false
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        id: 60d5ecb54b20f20d5c4b5c74
+        content: "Great article! Very informative."
+        author: 5ebac534954b54139806c112
+        blog: 60d5ecb54b20f20d5c4b5c72
+        parentComment: null
+        likes: ["5ebac534954b54139806c113"]
+        dislikes: []
+        isDeleted: false
+        createdAt: "2023-06-25T11:30:00.000Z"
+        updatedAt: "2023-06-25T11:30:00.000Z"
+
+    Contact:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+          format: email
+        queryType:
+          type: string
+        message:
+          type: string
+        status:
+          type: string
+          enum: [new, in-progress, resolved]
+          default: new
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        id: 60d5ecb54b20f20d5c4b5c75
+        name: "John Doe"
+        email: "john@example.com"
+        queryType: "general"
+        message: "I have a question about your platform"
+        status: "new"
+        createdAt: "2023-06-25T12:30:00.000Z"
+        updatedAt: "2023-06-25T12:30:00.000Z"
+
+    OAuthConnection:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        provider:
+          type: string
+          enum: [google, apple]
+        providerId:
+          type: string
+          description: Unique ID from the OAuth provider
+        email:
+          type: string
+          format: email
+        displayName:
+          type: string
+        tokenExpiry:
+          type: string
+          format: date-time
+        scopes:
+          type: array
+          items:
+            type: string
+        isActive:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      example:
+        id: 60d5ecb54b20f20d5c4b5c76
+        userId: 5ebac534954b54139806c112
+        provider: "google"
+        providerId: "1234567890"
+        email: "user@gmail.com"
+        displayName: "John Doe"
+        tokenExpiry: "2024-06-25T12:30:00.000Z"
+        scopes: ["email", "profile"]
+        isActive: true
+        createdAt: "2023-06-25T10:30:00.000Z"
+        updatedAt: "2023-06-25T10:30:00.000Z"
+
+    CommentsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        totalPages:
+          type: integer
+          example: 5
+        totalResults:
+          type: integer
+          example: 50
+
+    ContactsResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        totalPages:
+          type: integer
+          example: 5
+        totalResults:
+          type: integer
+          example: 50
 
     Token:
       type: object

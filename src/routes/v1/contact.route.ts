@@ -119,35 +119,7 @@ export default router;
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - name
- *               - email
- *               - queryType
- *               - message
- *             properties:
- *               name:
- *                 type: string
- *                 minLength: 2
- *                 maxLength: 100
- *                 description: Full name of the person contacting
- *               email:
- *                 type: string
- *                 format: email
- *                 description: Email address for follow-up
- *               queryType:
- *                 type: string
- *                 description: Type of query - must match one of the available query types
- *               message:
- *                 type: string
- *                 minLength: 10
- *                 maxLength: 2000
- *                 description: The message content
- *             example:
- *               name: John Doe
- *               email: john.doe@example.com
- *               queryType: support
- *               message: I need help with my account setup and would like assistance with configuring my settings properly.
+ *             $ref: '#/components/schemas/CreateContactRequest'
  *     responses:
  *       "201":
  *         description: Contact message created successfully. A confirmation email has been sent.
@@ -203,24 +175,7 @@ export default router;
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 results:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Contact'
- *                 page:
- *                   type: integer
- *                   example: 1
- *                 limit:
- *                   type: integer
- *                   example: 10
- *                 totalPages:
- *                   type: integer
- *                   example: 5
- *                 totalResults:
- *                   type: integer
- *                   example: 47
+ *               $ref: '#/components/schemas/ContactsResponse'
  *       "401":
  *         $ref: '#/components/responses/Unauthorized'
  *       "403":
