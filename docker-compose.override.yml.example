@@ -1,0 +1,23 @@
+# docker-compose.override.yml
+# 
+# This file is for local development customizations.
+# Copy this file to docker-compose.override.yml and customize as needed.
+# This file is gitignored by default.
+#
+# Docker Compose automatically applies this file when running `docker-compose up`
+# You can use it to override settings without modifying the main compose files.
+
+services:
+  # Example: Customize app service
+  # app:
+  #   ports:
+  #     - "3001:3000"  # Use different host port
+  #   environment:
+  #     - DEBUG=*  # Enable all debug logs
+  
+  # Example: Customize mongo service
+  # mongo:
+  #   ports:
+  #     - "27019:27017"  # Use different host port
+  #   volumes:
+  #     - ./custom-data:/data/db  # Use custom data directory

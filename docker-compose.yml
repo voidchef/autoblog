@@ -1,36 +1,57 @@
-version: '3'
-
 services:
   mongo:
-    container_name: mongo
-    image: mongo:latest
-    restart: always
+    container_name: autoblog-mongo
+    image: mongo:7-jammy
+    restart: unless-stopped
     ports:
       - "27018:27017"
+    environment:
+      MONGO_INITDB_DATABASE: autoblog
+    volumes:
+      - mongo-data:/data/db
     networks:
       - backend
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+
   app:
     container_name: autoblog
     build: 
       context: .
       dockerfile: Dockerfile
       target: base
-    restart: always
+    restart: unless-stopped
     env_file: .env
-    expose:
-      - ${PORT}
     ports:
-      - ${PORT}:${PORT}
+      - "${PORT:-3000}:${PORT:-3000}"
     environment: 
+      - NODE_ENV=${NODE_ENV:-development}
       - MONGODB_URL=mongodb://mongo:27017/autoblog
       - CLIENT_URL=${CLIENT_URL}
-    links: 
-      - mongo  
+      - PORT=${PORT:-3000}
     depends_on:
-      - mongo  
+      mongo:
+        condition: service_healthy
     networks:
       - backend
+    volumes:
+      - ./uploads:/usr/src/app/uploads
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:${PORT:-3000}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
 
 networks:
   backend:
-    driver: bridge    
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
+    

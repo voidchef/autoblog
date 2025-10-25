@@ -141,6 +141,64 @@
 - OpenAI API key
 - AWS account (for S3 storage)
 
+## 🐳 Docker Installation (Recommended)
+
+The easiest way to get started is using Docker. See [DOCKER.md](./DOCKER.md) for comprehensive Docker documentation.
+
+### Quick Start with Docker
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/voidchef/autoblog.git
+   cd autoblog
+   ```
+
+2. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+3. **Start with Docker**
+   ```bash
+   # Development mode (with hot reload)
+   make dev
+   # or
+   pnpm docker:dev
+   
+   # Production mode
+   make prod
+   # or
+   pnpm docker:prod
+   ```
+
+4. **Access the application**
+   - Frontend: http://localhost:5173 (dev) or http://localhost:3000 (prod)
+   - Backend API: http://localhost:3000
+   - MongoDB: localhost:27018
+
+### Docker Commands
+
+```bash
+make help              # Show all available commands
+make dev               # Start development environment
+make prod              # Start production environment
+make test              # Run tests in Docker
+make logs              # View logs
+make shell             # Open shell in container
+make db-shell          # Open MongoDB shell
+make clean             # Clean up containers
+```
+
+See [DOCKER.md](./DOCKER.md) for detailed Docker documentation including:
+- Multi-stage builds
+- Development vs Production configurations
+- Database management
+- Troubleshooting
+- CI/CD integration
+
+## 💻 Local Installation
+
 ### Installation
 
 1. **Clone the repository**

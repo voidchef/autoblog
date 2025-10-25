@@ -1,6 +1,26 @@
-version: '3'
-
 services:
+  mongo:
+    container_name: autoblog-mongo-test
+    tmpfs:
+      - /data/db  # Use tmpfs for faster test database
+    ports: []
+  
   app:
     container_name: autoblog-test
-    command: yarn test:js
+    build: 
+      target: development
+    command: pnpm test
+    environment:
+      - NODE_ENV=test
+      - MONGODB_URL=mongodb://mongo:27017/autoblog-test
+    volumes:
+      - ./src:/usr/src/app/src
+      - ./coverage:/usr/src/app/coverage
+      - test-node-modules:/usr/src/app/node_modules
+    depends_on:
+      mongo:
+        condition: service_healthy
+
+volumes:
+  test-node-modules:
+

@@ -17,5 +17,11 @@ dist
 # docker volume
 data
 
+# Docker
+docker-compose.override.yml
+
+# Backups
+backups/
+
 # google cloud credentials
 service-account.json

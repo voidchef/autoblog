@@ -1,8 +1,44 @@
-version: '3'
-
 services:
+  mongo:
+    container_name: autoblog-mongo-prod
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-changeme}
+      MONGO_INITDB_DATABASE: autoblog
+    volumes:
+      - mongo-data-prod:/data/db
+    # Don't expose port in production (only internal access)
+    ports: []
+  
   app:
     container_name: autoblog-prod
     build: 
       target: production
-    command: yarn start
+      args:
+        - NODE_ENV=production
+    command: pnpm start
+    environment:
+      - NODE_ENV=production
+      - MONGODB_URL=mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-changeme}@mongo:27017/autoblog?authSource=admin
+    restart: always
+    # Resource limits for production
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+    # Read-only root filesystem for security (except specific paths)
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /usr/prod/app/.pm2
+    volumes:
+      - ./uploads:/usr/prod/app/uploads
+
+volumes:
+  mongo-data-prod:
+    driver: local
+

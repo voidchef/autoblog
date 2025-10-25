@@ -1,14 +1,34 @@
-version: '3'
-
 services:
   mongo:
+    container_name: autoblog-mongo-dev
     volumes:
       - ./data:/data/db
+    ports:
+      - "27018:27017"
   
   app:
     container_name: autoblog-dev
-    command: yarn dev -L
+    build: 
+      target: development
+    command: pnpm dev
+    environment:
+      - NODE_ENV=development
+    volumes:
+      # Mount source code for hot reload
+      - ./src:/usr/src/app/src
+      - ./front:/usr/src/app/front
+      - ./tsconfig.json:/usr/src/app/tsconfig.json
+      - ./ecosystem.config.json:/usr/src/app/ecosystem.config.json
+      # Named volumes for node_modules to prevent conflicts with host
+      - backend-node-modules:/usr/src/app/node_modules
+      - frontend-node-modules:/usr/src/app/front/node_modules
+      # Uploads
+      - ./uploads:/usr/src/app/uploads
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+      - "5173:5173"  # Vite dev server
 
 volumes:
-  mongo-data:
-    driver: local
+  backend-node-modules:
+  frontend-node-modules:
+
