@@ -32,15 +32,19 @@ Features:
   },
   servers: [
     {
-      url: `http://localhost:${config.port}/v1`,
-      description: 'Development Server',
+      url: '/',
+      description: 'Current Server (Root)',
     },
     {
       url: '/v1',
-      description: 'Current Server',
+      description: 'Current Server (API v1)',
     },
   ],
   tags: [
+    {
+      name: 'System',
+      description: 'System information and health check endpoints',
+    },
     {
       name: 'Auth',
       description: 'Authentication and authorization endpoints',

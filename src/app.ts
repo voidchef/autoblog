@@ -9,6 +9,7 @@ import { ApiError, errorConverter, errorHandler } from './modules/errors';
 import { morgan } from './modules/logger';
 import { authLimiter } from './modules/utils';
 import routes from './routes/v1';
+import rootRoute from './routes/v1/root.route';
 
 const app: Express = express();
 
@@ -44,6 +45,9 @@ if (appleStrategy) {
 if (config.env === 'production') {
   app.use('/v1/auth', authLimiter);
 }
+
+// root routes (/, /health)
+app.use('/', rootRoute);
 
 // v1 api routes
 app.use('/v1', routes);
