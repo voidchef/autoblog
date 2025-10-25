@@ -189,7 +189,7 @@ export class S3Utils {
         })
       );
 
-      const s3ImageUrl = `${awsBaseUrl}/${fileName}`;
+      const s3ImageUrl = `${awsBaseUrl}/${uploadKey}`;
       uploadedUrls.push(s3ImageUrl);
 
       logger.info(`${uploadKey} uploaded successfully from ${isUrl ? 'URL' : 'file'}.`);
@@ -213,9 +213,9 @@ export class S3Utils {
   }
 
   public async uploadFromUrlsOrFiles(uploadData: UploadDetails): Promise<UploadResult> {
-    const { sources, blogId, uploadPath } = uploadData;
+    const { sources, uploadPath } = uploadData;
     const { bucketName, awsRegion } = this.getS3Config();
-    const awsBaseUrl = `https://${bucketName}.s3.${awsRegion}.amazonaws.com/blogs/${blogId}`;
+    const awsBaseUrl = `https://${bucketName}.s3.${awsRegion}.amazonaws.com`;
 
     const uploadedUrls: string[] = [];
     const errors: string[] = [];

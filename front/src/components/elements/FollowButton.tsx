@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button, CircularProgress, Tooltip } from '@mui/material';
+import { Button, CircularProgress, Tooltip, Snackbar, Alert } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { useFollowUserMutation, useUnfollowUserMutation } from '../../services/userApi';
@@ -23,6 +23,16 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   const [followUser, { isLoading: isFollowing }] = useFollowUserMutation();
   const [unfollowUser, { isLoading: isUnfollowing }] = useUnfollowUserMutation();
   
+  const [snackbar, setSnackbar] = React.useState<{
+    open: boolean;
+    message: string;
+    severity: 'success' | 'error';
+  }>({
+    open: false,
+    message: '',
+    severity: 'success',
+  });
+  
   // Check if current user is following this author
   const isFollowingAuthor = React.useMemo(() => {
     return userData?.following?.includes(authorId) || false;
@@ -37,48 +47,82 @@ const FollowButton: React.FC<FollowButtonProps> = ({
     try {
       if (isFollowingAuthor) {
         await unfollowUser(authorId).unwrap();
+        setSnackbar({
+          open: true,
+          message: `You unfollowed ${authorName}`,
+          severity: 'success',
+        });
       } else {
         await followUser(authorId).unwrap();
+        setSnackbar({
+          open: true,
+          message: `You are now following ${authorName}`,
+          severity: 'success',
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to follow/unfollow user:', error);
+      const errorMessage = error?.data?.message || 'Failed to update follow status. Please try again.';
+      setSnackbar({
+        open: true,
+        message: errorMessage,
+        severity: 'error',
+      });
     }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar({ ...snackbar, open: false });
   };
 
   const isLoading = isFollowing || isUnfollowing;
 
   return (
-    <Tooltip title={isFollowingAuthor ? `Unfollow ${authorName}` : `Follow ${authorName}`}>
-      <Button
-        onClick={handleFollowToggle}
-        disabled={isLoading}
-        size={size}
-        variant={variant}
-        color={isFollowingAuthor ? 'secondary' : 'primary'}
-        startIcon={
-          isLoading ? (
-            <CircularProgress size={16} />
-          ) : isFollowingAuthor ? (
-            <PersonRemoveIcon />
-          ) : (
-            <PersonAddIcon />
-          )
-        }
-        sx={{
-          minWidth: '100px',
-          textTransform: 'none',
-          fontWeight: 600,
-          borderRadius: 2,
-          '&:hover': {
-            transform: 'translateY(-1px)',
-            boxShadow: 2,
-          },
-          transition: 'all 0.2s ease-in-out',
-        }}
+    <>
+      <Tooltip title={isFollowingAuthor ? `Unfollow ${authorName}` : `Follow ${authorName}`}>
+        <Button
+          onClick={handleFollowToggle}
+          disabled={isLoading}
+          size={size}
+          variant={variant}
+          color={isFollowingAuthor ? 'secondary' : 'primary'}
+          startIcon={
+            isLoading ? (
+              <CircularProgress size={16} />
+            ) : isFollowingAuthor ? (
+              <PersonRemoveIcon />
+            ) : (
+              <PersonAddIcon />
+            )
+          }
+          sx={{
+            minWidth: '100px',
+            textTransform: 'none',
+            fontWeight: 600,
+            borderRadius: 2,
+            '&:hover': {
+              transform: 'translateY(-1px)',
+              boxShadow: 2,
+            },
+            transition: 'all 0.2s ease-in-out',
+          }}
+        >
+          {isFollowingAuthor ? 'Following' : 'Follow'}
+        </Button>
+      </Tooltip>
+      
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={4000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        {isFollowingAuthor ? 'Following' : 'Follow'}
-      </Button>
-    </Tooltip>
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </>
   );
 };
 

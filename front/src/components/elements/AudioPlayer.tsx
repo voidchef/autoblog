@@ -36,6 +36,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, blogId, load
   const [playbackRate, setPlaybackRate] = useState(1);
   const [hasTrackedPlay, setHasTrackedPlay] = useState(false);
   const [hasTrackedComplete, setHasTrackedComplete] = useState(false);
+  const [audioError, setAudioError] = useState(false);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -52,34 +53,56 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, blogId, load
         setHasTrackedComplete(true);
       }
     };
+    
+    const handleError = (e: ErrorEvent) => {
+      console.error('Audio loading error:', e);
+      setAudioError(true);
+      setIsPlaying(false);
+    };
+    
+    const handleCanPlay = () => {
+      setAudioError(false);
+    };
 
     audio.addEventListener('timeupdate', updateTime);
     audio.addEventListener('loadedmetadata', updateDuration);
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('error', handleError as any);
+    audio.addEventListener('canplay', handleCanPlay);
 
     return () => {
       audio.removeEventListener('timeupdate', updateTime);
       audio.removeEventListener('loadedmetadata', updateDuration);
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('error', handleError as any);
+      audio.removeEventListener('canplay', handleCanPlay);
     };
   }, [audioUrl, blogId, title, duration, hasTrackedComplete]);
 
-  const togglePlay = () => {
+  const togglePlay = async () => {
     const audio = audioRef.current;
     if (!audio) return;
 
     if (isPlaying) {
       audio.pause();
+      setIsPlaying(false);
     } else {
-      audio.play();
-      
-      // Track audio play event (only once per session)
-      if (blogId && title && !hasTrackedPlay) {
-        analytics.trackAudioPlay(blogId, title);
-        setHasTrackedPlay(true);
+      try {
+        // Wait for the audio to start playing
+        await audio.play();
+        setIsPlaying(true);
+        
+        // Track audio play event (only once per session)
+        if (blogId && title && !hasTrackedPlay) {
+          analytics.trackAudioPlay(blogId, title);
+          setHasTrackedPlay(true);
+        }
+      } catch (error) {
+        console.error('Failed to play audio:', error);
+        setIsPlaying(false);
+        setAudioError(true);
       }
     }
-    setIsPlaying(!isPlaying);
   };
 
   const handleGenerateAudio = () => {
@@ -174,6 +197,23 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, blogId, load
     );
   }
 
+  if (audioError) {
+    return (
+      <Paper elevation={2} sx={{ p: 3, mb: 3, bgcolor: 'error.lighter' }}>
+        <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+          <Typography variant="body2" color="error">
+            Failed to load audio. The file may be unavailable or in an unsupported format.
+          </Typography>
+          {onGenerateAudio && (
+            <IconButton onClick={handleGenerateAudio} color="primary" size="small">
+              <VolumeUpIcon />
+            </IconButton>
+          )}
+        </Stack>
+      </Paper>
+    );
+  }
+
   return (
     <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
       <audio ref={audioRef} src={audioUrl} preload="metadata" />
@@ -193,6 +233,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, blogId, load
             onChange={handleSeek}
             sx={{ mb: 1 }}
             size="small"
+            disabled={audioError}
           />
           <Stack direction="row" justifyContent="space-between">
             <Typography variant="caption" color="text.secondary">
@@ -205,12 +246,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, blogId, load
         </Box>
 
         <Stack direction="row" spacing={1} alignItems="center">
-          <IconButton onClick={togglePlay} color="primary" size="large">
+          <IconButton onClick={togglePlay} color="primary" size="large" disabled={audioError}>
             {isPlaying ? <PauseIcon /> : <PlayIcon />}
           </IconButton>
 
           <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 120 }}>
-            <IconButton onClick={toggleMute} size="small">
+            <IconButton onClick={toggleMute} size="small" disabled={audioError}>
               {isMuted ? <VolumeMuteIcon /> : <VolumeUpIcon />}
             </IconButton>
             <Slider
@@ -220,11 +261,12 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, blogId, load
               onChange={handleVolumeChange}
               sx={{ mx: 1, width: 80 }}
               size="small"
+              disabled={audioError}
             />
           </Box>
 
           <Tooltip title={`Speed: ${playbackRate}x`}>
-            <IconButton onClick={cyclePlaybackRate} size="small">
+            <IconButton onClick={cyclePlaybackRate} size="small" disabled={audioError}>
               <SpeedIcon />
               <Typography variant="caption" sx={{ ml: 0.5 }}>
                 {playbackRate}x

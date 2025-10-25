@@ -532,12 +532,12 @@ export const blogApi = api.injectEndpoints({
         url: `/blogs/${blogId}/audio`,
         method: 'POST',
       }),
-      invalidatesTags: ['Blog'],
+      invalidatesTags: (result, error, blogId) => [{ type: 'Blog', id: blogId }],
     }),
 
     getAudioNarrationStatus: builder.query<{ audioNarrationUrl?: string; audioGenerationStatus?: string }, string>({
       query: (blogId) => `/blogs/${blogId}/audio`,
-      providesTags: ['Blog'],
+      providesTags: (result, error, blogId) => [{ type: 'Blog', id: blogId }],
     }),
 
     publishToWordPress: builder.mutation<IBlog, { blogId: string; wordpressConfig?: { siteUrl: string; username: string; applicationPassword: string } }>({

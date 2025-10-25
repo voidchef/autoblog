@@ -49,9 +49,25 @@ export const userApi = api.injectEndpoints({
         url: `/users/${userId}/follow`,
         method: 'POST',
       }),
+      async onQueryStarted(userId, { dispatch, queryFulfilled, getState }) {
+        try {
+          const { data: updatedUser } = await queryFulfilled;
+          // Update the cache for the current user
+          const state = getState() as any;
+          const currentUserId = state.auth.userId;
+          if (currentUserId) {
+            dispatch(
+              userApi.util.updateQueryData('getUser', currentUserId, (draft) => {
+                Object.assign(draft, updatedUser);
+              })
+            );
+          }
+        } catch {
+          // Error handled by mutation
+        }
+      },
       invalidatesTags: (result, error, userId) => [
         { type: 'User', id: userId },
-        { type: 'User', id: 'ME' },
       ],
     }),
     unfollowUser: builder.mutation<UserData, string>({
@@ -59,9 +75,25 @@ export const userApi = api.injectEndpoints({
         url: `/users/${userId}/unfollow`,
         method: 'POST',
       }),
+      async onQueryStarted(userId, { dispatch, queryFulfilled, getState }) {
+        try {
+          const { data: updatedUser } = await queryFulfilled;
+          // Update the cache for the current user
+          const state = getState() as any;
+          const currentUserId = state.auth.userId;
+          if (currentUserId) {
+            dispatch(
+              userApi.util.updateQueryData('getUser', currentUserId, (draft) => {
+                Object.assign(draft, updatedUser);
+              })
+            );
+          }
+        } catch {
+          // Error handled by mutation
+        }
+      },
       invalidatesTags: (result, error, userId) => [
         { type: 'User', id: userId },
-        { type: 'User', id: 'ME' },
       ],
     }),
   }),
