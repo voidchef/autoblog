@@ -67,6 +67,10 @@ interface BlogState {
     progress: number;
     status: string;
   };
+  activeGeneration: {
+    blogId: string | null;
+    status: 'processing' | 'completed' | 'failed' | null;
+  };
   filters: {
     category: string;
     language: string;
@@ -104,6 +108,10 @@ const initialState: BlogState = {
     isGenerating: false,
     progress: 0,
     status: '',
+  },
+  activeGeneration: {
+    blogId: null,
+    status: null,
   },
   filters: {
     category: '',
@@ -254,6 +262,28 @@ const blogSlice = createSlice({
     },
     setGenerationProgress: (state, action: PayloadAction<Partial<BlogState['generationProgress']>>) => {
       state.generationProgress = { ...state.generationProgress, ...action.payload };
+    },
+    setActiveGeneration: (
+      state,
+      action: PayloadAction<{ blogId: string; status: 'processing' | 'completed' | 'failed' }>,
+    ) => {
+      state.activeGeneration = action.payload;
+      // Save to localStorage for persistence across page reloads
+      localStorage.setItem('activeGeneration', JSON.stringify(action.payload));
+    },
+    clearActiveGeneration: (state) => {
+      state.activeGeneration = { blogId: null, status: null };
+      localStorage.removeItem('activeGeneration');
+    },
+    loadActiveGeneration: (state) => {
+      const saved = localStorage.getItem('activeGeneration');
+      if (saved) {
+        try {
+          state.activeGeneration = JSON.parse(saved);
+        } catch {
+          state.activeGeneration = { blogId: null, status: null };
+        }
+      }
     },
     // Optimistic updates
     addBlogOptimistic: (state, action: PayloadAction<IBlog>) => {
@@ -416,6 +446,9 @@ export const {
   selectAllBlogs,
   clearSelection,
   setGenerationProgress,
+  setActiveGeneration,
+  clearActiveGeneration,
+  loadActiveGeneration,
   addBlogOptimistic,
   updateBlogOptimistic,
   removeBlogOptimistic,

@@ -1,8 +1,9 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import { ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { ToggleButton, ToggleButtonGroup, Typography, Alert } from '@mui/material';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
+import GeneratingBanner from '../elements/Common/GeneratingBanner';
 import { 
   Title, 
   BlogFormFields, 
@@ -23,13 +24,14 @@ import {
   ITemplateBlogData,
   ITemplatePreview,
 } from '../../services/blogApi';
-import { setBlogData, clearBlog, IBlog, generateBlogWithProgress } from '../../reducers/blog';
+import { setBlogData, clearBlog, IBlog, generateBlogWithProgress, setActiveGeneration, clearActiveGeneration } from '../../reducers/blog';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import { useAuth } from '../../utils/hooks';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AWS_BASEURL } from '../../utils/consts';
 import { ROUTES } from '../../utils/routing/routes';
+import { useGetBlogGenerationStatusQuery } from '../../services/blogApi';
 
 async function fetchImages(blogId: string) {
   const newImages: string[] = [];
@@ -60,6 +62,7 @@ export default function CreatePost() {
   const { state } = useLocation();
   const appSettings = useAppSelector((state) => state.appSettings);
   const generationProgress = useAppSelector((state) => state.blog.generationProgress);
+  const activeGeneration = useAppSelector((state) => state.blog.activeGeneration);
   const { user } = useAuth();
 
   const blogId = state?.blogId;
@@ -96,8 +99,55 @@ export default function CreatePost() {
   const [templateFile, setTemplateFile] = React.useState<File | null>(null);
   const [templatePreview, setTemplatePreview] = React.useState<ITemplatePreview | null>(null);
   const [templateVariables, setTemplateVariables] = React.useState<Record<string, string | number | boolean>>({});
+  const [generatingBlogId, setGeneratingBlogId] = React.useState<string | null>(null);
 
   const [generateBlogFromTemplate] = useGenerateBlogFromTemplateMutation();
+  const [generateBlog] = useGenerateBlogMutation();
+
+  // Poll for generation status
+  const { data: generationStatus } = useGetBlogGenerationStatusQuery(generatingBlogId || '', {
+    skip: !generatingBlogId,
+    pollingInterval: 2000, // Poll every 2 seconds
+  });
+
+  // Handle generation completion
+  React.useEffect(() => {
+    if (generationStatus && generatingBlogId) {
+      if (generationStatus.generationStatus === 'completed') {
+        // Wait a bit to show the success message, then navigate
+        setTimeout(() => {
+          navigate(`${ROUTES.PREVIEW}/${generationStatus.slug}?preview=${true}`);
+          setGeneratingBlogId(null);
+          dispatch(clearActiveGeneration());
+        }, 2000);
+      } else if (generationStatus.generationStatus === 'failed') {
+        // Wait a bit to show the error message
+        setTimeout(() => {
+          console.error('Blog generation failed:', generationStatus.generationError);
+          setGeneratingBlogId(null);
+          dispatch(clearActiveGeneration());
+        }, 5000);
+      }
+    }
+  }, [generationStatus, generatingBlogId, navigate, dispatch]);
+
+  // Check for ongoing generation on mount
+  React.useEffect(() => {
+    const saved = localStorage.getItem('activeGeneration');
+    if (saved) {
+      try {
+        const { blogId, status } = JSON.parse(saved);
+        if (status === 'processing' && blogId) {
+          setGeneratingBlogId(blogId);
+        }
+      } catch (error) {
+        console.error('Failed to parse saved generation:', error);
+      }
+    }
+  }, []);
+
+  // Check if generation is in progress (either from this session or loaded from localStorage)
+  const isGenerationInProgress = !!(generatingBlogId || (activeGeneration.blogId && activeGeneration.status === 'processing'));
 
   // Check if user has API keys
   const hasOpenAiKey = user?.hasOpenAiKey || false;
@@ -214,6 +264,12 @@ export default function CreatePost() {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    // Prevent new generation if one is already in progress
+    if (isGenerationInProgress && !blog?.id) {
+      alert('A blog is currently being generated. Please wait for it to complete before starting a new generation.');
+      return;
+    }
+
     if (blog && blog.id) {
       const updateData = Object.entries({
         title: blogTitle,
@@ -272,12 +328,15 @@ export default function CreatePost() {
       generateBlogFromTemplate(templateData)
         .unwrap()
         .then((newBlog) => {
-          if (newBlog) {
-            navigate(`${ROUTES.PREVIEW}/${newBlog.slug}?preview=${true}`);
+          if (newBlog && newBlog.id) {
+            // Start polling for this blog
+            setGeneratingBlogId(newBlog.id);
+            dispatch(setActiveGeneration({ blogId: newBlog.id, status: 'processing' }));
           }
         })
         .catch((error) => {
           console.error('Failed to generate blog from template:', error);
+          alert(`Failed to generate blog: ${error}`);
         });
     } else {
       // Regular generation
@@ -293,15 +352,18 @@ export default function CreatePost() {
         tags: formData.tags,
       };
 
-      dispatch(generateBlogWithProgress(generateData))
+      generateBlog(generateData)
         .unwrap()
         .then((newBlog) => {
-          if (newBlog) {
-            navigate(`${ROUTES.PREVIEW}/${newBlog.slug}?preview=${true}`);
+          if (newBlog && newBlog.id) {
+            // Start polling for this blog
+            setGeneratingBlogId(newBlog.id);
+            dispatch(setActiveGeneration({ blogId: newBlog.id, status: 'processing' }));
           }
         })
         .catch((error) => {
           console.error('Failed to generate blog:', error);
+          alert(`Failed to generate blog: ${error}`);
         });
     }
   };
@@ -354,8 +416,20 @@ export default function CreatePost() {
         bgcolor: (theme) => theme.palette.mode === 'dark' 
           ? theme.palette.background.default
           : theme.palette.customColors.pageBackground.light,
+        paddingTop: generatingBlogId && generationStatus ? '80px' : 0,
+        transition: 'padding-top 0.3s ease',
       }}
     >
+      {/* Show generating banner if blog is being generated */}
+      {generatingBlogId && generationStatus && (
+        <GeneratingBanner
+          blogId={generatingBlogId}
+          blogTitle={generationStatus.title}
+          status={generationStatus.generationStatus as 'processing' | 'completed' | 'failed'}
+          error={generationStatus.generationError}
+        />
+      )}
+      
       <Box
         display={'flex'}
         flexDirection={'column'}
@@ -390,6 +464,7 @@ export default function CreatePost() {
               onChange={handleModeChange}
               aria-label="generation mode"
               size="small"
+              disabled={isGenerationInProgress}
             >
               <ToggleButton value="regular" aria-label="regular generation">
                 Regular
@@ -399,6 +474,13 @@ export default function CreatePost() {
               </ToggleButton>
             </ToggleButtonGroup>
           </Box>
+
+          {/* Show message when generation is in progress */}
+          {isGenerationInProgress && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              A blog is currently being generated. Please wait for it to complete before starting a new generation.
+            </Alert>
+          )}
 
           {generationMode === 'template' && (
             <Box sx={{ mb: 3 }}>
@@ -449,7 +531,7 @@ export default function CreatePost() {
             formData={formData}
             appSettings={appSettings}
             isEditMode={!!blog?.id}
-            disabled={isFormDisabled}
+            disabled={isFormDisabled || isGenerationInProgress}
             onFormDataChange={handleFormDataChange}
           />
         )}
@@ -460,7 +542,7 @@ export default function CreatePost() {
               formData={formData}
               appSettings={appSettings}
               isEditMode={false}
-              disabled={isFormDisabled}
+              disabled={isFormDisabled || isGenerationInProgress}
               onFormDataChange={handleFormDataChange}
             />
           </Box>
@@ -468,8 +550,8 @@ export default function CreatePost() {
         <ActionButtons
           isEditMode={!!blog?.id}
           isPublished={isPublished}
-          disabled={isFormDisabled}
-          isLoading={generationProgress.isGenerating}
+          disabled={isFormDisabled || isGenerationInProgress}
+          isLoading={generationProgress.isGenerating || isGenerationInProgress}
           onReset={handleReset}
           onUpdate={handleUpdate}
           onOpenImagePicker={handleOpen}

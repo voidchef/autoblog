@@ -13,6 +13,8 @@ import Loading from './components/elements/Common/Loading';
 import Alerts from './components/elements/Common/Alerts';
 import { useAuth, useAppSettings, useTheme } from './utils/hooks';
 import * as analytics from './utils/analytics';
+import { useAppDispatch } from './utils/reduxHooks';
+import { loadActiveGeneration } from './reducers/blog';
 
 // Lazy load page components
 const Home = React.lazy(() => import('./components/pages/Home'));
@@ -38,10 +40,16 @@ if (localStorage.tokens) {
 
 export default function App() {
   const location = useLocation();
+  const dispatch = useAppDispatch();
 
   const { isAuthenticated, user, isLoading: userLoading } = useAuth();
   const { data: appSettingsData, isLoading: appSettingsLoading } = useAppSettings();
   const { themeMode } = useTheme();
+
+  // Load active generation from localStorage on mount
+  React.useEffect(() => {
+    dispatch(loadActiveGeneration());
+  }, [dispatch]);
 
   // Initialize Google Analytics once on app mount
   React.useEffect(() => {

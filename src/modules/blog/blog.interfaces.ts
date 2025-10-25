@@ -41,6 +41,8 @@ export interface IBlog extends IGenerateBlog {
   selectedImage?: string;
   audioNarrationUrl?: string;
   audioGenerationStatus?: 'pending' | 'processing' | 'completed' | 'failed';
+  generationStatus?: 'pending' | 'processing' | 'completed' | 'failed';
+  generationError?: string;
   // WordPress publishing fields
   wordpressPostId?: number;
   wordpressPostUrl?: string;

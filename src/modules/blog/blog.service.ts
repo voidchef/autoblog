@@ -82,7 +82,7 @@ export const generateBlog = async (
     }
   } else if (llmProvider === 'mistral') {
     // Mistral models - using OpenAI key field for now, could be extended
-    if (!user.hasOpenAiKey()) {
+    if (!user.hasOpenAiKey) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Mistral API key is required for Mistral models');
     }
     decryptedApiKey = user.getDecryptedOpenAiKey();
@@ -91,7 +91,7 @@ export const generateBlog = async (
     }
   } else {
     // OpenAI models (default)
-    if (!user.hasOpenAiKey()) {
+    if (!user.hasOpenAiKey) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'OpenAI API key is required for blog generation');
     }
     decryptedApiKey = user.getDecryptedOpenAiKey();
@@ -150,7 +150,7 @@ export const generateBlogFromTemplate = async (
       throw new ApiError(httpStatus.BAD_REQUEST, 'Failed to decrypt Google API key');
     }
   } else if (llmProvider === 'mistral') {
-    if (!user.hasOpenAiKey()) {
+    if (!user.hasOpenAiKey) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Mistral API key is required for Mistral models');
     }
     decryptedApiKey = user.getDecryptedOpenAiKey();
@@ -159,7 +159,7 @@ export const generateBlogFromTemplate = async (
     }
   } else {
     // OpenAI models (default)
-    if (!user.hasOpenAiKey()) {
+    if (!user.hasOpenAiKey) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'OpenAI API key is required for template blog generation');
     }
     decryptedApiKey = user.getDecryptedOpenAiKey();
@@ -209,6 +209,130 @@ export const generateBlogFromTemplate = async (
   }
 
   return createBlog({ ...post, ...generateTemplateData, ...additionalData } as NewCreatedBlog);
+};
+
+/**
+ * Initiate blog generation asynchronously
+ * @param {IGenerateBlog} generateBlogData
+ * @param {mongoose.Types.ObjectId} author
+ * @returns {Promise<IBlogDoc>}
+ */
+export const initiateBlogGeneration = async (
+  generateBlogData: IGenerateBlog,
+  author: mongoose.Types.ObjectId
+): Promise<IBlogDoc> => {
+  // Create a placeholder blog with 'processing' status
+  const timestamp = Date.now();
+  const placeholderBlog = await Blog.create({
+    title: 'Generating...',
+    slug: `generating-${timestamp}`,
+    seoTitle: 'Generating...',
+    seoDescription: 'Blog is being generated...',
+    content: 'Blog content is being generated. Please wait...',
+    author,
+    category: generateBlogData.category,
+    tags: generateBlogData.tags
+      ? Array.isArray(generateBlogData.tags)
+        ? generateBlogData.tags.map((tag: string) => tag.trim())
+        : String(generateBlogData.tags)
+            .split(/\s*,\s*/)
+            .map((tag: string) => tag.trim())
+      : [],
+    generationStatus: 'processing',
+    topic: generateBlogData.topic,
+    language: generateBlogData.language,
+    llmModel: generateBlogData.llmModel,
+  });
+
+  // Start generation in background
+  void (async () => {
+    try {
+      const generatedBlog = await generateBlog(generateBlogData, author);
+      // Update the placeholder with generated content
+      await Blog.findByIdAndUpdate(placeholderBlog._id, {
+        ...generatedBlog.toObject(),
+        _id: placeholderBlog._id,
+        generationStatus: 'completed',
+        generationError: undefined,
+      });
+    } catch (error) {
+      logger.error('Error in background blog generation:', error);
+      await Blog.findByIdAndUpdate(placeholderBlog._id, {
+        generationStatus: 'failed',
+        generationError: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
+    }
+  })();
+
+  return placeholderBlog;
+};
+
+/**
+ * Initiate blog generation from template asynchronously
+ * @param {IGenerateTemplateBlog} generateTemplateData
+ * @param {mongoose.Types.ObjectId} author
+ * @returns {Promise<IBlogDoc>}
+ */
+export const initiateBlogGenerationFromTemplate = async (
+  generateTemplateData: IGenerateTemplateBlog,
+  author: mongoose.Types.ObjectId
+): Promise<IBlogDoc> => {
+  // Create a placeholder blog with 'processing' status
+  const timestamp = Date.now();
+  const placeholderBlog = await Blog.create({
+    title: 'Generating from template...',
+    slug: `generating-template-${timestamp}`,
+    seoTitle: 'Generating from template...',
+    seoDescription: 'Blog is being generated from template...',
+    content: 'Blog content is being generated from template. Please wait...',
+    author,
+    category: generateTemplateData.category,
+    tags: generateTemplateData.tags
+      ? Array.isArray(generateTemplateData.tags)
+        ? generateTemplateData.tags.map((tag: string) => tag.trim())
+        : String(generateTemplateData.tags)
+            .split(/\s*,\s*/)
+            .map((tag: string) => tag.trim())
+      : [],
+    generationStatus: 'processing',
+    topic: 'Template Blog',
+    language: 'en',
+    llmModel: generateTemplateData.llmModel,
+  });
+
+  // Start generation in background
+  void (async () => {
+    try {
+      const generatedBlog = await generateBlogFromTemplate(generateTemplateData, author);
+      // Update the placeholder with generated content
+      await Blog.findByIdAndUpdate(placeholderBlog._id, {
+        ...generatedBlog.toObject(),
+        _id: placeholderBlog._id,
+        generationStatus: 'completed',
+        generationError: undefined,
+      });
+
+      // Clean up template file after successful generation
+      if (generateTemplateData.templateFile) {
+        const { cleanupTemplateFile } = await import('./template-upload.middleware');
+        cleanupTemplateFile(generateTemplateData.templateFile);
+      }
+    } catch (error) {
+      logger.error('Error in background template blog generation:', error);
+      await Blog.findByIdAndUpdate(placeholderBlog._id, {
+        generationStatus: 'failed',
+        generationError: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
+
+      // Clean up template file on error too
+      if (generateTemplateData.templateFile) {
+        const { cleanupTemplateFile } = await import('./template-upload.middleware');
+        cleanupTemplateFile(generateTemplateData.templateFile);
+      }
+    }
+  })();
+
+  return placeholderBlog;
 };
 
 /**

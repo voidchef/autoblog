@@ -75,6 +75,9 @@ router.route('/:blogId/dislike').post(auth(), blogController.dislikeBlog);
 router.route('/:blogId/audio').post(auth('manageBlogs'), blogController.generateAudioNarration);
 router.route('/:blogId/audio').get(blogController.getAudioNarrationStatus);
 
+// Blog generation status route
+router.route('/:blogId/generation-status').get(auth('generateBlogs'), blogController.getBlogGenerationStatus);
+
 // Publishing routes
 router.route('/:blogId/publish-wordpress').post(auth('manageBlogs'), blogController.publishToWordPress);
 router.route('/:blogId/publish-medium').post(auth('manageBlogs'), blogController.publishToMedium);

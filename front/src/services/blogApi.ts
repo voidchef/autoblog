@@ -60,6 +60,8 @@ export interface IBlog {
   selectedImage?: string;
   audioNarrationUrl?: string;
   audioGenerationStatus?: 'pending' | 'processing' | 'completed' | 'failed';
+  generationStatus?: 'pending' | 'processing' | 'completed' | 'failed';
+  generationError?: string;
   // WordPress publishing fields
   wordpressPostId?: number;
   wordpressPostUrl?: string;
@@ -301,6 +303,14 @@ export const blogApi = api.injectEndpoints({
       query: (blogId) => `/blogs/${blogId}`,
       providesTags: (result, error, blogId) => [{ type: 'Blog', id: blogId }],
       keepUnusedDataFor: 600, // Keep individual blog posts for 10 minutes
+    }),
+
+    getBlogGenerationStatus: builder.query<
+      { id: string; generationStatus: string; generationError?: string; title: string; slug: string },
+      string
+    >({
+      query: (blogId) => `/blogs/${blogId}/generation-status`,
+      providesTags: (result, error, blogId) => [{ type: 'Blog', id: blogId }],
     }),
 
     getBlogBySlug: builder.query<IBlog, string>({
@@ -570,6 +580,7 @@ export const {
   useGetDraftBlogsQuery,
   useGetBlogsByCategoryQuery,
   useGetBlogQuery,
+  useGetBlogGenerationStatusQuery,
   useGetBlogBySlugQuery,
   useGetBlogViewsQuery,
   useGetAllBlogsEngagementStatsQuery,

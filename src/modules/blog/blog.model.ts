@@ -97,6 +97,14 @@ const blogSchema = new mongoose.Schema<IBlogDoc, IBlogModel>(
       type: String,
       enum: ['pending', 'processing', 'completed', 'failed'],
     },
+    generationStatus: {
+      type: String,
+      enum: ['pending', 'processing', 'completed', 'failed'],
+      default: 'completed',
+    },
+    generationError: {
+      type: String,
+    },
     // WordPress publishing fields
     wordpressPostId: {
       type: Number,

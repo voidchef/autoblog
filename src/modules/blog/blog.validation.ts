@@ -41,6 +41,8 @@ const createBlogBody: Partial<Record<keyof NewCreatedBlog, any>> = {
   selectedImage: Joi.string().optional(),
   audioNarrationUrl: Joi.string().optional(),
   audioGenerationStatus: Joi.string().valid('pending', 'processing', 'completed', 'failed').optional(),
+  generationStatus: Joi.string().valid('pending', 'processing', 'completed', 'failed').optional(),
+  generationError: Joi.string().optional(),
   wordpressPostId: Joi.number().optional(),
   wordpressPostUrl: Joi.string().optional(),
   wordpressPublishStatus: Joi.string().valid('pending', 'published', 'failed').optional(),

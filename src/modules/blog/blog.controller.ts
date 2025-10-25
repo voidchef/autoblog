@@ -13,8 +13,8 @@ import { validateTemplateFile, getTemplatePreview } from './template.utils';
 
 export const generateBlog = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IUserDoc;
-  const blog = await blogService.generateBlog(req.body, user._id as mongoose.Types.ObjectId);
-  res.status(httpStatus.CREATED).send(blog);
+  const blog = await blogService.initiateBlogGeneration(req.body, user._id as mongoose.Types.ObjectId);
+  res.status(httpStatus.ACCEPTED).send(blog);
 });
 
 export const generateBlogFromTemplate = catchAsync(async (req: Request, res: Response) => {
@@ -60,12 +60,14 @@ export const generateBlogFromTemplate = catchAsync(async (req: Request, res: Res
       imagesPerSection: req.body.imagesPerSection ? parseInt(req.body.imagesPerSection, 10) : 2,
     };
 
-    const blog = await blogService.generateBlogFromTemplate(templateData, user._id as mongoose.Types.ObjectId);
+    const blog = await blogService.initiateBlogGenerationFromTemplate(
+      templateData,
+      user._id as mongoose.Types.ObjectId
+    );
 
-    // Clean up the uploaded template file after successful generation
-    cleanupTemplateFile(templateFile);
+    // Note: Template file cleanup will happen after generation completes
 
-    res.status(httpStatus.CREATED).send(blog);
+    res.status(httpStatus.ACCEPTED).send(blog);
   } catch (error) {
     // Clean up the template file in case of error
     cleanupTemplateFile(templateFile);
@@ -296,6 +298,22 @@ export const getAudioNarrationStatus = catchAsync(async (req: Request, res: Resp
   if (typeof req.params['blogId'] === 'string') {
     const status = await blogService.getAudioNarrationStatus(new mongoose.Types.ObjectId(req.params['blogId']));
     res.send(status);
+  }
+});
+
+export const getBlogGenerationStatus = catchAsync(async (req: Request, res: Response) => {
+  if (typeof req.params['blogId'] === 'string') {
+    const blog = await blogService.getBlogById(new mongoose.Types.ObjectId(req.params['blogId']));
+    if (!blog) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
+    }
+    res.send({
+      id: blog.id,
+      generationStatus: blog.generationStatus || 'completed',
+      generationError: blog.generationError,
+      title: blog.title,
+      slug: blog.slug,
+    });
   }
 });
 
