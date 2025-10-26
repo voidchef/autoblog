@@ -13,6 +13,9 @@
 
 import ReactGA from 'react-ga4';
 
+// Ensure we have the correct ReactGA object (handle both ESM and CommonJS)
+const GA = typeof ReactGA === 'object' && 'default' in ReactGA ? (ReactGA as any).default : ReactGA;
+
 // Track initialization state to prevent multiple initializations
 let isInitialized = false;
 
@@ -44,7 +47,7 @@ export const initializeGA = (
 
   try {
     // Initialize ReactGA with options
-    ReactGA.initialize(measurementId, {
+    GA.initialize(measurementId, {
       gaOptions: {
         // Enable debug mode in development
         debug_mode: options?.debug ?? import.meta.env.DEV,
@@ -82,11 +85,11 @@ export const setUserID = (userId: string | null): void => {
 
   try {
     if (userId) {
-      ReactGA.set({ userId });
+      GA.set({ userId });
       console.log('[Analytics] User ID set');
     } else {
       // Clear user ID on logout
-      ReactGA.set({ userId: undefined });
+      GA.set({ userId: undefined });
       console.log('[Analytics] User ID cleared');
     }
   } catch (error) {
@@ -109,7 +112,7 @@ export const trackPageView = (
   if (!isInitialized) return;
 
   try {
-    ReactGA.send({
+    GA.send({
       hitType: 'pageview',
       page: path,
       title: title || document.title,
@@ -152,7 +155,7 @@ export const trackEvent = (
   if (!isInitialized) return;
 
   try {
-    ReactGA.event(eventName, eventParams);
+    GA.event(eventName, eventParams);
 
     if (import.meta.env.DEV) {
       console.log('[Analytics] Event tracked:', eventName, eventParams);

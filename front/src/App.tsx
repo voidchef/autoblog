@@ -16,7 +16,7 @@ import * as analytics from './utils/analytics';
 import { useAppDispatch } from './utils/reduxHooks';
 import { loadActiveGeneration } from './reducers/blog';
 
-// Lazy load page components
+// Lazy load page components with preload capability
 const Home = React.lazy(() => import('./components/pages/Home'));
 const SignInSide = React.lazy(() => import('./components/pages/SignInSide'));
 const ContactUs = React.lazy(() => import('./components/pages/ContactUs'));
@@ -107,41 +107,8 @@ export default function App() {
     });
   }, [location.pathname, location.search, isAuthenticated]);
 
-  // Show loading screen while essential data is loading
-  const isInitialLoading = appSettingsLoading;
-
-  if (isInitialLoading) {
-    return (
-      <ThemeProvider theme={themeMode === 'light' ? lightTheme : darkTheme}>
-        <CssBaseline />
-        <Box height="100vh" display="flex" justifyContent="center" alignItems="center" flexDirection="column">
-          <Box
-            width={{
-              xl: '55%',
-              md: '50%',
-              sm: '40%',
-              xs: '60%',
-            }}
-          >
-            <Loading />
-          </Box>
-          <Typography 
-            variant="body2" 
-            color="text.secondary" 
-            sx={{ 
-              mt: 3, 
-              textAlign: 'center',
-              px: 2,
-              maxWidth: '400px'
-            }}
-          >
-            Starting up the server... This may take a few moments as our service is hosted on Render's free tier.
-          </Typography>
-        </Box>
-      </ThemeProvider>
-    );
-  }
-
+  // Render UI optimistically - don't block on app settings loading
+  // The settings will be available shortly and components can handle loading states individually
   return (
     <ThemeProvider theme={themeMode === 'light' ? lightTheme : darkTheme}>
       <CssBaseline />
@@ -164,82 +131,80 @@ export default function App() {
         <React.Fragment>
           <Alerts />
           <section>
-            {appSettingsData && (
-              <Routes>
-                <Route path={ROUTES.LOGIN} element={<SignInSide />} />
-                <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmail />} />
-                <Route path={ROUTES.OAUTH_CALLBACK} element={<OAuthCallback />} />
-                <Route path={ROUTES.ROOT} element={<Home />} />
-                <Route path={ROUTES.CONTACTUS} element={<ContactUs />} />
-                <Route path={ROUTES.ABOUTUS} element={<AboutUs />} />
-                <Route path={`${ROUTES.CATEGORY}/:categoryName`} element={<Category />} />
-                <Route path={ROUTES.ALLPOSTS} element={<AllPosts />} />
-                <Route path={`${ROUTES.BLOG}/:slug`} element={<Blog />} />
-                <Route path={`${ROUTES.AUTHOR}/:authorId`} element={<Author />} />
-                <Route
-                  path={`${ROUTES.PREVIEW}/:slug`}
-                  element={
-                    <PrivateRoute>
-                      <Blog />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path={ROUTES.CREATEPOST}
-                  element={
-                    <PrivateRoute>
-                      <CreatePost />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path={ROUTES.DASHBOARD}
-                  element={
-                    <PrivateRoute>
-                      <Dashboard />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path={ROUTES.ANALYTICS}
-                  element={
-                    <PrivateRoute>
-                      <Analytics />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path={ROUTES.PROFILE}
-                  element={
-                    <PrivateRoute>
-                      <Profile />
-                    </PrivateRoute>
-                  }
-                />
-                <Route
-                  path={ROUTES.SETTINGS}
-                  element={
-                    <AdminRoute>
-                      <AppSettings />
-                    </AdminRoute>
-                  }
-                />
-                {/* Catch-all route for 404 pages */}
-                <Route
-                  path="*"
-                  element={
-                    <Box display="flex" justifyContent="center" alignItems="center" height="100vh" flexDirection="column">
-                      <Typography variant="h4" component="h1" gutterBottom>
-                        404 - Page Not Found
-                      </Typography>
-                      <Typography variant="body1" color="text.secondary">
-                        The page you're looking for doesn't exist.
-                      </Typography>
-                    </Box>
-                  }
-                />
-              </Routes>
-            )}
+            <Routes>
+              <Route path={ROUTES.LOGIN} element={<SignInSide />} />
+              <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmail />} />
+              <Route path={ROUTES.OAUTH_CALLBACK} element={<OAuthCallback />} />
+              <Route path={ROUTES.ROOT} element={<Home />} />
+              <Route path={ROUTES.CONTACTUS} element={<ContactUs />} />
+              <Route path={ROUTES.ABOUTUS} element={<AboutUs />} />
+              <Route path={`${ROUTES.CATEGORY}/:categoryName`} element={<Category />} />
+              <Route path={ROUTES.ALLPOSTS} element={<AllPosts />} />
+              <Route path={`${ROUTES.BLOG}/:slug`} element={<Blog />} />
+              <Route path={`${ROUTES.AUTHOR}/:authorId`} element={<Author />} />
+              <Route
+                path={`${ROUTES.PREVIEW}/:slug`}
+                element={
+                  <PrivateRoute>
+                    <Blog />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path={ROUTES.CREATEPOST}
+                element={
+                  <PrivateRoute>
+                    <CreatePost />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path={ROUTES.DASHBOARD}
+                element={
+                  <PrivateRoute>
+                    <Dashboard />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path={ROUTES.ANALYTICS}
+                element={
+                  <PrivateRoute>
+                    <Analytics />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path={ROUTES.PROFILE}
+                element={
+                  <PrivateRoute>
+                    <Profile />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path={ROUTES.SETTINGS}
+                element={
+                  <AdminRoute>
+                    <AppSettings />
+                  </AdminRoute>
+                }
+              />
+              {/* Catch-all route for 404 pages */}
+              <Route
+                path="*"
+                element={
+                  <Box display="flex" justifyContent="center" alignItems="center" height="100vh" flexDirection="column">
+                    <Typography variant="h4" component="h1" gutterBottom>
+                      404 - Page Not Found
+                    </Typography>
+                    <Typography variant="body1" color="text.secondary">
+                      The page you're looking for doesn't exist.
+                    </Typography>
+                  </Box>
+                }
+              />
+            </Routes>
           </section>
         </React.Fragment>
       </React.Suspense>
