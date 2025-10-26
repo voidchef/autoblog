@@ -7,15 +7,17 @@ import { ThumbUp, ThumbDown, ChatBubbleOutline } from '@mui/icons-material';
 import { useGetBlogsQuery } from '../../../services/blogApi';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
+import { stringAvatar } from '../../../utils/utils';
+import Avatar from '@mui/material/Avatar';
 
 const AllPosts = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  
-  const { data: allBlogs, isLoading } = useGetBlogsQuery({ 
-    limit: rowsPerPage, 
+
+  const { data: allBlogs, isLoading } = useGetBlogsQuery({
+    limit: rowsPerPage,
     page: page + 1, // API expects 1-based page
-    isPublished: true 
+    isPublished: true,
   });
 
   const navigate = useNavigate();
@@ -52,9 +54,9 @@ const AllPosts = () => {
           <Grid container spacing={3}>
             {allBlogs.results.map((post: any, index: number) => (
               <Grid size={{ xs: 12, sm: 4 }} key={index}>
-                <Box 
-                  sx={{ py: 1, cursor: 'pointer' }} 
-                  height={{ xs: '15rem', sm: '18rem' }} 
+                <Box
+                  sx={{ py: 1, cursor: 'pointer' }}
+                  height={{ xs: '15rem', sm: '18rem' }}
                   maxWidth={'100%'}
                   onClick={() => handleClick(post.slug)}
                 >
@@ -65,58 +67,84 @@ const AllPosts = () => {
                   />
                 </Box>
                 <Box display="flex" flexDirection="column" justifyContent="space-between">
-                  <Typography fontSize={{ sm: 15 }} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
-                    By <span 
-                      style={{ color: '#555FAC', cursor: 'pointer', textDecoration: 'none' }}
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Avatar
+                      src={post.author.profilePicture || undefined}
+                      {...(!post.author.profilePicture ? stringAvatar(post.author.name) : {})}
+                      sx={{
+                        width: 36,
+                        height: 36,
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
+                        cursor: 'pointer',
+                      }}
                       onClick={(e) => {
                         e.stopPropagation();
                         if (post.author?.id) navigate(`${ROUTES.AUTHOR}/${post.author.id}`);
                       }}
-                      onMouseEnter={(e) => e.currentTarget.style.textDecoration = 'underline'}
-                      onMouseLeave={(e) => e.currentTarget.style.textDecoration = 'none'}
-                    >
-                      {post.author?.name || 'Unknown'}
-                    </span> |{' '}
-                    {new Date(post.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </Typography>
-                  <Typography 
-                    fontSize={{ sm: 22 }} 
-                    fontWeight={500} 
-                    component="div" 
-                    sx={{ 
-                      flexGrow: 1, 
+                    />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+                      <Typography
+                        variant="body2"
+                        fontWeight={600}
+                        fontSize="0.875rem"
+                        sx={{
+                          cursor: 'pointer',
+                          '&:hover': { color: 'primary.main' },
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (post.author?.id) navigate(`${ROUTES.AUTHOR}/${post.author.id}`);
+                        }}
+                      >
+                        {post.author.name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
+                        •
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
+                        {new Date(post.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Typography
+                    fontSize={{ sm: 22 }}
+                    fontWeight={500}
+                    component="div"
+                    sx={{
+                      flexGrow: 1,
                       marginBottom: 1,
                       cursor: 'pointer',
-                      '&:hover': { color: 'primary.main' }
+                      '&:hover': { color: 'primary.main' },
                     }}
                     onClick={() => handleClick(post.slug)}
                   >
                     {post.title}
                   </Typography>
-                  <Typography 
-                    fontSize={{ sm: 18 }} 
-                    component="div" 
-                    sx={{ 
+                  <Typography
+                    fontSize={{ sm: 18 }}
+                    component="div"
+                    sx={{
                       flexGrow: 1,
-                      cursor: 'pointer'
+                      cursor: 'pointer',
                     }}
                     onClick={() => handleClick(post.slug)}
                   >
                     {`${post.content.slice(0, 255)}...`}
                   </Typography>
-                  
+
                   {/* Engagement Stats */}
-                  <Box 
-                    sx={{ 
-                      display: 'flex', 
-                      gap: 2, 
-                      mt: 2, 
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      gap: 2,
+                      mt: 2,
                       alignItems: 'center',
-                      color: '#6D6E76'
+                      color: '#6D6E76',
                     }}
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

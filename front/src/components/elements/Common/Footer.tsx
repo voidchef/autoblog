@@ -109,6 +109,7 @@ const Footer = () => {
                       bgcolor: (theme) => theme.palette.customColors.overlay.white.full,
                       borderRadius: { xs: 1.5, md: 2 },
                       fontSize: { xs: '0.875rem', md: '1rem' },
+                      minHeight: { xs: '40px', sm: '44px', md: '56px' },
                       color: (theme) => theme.palette.mode === 'dark' 
                         ? theme.palette.customColors.textDark.primary 
                         : theme.palette.customColors.textLight.primary,
