@@ -12,7 +12,7 @@ const Headline = () => {
     <Box
       sx={{
         position: 'relative',
-        minHeight: { xs: '100vh', md: 'calc(100vh - 64px)' },
+        minHeight: { xs: 'calc(100vh - 55px)', md: 'calc(100vh - 64px)' },
         display: 'flex',
         alignItems: 'center',
         overflow: 'hidden',

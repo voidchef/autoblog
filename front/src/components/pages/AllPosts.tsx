@@ -22,7 +22,6 @@ export default function Category() {
         <NavBar />
         <Title />
       </Box>
-      <Box sx={{ my: 4 }} />
       <Posts />
       <Footer />
     </Box>

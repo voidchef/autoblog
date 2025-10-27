@@ -13,7 +13,7 @@ const Headline = ({ category }: TitleProps) => {
       display={'flex'}
       flexDirection={'column'}
       justifyContent={'space-between'}
-      sx={{ marginX: { xs: '1rem', sm: '7rem' } }}
+      sx={{ marginX: { xs: '1rem', sm: '7rem' }, marginTop: '2rem' }}
       textAlign={'center'}
     >
       <Typography

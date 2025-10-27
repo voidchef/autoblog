@@ -42,7 +42,6 @@ export default function Category() {
         <NavBar />
         {category && <Title category={category} />}
       </Box>
-      <Box sx={{ my: 4 }} />
       {category && <Posts category={category.categoryName.toLocaleLowerCase()} />}
       <Footer />
     </Box>
