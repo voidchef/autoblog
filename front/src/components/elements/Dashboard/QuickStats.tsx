@@ -136,54 +136,64 @@ const QuickStatCard: React.FC<QuickStatProps> = ({ title, value, change, icon, c
 
 interface QuickStatsProps {
   weeklyViews?: number;
+  weeklyViewsChange?: number;
   newFollowers?: number;
+  newFollowersChange?: number;
   avgReadTime?: number;
+  avgReadTimeChange?: number;
   engagementRate?: number;
+  engagementRateChange?: number;
   totalReach?: number;
+  totalReachChange?: number;
   isLoading?: boolean;
 }
 
 export default function QuickStats({
   weeklyViews = 0,
+  weeklyViewsChange = 0,
   newFollowers = 0,
+  newFollowersChange = 0,
   avgReadTime = 0,
+  avgReadTimeChange = 0,
   engagementRate = 0,
+  engagementRateChange = 0,
   totalReach = 0,
+  totalReachChange = 0,
   isLoading = false,
 }: QuickStatsProps) {
   const stats = [
     {
       title: 'Views This Week',
       value: weeklyViews.toLocaleString(),
-      change: 12.5,
+      change: weeklyViewsChange,
       icon: <VisibilityIcon />,
       color: '#3b82f6',
     },
     {
       title: 'New Followers',
       value: newFollowers,
-      change: 8.3,
+      change: newFollowersChange,
       icon: <PeopleIcon />,
       color: '#8b5cf6',
     },
     {
       title: 'Avg. Read Time',
       value: `${avgReadTime} min`,
-      change: -2.1,
+      change: avgReadTimeChange !== undefined ? Number(avgReadTimeChange.toFixed(1)) : undefined, // format to 1 decimal place
       icon: <AccessTimeIcon />,
       color: '#f59e0b',
     },
     {
       title: 'Engagement Rate',
       value: `${engagementRate.toFixed(1)}%`,
-      change: 5.7,
+      change: engagementRateChange,
       icon: <TrendingUpIcon />,
       color: '#10b981',
     },
     {
       title: 'Total Reach',
       value: totalReach.toLocaleString(),
-      change: 15.2,
+      change: totalReachChange,
       icon: <AutoGraphIcon />,
       color: '#ec4899',
     },

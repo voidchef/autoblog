@@ -14,6 +14,7 @@ import {
   TemplatePostPrompt,
 } from '../postGen';
 import { ttsService } from '../tts';
+import User from '../user/user.model';
 import { getUserById } from '../user/user.service';
 import runReport, {
   IRunReportResponse,
@@ -22,7 +23,6 @@ import runReport, {
   getTrafficSources,
   getDailyTrends,
   getEventAnalytics,
-  getTopPages,
 } from '../utils/analytics';
 import { wordpressService } from '../wordpress';
 import { IGenerateBlog, IGenerateTemplateBlog, NewCreatedBlog, UpdateBlogBody, IBlogDoc } from './blog.interfaces';
@@ -344,6 +344,59 @@ export const initiateBlogGenerationFromTemplate = async (
 export const queryBlogs = async (filter: Record<string, any>, options: IOptions): Promise<QueryResult> => {
   const blogs = await Blog.paginate(filter, options);
   return blogs;
+};
+
+/**
+ * Query for blogs with stats (views, likes, comments)
+ * @param {Object} filter - Mongo filter
+ * @param {Object} options - Query options
+ * @param {mongoose.Types.ObjectId} userId - User ID for filtering by author
+ * @returns {Promise<any>}
+ */
+export const queryBlogsWithStats = async (
+  filter: Record<string, any>,
+  options: IOptions,
+  userId: mongoose.Types.ObjectId
+): Promise<any> => {
+  const Comment = mongoose.model('Comment');
+
+  // Get blogs for the user
+  const blogs = await Blog.paginate({ ...filter, author: userId }, options);
+
+  // Calculate date range for GA views (last 90 days to get recent data)
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setDate(endDate.getDate() - 90);
+  const startDateStr = startDate.toISOString().split('T')[0] || startDate.toISOString();
+  const endDateStr = endDate.toISOString().split('T')[0] || endDate.toISOString();
+
+  // Get views from Google Analytics
+  let blogPageViews: Array<{ slug: string; views: number }> = [];
+  try {
+    blogPageViews = await getBlogPageViews(startDateStr, endDateStr);
+  } catch (error) {
+    logger.warn('Failed to fetch Google Analytics data for blogs:', error);
+    // Continue without GA data
+  }
+
+  // Enrich blog data with views and comments
+  const enrichedResults = await Promise.all(
+    blogs.results.map(async (blog: any) => {
+      const gaData = blogPageViews.find((bpv) => bpv.slug === blog.slug);
+      const commentsCount = await Comment.countDocuments({ blog: blog._id });
+
+      return {
+        ...blog.toJSON(),
+        views: gaData?.views || 0,
+        commentsCount,
+      };
+    })
+  );
+
+  return {
+    ...blogs,
+    results: enrichedResults,
+  };
 };
 
 /**
@@ -839,9 +892,13 @@ export const getComprehensiveAnalytics = async (
     // Sort by views
     blogsWithViews.sort((a, b) => b.views - a.views);
 
+    // Calculate total blog views from the blogPageViews data
+    const totalBlogViews = blogPageViews.reduce((sum, blog) => sum + blog.views, 0);
+
     return {
       overview: {
         ...gaOverview,
+        blogViews: totalBlogViews, // Add blog-specific views
         totalBlogs: engagementStats.totalBlogs,
         totalLikes: engagementStats.totalLikes,
         totalDislikes: engagementStats.totalDislikes,
@@ -978,5 +1035,108 @@ export const getEventBasedAnalytics = async (
       },
       byBlog: [],
     };
+  }
+};
+
+/**
+ * Get dashboard statistics with weekly trends
+ * @param {mongoose.Types.ObjectId} userId - User ID
+ * @returns {Promise<any>}
+ */
+export const getDashboardStats = async (userId: mongoose.Types.ObjectId): Promise<any> => {
+  try {
+    const today = new Date();
+
+    // Current week (last 7 days)
+    const currentWeekStart = new Date(today);
+    currentWeekStart.setDate(today.getDate() - 7);
+    const currentWeekStartStr = currentWeekStart.toISOString().split('T')[0] || currentWeekStart.toISOString();
+    const todayStr = today.toISOString().split('T')[0] || today.toISOString();
+
+    // Previous week (8-14 days ago)
+    const previousWeekStart = new Date(today);
+    previousWeekStart.setDate(today.getDate() - 14);
+    const previousWeekEnd = new Date(today);
+    previousWeekEnd.setDate(today.getDate() - 8);
+    const previousWeekStartStr = previousWeekStart.toISOString().split('T')[0] || previousWeekStart.toISOString();
+    const previousWeekEndStr = previousWeekEnd.toISOString().split('T')[0] || previousWeekEnd.toISOString();
+
+    // Get current and previous week blog analytics using getBlogPageViews
+    const [currentWeekBlogViews, previousWeekBlogViews, currentWeekGA, previousWeekGA] = await Promise.all([
+      getBlogPageViews(currentWeekStartStr, todayStr),
+      getBlogPageViews(previousWeekStartStr, previousWeekEndStr),
+      getAnalyticsOverview(currentWeekStartStr, todayStr),
+      getAnalyticsOverview(previousWeekStartStr, previousWeekEndStr),
+    ]);
+
+    // Sum up blog page views from individual blogs
+    const currentWeekBlogPageViews = currentWeekBlogViews.reduce((sum, blog) => sum + blog.views, 0);
+    const previousWeekBlogPageViews = previousWeekBlogViews.reduce((sum, blog) => sum + blog.views, 0);
+
+    // Get user data for followers
+    const user = await User.findById(userId).select('followers').lean();
+
+    // Get followers count from previous week (we'll approximate based on database)
+    // This is a simplified approach - in production you might want to track this in a separate collection
+    const currentFollowers = user?.followers?.length || 0;
+
+    // Get user's blogs for calculating average read time and engagement
+    const userBlogs = await Blog.find({ author: userId, isPublished: true })
+      .select('readingTime likes dislikes views')
+      .lean();
+
+    // Calculate average read time from user's blogs
+    const avgReadTime =
+      userBlogs.length > 0 ? userBlogs.reduce((sum, blog) => sum + (blog.readingTime || 0), 0) / userBlogs.length : 0;
+
+    // Get engagement stats
+    const engagementStats = await getAllBlogsEngagementStats(userId);
+    const engagementRate = parseFloat(engagementStats.avgEngagementPerBlog) || 0;
+
+    // Calculate total reach (unique users from GA - all site pages)
+    const totalReach = currentWeekGA.totalUsers;
+    const previousReach = previousWeekGA.totalUsers;
+
+    // Calculate percentage changes for blog views specifically
+    const weeklyViewsChange =
+      previousWeekBlogPageViews > 0
+        ? ((currentWeekBlogPageViews - previousWeekBlogPageViews) / previousWeekBlogPageViews) * 100
+        : 0;
+
+    const totalReachChange = previousReach > 0 ? ((totalReach - previousReach) / previousReach) * 100 : 0;
+
+    // For followers, we can estimate by looking at recent change
+    // This is simplified - consider implementing a followers history table for accurate tracking
+    const newFollowersChange = 0; // Placeholder - would need historical tracking
+
+    // Avg read time change (comparing to site average)
+    const avgReadTimeChange =
+      currentWeekGA.avgSessionDuration > 0 && avgReadTime > 0
+        ? ((avgReadTime - currentWeekGA.avgSessionDuration / 60) / (currentWeekGA.avgSessionDuration / 60)) * 100
+        : 0;
+
+    // Engagement rate change
+    const previousEngagementRate = previousWeekGA.engagementRate * 100;
+    const currentEngagementRate = engagementRate;
+    const engagementRateChange =
+      previousEngagementRate > 0
+        ? ((currentEngagementRate - previousEngagementRate) / previousEngagementRate) * 100
+        : 0;
+
+    return {
+      weeklyViews: currentWeekBlogPageViews,
+      weeklyViewsChange,
+      newFollowers: currentFollowers, // Current total followers
+      newFollowersChange, // Would need historical data
+      avgReadTime: Math.round(avgReadTime * 10) / 10, // Round to 1 decimal
+      avgReadTimeChange,
+      engagementRate: Math.round(engagementRate * 10) / 10,
+      engagementRateChange,
+      totalReach,
+      totalReachChange,
+    };
+  } catch (error) {
+    logger.error('Error fetching dashboard stats:', error);
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to fetch dashboard statistics');
   }
 };

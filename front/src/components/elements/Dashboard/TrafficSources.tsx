@@ -326,7 +326,11 @@ const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error 
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                {Math.floor(data.avgSessionDuration / 60)}:{(data.avgSessionDuration % 60).toString().padStart(2, '0')}
+                {(() => {
+                  const min = Math.floor(data.avgSessionDuration / 60);
+                  const sec = Math.floor(data.avgSessionDuration % 60);
+                  return `${min}:${sec.toString().padStart(2, '0')}`;
+                })()}
               </Typography>
               <Typography variant="body2" color="text.secondary" fontWeight={500} sx={{ fontSize: { xs: '0.8125rem', sm: '0.875rem' } }}>
                 Avg. Duration

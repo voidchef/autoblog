@@ -76,6 +76,8 @@ export interface IBlog {
   dislikes: string[];
   createdAt: Date;
   updatedAt: Date;
+  views?: number; // Added from GA when using with-stats endpoint
+  commentsCount?: number; // Added from DB when using with-stats endpoint
 }
 
 export interface IQueryResult {
@@ -113,6 +115,7 @@ export interface AllBlogsEngagementStats {
 
 export interface AnalyticsOverview {
   pageViews: number;
+  blogViews: number;
   totalUsers: number;
   sessions: number;
   avgSessionDuration: number;
@@ -159,6 +162,19 @@ export interface ComprehensiveAnalytics {
   trafficSources: TrafficSource[];
   dailyTrends: DailyTrend[];
   topPerformers: BlogPerformance[];
+}
+
+export interface DashboardStats {
+  weeklyViews: number;
+  weeklyViewsChange: number;
+  newFollowers: number;
+  newFollowersChange: number;
+  avgReadTime: number;
+  avgReadTimeChange: number;
+  engagementRate: number;
+  engagementRateChange: number;
+  totalReach: number;
+  totalReachChange: number;
 }
 
 export interface EventAnalytics {
@@ -255,6 +271,21 @@ export const blogApi = api.injectEndpoints({
         result
           ? [...result.results.map(({ id }) => ({ type: 'Blog' as const, id })), { type: 'Blog', id: 'LIST' }]
           : [{ type: 'Blog', id: 'LIST' }],
+      keepUnusedDataFor: 300, // Keep data for 5 minutes
+    }),
+
+    getBlogsWithStats: builder.query<IQueryResult, BlogsQueryParams>({
+      query: (params) => ({
+        url: '/blogs/with-stats',
+        params: {
+          ...params,
+          populate: 'author',
+        },
+      }),
+      providesTags: (result) =>
+        result
+          ? [...result.results.map(({ id }) => ({ type: 'Blog' as const, id })), { type: 'Blog', id: 'WITH_STATS' }]
+          : [{ type: 'Blog', id: 'WITH_STATS' }],
       keepUnusedDataFor: 300, // Keep data for 5 minutes
     }),
 
@@ -369,6 +400,12 @@ export const blogApi = api.injectEndpoints({
         params: { startDate, endDate },
       }),
       keepUnusedDataFor: 3600, // Cache for 1 hour
+    }),
+
+    getDashboardStats: builder.query<DashboardStats, void>({
+      query: () => '/blogs/dashboard-stats',
+      providesTags: [{ type: 'Blog', id: 'DASHBOARD_STATS' }],
+      keepUnusedDataFor: 600, // Cache for 10 minutes
     }),
 
     updateBlog: builder.mutation<IBlog, { id: string; data: Partial<IBlog>; preview?: boolean }>({
@@ -577,6 +614,7 @@ export const {
   useGetTemplatePreviewMutation,
   useCreateBlogMutation,
   useGetBlogsQuery,
+  useGetBlogsWithStatsQuery,
   useGetFeaturedBlogsQuery,
   useGetDraftBlogsQuery,
   useGetBlogsByCategoryQuery,
@@ -588,6 +626,7 @@ export const {
   useGetComprehensiveAnalyticsQuery,
   useGetAnalyticsByTimeRangeQuery,
   useGetEventBasedAnalyticsQuery,
+  useGetDashboardStatsQuery,
   useUpdateBlogMutation,
   usePublishBlogMutation,
   useUnpublishBlogMutation,
@@ -598,6 +637,7 @@ export const {
   useLikeBlogMutation,
   useDislikeBlogMutation,
   useLazyGetBlogsQuery,
+  useLazyGetBlogsWithStatsQuery,
   useLazyGetFeaturedBlogsQuery,
   useLazyGetDraftBlogsQuery,
   useLazyGetBlogsByCategoryQuery,

@@ -174,7 +174,7 @@ export default function Analytics() {
   const analyticsOverviewData = analyticsData?.overview ? {
     pageViews: analyticsData.overview.pageViews,
     pageViewsChange: 0, // Would need previous period data
-    blogViews: analyticsData.overview.pageViews, // Using same as pageViews for now
+    blogViews: analyticsData.overview.blogViews || 0, // Use the blog-specific views from backend
     blogViewsChange: 0,
     totalLikes: analyticsData.overview.totalLikes,
     likesChange: 0,

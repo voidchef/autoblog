@@ -9,7 +9,7 @@ import { ROUTES } from '../../utils/routing/routes';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/reduxHooks';
 import { clearBlog } from '../../reducers/blog';
-import { useGetBlogViewsQuery, useGetAllBlogsEngagementStatsQuery, useGetBlogsQuery } from '../../services/blogApi';
+import { useGetBlogViewsQuery, useGetAllBlogsEngagementStatsQuery, useGetBlogsQuery, useGetDashboardStatsQuery } from '../../services/blogApi';
 import ViewsGraph from '../elements/Dashboard/ViewsGraph';
 import DraftsTable from '../elements/Dashboard/DraftsTable';
 import EngagementMetrics from '../elements/Dashboard/EngagementMetrics';
@@ -32,6 +32,9 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { userId } = useAuth();
+  
+  // Fetch dashboard statistics with weekly trends
+  const { data: dashboardStats, isLoading: dashboardStatsLoading } = useGetDashboardStatsQuery();
   
   // Fetch engagement stats
   const { data: engagementStats, isLoading: statsLoading } = useGetAllBlogsEngagementStatsQuery();
@@ -177,12 +180,17 @@ export default function Dashboard() {
         {/* Quick Stats Section */}
         <Box sx={{ my: 5 }}>
           <QuickStats
-            weeklyViews={1247}
-            newFollowers={23}
-            avgReadTime={4.5}
-            engagementRate={engagementStats?.avgEngagementPerBlog ? parseFloat(engagementStats.avgEngagementPerBlog) : 0}
-            totalReach={engagementStats?.totalBlogs ? engagementStats.totalBlogs * 150 : 0}
-            isLoading={statsLoading}
+            weeklyViews={dashboardStats?.weeklyViews}
+            weeklyViewsChange={dashboardStats?.weeklyViewsChange}
+            newFollowers={dashboardStats?.newFollowers}
+            newFollowersChange={dashboardStats?.newFollowersChange}
+            avgReadTime={dashboardStats?.avgReadTime}
+            avgReadTimeChange={dashboardStats?.avgReadTimeChange}
+            engagementRate={dashboardStats?.engagementRate}
+            engagementRateChange={dashboardStats?.engagementRateChange}
+            totalReach={dashboardStats?.totalReach}
+            totalReachChange={dashboardStats?.totalReachChange}
+            isLoading={dashboardStatsLoading}
           />
         </Box>
 

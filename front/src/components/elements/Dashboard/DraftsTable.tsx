@@ -1,7 +1,7 @@
 import * as React from 'react';
 import EnhancedTable from '../Common/EnhancedTable/EnhancedTable';
 import { useAppSelector } from '../../../utils/reduxHooks';
-import { useGetBlogsQuery, useUpdateBlogMutation, useDeleteBlogMutation } from '../../../services/blogApi';
+import { useGetBlogsWithStatsQuery, useUpdateBlogMutation, useDeleteBlogMutation } from '../../../services/blogApi';
 import { IBlog } from '../../../reducers/blog';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
@@ -100,10 +100,9 @@ export default function DraftsTable() {
 
   const userId = localStorage.getItem('userId');
   
-  const { data: drafts, isLoading } = useGetBlogsQuery({ 
+  const { data: drafts, isLoading } = useGetBlogsWithStatsQuery({ 
     limit: rowsPerPage, 
     page: page + 1, 
-    author: userId || '', 
     isDraft: true 
   });
   
@@ -119,9 +118,9 @@ export default function DraftsTable() {
             blog.id,
             blog.title,
             blog.slug,
-            69,
-            69,
-            69,
+            blog.views || 0,
+            blog.likes?.length || 0,
+            blog.commentsCount || 0,
             new Date(blog.createdAt),
             new Date(blog.createdAt),
             blog.isDraft,

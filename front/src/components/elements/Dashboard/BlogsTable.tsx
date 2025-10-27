@@ -2,7 +2,7 @@ import * as React from 'react';
 import EnhancedTable from '../Common/EnhancedTable/EnhancedTable';
 import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
 import { 
-  useGetBlogsQuery, 
+  useGetBlogsWithStatsQuery, 
   useUpdateBlogMutation, 
   useDeleteBlogMutation,
   usePublishToWordPressMutation,
@@ -130,10 +130,9 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
 
   const userId = localStorage.getItem('userId');
   
-  const { data: blogs, isLoading } = useGetBlogsQuery({ 
+  const { data: blogs, isLoading } = useGetBlogsWithStatsQuery({ 
     limit: rowsPerPage, 
     page: page + 1, 
-    author: userId || '', 
     isDraft: false 
   });
   
@@ -151,9 +150,9 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
             blog.id,
             blog.title,
             blog.slug,
-            69,
-            69,
-            69,
+            blog.views || 0,
+            blog.likes?.length || 0,
+            blog.commentsCount || 0,
             new Date(blog.createdAt),
             new Date(blog.createdAt),
             blog.isPublished,

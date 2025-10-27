@@ -11,6 +11,8 @@ router
   .post(auth('generateBlogs'), validate(blogValidation.generateBlog), blogController.generateBlog)
   .get(validate(blogValidation.getBlogs), blogController.getBlogs);
 
+router.route('/with-stats').get(auth(), validate(blogValidation.getBlogs), blogController.getBlogsWithStats);
+
 // Template-based blog generation routes
 router
   .route('/generate-from-template')
@@ -47,6 +49,8 @@ router
 router
   .route('/analytics/events')
   .get(auth('getViews'), validate(blogValidation.getEventBasedAnalytics), blogController.getEventBasedAnalytics);
+
+router.route('/dashboard-stats').get(auth(), blogController.getDashboardStats);
 
 router
   .route('/my-engagement-stats')

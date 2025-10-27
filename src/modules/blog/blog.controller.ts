@@ -230,6 +230,22 @@ export const searchBlogs = catchAsync(async (req: Request, res: Response) => {
   res.send(result);
 });
 
+export const getBlogsWithStats = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+  const filter: any = pick(req.query, ['category', 'tags', 'isFeatured', 'isPublished', 'isDraft']);
+  const options: IOptions = pick(req.query, ['sortBy', 'limit', 'page', 'projectBy', 'populate']);
+
+  // Always populate author field
+  if (!options.populate) {
+    options.populate = 'author';
+  } else if (!options.populate.includes('author')) {
+    options.populate += ',author';
+  }
+
+  const result = await blogService.queryBlogsWithStats(filter, options, user._id as mongoose.Types.ObjectId);
+  res.send(result);
+});
+
 export const generateSitemap = catchAsync(async (req: Request, res: Response) => {
   const { generateSitemapXML } = await import('./sitemap.service');
   const baseUrl = `${req.protocol}://${req.get('host')}`;
@@ -386,4 +402,15 @@ export const getEventBasedAnalytics = catchAsync(async (req: Request, res: Respo
   );
 
   res.send(analytics);
+});
+
+/**
+ * Get dashboard statistics with weekly trends
+ */
+export const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+
+  const stats = await blogService.getDashboardStats(user._id as mongoose.Types.ObjectId);
+
+  res.send(stats);
 });

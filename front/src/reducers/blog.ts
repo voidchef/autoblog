@@ -44,6 +44,8 @@ export type IBlog = {
   dislikes: string[];
   createdAt: Date;
   updatedAt: Date;
+  views?: number; // Added from GA when using with-stats endpoint
+  commentsCount?: number; // Added from DB when using with-stats endpoint
 };
 
 interface IQueryResult {
