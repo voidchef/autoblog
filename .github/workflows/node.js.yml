@@ -23,8 +23,6 @@ env:
   JWT_RESET_PASSWORD_EXPIRATION_MINUTES: 10
   JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: 10
   CLIENT_URL: http://localhost:5173
-  RAZORPAY_KEY_ID: your_razorpay_key_id
-  RAZORPAY_KEY_SECRET: your_razorpay_key_secret
 
 jobs:
   setup:
