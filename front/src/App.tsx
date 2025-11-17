@@ -21,6 +21,7 @@ const Home = React.lazy(() => import('./components/pages/Home'));
 const SignInSide = React.lazy(() => import('./components/pages/SignInSide'));
 const ContactUs = React.lazy(() => import('./components/pages/ContactUs'));
 const AboutUs = React.lazy(() => import('./components/pages/AboutUs'));
+const Pricing = React.lazy(() => import('./components/pages/Pricing'));
 const Category = React.lazy(() => import('./components/pages/Category'));
 const AllPosts = React.lazy(() => import('./components/pages/AllPosts'));
 const CreatePost = React.lazy(() => import('./components/pages/CreatePost'));
@@ -138,6 +139,7 @@ export default function App() {
               <Route path={ROUTES.ROOT} element={<Home />} />
               <Route path={ROUTES.CONTACTUS} element={<ContactUs />} />
               <Route path={ROUTES.ABOUTUS} element={<AboutUs />} />
+              <Route path={ROUTES.PRICING} element={<Pricing />} />
               <Route path={`${ROUTES.CATEGORY}/:categoryName`} element={<Category />} />
               <Route path={ROUTES.ALLPOSTS} element={<AllPosts />} />
               <Route path={`${ROUTES.BLOG}/:slug`} element={<Blog />} />

@@ -31,7 +31,7 @@ interface Props {
 }
 
 const drawerWidth = 240;
-const navItems = ['Home', 'Blog', 'About Us', 'Contact Us'];
+const navItems = ['Home', 'Blog', 'Pricing', 'About Us', 'Contact Us'];
 
 export default function DrawerAppBar(props: Props) {
   const { window } = props;
@@ -53,6 +53,9 @@ export default function DrawerAppBar(props: Props) {
         break;
       case 'Blog':
         navigate(ROUTES.ALLPOSTS);
+        break;
+      case 'Pricing':
+        navigate(ROUTES.PRICING);
         break;
       case 'About Us':
         navigate(ROUTES.ABOUTUS);

@@ -3,6 +3,7 @@ export enum ROUTES {
   LOGIN = '/login',
   CONTACTUS = '/contactus',
   ABOUTUS = '/aboutus',
+  PRICING = '/pricing',
   CATEGORY = '/category',
   ALLPOSTS = '/allposts',
   CREATEPOST = '/createpost',
