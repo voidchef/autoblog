@@ -115,6 +115,7 @@ describe('PostImageService', () => {
       topic: 'Test',
       language: 'English',
       model: 'gpt-4o',
+      apiKey: 'test-api-key',
     };
 
     const service = new PostImageService(postPrompt);

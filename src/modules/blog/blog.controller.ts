@@ -414,3 +414,15 @@ export const getDashboardStats = catchAsync(async (req: Request, res: Response) 
 
   res.send(stats);
 });
+
+/**
+ * Regenerate a specific block of text using AI
+ */
+export const regenerateText = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IUserDoc;
+  const { regenerateText } = await import('./text-regeneration.service');
+
+  const regeneratedText = await regenerateText(req.body, user._id as mongoose.Types.ObjectId);
+
+  res.send({ regeneratedText });
+});

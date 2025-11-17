@@ -86,6 +86,11 @@ router.route('/:blogId/generation-status').get(auth('generateBlogs'), blogContro
 router.route('/:blogId/publish-wordpress').post(auth('manageBlogs'), blogController.publishToWordPress);
 router.route('/:blogId/publish-medium').post(auth('manageBlogs'), blogController.publishToMedium);
 
+// Text regeneration route
+router
+  .route('/regenerate-text')
+  .post(auth('manageBlogs'), validate(blogValidation.regenerateText), blogController.regenerateText);
+
 export default router;
 
 /**

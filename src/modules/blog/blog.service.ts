@@ -52,15 +52,15 @@ export const createBlog = async (blogBody: NewCreatedBlog): Promise<IBlogDoc> =>
 };
 
 /**
- * Generate a blog post
+ * Generate blog content (without creating DB entry)
  * @param {IGenerateBlog} generateBlogData
  * @param {mongoose.Types.ObjectId} author
- * @returns {Promise<IBlogDoc>}
+ * @returns {Promise<NewCreatedBlog>}
  */
-export const generateBlog = async (
+const generateBlogContent = async (
   generateBlogData: IGenerateBlog,
   author: mongoose.Types.ObjectId
-): Promise<IBlogDoc> => {
+): Promise<NewCreatedBlog> => {
   // Get the user to retrieve the decrypted API key
   const user = await getUserById(author);
   if (!user) {
@@ -118,19 +118,33 @@ export const generateBlog = async (
           .split(/\s*,\s*/)
           .map((tag: string) => tag.trim());
   }
-  return createBlog({ ...post, ...generateBlogData, ...additionalData } as NewCreatedBlog);
+  return { ...post, ...generateBlogData, ...additionalData } as NewCreatedBlog;
 };
 
 /**
- * Generate a blog post from a template file
- * @param {IGenerateTemplateBlog} generateTemplateData
+ * Generate a blog post
+ * @param {IGenerateBlog} generateBlogData
  * @param {mongoose.Types.ObjectId} author
  * @returns {Promise<IBlogDoc>}
  */
-export const generateBlogFromTemplate = async (
-  generateTemplateData: IGenerateTemplateBlog,
+export const generateBlog = async (
+  generateBlogData: IGenerateBlog,
   author: mongoose.Types.ObjectId
 ): Promise<IBlogDoc> => {
+  const blogContent = await generateBlogContent(generateBlogData, author);
+  return createBlog(blogContent);
+};
+
+/**
+ * Generate blog content from template (without creating DB entry)
+ * @param {IGenerateTemplateBlog} generateTemplateData
+ * @param {mongoose.Types.ObjectId} author
+ * @returns {Promise<NewCreatedBlog>}
+ */
+const generateBlogContentFromTemplate = async (
+  generateTemplateData: IGenerateTemplateBlog,
+  author: mongoose.Types.ObjectId
+): Promise<NewCreatedBlog> => {
   // Get the user to retrieve the decrypted API key
   const user = await getUserById(author);
   if (!user) {
@@ -208,7 +222,21 @@ export const generateBlogFromTemplate = async (
           .map((tag: string) => tag.trim());
   }
 
-  return createBlog({ ...post, ...generateTemplateData, ...additionalData } as NewCreatedBlog);
+  return { ...post, ...generateTemplateData, ...additionalData } as NewCreatedBlog;
+};
+
+/**
+ * Generate a blog post from a template file
+ * @param {IGenerateTemplateBlog} generateTemplateData
+ * @param {mongoose.Types.ObjectId} author
+ * @returns {Promise<IBlogDoc>}
+ */
+export const generateBlogFromTemplate = async (
+  generateTemplateData: IGenerateTemplateBlog,
+  author: mongoose.Types.ObjectId
+): Promise<IBlogDoc> => {
+  const blogContent = await generateBlogContentFromTemplate(generateTemplateData, author);
+  return createBlog(blogContent);
 };
 
 /**
@@ -247,11 +275,27 @@ export const initiateBlogGeneration = async (
   // Start generation in background
   void (async () => {
     try {
-      const generatedBlog = await generateBlog(generateBlogData, author);
+      const blogContent = await generateBlogContent(generateBlogData, author);
+      
+      // Upload images if any
+      let uploadedImages: string[] = [];
+      if (blogContent.generatedImages && blogContent.generatedImages.length > 0) {
+        const uploadResult = await S3Utils.uploadFromUrlsOrFiles({
+          sources: blogContent.generatedImages,
+          blogId: placeholderBlog.id,
+          uploadPath: `blogs/${placeholderBlog._id}`,
+        });
+        if (uploadResult.uploadedUrls.length > 0) {
+          uploadedImages = uploadResult.uploadedUrls;
+        }
+      }
+      
       // Update the placeholder with generated content
       await Blog.findByIdAndUpdate(placeholderBlog._id, {
-        ...generatedBlog.toObject(),
+        ...blogContent,
         _id: placeholderBlog._id,
+        generatedImages: uploadedImages.length > 0 ? uploadedImages : blogContent.generatedImages,
+        selectedImage: uploadedImages.length > 0 ? uploadedImages[0] : undefined,
         generationStatus: 'completed',
         generationError: undefined,
       });
@@ -303,11 +347,27 @@ export const initiateBlogGenerationFromTemplate = async (
   // Start generation in background
   void (async () => {
     try {
-      const generatedBlog = await generateBlogFromTemplate(generateTemplateData, author);
+      const blogContent = await generateBlogContentFromTemplate(generateTemplateData, author);
+      
+      // Upload images if any
+      let uploadedImages: string[] = [];
+      if (blogContent.generatedImages && blogContent.generatedImages.length > 0) {
+        const uploadResult = await S3Utils.uploadFromUrlsOrFiles({
+          sources: blogContent.generatedImages,
+          blogId: placeholderBlog.id,
+          uploadPath: `blogs/${placeholderBlog._id}`,
+        });
+        if (uploadResult.uploadedUrls.length > 0) {
+          uploadedImages = uploadResult.uploadedUrls;
+        }
+      }
+      
       // Update the placeholder with generated content
       await Blog.findByIdAndUpdate(placeholderBlog._id, {
-        ...generatedBlog.toObject(),
+        ...blogContent,
         _id: placeholderBlog._id,
+        generatedImages: uploadedImages.length > 0 ? uploadedImages : blogContent.generatedImages,
+        selectedImage: uploadedImages.length > 0 ? uploadedImages[0] : undefined,
         generationStatus: 'completed',
         generationError: undefined,
       });

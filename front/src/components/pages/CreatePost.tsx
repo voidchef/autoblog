@@ -564,6 +564,7 @@ export default function CreatePost() {
         blogContent={blogContent}
         isEditMode={!!blog?.id}
         disabled={isFormDisabled}
+        blogId={blogId}
         onBlogTitleChange={handleBlogTitleChange}
         onBlogContentChange={handleBlogContentChange}
       />

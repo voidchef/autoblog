@@ -605,6 +605,25 @@ export const blogApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Blog'],
     }),
+
+    regenerateText: builder.mutation<
+      { regeneratedText: string },
+      {
+        blogId: string;
+        selectedText: string;
+        userPrompt: string;
+        llmModel?: string;
+        llmProvider?: 'openai' | 'google' | 'mistral';
+        contextBefore?: string;
+        contextAfter?: string;
+      }
+    >({
+      query: (data) => ({
+        url: '/blogs/regenerate-text',
+        method: 'POST',
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -650,4 +669,5 @@ export const {
   useLazyGetAudioNarrationStatusQuery,
   usePublishToWordPressMutation,
   usePublishToMediumMutation,
+  useRegenerateTextMutation,
 } = blogApi;

@@ -1,167 +1,253 @@
-import { BaseChatModel } from '@langchain/core/language_models/chat_models';
-import { HumanMessage } from '@langchain/core/messages';
-import { ChatOpenAI, DallEAPIWrapper } from '@langchain/openai';
 import logger from '../logger/logger';
 import { BasePostPrompt } from '../postGen/types';
-
-export interface ImageGenerationOptions {
-  model: 'dall-e-2' | 'dall-e-3';
-  apiKey: string;
-  size: '256x256' | '512x512' | '1024x1024' | '1792x1024' | '1024x1792';
-  quality: 'standard' | 'hd';
-  style: 'vivid' | 'natural';
-  numberOfImages: number;
-  debug?: boolean;
-}
-
-export interface GeneratedImage {
-  url: string;
-  prompt: string;
-  revisedPrompt?: string;
-}
+import { InvalidConfigurationError, ImageGenerationError } from './errors';
+import { PromptOptimizer } from './promptOptimizer';
+import { DallEProvider } from './providers';
+import {
+  ImageGenerationConfig,
+  GeneratedImage,
+  IImageProvider,
+  BlogImageStyle,
+  BatchImageGenerationResult,
+  PromptContext,
+} from './types';
+import { withRetry, processBatch } from './utils';
 
 /**
- * Image generator using OpenAI's DALL-E integration
+ * Enhanced Image Generator with improved error handling, retry logic, and extensibility
  */
 export class ImageGenerator {
-  private llm: BaseChatModel;
-  private tool: DallEAPIWrapper;
+  private provider: IImageProvider;
+  private promptOptimizer: PromptOptimizer;
+  private config: ImageGenerationConfig;
 
-  constructor(private options: ImageGenerationOptions) {
-    // Initialize ChatOpenAI for prompt optimization
-    const apiKey = options.apiKey || process.env['OPENAI_API_KEY'];
+  constructor(config: ImageGenerationConfig) {
+    this.validateConfig(config);
+    this.config = {
+      maxRetries: 3,
+      retryDelay: 1000,
+      ...config,
+    };
 
-    this.llm = new ChatOpenAI({
-      modelName: 'gpt-4o-mini', // Use a smaller model for prompt optimization
-      temperature: 0.7,
-      ...(apiKey && { apiKey: apiKey }),
+    // Initialize provider
+    this.provider = new DallEProvider({
+      model: config.model,
+      apiKey: config.apiKey,
+      size: config.size,
+      quality: config.quality,
+      style: config.style,
+      numberOfImages: config.numberOfImages,
     });
 
-    this.tool = new DallEAPIWrapper({
-      n: options.numberOfImages, // Default to generating one image
-      model: options.model,
-      size: options.size,
-      quality: options.quality,
-      style: options.style,
-      apiKey: options.apiKey,
+    // Initialize prompt optimizer with caching
+    this.promptOptimizer = new PromptOptimizer(config.apiKey, {
+      useCache: true,
+      cacheSize: 100,
     });
   }
 
   /**
-   * Generate an optimized image prompt and generate image
+   * Generate a single image with retry logic and error handling
    */
-  async generateImage(prompt: string): Promise<GeneratedImage> {
+  async generateImage(prompt: string, context?: PromptContext): Promise<GeneratedImage> {
+    logger.info(`Generating image for prompt: "${prompt.substring(0, 100)}..."`);
+
     try {
-      logger.info(`Optimizing image prompt: "${prompt.substring(0, 100)}..."`);
+      // Optimize prompt with fallback to original
+      let optimizedPrompt = prompt;
+      try {
+        optimizedPrompt = await this.promptOptimizer.optimize(prompt, context);
+        logger.debug(`Optimized prompt: "${optimizedPrompt}"`);
+      } catch (error) {
+        logger.warn('Prompt optimization failed, using original prompt', error);
+        optimizedPrompt = prompt;
+      }
 
-      // Use LLM to create an optimized DALL-E prompt
-      const optimizedPrompt = await this.optimizeImagePrompt(prompt);
+      // Generate image with retry logic
+      const imageURL = await withRetry(
+        () => this.provider.generateImage(optimizedPrompt),
+        {
+          maxRetries: this.config.maxRetries ?? 3,
+          initialDelay: this.config.retryDelay ?? 1000,
+        },
+        `image generation`
+      );
 
-      // Generate image using the DALL-E API wrapper
-      logger.info(`Generate image using DALL-E: "${optimizedPrompt}"`);
-
-      const imageURL = await this.tool.invoke(optimizedPrompt);
-
-      logger.debug('Image generated successfully:', {
-        originalPrompt: prompt,
-        optimizedPrompt: optimizedPrompt,
-        url: imageURL,
-      });
-
-      return {
+      const generatedImage: GeneratedImage = {
         url: imageURL,
         prompt: prompt,
-        revisedPrompt: optimizedPrompt,
+        ...(optimizedPrompt !== prompt && { revisedPrompt: optimizedPrompt }),
+        metadata: {
+          model: this.config.model,
+          size: this.config.size,
+          quality: this.config.quality,
+          style: this.config.style,
+          timestamp: new Date(),
+        },
       };
+
+      logger.info('Image generated successfully');
+      return generatedImage;
     } catch (error) {
       logger.error('Failed to generate image:', error);
-      throw new Error(`Image generation failed: ${error}`);
+      throw new ImageGenerationError(
+        `Image generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        error,
+        false
+      );
     }
   }
 
   /**
-   * Optimize a prompt for DALL-E image generation
+   * Generate multiple images with controlled concurrency and batch error handling
    */
-  private async optimizeImagePrompt(prompt: string): Promise<string> {
-    const optimizationPrompt = `
-        You are an expert at creating DALL-E image prompts. 
-        Transform the following blog post image request into an optimized DALL-E prompt that will generate a high-quality, professional image suitable for a blog post.
+  async generateImages(
+    prompts: string[],
+    options: {
+      context?: PromptContext;
+      concurrency?: number;
+      stopOnError?: boolean;
+    } = {}
+  ): Promise<BatchImageGenerationResult> {
+    const { concurrency = 3, stopOnError = false, context } = options;
 
-        Guidelines:
-        - Keep it concise but descriptive
-        - Include style keywords like "professional", "clean", "modern"
-        - Specify "digital art" or "illustration" as appropriate
-        - Add quality indicators like "high resolution", "detailed"
-        - Make it suitable for blog post headers or content
+    logger.info(`Generating ${prompts.length} images with concurrency ${concurrency}`);
 
-        Original prompt: ${prompt}
-
-        Optimized DALL-E prompt:`;
-
-    try {
-      const response = await this.llm.invoke([new HumanMessage(optimizationPrompt)]);
-      return response.content.toString().trim();
-    } catch (error) {
-      logger.warn('Failed to optimize prompt, using original:', error);
-      return prompt;
-    }
-  }
-
-  /**
-   * Generate multiple images from multiple prompts
-   */
-  async generateImages(prompts: string[]): Promise<GeneratedImage[]> {
-    const images: GeneratedImage[] = [];
-
-    for (const prompt of prompts) {
-      try {
-        const image = await this.generateImage(prompt);
-        images.push(image);
-      } catch (error) {
-        logger.warn(`Failed to generate image for prompt "${prompt}":`, error);
-        // Continue with other images even if one fails
+    const results = await processBatch(
+      prompts,
+      async (prompt, index) => {
+        logger.debug(`Processing image ${index + 1}/${prompts.length}`);
+        return await this.generateImage(prompt, context);
+      },
+      {
+        concurrency,
+        stopOnError,
+        onProgress: (completed, total) => {
+          if (completed % 5 === 0 || completed === total) {
+            logger.info(`Image generation progress: ${completed}/${total}`);
+          }
+        },
       }
-    }
+    );
 
-    return images;
+    const successful = results.filter((r) => r.success && r.result).map((r) => r.result!);
+    const failed = results
+      .filter((r) => !r.success)
+      .map((r) => ({
+        prompt: r.item,
+        error: r.error || new Error('Unknown error'),
+      }));
+
+    logger.info(`Batch generation complete: ${successful.length} successful, ${failed.length} failed`);
+
+    return {
+      successful,
+      failed,
+      totalRequested: prompts.length,
+    };
   }
 
   /**
-   * Create an optimized image prompt for blog posts
+   * Create an optimized blog image prompt with context
    */
-  static createBlogImagePrompt(
-    title: string,
-    keywords?: string[],
-    style: 'professional' | 'creative' | 'minimal' = 'professional'
-  ): string {
-    const keywordText = keywords && keywords.length > 0 ? `, ${keywords.join(', ')}` : '';
+  static createBlogImagePrompt(title: string, keywords: string[] = [], style: BlogImageStyle = 'professional'): string {
+    const keywordText = keywords.length > 0 ? `, featuring ${keywords.join(', ')}` : '';
 
-    const styleDescriptors = {
+    const styleDescriptors: Record<BlogImageStyle, string> = {
       professional: 'professional, clean, modern, high-quality illustration',
       creative: 'creative, artistic, vibrant, engaging illustration',
       minimal: 'minimal, clean, simple, elegant design',
     };
 
-    return `${title}${keywordText}, ${styleDescriptors[style]}, blog post header image, digital art`;
+    const descriptor = styleDescriptors[style];
+    return `${title}${keywordText}, ${descriptor}, blog post header image, digital art, no text`;
   }
 
   /**
-   * Create an image generator from PostPrompt configuration
+   * Create an ImageGenerator instance from PostPrompt configuration
    */
   static fromPostPrompt(postPrompt: BasePostPrompt): ImageGenerator {
-    const options: ImageGenerationOptions = {
+    const apiKey = postPrompt.apiKey || process.env['OPENAI_API_KEY'];
+
+    if (!apiKey) {
+      throw new InvalidConfigurationError(
+        'API key is required for image generation. Set OPENAI_API_KEY environment variable or provide apiKey in postPrompt.'
+      );
+    }
+
+    const config: ImageGenerationConfig = {
       model: 'dall-e-3',
       size: '1024x1024',
       quality: 'standard',
       style: 'natural',
-      apiKey: postPrompt.apiKey || process.env['OPENAI_API_KEY'] || '',
-      numberOfImages: 1, // Default to 1 image per heading
+      apiKey,
+      numberOfImages: 1,
+      ...(postPrompt.debug !== undefined && { debug: postPrompt.debug }),
+      maxRetries: 3,
+      retryDelay: 1000,
     };
 
-    if (postPrompt.debug !== undefined) {
-      options.debug = postPrompt.debug;
+    return new ImageGenerator(config);
+  }
+
+  /**
+   * Validate configuration
+   */
+  private validateConfig(config: ImageGenerationConfig): void {
+    if (!config.apiKey) {
+      throw new InvalidConfigurationError('API key is required');
     }
 
-    return new ImageGenerator(options);
+    if (config.numberOfImages < 1 || config.numberOfImages > 10) {
+      throw new InvalidConfigurationError('numberOfImages must be between 1 and 10');
+    }
+
+    // Validate model-specific constraints
+    if (config.model === 'dall-e-2') {
+      const validSizes: string[] = ['256x256', '512x512', '1024x1024'];
+      if (!validSizes.includes(config.size)) {
+        throw new InvalidConfigurationError(
+          `Invalid size for dall-e-2: ${config.size}. Valid sizes: ${validSizes.join(', ')}`
+        );
+      }
+      if (config.quality === 'hd') {
+        throw new InvalidConfigurationError('HD quality is only available for dall-e-3');
+      }
+    }
+  }
+
+  /**
+   * Update generator configuration
+   */
+  updateConfig(config: Partial<ImageGenerationConfig>): void {
+    this.config = { ...this.config, ...config };
+
+    if (config.apiKey || config.model || config.size || config.quality || config.style) {
+      this.provider = new DallEProvider({
+        model: this.config.model,
+        apiKey: this.config.apiKey,
+        size: this.config.size,
+        quality: this.config.quality,
+        style: this.config.style,
+        numberOfImages: this.config.numberOfImages,
+      });
+    }
+  }
+
+  /**
+   * Clear internal caches
+   */
+  clearCache(): void {
+    this.promptOptimizer.clearCache();
+  }
+
+  /**
+   * Get current configuration
+   */
+  getConfig(): Readonly<ImageGenerationConfig> {
+    return { ...this.config };
   }
 }
+
+// Re-export types for backward compatibility
+export type { ImageGenerationConfig as ImageGenerationOptions, GeneratedImage };

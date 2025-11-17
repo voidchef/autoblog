@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Box, TextField, Paper, Typography, InputAdornment, Chip } from '@mui/material';
+import { Box, TextField, Paper, Typography, InputAdornment, Chip, IconButton, Tooltip, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import { 
   Title as TitleIcon,
   Article as ArticleIcon,
-  Info as InfoIcon
+  Info as InfoIcon,
+  AutoFixHigh as AutoFixHighIcon,
 } from '@mui/icons-material';
 import { alpha } from '@mui/material/styles';
 import { 
@@ -34,12 +35,14 @@ import {
   type MDXEditorMethods
 } from '@mdxeditor/editor';
 import '@mdxeditor/editor/style.css';
+import TextRegenerationDialog from './TextRegenerationDialog';
 
 interface BlogContentFieldsProps {
   blogTitle: string;
   blogContent: string;
   isEditMode: boolean;
   disabled?: boolean;
+  blogId?: string;
   onBlogTitleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onBlogContentChange: (content: string) => void;
 }
@@ -49,15 +52,22 @@ export default function BlogContentFields({
   blogContent,
   isEditMode,
   disabled = false,
+  blogId,
   onBlogTitleChange,
   onBlogContentChange,
 }: BlogContentFieldsProps) {
   const mdxEditorRef = React.useRef<MDXEditorMethods>(null);
+  const editorContainerRef = React.useRef<HTMLDivElement>(null);
   const [editorKey, setEditorKey] = React.useState(0);
+  const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
+  const [selectedText, setSelectedText] = React.useState('');
+  const [regenerationDialogOpen, setRegenerationDialogOpen] = React.useState(false);
+  const [contextBefore, setContextBefore] = React.useState('');
+  const [contextAfter, setContextAfter] = React.useState('');
+  
   const wordCount = blogContent.trim().split(/\s+/).filter(word => word.length > 0).length;
   const charCount = blogContent.length;
   const readingTime = Math.ceil(wordCount / 200); // Average reading speed
-  console.log('BlogContentFields rendered', blogContent);
 
   // Update editor when blogContent changes externally (e.g., from AI generation or loading a blog)
   React.useEffect(() => {
@@ -65,6 +75,56 @@ export default function BlogContentFields({
       setEditorKey(prev => prev + 1);
     }
   }, [blogContent]);
+
+  // Handle context menu (right-click) on editor
+  const handleContextMenu = (event: React.MouseEvent) => {
+    // Only show context menu if we're in edit mode and have a blog ID
+    if (!isEditMode || !blogId || disabled || blogTitle === '') {
+      return;
+    }
+
+    const selection = window.getSelection();
+    const text = selection?.toString().trim();
+
+    if (text && text.length > 0) {
+      event.preventDefault();
+      setSelectedText(text);
+      
+      // Get surrounding context
+      const fullText = blogContent;
+      const selectionStart = fullText.indexOf(text);
+      if (selectionStart !== -1) {
+        // Get 500 characters before and after for context
+        const before = fullText.substring(Math.max(0, selectionStart - 500), selectionStart);
+        const after = fullText.substring(selectionStart + text.length, Math.min(fullText.length, selectionStart + text.length + 500));
+        setContextBefore(before);
+        setContextAfter(after);
+      }
+      
+      setContextMenu({
+        mouseX: event.clientX + 2,
+        mouseY: event.clientY - 6,
+      });
+    }
+  };
+
+  const handleCloseContextMenu = () => {
+    setContextMenu(null);
+  };
+
+  const handleRegenerateClick = () => {
+    setRegenerationDialogOpen(true);
+    handleCloseContextMenu();
+  };
+
+  const handleApplyRegeneration = (newText: string) => {
+    if (mdxEditorRef.current && selectedText) {
+      const currentContent = mdxEditorRef.current.getMarkdown();
+      const updatedContent = currentContent.replace(selectedText, newText);
+      onBlogContentChange(updatedContent);
+      setEditorKey(prev => prev + 1);
+    }
+  };
 
   return (
     <Box sx={{ flexGrow: 1, marginX: { xs: '1rem', sm: '7rem' } }}>
@@ -163,6 +223,8 @@ export default function BlogContentFields({
           )}
           
           <Box
+            ref={editorContainerRef}
+            onContextMenu={handleContextMenu}
             sx={{
               border: (theme) => `1px solid ${alpha(theme.palette.divider, 0.23)}`,
               borderRadius: 2,
@@ -404,6 +466,38 @@ export default function BlogContentFields({
           )}
         </Box>
       </Paper>
+
+      {/* Context Menu for Text Regeneration */}
+      <Menu
+        open={contextMenu !== null}
+        onClose={handleCloseContextMenu}
+        anchorReference="anchorPosition"
+        anchorPosition={
+          contextMenu !== null
+            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+            : undefined
+        }
+      >
+        <MenuItem onClick={handleRegenerateClick}>
+          <ListItemIcon>
+            <AutoFixHighIcon fontSize="small" color="primary" />
+          </ListItemIcon>
+          <ListItemText>Regenerate with AI</ListItemText>
+        </MenuItem>
+      </Menu>
+
+      {/* Text Regeneration Dialog */}
+      {blogId && (
+        <TextRegenerationDialog
+          open={regenerationDialogOpen}
+          onClose={() => setRegenerationDialogOpen(false)}
+          blogId={blogId}
+          selectedText={selectedText}
+          contextBefore={contextBefore}
+          contextAfter={contextAfter}
+          onApplyRegeneration={handleApplyRegeneration}
+        />
+      )}
     </Box>
   );
 }

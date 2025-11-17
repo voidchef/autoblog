@@ -6,3 +6,4 @@ export { default as Title } from './Title';
 export { default as OpenAiKeyBanner } from './OpenAiKeyBanner';
 export { TemplateUpload } from './TemplateUpload';
 export { TemplateParametersForm } from './TemplateParametersForm';
+export { default as TextRegenerationDialog } from './TextRegenerationDialog';

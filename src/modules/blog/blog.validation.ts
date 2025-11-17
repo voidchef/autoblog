@@ -155,3 +155,15 @@ export const getEventBasedAnalytics = {
       .required(),
   }),
 };
+
+export const regenerateText = {
+  body: Joi.object().keys({
+    blogId: Joi.string().custom(objectId).required(),
+    selectedText: Joi.string().required(),
+    userPrompt: Joi.string().required(),
+    llmModel: Joi.string().optional(),
+    llmProvider: Joi.string().valid('openai', 'google', 'mistral').optional(),
+    contextBefore: Joi.string().optional().allow(''),
+    contextAfter: Joi.string().optional().allow(''),
+  }),
+};
