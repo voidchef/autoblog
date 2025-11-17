@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import fs from 'fs';
 import AppleStrategy from 'passport-apple';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
@@ -121,7 +122,8 @@ if (config.oauth.google.clientId && config.oauth.google.clientSecret) {
 // Apple OAuth Strategy
 let appleStrategy: AppleStrategy | null = null;
 
-if (config.oauth.apple.clientId && config.oauth.apple.privateKeyPath) {
+// Skip Apple OAuth initialization in test environment
+if (config.env !== 'test' && config.oauth.apple.clientId && config.oauth.apple.privateKeyPath) {
   try {
     // Check if the private key file exists before trying to read it
     // eslint-disable-next-line security/detect-non-literal-fs-filename

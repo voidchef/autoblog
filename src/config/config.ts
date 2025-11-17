@@ -31,6 +31,9 @@ const envVarsSchema = Joi.object()
     APPLE_TEAM_ID: Joi.string().description('Apple Team ID'),
     APPLE_KEY_ID: Joi.string().description('Apple Key ID'),
     APPLE_PRIVATE_KEY_PATH: Joi.string().description('Path to Apple private key file'),
+    RAZORPAY_KEY_ID: Joi.string().description('Razorpay API Key ID'),
+    RAZORPAY_KEY_SECRET: Joi.string().description('Razorpay API Key Secret'),
+    RAZORPAY_WEBHOOK_SECRET: Joi.string().description('Razorpay Webhook Secret'),
   })
   .unknown();
 
@@ -89,6 +92,11 @@ const config = {
       privateKeyPath: envVars.APPLE_PRIVATE_KEY_PATH,
       callbackUrl: `${envVars.SERVER_URL}/v1/auth/apple/callback`,
     },
+  },
+  razorpay: {
+    keyId: envVars.RAZORPAY_KEY_ID,
+    keySecret: envVars.RAZORPAY_KEY_SECRET,
+    webhookSecret: envVars.RAZORPAY_WEBHOOK_SECRET,
   },
 };
 

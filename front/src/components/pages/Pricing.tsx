@@ -9,6 +9,8 @@ import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
 import { alpha } from '@mui/material/styles';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import StarIcon from '@mui/icons-material/Star';
@@ -24,6 +26,7 @@ import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../utils/hooks';
 import { ROUTES } from '../../utils/routing/routes';
+import { useCreateOrderMutation, useVerifyPaymentMutation } from '../../services/paymentApi';
 
 interface PricingFeature {
   text: string;
@@ -45,14 +48,88 @@ interface PricingTier {
 
 export default function Pricing() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const [createOrder, { isLoading: isCreatingOrder }] = useCreateOrderMutation();
+  const [verifyPayment, { isLoading: isVerifyingPayment }] = useVerifyPaymentMutation();
+  const [paymentError, setPaymentError] = React.useState<string | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = React.useState(false);
 
   const handleGetStarted = (tier: string) => {
     if (tier === 'free') {
       navigate(isAuthenticated ? ROUTES.DASHBOARD : ROUTES.LOGIN);
     } else {
-      // For paid tier, navigate to contact or a future billing page
-      navigate(ROUTES.CONTACTUS);
+      // For paid tier, initiate payment
+      if (!isAuthenticated) {
+        navigate(ROUTES.LOGIN);
+        return;
+      }
+      handlePayment();
+    }
+  };
+
+  const handlePayment = async () => {
+    setPaymentError(null);
+    setPaymentSuccess(false);
+
+    try {
+      // Create order on backend
+      const order = await createOrder({
+        amount: 29,
+        currency: 'INR',
+        plan: 'pro',
+      }).unwrap();
+
+      // Initialize Razorpay checkout
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'AutoBlog',
+        description: 'Pro Plan Subscription',
+        order_id: order.id,
+        handler: async (response: any) => {
+          try {
+            // Verify payment on backend
+            const verificationResult = await verifyPayment({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            }).unwrap();
+
+            if (verificationResult.success) {
+              setPaymentSuccess(true);
+              setTimeout(() => {
+                navigate(ROUTES.DASHBOARD);
+              }, 2000);
+            } else {
+              setPaymentError('Payment verification failed. Please contact support.');
+            }
+          } catch (error: any) {
+            setPaymentError(error?.data?.message || 'Payment verification failed. Please try again.');
+          }
+        },
+        prefill: {
+          name: user?.name || '',
+          email: user?.email || '',
+        },
+        notes: {
+          userId: user?.id || '',
+          plan: 'pro',
+        },
+        theme: {
+          color: '#667eea',
+        },
+        modal: {
+          ondismiss: () => {
+            setPaymentError(null);
+          },
+        },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (error: any) {
+      setPaymentError(error?.data?.message || 'Failed to initiate payment. Please try again.');
     }
   };
 
@@ -185,6 +262,18 @@ export default function Pricing() {
       <NavBar />
 
       <Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 }, position: 'relative', zIndex: 1 }}>
+        {/* Payment Status Alerts */}
+        {paymentSuccess && (
+          <Alert severity="success" sx={{ mb: 4 }}>
+            Payment successful! Redirecting to dashboard...
+          </Alert>
+        )}
+        {paymentError && (
+          <Alert severity="error" sx={{ mb: 4 }} onClose={() => setPaymentError(null)}>
+            {paymentError}
+          </Alert>
+        )}
+
         {/* Header */}
         <Stack spacing={2} alignItems="center" sx={{ textAlign: 'center', mb: { xs: 6, md: 10 } }}>
           <Chip
@@ -369,6 +458,7 @@ export default function Pricing() {
                     variant={tier.popular ? 'contained' : 'outlined'}
                     size="large"
                     onClick={() => handleGetStarted(tier.name.toLowerCase())}
+                    disabled={tier.popular && (isCreatingOrder || isVerifyingPayment)}
                     sx={{
                       mb: 4,
                       py: 2,
@@ -390,9 +480,19 @@ export default function Pricing() {
                         background: tier.popular ? tier.gradient : (theme) => alpha(theme.palette.primary.main, 0.08),
                         borderWidth: tier.popular ? 0 : 2,
                       },
+                      '&.Mui-disabled': {
+                        opacity: 0.7,
+                      },
                     }}
                   >
-                    {tier.buttonText}
+                    {tier.popular && (isCreatingOrder || isVerifyingPayment) ? (
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <CircularProgress size={20} sx={{ color: 'white' }} />
+                        <span>{isCreatingOrder ? 'Processing...' : 'Verifying...'}</span>
+                      </Stack>
+                    ) : (
+                      tier.buttonText
+                    )}
                   </Button>
 
                   <Divider sx={{ mb: 4 }}>

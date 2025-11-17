@@ -83,6 +83,8 @@ describe('Auth routes', () => {
         hasOAuthConnection: expect.any(Boolean),
         followers: expect.any(Array),
         following: expect.any(Array),
+        subscriptionPlan: 'free',
+        subscriptionStatus: 'inactive',
       });
 
       const dbUser = await User.findById(res.body.user.id);
@@ -146,6 +148,8 @@ describe('Auth routes', () => {
         hasOAuthConnection: expect.any(Boolean),
         followers: expect.any(Array),
         following: expect.any(Array),
+        subscriptionPlan: 'free',
+        subscriptionStatus: 'inactive',
       });
 
       expect(res.body.tokens).toEqual({
@@ -233,6 +237,8 @@ describe('Auth routes', () => {
         hasOAuthConnection: expect.any(Boolean),
         followers: expect.any(Array),
         following: expect.any(Array),
+        subscriptionPlan: 'free',
+        subscriptionStatus: 'inactive',
       });
 
       expect(res.body.tokens).toEqual({

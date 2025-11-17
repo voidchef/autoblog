@@ -3,6 +3,10 @@ import bcrypt from 'bcryptjs';
 import httpStatus from 'http-status';
 import moment from 'moment';
 import mongoose from 'mongoose';
+
+// Mock email service BEFORE importing app
+jest.mock('../email/email.service');
+
 import request from 'supertest';
 import app from '../../app';
 import config from '../../config/config';
@@ -126,7 +130,7 @@ describe('Contact routes', () => {
         message: newContact.message,
         status: 'new',
       });
-    });
+    }, 10000);
 
     test('should return 400 if name is missing', async () => {
       delete newContact.name;

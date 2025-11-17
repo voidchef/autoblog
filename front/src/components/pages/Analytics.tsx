@@ -20,6 +20,7 @@ import {
   PieChart as PieChartIcon,
   TableChart as TableChartIcon,
   Lock as LockIcon,
+  AttachMoney as PaymentIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import NavBar from '../elements/Common/NavBar';
@@ -28,6 +29,7 @@ import AnalyticsOverview from '../elements/Dashboard/AnalyticsOverview';
 import BlogPerformanceTable, { BlogPerformanceData } from '../elements/Dashboard/BlogPerformanceTable';
 import TrafficSources from '../elements/Dashboard/TrafficSources';
 import ViewsGraph from '../elements/Dashboard/ViewsGraph';
+import PaymentAnalytics from '../elements/PaymentAnalytics';
 import { useGetAnalyticsByTimeRangeQuery, useToggleFeaturedMutation } from '../../services/blogApi';
 import { useAuth } from '../../utils/hooks';
 import { ROUTES } from '../../utils/routing/routes';
@@ -431,6 +433,11 @@ export default function Analytics() {
                 iconPosition="start"
                 label="Trends"
               />
+              <Tab
+                icon={<PaymentIcon sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }} />}
+                iconPosition="start"
+                label="Payments"
+              />
             </Tabs>
           </Paper>
         </Box>
@@ -472,6 +479,18 @@ export default function Analytics() {
                 monthDays={viewsGraphData.monthDays} 
               />
             </Paper>
+          </Box>
+        </TabPanel>
+
+        <TabPanel value={tabValue} index={4}>
+          <Box>
+            <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>
+              Payment Analytics
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: { xs: 2, sm: 3 }, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+              Revenue, subscriptions, and payment trends
+            </Typography>
+            <PaymentAnalytics />
           </Box>
         </TabPanel>
       </Container>

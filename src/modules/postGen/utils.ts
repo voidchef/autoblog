@@ -55,7 +55,6 @@ export class ChainBuilder {
 
     const inputMapping = this.buildInputMapping(inputKeys);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const chain = RunnableSequence.from([
       {
         ...inputMapping,

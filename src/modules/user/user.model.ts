@@ -124,6 +124,19 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
         ref: 'User',
       },
     ],
+    subscriptionPlan: {
+      type: String,
+      enum: ['free', 'pro'],
+      default: 'free',
+    },
+    subscriptionStatus: {
+      type: String,
+      enum: ['active', 'inactive', 'expired'],
+      default: 'inactive',
+    },
+    subscriptionExpiresAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,

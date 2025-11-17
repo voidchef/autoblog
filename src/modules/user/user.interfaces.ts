@@ -25,6 +25,9 @@ export interface IUser {
   };
   followers: mongoose.Types.ObjectId[];
   following: mongoose.Types.ObjectId[];
+  subscriptionPlan?: string;
+  subscriptionStatus?: 'active' | 'inactive' | 'expired';
+  subscriptionExpiresAt?: Date;
 }
 
 export interface IUserDoc extends IUser, Document {

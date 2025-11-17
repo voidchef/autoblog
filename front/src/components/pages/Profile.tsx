@@ -39,6 +39,7 @@ import {
   Security as SecurityIcon,
   Link as LinkIcon,
   AccountCircle as AccountCircleIcon,
+  Receipt as ReceiptIcon,
 } from '@mui/icons-material';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
@@ -46,6 +47,7 @@ import PasswordStrength from '../elements/Common/PasswordStrength';
 import ConfirmationDialog from '../elements/Common/ConfirmationDialog';
 import ConnectedAccounts from '../elements/ConnectedAccounts';
 import ProfilePictureUpload from '../elements/ProfilePictureUpload';
+import OrderHistory from '../elements/OrderHistory';
 import { useAuth } from '../../utils/hooks';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import { useUpdateUserMutation } from '../../services/userApi';
@@ -1627,6 +1629,35 @@ const Profile: React.FC = () => {
                           <ConnectedAccounts />
                         </Paper>
                       </Grid>
+
+                      {/* Order History Section */}
+                      {!isEditing && (
+                        <Grid size={12}>
+                          <Paper
+                            elevation={0}
+                            sx={{
+                              p: { xs: 2, sm: 2.5 },
+                              bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
+                              borderRadius: 2,
+                              border: '1px solid',
+                              borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
+                            }}
+                          >
+                            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: { xs: 1.5, sm: 2 } }}>
+                              <ReceiptIcon sx={{ color: 'primary.main', fontSize: { xs: 20, sm: 24 } }} />
+                              <Typography 
+                                variant="h6" 
+                                fontWeight={600} 
+                                color="primary"
+                                sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+                              >
+                                Order History
+                              </Typography>
+                            </Stack>
+                            <OrderHistory />
+                          </Paper>
+                        </Grid>
+                      )}
 
                       {/* Action Buttons */}
                       {isEditing && (

@@ -7,11 +7,17 @@ import config from './config/config';
 import { jwtStrategy, googleStrategy, appleStrategy } from './modules/auth';
 import { ApiError, errorConverter, errorHandler } from './modules/errors';
 import { morgan } from './modules/logger';
+import { initSubscriptionCronJobs } from './modules/subscription';
 import { authLimiter } from './modules/utils';
 import rootRoute from './routes/root.route';
 import routes from './routes/v1';
 
 const app: Express = express();
+
+// Initialize cron jobs (only in non-test environment)
+if (config.env !== 'test') {
+  initSubscriptionCronJobs();
+}
 
 if (config.env !== 'test') {
   app.use(morgan.successHandler);

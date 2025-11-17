@@ -82,7 +82,7 @@ describe('Email Service', () => {
       await emailService.sendResetPasswordEmail(to, token);
 
       const callArgs = mockSendMail.mock.calls[0]?.[0] as EmailOptions;
-      const expectedUrl = `http://${config.clientUrl}/reset-password?token=${token}`;
+      const expectedUrl = `${config.clientUrl}/reset-password?token=${token}`;
 
       expect(callArgs.text).toContain(expectedUrl);
       expect(callArgs.html).toContain(expectedUrl);
@@ -116,7 +116,7 @@ describe('Email Service', () => {
       await emailService.sendVerificationEmail(to, token, name);
 
       const callArgs = mockSendMail.mock.calls[0]?.[0] as EmailOptions;
-      const expectedUrl = `http://${config.clientUrl}/verify-email?token=${token}`;
+      const expectedUrl = `${config.clientUrl}/verify-email?token=${token}`;
 
       expect(callArgs.text).toContain(expectedUrl);
       expect(callArgs.html).toContain(expectedUrl);
@@ -152,7 +152,7 @@ describe('Email Service', () => {
       await emailService.sendSuccessfulRegistration(to, token, name);
 
       const callArgs = mockSendMail.mock.calls[0]?.[0] as EmailOptions;
-      const expectedUrl = `http://${config.clientUrl}/verify-email?token=${token}`;
+      const expectedUrl = `${config.clientUrl}/verify-email?token=${token}`;
 
       expect(callArgs.text).toContain(expectedUrl);
       expect(callArgs.html).toContain(expectedUrl);

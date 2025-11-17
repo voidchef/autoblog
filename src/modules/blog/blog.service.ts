@@ -276,7 +276,7 @@ export const initiateBlogGeneration = async (
   void (async () => {
     try {
       const blogContent = await generateBlogContent(generateBlogData, author);
-      
+
       // Upload images if any
       let uploadedImages: string[] = [];
       if (blogContent.generatedImages && blogContent.generatedImages.length > 0) {
@@ -289,7 +289,7 @@ export const initiateBlogGeneration = async (
           uploadedImages = uploadResult.uploadedUrls;
         }
       }
-      
+
       // Update the placeholder with generated content
       await Blog.findByIdAndUpdate(placeholderBlog._id, {
         ...blogContent,
@@ -348,7 +348,7 @@ export const initiateBlogGenerationFromTemplate = async (
   void (async () => {
     try {
       const blogContent = await generateBlogContentFromTemplate(generateTemplateData, author);
-      
+
       // Upload images if any
       let uploadedImages: string[] = [];
       if (blogContent.generatedImages && blogContent.generatedImages.length > 0) {
@@ -361,7 +361,7 @@ export const initiateBlogGenerationFromTemplate = async (
           uploadedImages = uploadResult.uploadedUrls;
         }
       }
-      
+
       // Update the placeholder with generated content
       await Blog.findByIdAndUpdate(placeholderBlog._id, {
         ...blogContent,
