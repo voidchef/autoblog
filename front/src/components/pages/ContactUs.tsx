@@ -10,10 +10,11 @@ import PhoneIcon from '@mui/icons-material/Phone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import SendIcon from '@mui/icons-material/Send';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { useCreateContactMutation, useGetQueryTypesQuery } from '../../services/contactApi';
+import { useCreateContactMutation } from '../../services/contactApi';
+import { useAppSelector } from '../../utils/reduxHooks';
 
 export default function ContactUs() {
-  const { data: queryTypes = [], isLoading: isLoadingQueryTypes } = useGetQueryTypesQuery();
+  const queryTypes = useAppSelector((state) => state.appSettings.queryType || []);
   const [createContact, { isLoading, isSuccess, isError, error }] = useCreateContactMutation();
   
   // Form state
@@ -372,13 +373,8 @@ export default function ContactUs() {
                     placeholder="Select query type"
                     variant="outlined"
                     size="medium"
-                    error={!!errors.queryType}
-                    helperText={errors.queryType}
-                    disabled={isLoading || isLoadingQueryTypes}
                   >
-                    {isLoadingQueryTypes ? (
-                      <MenuItem disabled>Loading...</MenuItem>
-                    ) : queryTypes.length === 0 ? (
+                    {queryTypes.length === 0 ? (
                       <MenuItem disabled>No query types available</MenuItem>
                     ) : (
                       queryTypes.map((option) => (

@@ -105,50 +105,6 @@ export default function AccountMenu() {
       : []),
   ];
 
-  // User info section component
-  const UserInfoSection = () => (
-    <Box
-      sx={{
-        p: 2.5,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        gap: 1.5,
-      }}
-    >
-      <Avatar
-        src={user.profilePicture || undefined}
-        {...(!user.profilePicture ? stringAvatar(user.name!) : {})}
-        sx={{
-          width: 64,
-          height: 64,
-          fontSize: '1.5rem',
-          border: '3px solid',
-          borderColor: 'primary.main',
-          boxShadow: (theme) => `0 4px 12px ${theme.palette.customColors.overlay.black.light}`,
-        }}
-      />
-      <Box sx={{ textAlign: 'center' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, justifyContent: 'center' }}>
-          <Typography variant="subtitle1" fontWeight={600}>
-            {user.name}
-          </Typography>
-          {user.isEmailVerified && (
-            <Tooltip title="Verified Account">
-              <VerifiedIcon sx={{ fontSize: 16, color: 'primary.main' }} />
-            </Tooltip>
-          )}
-        </Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, justifyContent: 'center', mt: 0.5 }}>
-          <EmailIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-          <Typography variant="caption" color="text.secondary">
-            {user.email}
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
-  );
-
   // Desktop Menu Content
   const DesktopMenuContent = () => (
     <>
