@@ -19,6 +19,28 @@ body {
   overflow-x: hidden;
 }
 
+/* Text Selection Highlighting - Light Mode */
+::selection {
+  background-color: rgba(29, 78, 216, 0.3) !important;
+  color: inherit !important;
+}
+
+::-moz-selection {
+  background-color: rgba(29, 78, 216, 0.3) !important;
+  color: inherit !important;
+}
+
+/* Text Selection Highlighting - Dark Mode */
+.dark ::selection {
+  background-color: rgba(59, 130, 246, 0.4) !important;
+  color: inherit !important;
+}
+
+.dark ::-moz-selection {
+  background-color: rgba(59, 130, 246, 0.4) !important;
+  color: inherit !important;
+}
+
 /* Enhanced Scrollbar Styling */
 ::-webkit-scrollbar {
   width: 14px;
@@ -387,4 +409,76 @@ button, a, input, textarea, select {
     padding-right: 24px !important;
   }
 }
+
+/* MDXEditor Custom Styles */
+.mdxeditor-popup-container {
+  z-index: 1300 !important;
+}
+
+.mdxeditor-diff-source-wrapper {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.mdxeditor .cm-editor {
+  border-radius: 8px;
+}
+
+.mdxeditor .cm-scroller {
+  font-family: 'Fira Code', 'Consolas', 'Monaco', monospace !important;
+}
+
+/* MDXEditor Focus States */
+.mdxeditor-root-contenteditable:focus {
+  outline: none;
+}
+
+.mdxeditor-toolbar button:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: 2px;
+}
+
+/* MDXEditor Text Selection */
+.mdxeditor-root-contenteditable ::selection {
+  background-color: rgba(29, 78, 216, 0.3) !important;
+  color: inherit !important;
+}
+
+.mdxeditor-root-contenteditable ::-moz-selection {
+  background-color: rgba(29, 78, 216, 0.3) !important;
+  color: inherit !important;
+}
+
+/* MDXEditor Dark Mode Adjustments */
+.dark .mdxeditor-toolbar {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+}
+
+.dark .mdxeditor-root-contenteditable {
+  background-color: rgba(30, 41, 59, 0.4) !important;
+  color: #e2e8f0 !important;
+}
+
+.dark .mdxeditor-root-contenteditable ::selection {
+  background-color: rgba(59, 130, 246, 0.4) !important;
+  color: inherit !important;
+}
+
+.dark .mdxeditor-root-contenteditable ::-moz-selection {
+  background-color: rgba(59, 130, 246, 0.4) !important;
+  color: inherit !important;
+}
+
+.dark .mdxeditor code {
+  background-color: rgba(30, 58, 138, 0.3) !important;
+}
+
+.dark .mdxeditor pre {
+  background-color: rgba(15, 23, 42, 0.9) !important;
+}
+
+.dark .mdxeditor th {
+  background-color: rgba(30, 58, 138, 0.2) !important;
+}
+
 

@@ -257,8 +257,8 @@ export default function CreatePost() {
     setBlogTitle(event.target.value);
   };
 
-  const handleBlogContentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setBlogContent(event.target.value);
+  const handleBlogContentChange = (content: string) => {
+    setBlogContent(content);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
