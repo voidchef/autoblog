@@ -6,7 +6,7 @@ import { TTSService } from './tts.service';
 
 // Mock dependencies
 jest.mock('@google-cloud/text-to-speech');
-jest.mock('../aws/s3utils');
+jest.mock('../aws/S3utils');
 jest.mock('../logger/logger');
 
 describe('TTS Service', () => {
