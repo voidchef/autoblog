@@ -5,18 +5,11 @@ import {
   Typography,
   Avatar,
   Grid,
-  Card,
-  CardContent,
   Chip,
-  Divider,
   IconButton,
   Stack,
   Tooltip,
-  Paper,
-  Tab,
-  Tabs,
   CircularProgress,
-  Button,
   useTheme,
 } from '@mui/material';
 import {
@@ -24,8 +17,6 @@ import {
   LinkedIn as LinkedInIcon,
   GitHub as GitHubIcon,
   Language as LanguageIcon,
-  People as PeopleIcon,
-  Article as ArticleIcon,
   ThumbUp,
   ThumbDown,
   ChatBubbleOutline,
@@ -40,34 +31,11 @@ import { stringAvatar } from '../../utils/utils';
 import FollowButton from '../elements/FollowButton';
 import { useAuth } from '../../utils/hooks';
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`author-tabpanel-${index}`}
-      aria-labelledby={`author-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
 const Author: React.FC = () => {
   const theme = useTheme();
   const { authorId } = useParams<{ authorId: string }>();
   const navigate = useNavigate();
   const { userId } = useAuth();
-  const [tabValue, setTabValue] = React.useState(0);
 
   // Fetch author data
   const { data: authorData, isLoading: authorLoading, error: authorError } = useGetUserQuery(authorId || '', {
@@ -87,10 +55,6 @@ const Author: React.FC = () => {
       skip: !authorId,
     }
   );
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-  };
 
   const handleBlogClick = (slug: string) => {
     navigate(`${ROUTES.BLOG}/${slug}`);
@@ -359,198 +323,134 @@ const Author: React.FC = () => {
 
       {/* Content Section */}
       <Container maxWidth="lg" sx={{ py: 6 }}>
-        <Paper
-          elevation={0}
+        <Typography
+          variant="h4"
           sx={{
-            bgcolor: theme.palette.mode === 'dark' ? theme.palette.customColors.author.bioCardBgDark : theme.palette.customColors.author.bioCardBgLight,
-            borderRadius: 3,
-            overflow: 'hidden',
-            border: theme.palette.mode === 'dark' ? theme.palette.customColors.author.bioCardBorder : 'none',
+            fontWeight: 700,
+            mb: 4,
+            textAlign: 'center',
           }}
         >
-          <Tabs
-            value={tabValue}
-            onChange={handleTabChange}
-            centered
-            sx={{
-              borderBottom: 1,
-              borderColor: theme.palette.mode === 'dark' ? theme.palette.customColors.overlay.white.light : 'divider',
-              '& .MuiTab-root': {
-                textTransform: 'none',
-                fontSize: '1rem',
-                fontWeight: 600,
-                minWidth: 120,
-                color: theme.palette.mode === 'dark' ? theme.palette.customColors.overlay.white.almostOpaque : 'inherit',
-                '&.Mui-selected': {
-                  color: theme.palette.mode === 'dark' ? theme.palette.customColors.author.accentBlue : 'primary.main',
-                },
-              },
-              '& .MuiTabs-indicator': {
-                bgcolor: theme.palette.mode === 'dark' ? theme.palette.customColors.author.accentBlue : 'primary.main',
-              },
-            }}
-          >
-            <Tab icon={<ArticleIcon />} iconPosition="start" label={`Articles (${totalArticles})`} />
-          </Tabs>
+          Articles ({totalArticles})
+        </Typography>
 
-          {/* Articles Tab */}
-          <TabPanel value={tabValue} index={0}>
-            {blogsLoading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-                <CircularProgress />
-              </Box>
-            ) : publishedBlogs.length === 0 ? (
-              <Box sx={{ textAlign: 'center', py: 8 }}>
-                <Typography variant="h6" color="text.secondary">
-                  No published articles yet
-                </Typography>
-              </Box>
-            ) : (
-              <Grid container spacing={3} sx={{ p: 3 }}>
-                {publishedBlogs.map((blog) => (
-                  <Grid size={{ xs: 12 }} key={blog.id}>
-                    <Card
+        {blogsLoading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+            <CircularProgress />
+          </Box>
+        ) : publishedBlogs.length === 0 ? (
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <Typography variant="h6" color="text.secondary">
+              No published articles yet
+            </Typography>
+          </Box>
+        ) : (
+          <Grid container spacing={3}>
+            {publishedBlogs.map((blog) => (
+              <Grid size={{ xs: 12, sm: 4 }} key={blog.id}>
+                <Box
+                  sx={{ py: 1, cursor: 'pointer' }}
+                  height={{ xs: '15rem', sm: '18rem' }}
+                  maxWidth={'100%'}
+                  onClick={() => handleBlogClick(blog.slug)}
+                >
+                  <img
+                    src={blog.selectedImage}
+                    alt={blog.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '0.5rem' }}
+                  />
+                </Box>
+                <Box display="flex" flexDirection="column" justifyContent="space-between">
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Avatar
+                      src={authorData.profilePicture || undefined}
+                      {...(!authorData.profilePicture ? stringAvatar(authorData.name) : {})}
                       sx={{
+                        width: 36,
+                        height: 36,
+                        fontWeight: 600,
+                        fontSize: '0.875rem',
                         cursor: 'pointer',
-                        transition: 'all 0.3s ease',
-                        '&:hover': {
-                          transform: 'translateY(-4px)',
-                          boxShadow:
-                            theme.palette.mode === 'dark'
-                              ? theme.palette.customColors.author.articleCardShadowDark
-                              : theme.palette.customColors.author.articleCardShadowLight,
-                        },
-                        height: '100%',
-                        display: 'flex',
-                        flexDirection: { xs: 'column', sm: 'row' },
-                        bgcolor: theme.palette.mode === 'dark' ? theme.palette.customColors.author.articleCardBgDark : theme.palette.customColors.author.articleCardBgLight,
-                        border: theme.palette.mode === 'dark' ? theme.palette.customColors.author.bioCardBorder : 'none',
-                        backgroundImage:
-                          theme.palette.mode === 'dark'
-                            ? theme.palette.customColors.author.articleCardGradientDark
-                            : 'none',
                       }}
-                      onClick={() => handleBlogClick(blog.slug)}
-                    >
-                      {blog.selectedImage && (
-                        <Box
-                          sx={{
-                            width: { xs: '100%', sm: 240 },
-                            height: { xs: 200, sm: 'auto' },
-                            minHeight: { sm: 180 },
-                            backgroundImage: `url(${blog.selectedImage})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            flexShrink: 0,
-                          }}
-                        />
-                      )}
-                      <CardContent sx={{ flex: 1, p: 3 }}>
-                        <Stack spacing={2}>
-                          {/* Category and Reading Time */}
-                          <Stack direction="row" spacing={1} alignItems="center">
-                            <Chip
-                              label={blog.category}
-                              size="small"
-                              color="primary"
-                              variant="outlined"
-                              sx={{
-                                fontWeight: 600,
-                                borderColor:
-                                  theme.palette.mode === 'dark' ? theme.palette.customColors.author.accentPurple : undefined,
-                                color:
-                                  theme.palette.mode === 'dark' ? theme.palette.customColors.author.accentPurpleHover : undefined,
-                              }}
-                            />
-                            <Typography variant="caption" color="text.secondary">
-                              {blog.readingTime} min read
-                            </Typography>
-                          </Stack>
+                    />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+                      <Typography
+                        variant="body2"
+                        fontWeight={600}
+                        fontSize="0.875rem"
+                        sx={{
+                          cursor: 'pointer',
+                          '&:hover': { color: 'primary.main' },
+                        }}
+                      >
+                        {authorData.name}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
+                        •
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
+                        {new Date(blog.createdAt).toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </Typography>
+                    </Box>
+                  </Box>
+                  <Typography
+                    fontSize={{ sm: 22 }}
+                    fontWeight={500}
+                    component="div"
+                    sx={{
+                      flexGrow: 1,
+                      marginBottom: 1,
+                      cursor: 'pointer',
+                      '&:hover': { color: 'primary.main' },
+                    }}
+                    onClick={() => handleBlogClick(blog.slug)}
+                  >
+                    {blog.title}
+                  </Typography>
+                  <Typography
+                    fontSize={{ sm: 18 }}
+                    component="div"
+                    sx={{
+                      flexGrow: 1,
+                      cursor: 'pointer',
+                    }}
+                    onClick={() => handleBlogClick(blog.slug)}
+                  >
+                    {blog.seoDescription ? `${blog.seoDescription.slice(0, 255)}...` : `${blog.content.slice(0, 255)}...`}
+                  </Typography>
 
-                          {/* Title */}
-                          <Typography
-                            variant="h5"
-                            component="h2"
-                            sx={{
-                              fontWeight: 700,
-                              color: 'text.primary',
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical',
-                              overflow: 'hidden',
-                            }}
-                          >
-                            {blog.title}
-                          </Typography>
-
-                          {/* Description */}
-                          <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical',
-                              overflow: 'hidden',
-                            }}
-                          >
-                            {blog.seoDescription}
-                          </Typography>
-
-                          {/* Tags */}
-                          {blog.tags && blog.tags.length > 0 && (
-                            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-                              {blog.tags.slice(0, 3).map((tag) => (
-                                <Chip
-                                  key={tag}
-                                  label={tag}
-                                  size="small"
-                                  variant="filled"
-                                  sx={{
-                                    bgcolor:
-                                      theme.palette.mode === 'dark' ? theme.palette.customColors.author.categoryChipBgDark : theme.palette.customColors.author.categoryChipBgLight,
-                                    color:
-                                      theme.palette.mode === 'dark' ? theme.palette.customColors.author.categoryChipText : 'inherit',
-                                    fontSize: '0.75rem',
-                                    border:
-                                      theme.palette.mode === 'dark' ? theme.palette.customColors.author.categoryChipBorder : 'none',
-                                  }}
-                                />
-                              ))}
-                            </Stack>
-                          )}
-
-                          {/* Stats */}
-                          <Stack direction="row" spacing={3} alignItems="center">
-                            <Stack direction="row" spacing={0.5} alignItems="center">
-                              <ThumbUp sx={{ fontSize: '1rem', color: 'text.secondary' }} />
-                              <Typography variant="body2" color="text.secondary">
-                                {blog.likes?.length || 0}
-                              </Typography>
-                            </Stack>
-                            <Stack direction="row" spacing={0.5} alignItems="center">
-                              <ThumbDown sx={{ fontSize: '1rem', color: 'text.secondary' }} />
-                              <Typography variant="body2" color="text.secondary">
-                                {blog.dislikes?.length || 0}
-                              </Typography>
-                            </Stack>
-                            <Typography variant="caption" color="text.secondary">
-                              {new Date(blog.createdAt).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric',
-                              })}
-                            </Typography>
-                          </Stack>
-                        </Stack>
-                      </CardContent>
-                    </Card>
-                  </Grid>
-                ))}
+                  {/* Engagement Stats */}
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      gap: 2,
+                      mt: 2,
+                      alignItems: 'center',
+                      color: (theme) => theme.palette.customColors.textMuted,
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <ThumbUp fontSize="small" sx={{ fontSize: '1rem' }} />
+                      <Typography variant="body2">{blog.likes?.length || 0}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <ThumbDown fontSize="small" sx={{ fontSize: '1rem' }} />
+                      <Typography variant="body2">{blog.dislikes?.length || 0}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <ChatBubbleOutline fontSize="small" sx={{ fontSize: '1rem' }} />
+                      <Typography variant="body2">Comments</Typography>
+                    </Box>
+                  </Box>
+                </Box>
               </Grid>
-            )}
-          </TabPanel>
-        </Paper>
+            ))}
+          </Grid>
+        )}
       </Container>
 
       <Footer />
