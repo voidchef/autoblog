@@ -2,7 +2,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
-import { Fab, MenuItem, Select, Typography, Paper, Container, Card, alpha, Divider } from '@mui/material';
+import { Fab, MenuItem, Select, Typography, Paper, Container, Card, alpha, Divider, useTheme } from '@mui/material';
 import BlogsTable from '../elements/Dashboard/BlogsTable';
 import AddIcon from '@mui/icons-material/Add';
 import { ROUTES } from '../../utils/routing/routes';
@@ -25,6 +25,7 @@ const months = Array.from({ length: 12 }, (_, index) => ({
 }));
 
 export default function Dashboard() {
+  const theme = useTheme();
   const [selectedMonth, setSelectedMonth] = React.useState<number>(new Date().getMonth());
   const [monthDays, setMonthDays] = React.useState<Array<Date>>([]);
   const [selectedBlog, setSelectedBlog] = React.useState<string>('');
@@ -143,8 +144,8 @@ export default function Dashboard() {
         minHeight: '100vh',
         background: (theme) =>
           theme.palette.mode === 'dark'
-            ? 'linear-gradient(135deg, #0a0e1a 0%, #131827 50%, #1e293b 100%)'
-            : 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #dbeafe 100%)',
+            ? theme.palette.customColors.analytics.heroGradientDark
+            : theme.palette.customColors.analytics.heroGradientLight,
       }}
     >
       <NavBar />
@@ -160,8 +161,8 @@ export default function Dashboard() {
               mb: 1,
               background: (theme) =>
                 theme.palette.mode === 'dark'
-                  ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                  : 'linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%)',
+                  ? theme.palette.customColors.analytics.headerTextGradientDark
+                  : theme.palette.customColors.analytics.headerTextGradientLight,
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -213,14 +214,14 @@ export default function Dashboard() {
             background: (theme) =>
               theme.palette.mode === 'dark'
                 ? alpha(theme.palette.background.paper, 0.6)
-                : 'rgba(255, 255, 255, 0.9)',
+                : theme.palette.customColors.overlay.white.almostOpaque,
             backdropFilter: 'blur(10px)',
             border: '1px solid',
             borderColor: 'divider',
             boxShadow: (theme) =>
               theme.palette.mode === 'dark'
-                ? '0 8px 32px rgba(0, 0, 0, 0.4)'
-                : '0 8px 32px rgba(0, 0, 0, 0.08)',
+                ? `0 8px 32px ${theme.palette.customColors.overlay.black.almostOpaque}`
+                : `0 8px 32px ${theme.palette.customColors.overlay.black.light}`,
           }}
         >
           <Box
@@ -234,7 +235,7 @@ export default function Dashboard() {
             <Box display="flex" alignItems="center" gap={1.5}>
               <Box
                 sx={{
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  background: theme.palette.customColors.analytics.headerTextGradientDark,
                   borderRadius: '12px',
                   p: 1,
                   display: 'flex',
@@ -264,7 +265,7 @@ export default function Dashboard() {
                   borderColor: (theme) =>
                     theme.palette.mode === 'dark'
                       ? alpha(theme.palette.primary.main, 0.3)
-                      : 'rgba(0, 0, 0, 0.1)',
+                      : theme.palette.customColors.overlay.black.light,
                 },
                 '&:hover .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'primary.main',

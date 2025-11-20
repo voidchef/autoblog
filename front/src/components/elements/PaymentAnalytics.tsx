@@ -19,10 +19,9 @@ import { BarChart } from '@mui/x-charts/BarChart';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { useGetPaymentAnalyticsQuery } from '../../services/paymentApi';
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-
 const PaymentAnalytics: React.FC = () => {
   const theme = useTheme();
+  const COLORS = theme.palette.customColors.charts.primary;
   const { data, isLoading, error } = useGetPaymentAnalyticsQuery({});
 
   if (isLoading) {
@@ -75,7 +74,7 @@ const PaymentAnalytics: React.FC = () => {
     icon: React.ReactNode;
     color: string;
   }> = ({ title, value, icon, color }) => (
-    <Card sx={{ height: '100%', boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
+    <Card sx={{ height: '100%', boxShadow: theme.palette.customColors.componentShadows.cardHover }}>
       <CardContent>
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box>
@@ -147,7 +146,7 @@ const PaymentAnalytics: React.FC = () => {
       <Grid container spacing={3}>
         {/* Daily Revenue Trend */}
         <Grid size={{ xs: 12, lg: 8 }}>
-          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
+          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: theme.palette.customColors.componentShadows.cardHover }}>
             <Typography variant="h6" gutterBottom fontWeight={600}>
               Daily Revenue (Last 30 Days)
             </Typography>
@@ -168,7 +167,7 @@ const PaymentAnalytics: React.FC = () => {
 
         {/* Revenue by Plan */}
         <Grid size={{ xs: 12, lg: 4 }}>
-          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
+          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: theme.palette.customColors.componentShadows.cardHover }}>
             <Typography variant="h6" gutterBottom fontWeight={600}>
               Revenue by Plan
             </Typography>
@@ -187,7 +186,7 @@ const PaymentAnalytics: React.FC = () => {
 
         {/* Monthly Revenue Trend */}
         <Grid size={{ xs: 12 }}>
-          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
+          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: theme.palette.customColors.componentShadows.cardHover }}>
             <Typography variant="h6" gutterBottom fontWeight={600}>
               Monthly Revenue & Transactions
             </Typography>
@@ -215,7 +214,7 @@ const PaymentAnalytics: React.FC = () => {
 
         {/* Plan Statistics */}
         <Grid size={{ xs: 12 }}>
-          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: '0 4px 12px rgba(0,0,0,0.08)' }}>
+          <Paper sx={{ p: 3, borderRadius: 2, boxShadow: theme.palette.customColors.componentShadows.cardHover }}>
             <Typography variant="h6" gutterBottom fontWeight={600}>
               Plan Statistics
             </Typography>

@@ -19,6 +19,11 @@ import {
   Stack,
   Tooltip,
   Badge,
+  Tabs,
+  Tab,
+  Fade,
+  Slide,
+  useTheme,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -40,6 +45,9 @@ import {
   Link as LinkIcon,
   AccountCircle as AccountCircleIcon,
   Receipt as ReceiptIcon,
+  Settings as SettingsIcon,
+  VpnKey as VpnKeyIcon,
+  CloudUpload as CloudUploadIcon,
 } from '@mui/icons-material';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
@@ -96,6 +104,7 @@ interface FormErrors {
 }
 
 const Profile: React.FC = () => {
+  const theme = useTheme();
   const dispatch = useAppDispatch();
   const { user, isLoading: userLoading } = useAuth();
   const [updateUser, { isLoading: updateLoading }] = useUpdateUserMutation();
@@ -169,6 +178,7 @@ const Profile: React.FC = () => {
   const [isEditing, setIsEditing] = React.useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = React.useState(false);
   const [pendingChanges, setPendingChanges] = React.useState<any>(null);
+  const [activeTab, setActiveTab] = React.useState(0);
 
   // Initialize form data when user data is loaded
   React.useEffect(() => {
@@ -532,365 +542,524 @@ const Profile: React.FC = () => {
       <NavBar />
       <Box
         sx={{
-          background: (theme) => theme.palette.customColors.gradients.badgeLight,
+          background: (theme) => theme.palette.mode === 'dark'
+            ? theme.palette.customColors.gradients.heroDark
+            : `linear-gradient(135deg, ${theme.palette.customColors.bgLight.primary} 0%, ${theme.palette.customColors.bgLight.secondary} 50%, ${theme.palette.customColors.bgLight.tertiary} 100%)`,
           minHeight: '100vh',
-          py: { xs: 2, sm: 3, md: 4 },
-          px: { xs: 1, sm: 0 },
+          py: { xs: 3, sm: 4, md: 6 },
+          px: { xs: 1, sm: 2 },
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: (theme) => theme.palette.mode === 'dark'
+              ? `radial-gradient(circle at 20% 50%, ${theme.palette.customColors.accent.blue.main}22 0%, transparent 50%), radial-gradient(circle at 80% 80%, ${theme.palette.customColors.accent.teal.main}22 0%, transparent 50%)`
+              : `radial-gradient(circle at 20% 50%, ${theme.palette.customColors.accent.blue.lighter}22 0%, transparent 50%), radial-gradient(circle at 80% 80%, ${theme.palette.customColors.accent.teal.lighter}22 0%, transparent 50%)`,
+            pointerEvents: 'none',
+          },
         }}
       >
-        <Container maxWidth="lg">
-          {/* Header Section */}
-          <Box sx={{ mb: { xs: 2, sm: 3, md: 4 }, textAlign: 'center', px: { xs: 1, sm: 0 } }}>
-            <Typography
-              variant="h3"
-              component="h1"
-              gutterBottom
+        <Container maxWidth="xl">
+          {/* Modern Header Section with Glass Effect */}
+          <Fade in timeout={800}>
+            <Paper
+              elevation={0}
               sx={{
-                fontWeight: 700,
-                fontSize: { xs: '1.75rem', sm: '2.25rem', md: '3rem' },
-                background: (theme) => theme.palette.customColors.gradients.primary,
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                mb: { xs: 0.5, md: 1 },
+                mb: { xs: 3, md: 4 },
+                p: { xs: 3, sm: 4, md: 5 },
+                borderRadius: 4,
+                background: (theme) => theme.palette.mode === 'dark'
+                  ? theme.palette.customColors.gradients.cardDark
+                  : `linear-gradient(135deg, ${theme.palette.customColors.overlay.white.full} 0%, ${theme.palette.customColors.overlay.white.almostOpaque} 100%)`,
+                backdropFilter: 'blur(20px)',
+                border: '1px solid',
+                borderColor: (theme) => theme.palette.mode === 'dark'
+                  ? theme.palette.customColors.borders.primaryDark
+                  : theme.palette.customColors.overlay.white.veryStrong,
+                boxShadow: theme.palette.mode === 'dark'
+                  ? theme.palette.customColors.componentShadows.profileDark
+                  : theme.palette.customColors.componentShadows.profileLight,
+                position: 'relative',
+                overflow: 'hidden',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '4px',
+                  background: (theme) => theme.palette.customColors.gradients.primary,
+                },
               }}
             >
-              Profile Settings
-            </Typography>
-            <Typography 
-              variant="body1" 
-              color="text.secondary"
-              sx={{ fontSize: { xs: '0.875rem', md: '1rem' } }}
-            >
-              Manage your account information and preferences
-            </Typography>
-          </Box>
-
-          <Grid container spacing={3}>
-            {/* Left Column - Profile Card */}
-            <Grid size={{ xs: 12, md: 4 }}>
-              <Card
-                sx={{
-                  position: { xs: 'static', md: 'sticky' },
-                  top: { xs: 'auto', md: 80 },
-                  overflow: 'hidden',
-                  boxShadow: { xs: '0 4px 16px rgba(0, 0, 0, 0.06)', md: '0 8px 32px rgba(0, 0, 0, 0.08)' },
-                  transition: 'transform 0.2s, box-shadow 0.2s',
-                  mb: { xs: 2, md: 0 },
-                  '&:hover': {
-                    transform: { xs: 'none', md: 'translateY(-4px)' },
-                    boxShadow: { xs: '0 4px 16px rgba(0, 0, 0, 0.06)', md: '0 12px 48px rgba(0, 0, 0, 0.12)' },
-                  },
-                }}
-              >
-                {/* Header with gradient background */}
-                <Box
-                  sx={{
-                    background: (theme) => theme.palette.customColors.gradients.primary,
-                    height: { xs: 100, sm: 120 },
-                    position: 'relative',
-                  }}
-                >
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: '50%',
-                      left: '50%',
-                      transform: 'translate(-50%, 0%)',
-                    }}
-                  >
-                    <Badge
-                      overlap="circular"
-                      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                      badgeContent={
-                        user.isEmailVerified ? (
+              <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} alignItems="center">
+                {/* Profile Avatar Section */}
+                <Box>
+                  <Badge
+                    overlap="circular"
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                    badgeContent={
+                      user.isEmailVerified ? (
+                        <Tooltip title="Email Verified" placement="top">
                           <CheckCircleIcon
                             sx={{
                               bgcolor: 'success.main',
                               borderRadius: '50%',
                               color: 'white',
-                              p: 0.3,
-                              fontSize: { xs: 22, sm: 28 },
+                              p: 0.5,
+                              fontSize: 32,
+                              border: theme.palette.mode === 'dark'
+                                ? theme.palette.customColors.componentShadows.avatarBorderLight
+                                : '3px solid white',
                             }}
                           />
-                        ) : null
-                      }
-                    >
-                      <Avatar
-                        src={user.profilePicture || undefined}
-                        {...(!user.profilePicture ? profileAvatar(formData.name || 'User') : {})}
-                        sx={{
-                          width: { xs: 80, sm: 100 },
-                          height: { xs: 80, sm: 100 },
-                          fontSize: { xs: '2rem', sm: '2.5rem' },
-                          border: { xs: '3px solid white', sm: '4px solid white' },
-                          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                        }}
-                      />
-                    </Badge>
-                  </Box>
+                        </Tooltip>
+                      ) : (
+                        <Tooltip title="Email Not Verified" placement="top">
+                          <WarningIcon
+                            sx={{
+                              bgcolor: 'warning.main',
+                              borderRadius: '50%',
+                              color: 'white',
+                              p: 0.5,
+                              fontSize: 32,
+                              border: theme.palette.mode === 'dark'
+                                ? theme.palette.customColors.componentShadows.avatarBorderLight
+                                : '3px solid white',
+                            }}
+                          />
+                        </Tooltip>
+                      )
+                    }
+                  >
+                    <Avatar
+                      src={user.profilePicture || undefined}
+                      {...(!user.profilePicture ? profileAvatar(formData.name || 'User') : {})}
+                      sx={{
+                        width: { xs: 100, sm: 120, md: 140 },
+                        height: { xs: 100, sm: 120, md: 140 },
+                        fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem' },
+                        border: theme.palette.mode === 'dark'
+                          ? theme.palette.customColors.componentShadows.avatarBorderHeavyLight
+                          : '5px solid white',
+                        boxShadow: theme.palette.mode === 'dark'
+                          ? theme.palette.customColors.componentShadows.avatarShadowDark
+                          : theme.palette.customColors.componentShadows.avatarShadowLight,
+                        transition: 'transform 0.3s ease',
+                        '&:hover': {
+                          transform: 'scale(1.05)',
+                        },
+                      }}
+                    />
+                  </Badge>
                 </Box>
 
-                <CardContent sx={{ pt: { xs: 6, sm: 7 }, pb: { xs: 2, sm: 3 }, px: { xs: 2, sm: 3 }, textAlign: 'center' }}>
-                  <Typography 
-                    variant="h5" 
-                    component="h2" 
-                    gutterBottom 
-                    fontWeight={600}
-                    sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}
+                {/* Profile Info */}
+                <Box flex={1} textAlign={{ xs: 'center', md: 'left' }}>
+                  <Typography
+                    variant="h3"
+                    component="h1"
+                    gutterBottom
+                    sx={{
+                      fontWeight: 800,
+                      fontSize: { xs: '1.75rem', sm: '2.25rem', md: '2.75rem' },
+                      background: (theme) => theme.palette.customColors.gradients.primary,
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      mb: 1,
+                    }}
                   >
                     {formData.name || 'User'}
                   </Typography>
-                  <Typography 
-                    variant="body2" 
-                    color="text.secondary" 
-                    gutterBottom 
-                    sx={{ 
-                      mb: 2,
-                      fontSize: { xs: '0.813rem', sm: '0.875rem' },
-                      wordBreak: 'break-word',
-                    }}
-                  >
-                    {formData.email}
-                  </Typography>
-
                   <Stack 
                     direction="row" 
-                    spacing={1} 
-                    justifyContent="center" 
-                    sx={{ 
-                      mb: 2,
-                      flexWrap: 'wrap',
-                      gap: 1,
-                    }}
+                    spacing={1.5} 
+                    alignItems="center" 
+                    justifyContent={{ xs: 'center', md: 'flex-start' }}
+                    flexWrap="wrap"
+                    sx={{ mb: 2 }}
                   >
                     <Chip
-                      label={user.role === 'admin' ? 'Administrator' : 'User'}
-                      size="small"
-                      color="primary"
+                      icon={<EmailIcon />}
+                      label={formData.email}
                       variant="outlined"
-                      sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                      sx={{ 
+                        fontSize: { xs: '0.813rem', sm: '0.875rem' },
+                        fontWeight: 500,
+                        borderRadius: 2,
+                      }}
                     />
                     <Chip
-                      icon={user.isEmailVerified ? <CheckCircleIcon /> : <WarningIcon />}
-                      label={user.isEmailVerified ? 'Verified' : 'Not Verified'}
-                      color={user.isEmailVerified ? 'success' : 'warning'}
-                      size="small"
-                      sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                      label={user.role === 'admin' ? 'Administrator' : 'User'}
+                      color="primary"
+                      variant="filled"
+                      sx={{ 
+                        fontSize: { xs: '0.813rem', sm: '0.875rem' },
+                        fontWeight: 600,
+                        borderRadius: 2,
+                      }}
                     />
                   </Stack>
-
-                  {/* Email Verification Reminder */}
-                  {!user.isEmailVerified && (
-                    <Alert 
-                      severity="warning" 
+                  {formData.bio && (
+                    <Typography 
+                      variant="body1" 
+                      color="text.secondary"
                       sx={{ 
-                        mt: 2, 
-                        mb: 1,
-                        fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                        fontSize: { xs: '0.875rem', sm: '1rem' },
+                        lineHeight: 1.6,
+                        maxWidth: '600px',
+                        mx: { xs: 'auto', md: 0 },
                       }}
-                      action={
-                        <Button
-                          color="inherit"
-                          size="small"
-                          onClick={handleResendVerificationEmail}
-                          disabled={isSendingVerification}
-                          startIcon={isSendingVerification ? <CircularProgress size={16} color="inherit" /> : <EmailIcon />}
-                          sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
-                        >
-                          {isSendingVerification ? 'Sending...' : 'Resend'}
-                        </Button>
-                      }
                     >
-                      Please verify your email to access all features
-                    </Alert>
+                      {formData.bio}
+                    </Typography>
                   )}
+                </Box>
 
-                  {formData.bio && !isEditing && (
+                {/* Quick Actions */}
+                <Stack direction="column" spacing={1.5}>
+                  {!isEditing ? (
+                    <Button
+                      variant="contained"
+                      size="large"
+                      onClick={() => setIsEditing(true)}
+                      startIcon={<EditIcon />}
+                      sx={{
+                        borderRadius: 3,
+                        textTransform: 'none',
+                        px: 4,
+                        py: 1.5,
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                        background: (theme) => theme.palette.customColors.gradients.primary,
+                        boxShadow: theme.palette.customColors.componentShadows.buttonPrimary,
+                        '&:hover': {
+                          background: (theme) => theme.palette.customColors.gradients.primaryDark,
+                          boxShadow: theme.palette.customColors.componentShadows.buttonPrimaryHover,
+                          transform: 'translateY(-2px)',
+                        },
+                        transition: 'all 0.3s ease',
+                      }}
+                    >
+                      Edit Profile
+                    </Button>
+                  ) : (
                     <>
-                      <Divider sx={{ my: { xs: 1.5, sm: 2 } }} />
+                      <Button
+                        variant="contained"
+                        size="large"
+                        type="submit"
+                        onClick={handleSubmit}
+                        startIcon={updateLoading ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
+                        disabled={updateLoading}
+                        sx={{
+                          borderRadius: 3,
+                          textTransform: 'none',
+                          px: 4,
+                          py: 1.5,
+                          fontSize: '1rem',
+                          fontWeight: 600,
+                          background: (theme) => theme.palette.customColors.gradients.primary,
+                          boxShadow: theme.palette.customColors.componentShadows.buttonPrimary,
+                          '&:hover': {
+                            background: (theme) => theme.palette.customColors.gradients.primaryDark,
+                            boxShadow: theme.palette.customColors.componentShadows.buttonPrimaryHover,
+                          },
+                        }}
+                      >
+                        {updateLoading ? 'Saving...' : 'Save Changes'}
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        size="large"
+                        onClick={handleCancel}
+                        startIcon={<CancelIcon />}
+                        disabled={updateLoading}
+                        sx={{
+                          borderRadius: 3,
+                          textTransform: 'none',
+                          px: 4,
+                          py: 1.5,
+                          fontSize: '1rem',
+                          fontWeight: 600,
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </>
+                  )}
+                </Stack>
+              </Stack>
+
+              {/* Email Verification Alert */}
+              {!user.isEmailVerified && (
+                <Slide direction="down" in={!user.isEmailVerified} mountOnEnter unmountOnExit>
+                  <Alert 
+                    severity="warning" 
+                    sx={{ 
+                      mt: 3,
+                      borderRadius: 2,
+                      fontSize: { xs: '0.875rem', sm: '1rem' },
+                    }}
+                    action={
+                      <Button
+                        color="inherit"
+                        size="small"
+                        onClick={handleResendVerificationEmail}
+                        disabled={isSendingVerification}
+                        startIcon={isSendingVerification ? <CircularProgress size={16} color="inherit" /> : <EmailIcon />}
+                        sx={{ fontWeight: 600 }}
+                      >
+                        {isSendingVerification ? 'Sending...' : 'Verify Now'}
+                      </Button>
+                    }
+                  >
+                    <strong>Verify your email</strong> to access all features
+                  </Alert>
+                </Slide>
+              )}
+            </Paper>
+          </Fade>
+
+          {/* Main Content with Tabs */}
+          <Grid container spacing={3}>
+            {/* Left Sidebar - Quick Stats */}
+            <Grid size={{ xs: 12, lg: 3 }}>
+              <Stack spacing={2}>
+                {/* Quick Stats Card */}
+                <Fade in timeout={1000}>
+                  <Paper
+                    elevation={0}
+                    sx={{
+                      p: 3,
+                      borderRadius: 3,
+                      background: (theme) => theme.palette.mode === 'dark'
+                        ? theme.palette.customColors.gradients.cardDark
+                        : `linear-gradient(135deg, ${theme.palette.customColors.overlay.white.full} 0%, ${theme.palette.customColors.overlay.white.almostOpaque} 100%)`,
+                      backdropFilter: 'blur(20px)',
+                      border: '1px solid',
+                      borderColor: (theme) => theme.palette.mode === 'dark'
+                        ? theme.palette.customColors.borders.primaryDark
+                        : theme.palette.customColors.overlay.white.veryStrong,
+                      boxShadow: theme.palette.mode === 'dark'
+                        ? theme.palette.customColors.componentShadows.sectionDark
+                        : theme.palette.customColors.componentShadows.sectionLight,
+                    }}
+                  >
+                    <Typography variant="h6" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
+                      Account Status
+                    </Typography>
+                    <Stack spacing={2}>
+                      <Box>
+                        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
+                          <Typography variant="body2" color="text.secondary">Email Status</Typography>
+                          <Chip
+                            icon={user.isEmailVerified ? <CheckCircleIcon /> : <WarningIcon />}
+                            label={user.isEmailVerified ? 'Verified' : 'Pending'}
+                            color={user.isEmailVerified ? 'success' : 'warning'}
+                            size="small"
+                            sx={{ fontWeight: 600, fontSize: '0.75rem' }}
+                          />
+                        </Stack>
+                      </Box>
+                      <Divider />
+                      <Box>
+                        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
+                          <Typography variant="body2" color="text.secondary">OpenAI API</Typography>
+                          <Chip
+                            icon={user?.hasOpenAiKey ? <CheckCircleIcon /> : <WarningIcon />}
+                            label={user?.hasOpenAiKey ? 'Configured' : 'Not Set'}
+                            color={user?.hasOpenAiKey ? 'success' : 'default'}
+                            size="small"
+                            variant="outlined"
+                            sx={{ fontSize: '0.75rem' }}
+                          />
+                        </Stack>
+                      </Box>
+                      <Box>
+                        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
+                          <Typography variant="body2" color="text.secondary">WordPress</Typography>
+                          <Chip
+                            icon={user?.hasWordPressConfig ? <CheckCircleIcon /> : <InfoIcon />}
+                            label={user?.hasWordPressConfig ? 'Connected' : 'Not Set'}
+                            color={user?.hasWordPressConfig ? 'success' : 'default'}
+                            size="small"
+                            variant="outlined"
+                            sx={{ fontSize: '0.75rem' }}
+                          />
+                        </Stack>
+                      </Box>
+                      <Box>
+                        <Stack direction="row" justifyContent="space-between" alignItems="center" mb={0.5}>
+                          <Typography variant="body2" color="text.secondary">Medium</Typography>
+                          <Chip
+                            icon={user?.hasMediumConfig ? <CheckCircleIcon /> : <InfoIcon />}
+                            label={user?.hasMediumConfig ? 'Connected' : 'Not Set'}
+                            color={user?.hasMediumConfig ? 'success' : 'default'}
+                            size="small"
+                            variant="outlined"
+                            sx={{ fontSize: '0.75rem' }}
+                          />
+                        </Stack>
+                      </Box>
+                    </Stack>
+                  </Paper>
+                </Fade>
+
+                {/* Social Links Card */}
+                {!isEditing &&
+                  (formData.socialLinks.twitter ||
+                    formData.socialLinks.linkedin ||
+                    formData.socialLinks.github ||
+                    formData.socialLinks.website) && (
+                    <Fade in timeout={1200}>
                       <Paper
                         elevation={0}
                         sx={{
-                          p: { xs: 1.5, sm: 2 },
-                          textAlign: 'left',
-                          bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
-                          borderRadius: 2,
+                          p: 3,
+                          borderRadius: 3,
+                          background: (theme) => theme.palette.mode === 'dark'
+                            ? theme.palette.customColors.gradients.cardDark
+                            : `linear-gradient(135deg, ${theme.palette.customColors.overlay.white.full} 0%, ${theme.palette.customColors.overlay.white.almostOpaque} 100%)`,
+                          backdropFilter: 'blur(20px)',
+                          border: '1px solid',
+                          borderColor: (theme) => theme.palette.mode === 'dark'
+                            ? theme.palette.customColors.borders.primaryDark
+                            : theme.palette.customColors.overlay.white.veryStrong,
+                          boxShadow: theme.palette.mode === 'dark'
+                            ? theme.palette.customColors.componentShadows.sectionDark
+                            : theme.palette.customColors.componentShadows.sectionLight,
                         }}
                       >
-                        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>
-                          <InfoIcon sx={{ fontSize: { xs: 16, sm: 18 }, color: 'primary.main' }} />
-                          <Typography 
-                            variant="subtitle2" 
-                            color="primary" 
-                            fontWeight={600}
-                            sx={{ fontSize: { xs: '0.813rem', sm: '0.875rem' } }}
-                          >
-                            Bio
-                          </Typography>
-                        </Stack>
-                        <Typography 
-                          variant="body2" 
-                          sx={{ 
-                            whiteSpace: 'pre-wrap', 
-                            lineHeight: 1.6,
-                            fontSize: { xs: '0.813rem', sm: '0.875rem' },
-                          }}
-                        >
-                          {formData.bio}
+                        <Typography variant="h6" fontWeight={700} gutterBottom sx={{ mb: 2 }}>
+                          Social Links
                         </Typography>
+                        <Stack spacing={1.5}>
+                          {formData.socialLinks.twitter && (
+                            <Button
+                              startIcon={<TwitterIcon />}
+                              href={formData.socialLinks.twitter}
+                              target="_blank"
+                              fullWidth
+                              variant="outlined"
+                              sx={{
+                                justifyContent: 'flex-start',
+                                textTransform: 'none',
+                                borderRadius: 2,
+                                py: 1.2,
+                                fontWeight: 600,
+                                '&:hover': {
+                                  bgcolor: 'primary.main',
+                                  color: 'white',
+                                  borderColor: 'primary.main',
+                                },
+                              }}
+                            >
+                              Twitter
+                            </Button>
+                          )}
+                          {formData.socialLinks.linkedin && (
+                            <Button
+                              startIcon={<LinkedInIcon />}
+                              href={formData.socialLinks.linkedin}
+                              target="_blank"
+                              fullWidth
+                              variant="outlined"
+                              sx={{
+                                justifyContent: 'flex-start',
+                                textTransform: 'none',
+                                borderRadius: 2,
+                                py: 1.2,
+                                fontWeight: 600,
+                                '&:hover': {
+                                  bgcolor: 'primary.main',
+                                  color: 'white',
+                                  borderColor: 'primary.main',
+                                },
+                              }}
+                            >
+                              LinkedIn
+                            </Button>
+                          )}
+                          {formData.socialLinks.github && (
+                            <Button
+                              startIcon={<GitHubIcon />}
+                              href={formData.socialLinks.github}
+                              target="_blank"
+                              fullWidth
+                              variant="outlined"
+                              sx={{
+                                justifyContent: 'flex-start',
+                                textTransform: 'none',
+                                borderRadius: 2,
+                                py: 1.2,
+                                fontWeight: 600,
+                                '&:hover': {
+                                  bgcolor: 'primary.main',
+                                  color: 'white',
+                                  borderColor: 'primary.main',
+                                },
+                              }}
+                            >
+                              GitHub
+                            </Button>
+                          )}
+                          {formData.socialLinks.website && (
+                            <Button
+                              startIcon={<LanguageIcon />}
+                              href={formData.socialLinks.website}
+                              target="_blank"
+                              fullWidth
+                              variant="outlined"
+                              sx={{
+                                justifyContent: 'flex-start',
+                                textTransform: 'none',
+                                borderRadius: 2,
+                                py: 1.2,
+                                fontWeight: 600,
+                                '&:hover': {
+                                  bgcolor: 'primary.main',
+                                  color: 'white',
+                                  borderColor: 'primary.main',
+                                },
+                              }}
+                            >
+                              Website
+                            </Button>
+                          )}
+                        </Stack>
                       </Paper>
-                    </>
+                    </Fade>
                   )}
 
-                  {!isEditing &&
-                    (formData.socialLinks.twitter ||
-                      formData.socialLinks.linkedin ||
-                      formData.socialLinks.github ||
-                      formData.socialLinks.website) && (
-                      <>
-                        <Divider sx={{ my: { xs: 1.5, sm: 2 } }} />
-                        <Paper
-                          elevation={0}
-                          sx={{
-                            p: { xs: 1.5, sm: 2 },
-                            textAlign: 'left',
-                            bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
-                            borderRadius: 2,
-                          }}
-                        >
-                          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1.5 }}>
-                            <LinkIcon sx={{ fontSize: { xs: 16, sm: 18 }, color: 'primary.main' }} />
-                            <Typography 
-                              variant="subtitle2" 
-                              color="primary" 
-                              fontWeight={600}
-                              sx={{ fontSize: { xs: '0.813rem', sm: '0.875rem' } }}
-                            >
-                              Social Links
-                            </Typography>
-                          </Stack>
-                          <Stack spacing={1}>
-                            {formData.socialLinks.twitter && (
-                              <Tooltip title="Visit Twitter Profile" placement="right">
-                                <Button
-                                  startIcon={<TwitterIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
-                                  href={formData.socialLinks.twitter}
-                                  target="_blank"
-                                  size="small"
-                                  fullWidth
-                                  variant="outlined"
-                                  sx={{
-                                    justifyContent: 'flex-start',
-                                    textTransform: 'none',
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.813rem', sm: '0.875rem' },
-                                    py: { xs: 0.75, sm: 1 },
-                                    minHeight: { xs: '40px', sm: '44px' },
-                                    '&:hover': {
-                                      bgcolor: 'primary.light',
-                                      color: 'white',
-                                    },
-                                  }}
-                                >
-                                  Twitter
-                                </Button>
-                              </Tooltip>
-                            )}
-                            {formData.socialLinks.linkedin && (
-                              <Tooltip title="Visit LinkedIn Profile" placement="right">
-                                <Button
-                                  startIcon={<LinkedInIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
-                                  href={formData.socialLinks.linkedin}
-                                  target="_blank"
-                                  size="small"
-                                  fullWidth
-                                  variant="outlined"
-                                  sx={{
-                                    justifyContent: 'flex-start',
-                                    textTransform: 'none',
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.813rem', sm: '0.875rem' },
-                                    py: { xs: 0.75, sm: 1 },
-                                    minHeight: { xs: '40px', sm: '44px' },
-                                    '&:hover': {
-                                      bgcolor: 'primary.light',
-                                      color: 'white',
-                                    },
-                                  }}
-                                >
-                                  LinkedIn
-                                </Button>
-                              </Tooltip>
-                            )}
-                            {formData.socialLinks.github && (
-                              <Tooltip title="Visit GitHub Profile" placement="right">
-                                <Button
-                                  startIcon={<GitHubIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
-                                  href={formData.socialLinks.github}
-                                  target="_blank"
-                                  size="small"
-                                  fullWidth
-                                  variant="outlined"
-                                  sx={{
-                                    justifyContent: 'flex-start',
-                                    textTransform: 'none',
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.813rem', sm: '0.875rem' },
-                                    py: { xs: 0.75, sm: 1 },
-                                    minHeight: { xs: '40px', sm: '44px' },
-                                    '&:hover': {
-                                      bgcolor: 'primary.light',
-                                      color: 'white',
-                                    },
-                                  }}
-                                >
-                                  GitHub
-                                </Button>
-                              </Tooltip>
-                            )}
-                            {formData.socialLinks.website && (
-                              <Tooltip title="Visit Website" placement="right">
-                                <Button
-                                  startIcon={<LanguageIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
-                                  href={formData.socialLinks.website}
-                                  target="_blank"
-                                  size="small"
-                                  fullWidth
-                                  variant="outlined"
-                                  sx={{
-                                    justifyContent: 'flex-start',
-                                    textTransform: 'none',
-                                    borderRadius: 2,
-                                    fontSize: { xs: '0.813rem', sm: '0.875rem' },
-                                    py: { xs: 0.75, sm: 1 },
-                                    minHeight: { xs: '40px', sm: '44px' },
-                                    '&:hover': {
-                                      bgcolor: 'primary.light',
-                                      color: 'white',
-                                    },
-                                  }}
-                                >
-                                  Website
-                                </Button>
-                              </Tooltip>
-                            )}
-                          </Stack>
-                        </Paper>
-                      </>
-                    )}
-
-                  {user.updatedAt && (
-                    <>
-                      <Divider sx={{ my: { xs: 1.5, sm: 2 } }} />
+                {/* Last Updated Info */}
+                {user.updatedAt && (
+                  <Fade in timeout={1400}>
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        p: 2,
+                        borderRadius: 3,
+                        background: (theme) => theme.palette.customColors.gradients.badgeLight,
+                        border: '1px solid',
+                        borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
+                      }}
+                    >
                       <Typography
                         variant="caption"
                         color="text.secondary"
                         display="flex"
                         alignItems="center"
                         justifyContent="center"
-                        sx={{ fontSize: { xs: '0.7rem', sm: '0.75rem' } }}
+                        sx={{ fontSize: '0.75rem' }}
                       >
+                        <InfoIcon sx={{ fontSize: 16, mr: 0.5 }} />
                         Last updated:{' '}
                         {new Date(user.updatedAt).toLocaleDateString('en-US', {
                           year: 'numeric',
@@ -898,67 +1067,75 @@ const Profile: React.FC = () => {
                           day: 'numeric',
                         })}
                       </Typography>
-                    </>
-                  )}
-                </CardContent>
-              </Card>
+                    </Paper>
+                  </Fade>
+                )}
+              </Stack>
             </Grid>
 
-            {/* Right Column - Edit Form */}
-            <Grid size={{ xs: 12, md: 8 }}>
-              <Card
-                sx={{
-                  boxShadow: { xs: '0 4px 16px rgba(0, 0, 0, 0.06)', md: '0 8px 32px rgba(0, 0, 0, 0.08)' },
-                  borderRadius: 2,
-                }}
-              >
-                <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
-                  <Box 
-                    display="flex" 
-                    flexDirection={{ xs: 'column', sm: 'row' }}
-                    justifyContent="space-between" 
-                    alignItems={{ xs: 'flex-start', sm: 'center' }}
-                    mb={{ xs: 2, md: 3 }}
-                    gap={{ xs: 1.5, sm: 0 }}
-                  >
-                    <Stack direction="row" alignItems="center" spacing={1.5}>
-                      <AccountCircleIcon sx={{ fontSize: { xs: 24, sm: 28 }, color: 'primary.main' }} />
-                      <Typography 
-                        variant="h5" 
-                        component="h3" 
-                        fontWeight={600}
-                        sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' } }}
-                      >
-                        Profile Information
-                      </Typography>
-                    </Stack>
-                    {!isEditing && (
-                      <Button
-                        variant="contained"
-                        onClick={() => setIsEditing(true)}
-                        startIcon={<EditIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
-                        sx={{
-                          width: { xs: '100%', sm: 'auto' },
-                          borderRadius: 2,
+            {/* Main Content Area with Tabs */}
+            <Grid size={{ xs: 12, lg: 9 }}>
+              <Fade in timeout={1000}>
+                <Card
+                  elevation={0}
+                  sx={{
+                    borderRadius: 3,
+                    background: (theme) => theme.palette.mode === 'dark'
+                      ? theme.palette.customColors.gradients.cardDark
+                      : `linear-gradient(135deg, ${theme.palette.customColors.overlay.white.full} 0%, ${theme.palette.customColors.overlay.white.almostOpaque} 100%)`,
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid',
+                    borderColor: (theme) => theme.palette.mode === 'dark'
+                      ? theme.palette.customColors.borders.primaryDark
+                      : theme.palette.customColors.overlay.white.veryStrong,
+                    boxShadow: theme.palette.mode === 'dark'
+                      ? theme.palette.customColors.componentShadows.profileDark
+                      : theme.palette.customColors.componentShadows.profileLight,
+                    overflow: 'visible',
+                  }}
+                >
+                  {/* Tabs Navigation */}
+                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs
+                      value={activeTab}
+                      onChange={(e, newValue) => setActiveTab(newValue)}
+                      variant="scrollable"
+                      scrollButtons="auto"
+                      sx={{
+                        px: { xs: 1, sm: 2 },
+                        '& .MuiTab-root': {
                           textTransform: 'none',
-                          px: { xs: 2, sm: 3 },
+                          fontWeight: 600,
                           fontSize: { xs: '0.875rem', sm: '1rem' },
-                          minHeight: { xs: '40px', sm: '44px' },
+                          minHeight: { xs: 56, sm: 64 },
+                          px: { xs: 2, sm: 3 },
+                        },
+                        '& .Mui-selected': {
+                          color: 'primary.main',
+                        },
+                        '& .MuiTabs-indicator': {
+                          height: 3,
+                          borderRadius: '3px 3px 0 0',
                           background: (theme) => theme.palette.customColors.gradients.primary,
-                          '&:hover': {
-                            background: (theme) => theme.palette.customColors.gradients.primaryDark,
-                          },
-                        }}
-                      >
-                        Edit Profile
-                      </Button>
-                    )}
+                        },
+                      }}
+                    >
+                      <Tab icon={<PersonIcon />} iconPosition="start" label="Basic Info" />
+                      <Tab icon={<VpnKeyIcon />} iconPosition="start" label="Security & APIs" />
+                      <Tab icon={<CloudUploadIcon />} iconPosition="start" label="Publishing" />
+                      <Tab icon={<LinkIcon />} iconPosition="start" label="Connected Accounts" />
+                      {!isEditing && <Tab icon={<ReceiptIcon />} iconPosition="start" label="Order History" />}
+                    </Tabs>
                   </Box>
 
-                  <Box component="form" onSubmit={handleSubmit}>
-                    <Grid container spacing={{ xs: 2, sm: 3 }}>
-                      {/* Basic Information Section */}
-                      <Grid size={12}>
+                  <CardContent sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+                    <Box component="form" onSubmit={handleSubmit}>
+                      {/* Tab Panel 0: Basic Info */}
+                      {activeTab === 0 && (
+                        <Fade in timeout={400}>
+                          <Grid container spacing={{ xs: 2, sm: 3 }}>
+                            {/* Basic Information Section */}
+                            <Grid size={12}>
                         <Paper
                           elevation={0}
                           sx={{
@@ -1075,30 +1252,30 @@ const Profile: React.FC = () => {
                         </Paper>
                       </Grid>
 
-                      {/* Social Links Section */}
-                      <Grid size={12}>
-                        <Paper
-                          elevation={0}
-                          sx={{
-                            p: { xs: 2, sm: 2.5 },
-                            bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
-                            borderRadius: 2,
-                            border: '1px solid',
-                            borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
-                          }}
-                        >
-                          <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: { xs: 1.5, sm: 2 } }}>
-                            <LinkIcon sx={{ color: 'primary.main', fontSize: { xs: 20, sm: 24 } }} />
-                            <Typography 
-                              variant="h6" 
-                              fontWeight={600} 
-                              color="primary"
-                              sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
-                            >
-                              Social Links
-                            </Typography>
-                          </Stack>
-                          <Grid container spacing={2}>
+                            {/* Social Links Section */}
+                            <Grid size={12}>
+                              <Paper
+                                elevation={0}
+                                sx={{
+                                  p: { xs: 2, sm: 2.5 },
+                                  bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
+                                  borderRadius: 2,
+                                  border: '1px solid',
+                                  borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
+                                }}
+                              >
+                                <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: { xs: 1.5, sm: 2 } }}>
+                                  <LinkIcon sx={{ color: 'primary.main', fontSize: { xs: 20, sm: 24 } }} />
+                                  <Typography 
+                                    variant="h6" 
+                                    fontWeight={600} 
+                                    color="primary"
+                                    sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+                                  >
+                                    Social Links
+                                  </Typography>
+                                </Stack>
+                                <Grid container spacing={2}>
                             {/* Twitter */}
                             <Grid size={{ xs: 12, sm: 6 }}>
                               <TextField
@@ -1183,14 +1360,21 @@ const Profile: React.FC = () => {
                                     </InputAdornment>
                                   ),
                                 }}
-                                sx={textFieldStyles}                              />
-                            </Grid>
+                                sx={textFieldStyles}                                  />
+                                </Grid>
+                              </Grid>
+                            </Paper>
                           </Grid>
-                        </Paper>
-                      </Grid>
+                        </Grid>
+                      </Fade>
+                    )}
 
-                      {/* Security Section */}
-                      <Grid size={12}>
+                    {/* Tab Panel 1: Security & APIs */}
+                    {activeTab === 1 && (
+                      <Fade in timeout={400}>
+                        <Grid container spacing={{ xs: 2, sm: 3 }}>
+                          {/* Security Section */}
+                          <Grid size={12}>
                         <Paper
                           elevation={0}
                           sx={{
@@ -1391,12 +1575,19 @@ const Profile: React.FC = () => {
                                 </Box>
                               )}
                             </Grid>
+                              </Grid>
+                            </Paper>
                           </Grid>
-                        </Paper>
-                      </Grid>
+                        </Grid>
+                      </Fade>
+                    )}
 
-                      {/* WordPress Publishing Settings */}
-                      <Grid size={12}>
+                    {/* Tab Panel 2: Publishing */}
+                    {activeTab === 2 && (
+                      <Fade in timeout={400}>
+                        <Grid container spacing={{ xs: 2, sm: 3 }}>
+                          {/* WordPress Publishing Settings */}
+                          <Grid size={12}>
                         <Paper
                           elevation={2}
                           sx={{
@@ -1610,118 +1801,73 @@ const Profile: React.FC = () => {
                                 </Box>
                               )}
                             </Grid>
+                              </Grid>
+                            </Paper>
                           </Grid>
-                        </Paper>
-                      </Grid>
-
-                      {/* OAuth Connected Accounts Section */}
-                      <Grid size={12}>
-                        <Paper
-                          elevation={0}
-                          sx={{
-                            p: { xs: 2, sm: 2.5 },
-                            bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
-                            borderRadius: 2,
-                            border: '1px solid',
-                            borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
-                          }}
-                        >
-                          <ConnectedAccounts />
-                        </Paper>
-                      </Grid>
-
-                      {/* Order History Section */}
-                      {!isEditing && (
-                        <Grid size={12}>
-                          <Paper
-                            elevation={0}
-                            sx={{
-                              p: { xs: 2, sm: 2.5 },
-                              bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
-                              borderRadius: 2,
-                              border: '1px solid',
-                              borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
-                            }}
-                          >
-                            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: { xs: 1.5, sm: 2 } }}>
-                              <ReceiptIcon sx={{ color: 'primary.main', fontSize: { xs: 20, sm: 24 } }} />
-                              <Typography 
-                                variant="h6" 
-                                fontWeight={600} 
-                                color="primary"
-                                sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
-                              >
-                                Order History
-                              </Typography>
-                            </Stack>
-                            <OrderHistory />
-                          </Paper>
                         </Grid>
-                      )}
+                      </Fade>
+                    )}
 
-                      {/* Action Buttons */}
-                      {isEditing && (
-                        <Grid size={12}>
-                          <Paper
-                            elevation={0}
-                            sx={{
-                              p: { xs: 1.5, sm: 2 },
-                              bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
-                              borderRadius: 2,
-                            }}
-                          >
-                            <Stack 
-                              direction={{ xs: 'column', sm: 'row' }}
-                              spacing={{ xs: 2, sm: 2 }}
-                              justifyContent="flex-end"
-                              sx={{ gap: { xs: 2, sm: 0 } }}
+                    {/* Tab Panel 3: Connected Accounts */}
+                    {activeTab === 3 && (
+                      <Fade in timeout={400}>
+                        <Grid container spacing={{ xs: 2, sm: 3 }}>
+                          {/* OAuth Connected Accounts Section */}
+                          <Grid size={12}>
+                            <Paper
+                              elevation={0}
+                              sx={{
+                                p: { xs: 2, sm: 2.5 },
+                                bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
+                                borderRadius: 2,
+                                border: '1px solid',
+                                borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
+                              }}
                             >
-                              <Button
-                                variant="outlined"
-                                onClick={handleCancel}
-                                startIcon={<CancelIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
-                                disabled={updateLoading}
-                                fullWidth={true}
-                                sx={{
-                                  borderRadius: 2,
-                                  textTransform: 'none',
-                                  px: { xs: 2, sm: 3 },
-                                  fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  minHeight: { xs: '44px', sm: '48px' },
-                                  order: { xs: 2, sm: 1 },
-                                }}
-                              >
-                                Cancel
-                              </Button>
-                              <Button
-                                type="submit"
-                                variant="contained"
-                                startIcon={updateLoading ? <CircularProgress size={20} /> : <SaveIcon sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }} />}
-                                disabled={updateLoading}
-                                fullWidth={true}
-                                sx={{
-                                  borderRadius: 2,
-                                  textTransform: 'none',
-                                  px: { xs: 2, sm: 3 },
-                                  fontSize: { xs: '0.875rem', sm: '1rem' },
-                                  minHeight: { xs: '44px', sm: '48px' },
-                                  order: { xs: 1, sm: 2 },
-                                  background: (theme) => theme.palette.customColors.gradients.primary,
-                                  '&:hover': {
-                                    background: (theme) => theme.palette.customColors.gradients.primaryDark,
-                                  },
-                                }}
-                              >
-                                {updateLoading ? 'Saving...' : 'Save Changes'}
-                              </Button>
-                            </Stack>
-                          </Paper>
+                              <ConnectedAccounts />
+                            </Paper>
+                          </Grid>
                         </Grid>
-                      )}
-                    </Grid>
-                  </Box>
-                </CardContent>
-              </Card>
+                      </Fade>
+                    )}
+
+                    {/* Tab Panel 4: Order History */}
+                    {!isEditing && activeTab === 4 && (
+                      <Fade in timeout={400}>
+                        <Grid container spacing={{ xs: 2, sm: 3 }}>
+                          {/* Order History Section */}
+                          <Grid size={12}>
+                            <Paper
+                              elevation={0}
+                              sx={{
+                                p: { xs: 2, sm: 2.5 },
+                                bgcolor: (theme) => theme.palette.customColors.gradients.badgeLight,
+                                borderRadius: 2,
+                                border: '1px solid',
+                                borderColor: (theme) => theme.palette.customColors.borders.primaryLight,
+                              }}
+                            >
+                              <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: { xs: 1.5, sm: 2 } }}>
+                                <ReceiptIcon sx={{ color: 'primary.main', fontSize: { xs: 20, sm: 24 } }} />
+                                <Typography 
+                                  variant="h6" 
+                                  fontWeight={600} 
+                                  color="primary"
+                                  sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+                                >
+                                  Order History
+                                </Typography>
+                              </Stack>
+                              <OrderHistory />
+                            </Paper>
+                          </Grid>
+                        </Grid>
+                      </Fade>
+                    )}
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Fade>
             </Grid>
           </Grid>
 

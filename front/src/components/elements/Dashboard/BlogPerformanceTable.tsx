@@ -365,10 +365,10 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
                                 onToggleFeatured(blog.id);
                               }}
                               sx={{
-                                color: blog.isFeatured ? '#FFD700' : theme.palette.action.active,
+                                color: blog.isFeatured ? theme.palette.customColors.featured.highlight : theme.palette.action.active,
                                 '&:hover': {
-                                  color: '#FFD700',
-                                  bgcolor: alpha('#FFD700', 0.1),
+                                  color: theme.palette.customColors.featured.highlight,
+                                  bgcolor: theme.palette.customColors.featured.highlightBg,
                                 },
                               }}
                             >

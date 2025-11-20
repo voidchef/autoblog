@@ -55,7 +55,7 @@ const BlogCard: React.FC<{ blog: Blog; rank: number }> = ({ blog, rank }) => {
         background: (theme) =>
           theme.palette.mode === 'dark'
             ? alpha(theme.palette.background.paper, 0.6)
-            : 'rgba(255, 255, 255, 0.9)',
+            : theme.palette.customColors.overlay.white.almostOpaque,
         backdropFilter: 'blur(10px)',
         '&:hover': {
           transform: 'translateX(4px)',
@@ -251,7 +251,7 @@ export default function TopPerformingBlogs({ blogs = [], isLoading = false }: To
               background: (theme) =>
                 theme.palette.mode === 'dark'
                   ? alpha(theme.palette.background.paper, 0.6)
-                  : 'rgba(255, 255, 255, 0.9)',
+                  : theme.palette.customColors.overlay.white.almostOpaque,
             }}
           >
             <TrendingUpIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2, opacity: 0.5 }} />

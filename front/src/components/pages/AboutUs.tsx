@@ -2,12 +2,13 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
-import { Typography, Container, Paper, Divider } from '@mui/material';
+import { Typography, Container, Paper, Divider, useTheme } from '@mui/material';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 
 export default function AboutUs() {
+  const theme = useTheme();
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <NavBar />
@@ -30,7 +31,7 @@ export default function AboutUs() {
             sx={{
               width: 60,
               height: 4,
-              background: 'linear-gradient(90deg, #1d4ed8 0%, #0d9488 100%)',
+              background: theme.palette.customColors.gradients.primary,
               mx: 'auto',
               borderRadius: 2,
             }}
@@ -46,10 +47,10 @@ export default function AboutUs() {
             borderRadius: 2,
             border: '1px solid',
             borderColor: 'divider',
-            background: (theme) =>
+            background:
               theme.palette.mode === 'dark'
-                ? 'rgba(30, 41, 59, 0.4)'
-                : 'rgba(248, 250, 252, 0.6)',
+                ? theme.palette.customColors.componentOverlays.heroDark
+                : theme.palette.customColors.componentOverlays.heroLight,
           }}
         >
           <Typography
@@ -99,10 +100,10 @@ export default function AboutUs() {
                   width: 48,
                   height: 48,
                   borderRadius: '50%',
-                  background: (theme) =>
+                  background:
                     theme.palette.mode === 'dark'
-                      ? 'rgba(29, 78, 216, 0.2)'
-                      : 'rgba(29, 78, 216, 0.1)',
+                      ? theme.palette.customColors.componentOverlays.accentBlueDark
+                      : theme.palette.customColors.componentOverlays.accentBlueLight,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -147,10 +148,10 @@ export default function AboutUs() {
                   width: 48,
                   height: 48,
                   borderRadius: '50%',
-                  background: (theme) =>
+                  background:
                     theme.palette.mode === 'dark'
-                      ? 'rgba(13, 148, 136, 0.2)'
-                      : 'rgba(13, 148, 136, 0.1)',
+                      ? theme.palette.customColors.componentOverlays.accentTealDark
+                      : theme.palette.customColors.componentOverlays.accentTealLight,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -195,10 +196,10 @@ export default function AboutUs() {
                   width: 48,
                   height: 48,
                   borderRadius: '50%',
-                  background: (theme) =>
+                  background:
                     theme.palette.mode === 'dark'
-                      ? 'rgba(239, 68, 68, 0.2)'
-                      : 'rgba(239, 68, 68, 0.1)',
+                      ? theme.palette.customColors.componentOverlays.accentRedDark
+                      : theme.palette.customColors.componentOverlays.accentRedLight,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -266,10 +267,10 @@ export default function AboutUs() {
             borderRadius: 2,
             border: '2px solid',
             borderColor: 'primary.main',
-            background: (theme) =>
+            background:
               theme.palette.mode === 'dark'
-                ? 'rgba(29, 78, 216, 0.05)'
-                : 'rgba(29, 78, 216, 0.03)',
+                ? theme.palette.customColors.overlay.black.light
+                : theme.palette.customColors.overlay.black.light,
             textAlign: 'center',
           }}
         >

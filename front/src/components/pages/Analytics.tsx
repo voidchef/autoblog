@@ -126,10 +126,10 @@ export default function Analytics() {
               p: 6,
               textAlign: 'center',
               borderRadius: 3,
-              background: (theme) =>
+              background:
                 theme.palette.mode === 'dark'
                   ? alpha(theme.palette.background.paper, 0.6)
-                  : 'rgba(255, 255, 255, 0.9)',
+                  : theme.palette.customColors.overlay.white.opaque,
             }}
           >
             <LockIcon sx={{ fontSize: 80, color: 'text.secondary', mb: 2 }} />
@@ -221,7 +221,7 @@ export default function Analytics() {
         name: source.channel || source.source,
         value: source.sessions,
         percentage: total > 0 ? (source.sessions / total * 100) : 0,
-        color: ['#667eea', '#2196f3', '#4caf50', '#ff9800', '#9c27b0'][index % 5],
+        color: theme.palette.customColors.analytics.trafficSources[index % 5],
       };
     }),
     sharePlatforms: [], // Not available yet
@@ -258,8 +258,8 @@ export default function Analytics() {
         sx={{
           minHeight: '100vh',
           background: theme.palette.mode === 'dark'
-            ? 'linear-gradient(135deg, #0a0e1a 0%, #131827 50%, #1e293b 100%)'
-            : 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #dbeafe 100%)',
+            ? theme.palette.customColors.analytics.heroGradientDark
+            : theme.palette.customColors.analytics.heroGradientLight,
         }}
       >
         <NavBar />
@@ -280,8 +280,8 @@ export default function Analytics() {
         sx={{
           minHeight: '100vh',
           background: theme.palette.mode === 'dark'
-            ? 'linear-gradient(135deg, #0a0e1a 0%, #131827 50%, #1e293b 100%)'
-            : 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #dbeafe 100%)',
+            ? theme.palette.customColors.analytics.heroGradientDark
+            : theme.palette.customColors.analytics.heroGradientLight,
         }}
       >
         <NavBar />
@@ -298,8 +298,8 @@ export default function Analytics() {
       sx={{
         minHeight: '100vh',
         background: theme.palette.mode === 'dark'
-          ? 'linear-gradient(135deg, #0a0e1a 0%, #131827 50%, #1e293b 100%)'
-          : 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #dbeafe 100%)',
+          ? theme.palette.customColors.analytics.heroGradientDark
+          : theme.palette.customColors.analytics.heroGradientLight,
       }}
     >
       <NavBar />
@@ -324,8 +324,8 @@ export default function Analytics() {
                   mb: 1,
                   fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' },
                   background: theme.palette.mode === 'dark'
-                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                    : 'linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%)',
+                    ? theme.palette.customColors.analytics.headerTextGradientDark
+                    : theme.palette.customColors.analytics.headerTextGradientLight,
                   backgroundClip: 'text',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',

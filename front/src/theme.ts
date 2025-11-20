@@ -95,6 +95,24 @@ const customColors = {
       dark: '#1e293b',
       darker: '#0f172a',
     },
+    pink: {
+      main: '#fa709a',
+      light: 'rgba(250, 112, 154, 0.2)',
+      lighter: 'rgba(250, 112, 154, 0.15)',
+    },
+    error: {
+      main: '#f44336',
+      light: 'rgba(244, 67, 54, 0.1)',
+      lighter: 'rgba(244, 67, 54, 0.05)',
+    },
+    cyan: {
+      main: '#0093E9',
+      light: 'rgba(0, 147, 233, 0.15)',
+    },
+    red: {
+      main: '#f5576c',
+      light: 'rgba(245, 87, 108, 0.15)',
+    },
   },
 
   // Gradient definitions
@@ -142,6 +160,31 @@ const customColors = {
     successDark: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(13, 148, 136, 0.15) 100%)',
     primaryPillLight: 'linear-gradient(135deg, #ffffff 0%, #ede9fe 100%)',
     primaryPillDark: 'linear-gradient(135deg, rgba(29, 78, 216, 0.15) 0%, rgba(13, 148, 136, 0.15) 100%)',
+    
+    // Category gradient (pink to yellow)
+    category: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+    
+    // Language gradient (blue to teal)
+    language: 'linear-gradient(135deg, #0093E9 0%, #80D0C7 100%)',
+    
+    // Query types gradient (pink to red)
+    queryTypes: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+
+    // Dashboard metric gradients (generic stat type gradients)
+    metricStat1: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',  // Posts/Content
+    metricStat2: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',  // Positive reactions
+    metricStat3: 'linear-gradient(135deg, #ee0979 0%, #ff6a00 100%)',  // Negative reactions
+    metricStat4: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',  // Comments/Discussion
+    metricStat5: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',  // Activity/Trending
+    metricStat6: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',  // Average/Summary
+    
+    // Analytics metric gradients
+    analyticsMetric1: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',  // Primary
+    analyticsMetric2: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',  // Views
+    analyticsMetric3: 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)',  // Likes
+    analyticsMetric4: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',  // Shares
+    analyticsMetric5: 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)',  // Audio/Media
+    analyticsMetric6: 'linear-gradient(135deg, #00bcd4 0%, #0097a7 100%)',  // Engagement
   },
 
   // Shadow colors (for box-shadow)
@@ -170,9 +213,11 @@ const customColors = {
   // Overlay colors (for transparent backgrounds, modals, etc.)
   overlay: {
     white: {
+      subtle: 'rgba(255, 255, 255, 0.04)',
+      veryLight: 'rgba(255, 255, 255, 0.08)',
       light: 'rgba(255, 255, 255, 0.1)',
-      medium: 'rgba(255, 255, 255, 0.15)',
-      strong: 'rgba(255, 255, 255, 0.25)',
+      medium: 'rgba(255, 255, 255, 0.5)',
+      strong: 'rgba(255, 255, 255, 0.7)',
       stronger: 'rgba(255, 255, 255, 0.3)',
       veryStrong: 'rgba(255, 255, 255, 0.5)',
       almostOpaque: 'rgba(255, 255, 255, 0.8)',
@@ -180,9 +225,11 @@ const customColors = {
       full: 'rgba(255, 255, 255, 0.95)',
     },
     black: {
+      subtle: 'rgba(0, 0, 0, 0.04)',
+      veryLight: 'rgba(0, 0, 0, 0.08)',
       light: 'rgba(0, 0, 0, 0.08)',
-      medium: 'rgba(0, 0, 0, 0.1)',
-      strong: 'rgba(0, 0, 0, 0.15)',
+      medium: 'rgba(0, 0, 0, 0.5)',
+      strong: 'rgba(0, 0, 0, 0.7)',
       stronger: 'rgba(0, 0, 0, 0.2)',
       veryStrong: 'rgba(0, 0, 0, 0.25)',
       almostOpaque: 'rgba(0, 0, 0, 0.3)',
@@ -211,6 +258,157 @@ const customColors = {
     twitter: '#1DA1F2',
     facebook: '#1877F2',
     linkedin: '#0A66C2',
+  },
+
+  // OAuth provider brand colors
+  oauth: {
+    google: '#4285F4',
+    googleHover: '#357ae8',
+    googleBg: 'rgba(66, 133, 244, 0.04)',
+    apple: '#000000',
+    appleHover: '#333333',
+    appleBg: 'rgba(0, 0, 0, 0.04)',
+  },
+
+  // Chart colors for data visualization (generic sets for different purposes)
+  charts: {
+    primary: ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'],
+    extended: ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ec4899', '#06b6d4', '#f97316'],
+    // Dashboard metrics colors (generic stat types: views, users, time, engagement, reach, posts, likes, dislikes, comments, activity, average)
+    metrics: {
+      stat1: '#3b82f6',   // Views/Visibility metrics
+      stat2: '#8b5cf6',   // User/People metrics
+      stat3: '#f59e0b',   // Time/Duration metrics
+      stat4: '#10b981',   // Engagement/Success metrics
+      stat5: '#ec4899',   // Reach/Growth metrics
+      stat6: '#1976d2',   // Posts/Content metrics
+      stat7: '#2e7d32',   // Positive reactions
+      stat8: '#d32f2f',   // Negative reactions
+      stat9: '#ed6c02',   // Comments/Discussion metrics
+      stat10: '#9c27b0',  // Activity/Trending metrics
+      stat11: '#0288d1',  // Average/Summary metrics
+    },
+    // Analytics specific colors
+    analytics: {
+      metric1: '#2196f3',  // Page views
+      metric2: '#4caf50',  // Likes
+      metric3: '#ff9800',  // Shares
+      metric4: '#9c27b0',  // Audio/Media
+      metric5: '#00bcd4',  // Engagement rate
+    },
+    // Traffic sources and categories
+    categories: ['#667eea', '#2196f3', '#4caf50', '#ff9800', '#9c27b0'],
+  },
+
+  // Featured/special UI colors (generic names)
+  featured: {
+    highlight: '#FFD700',
+    highlightBg: 'rgba(255, 215, 0, 0.1)',
+  },
+
+  // Analytics page colors
+  analytics: {
+    trafficSources: ['#667eea', '#2196f3', '#4caf50', '#ff9800', '#9c27b0'],
+    heroGradientDark: 'linear-gradient(135deg, #0a0e1a 0%, #131827 50%, #1e293b 100%)',
+    heroGradientLight: 'linear-gradient(135deg, #f8fafc 0%, #e0e7ff 50%, #dbeafe 100%)',
+    headerTextGradientDark: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    headerTextGradientLight: 'linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%)',
+  },
+
+  // Payment/modal colors
+  payment: {
+    brandColor: '#667eea',
+  },
+
+  // Icon colors (white for light backgrounds)
+  icon: {
+    onBrand: '#fff',  // White icons on branded backgrounds
+  },
+
+  // Text muted/secondary
+  textMuted: '#6D6E76',
+
+  // Status colors (generic positive/negative indicators)
+  status: {
+    positive: '#10b981',      // Success/growth indicator
+    negative: '#ef4444',      // Error/decline indicator
+    positiveAlpha: 'rgba(16, 185, 129, 0.1)',
+    negativeAlpha: 'rgba(239, 68, 68, 0.1)',
+  },
+
+  // Graph/chart line colors (generic chart elements)
+  graph: {
+    primaryLine: {
+      light: '#1d4ed8',
+      dark: '#667eea',
+    },
+    secondaryLine: {
+      light: '#7c3aed',
+      dark: '#764ba2',
+    },
+    background: {
+      light: '#ffffff',
+      dark: '#0f172a',
+    },
+  },
+
+  // Author page specific colors
+  author: {
+    headerGradientDark: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+    headerGradientLight: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    radialOverlayDark: 'radial-gradient(circle at 20% 50%, rgba(99,102,241,0.15) 0%, transparent 50%)',
+    radialOverlayLight: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+    profileShadow: '0 8px 32px rgba(0,0,0,0.3)',
+    profileBorder: '4px solid rgba(255,255,255,0.2)',
+    statsBgOverlay: 'rgba(255,255,255,0.25)',
+    statsItemBg: 'rgba(255,255,255,0.2)',
+    statsItemHover: 'rgba(255,255,255,0.3)',
+    contactButtonShadow: '0 4px 12px rgba(0,0,0,0.2)',
+    contactButtonHover: 'rgba(255,255,255,0.95)',
+    contactButtonHoverShadow: '0 6px 16px rgba(0,0,0,0.3)',
+    bioCardBgDark: '#1e293b',
+    bioCardBgLight: '#ffffff',
+    bioCardBorder: '1px solid rgba(255,255,255,0.1)',
+    articleCardShadowDark: '0 8px 24px rgba(99,102,241,0.3), 0 4px 12px rgba(0,0,0,0.5)',
+    articleCardShadowLight: '0 8px 24px rgba(0,0,0,0.15)',
+    articleCardBgDark: '#0f172a',
+    articleCardBgLight: '#fafafa',
+    articleCardGradientDark: 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
+    categoryChipBgDark: 'rgba(99,102,241,0.2)',
+    categoryChipBgLight: 'rgba(0,0,0,0.08)',
+    categoryChipText: 'rgba(255,255,255,0.9)',
+    categoryChipBorder: '1px solid rgba(99,102,241,0.3)',
+    accentBlue: '#60a5fa',
+    accentPurple: 'rgba(99,102,241,0.5)',
+    accentPurpleHover: 'rgba(99,102,241,1)',
+  },
+
+  // Component-specific shadows (beyond the shadow colors already defined)
+  componentShadows: {
+    card: '0 2px 8px rgba(0, 0, 0, 0.08)',
+    cardHover: '0 4px 12px rgba(0,0,0,0.08)',
+    profileLight: '0 8px 32px rgba(29, 78, 216, 0.12)',
+    profileDark: '0 8px 32px rgba(0, 0, 0, 0.5)',
+    avatarBorderLight: '3px solid rgba(255, 255, 255, 0.1)',
+    avatarBorderHeavyLight: '5px solid rgba(255, 255, 255, 0.1)',
+    avatarShadowLight: '0 8px 24px rgba(29, 78, 216, 0.25)',
+    avatarShadowDark: '0 8px 24px rgba(0, 0, 0, 0.5)',
+    buttonPrimary: '0 4px 16px rgba(29, 78, 216, 0.3)',
+    buttonPrimaryHover: '0 6px 24px rgba(29, 78, 216, 0.4)',
+    sectionLight: '0 4px 16px rgba(29, 78, 216, 0.08)',
+    sectionDark: '0 4px 16px rgba(0, 0, 0, 0.4)',
+  },
+
+  // Additional overlays for components
+  componentOverlays: {
+    heroDark: 'rgba(30, 41, 59, 0.4)',
+    heroLight: 'rgba(248, 250, 252, 0.6)',
+    accentBlueDark: 'rgba(29, 78, 216, 0.2)',
+    accentBlueLight: 'rgba(29, 78, 216, 0.1)',
+    accentTealDark: 'rgba(13, 148, 136, 0.2)',
+    accentTealLight: 'rgba(13, 148, 136, 0.1)',
+    accentRedDark: 'rgba(239, 68, 68, 0.2)',
+    accentRedLight: 'rgba(239, 68, 68, 0.1)',
   },
 } as const;
 

@@ -23,7 +23,7 @@ export default function ViewsGraph({ blogViews, monthDays }: { blogViews: number
           return index % 3 === 0 || index === blogViews.length - 1;
         },
         area: true,
-        color: isDarkMode ? '#667eea' : '#1d4ed8',
+        color: isDarkMode ? theme.palette.customColors.graph.primaryLine.dark : theme.palette.customColors.graph.primaryLine.light,
         curve: 'catmullRom' as const,
       },
     ],
@@ -41,36 +41,36 @@ export default function ViewsGraph({ blogViews, monthDays }: { blogViews: number
           fill: "url('#visitsGradient')",
         },
         '& .MuiChartsAxis-line': {
-          stroke: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
+          stroke: isDarkMode ? theme.palette.customColors.overlay.white.veryLight : theme.palette.customColors.overlay.black.veryLight,
           strokeWidth: 1,
         },
         '& .MuiChartsAxis-tick': {
-          stroke: isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)',
+          stroke: isDarkMode ? theme.palette.customColors.overlay.white.veryLight : theme.palette.customColors.overlay.black.veryLight,
         },
         '& .MuiChartsAxis-tickLabel': {
-          fill: isDarkMode ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
+          fill: isDarkMode ? theme.palette.customColors.overlay.white.medium : theme.palette.customColors.overlay.black.medium,
           fontSize: isMobile ? '0.65rem' : '0.75rem',
           fontWeight: 500,
         },
         '& .MuiChartsAxis-label': {
-          fill: isDarkMode ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)',
+          fill: isDarkMode ? theme.palette.customColors.overlay.white.strong : theme.palette.customColors.overlay.black.strong,
           fontSize: isMobile ? '0.75rem' : '0.8125rem',
           fontWeight: 600,
         },
         '& .MuiMarkElement-root': {
-          fill: isDarkMode ? '#667eea' : '#1d4ed8',
-          stroke: isDarkMode ? '#0f172a' : '#ffffff',
+          fill: isDarkMode ? theme.palette.customColors.graph.primaryLine.dark : theme.palette.customColors.graph.primaryLine.light,
+          stroke: isDarkMode ? theme.palette.customColors.graph.background.dark : theme.palette.customColors.graph.background.light,
           strokeWidth: 2,
           r: isMobile ? 3 : 4,
           transition: 'all 0.2s ease',
           '&:hover': {
             r: isMobile ? 5 : 6,
-            stroke: isDarkMode ? '#667eea' : '#1d4ed8',
-            fill: '#ffffff',
+            stroke: isDarkMode ? theme.palette.customColors.graph.primaryLine.dark : theme.palette.customColors.graph.primaryLine.light,
+            fill: theme.palette.customColors.graph.background.light,
           },
         },
         '& .MuiChartsGrid-line': {
-          stroke: isDarkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.04)',
+          stroke: isDarkMode ? theme.palette.customColors.overlay.white.subtle : theme.palette.customColors.overlay.black.subtle,
           strokeDasharray: '3 3',
         },
       }}
@@ -102,9 +102,9 @@ export default function ViewsGraph({ blogViews, monthDays }: { blogViews: number
     >
       <defs>
         <linearGradient id="visitsGradient" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={isDarkMode ? '#667eea' : '#1d4ed8'} stopOpacity="0.3" />
-          <stop offset="50%" stopColor={isDarkMode ? '#764ba2' : '#7c3aed'} stopOpacity="0.15" />
-          <stop offset="100%" stopColor={isDarkMode ? '#1e293b' : '#ffffff'} stopOpacity="0" />
+          <stop offset="0%" stopColor={isDarkMode ? theme.palette.customColors.graph.primaryLine.dark : theme.palette.customColors.graph.primaryLine.light} stopOpacity="0.3" />
+          <stop offset="50%" stopColor={isDarkMode ? theme.palette.customColors.graph.secondaryLine.dark : theme.palette.customColors.graph.secondaryLine.light} stopOpacity="0.15" />
+          <stop offset="100%" stopColor={isDarkMode ? theme.palette.customColors.bgDark.tertiary : theme.palette.customColors.graph.background.light} stopOpacity="0" />
         </linearGradient>
       </defs>
     </LineChart>

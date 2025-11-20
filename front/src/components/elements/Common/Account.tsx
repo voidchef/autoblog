@@ -135,7 +135,7 @@ export default function AccountMenu() {
               fontSize: '1.25rem',
               border: '2px solid',
               borderColor: 'common.white',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+              boxShadow: `0 2px 8px ${theme.palette.customColors.overlay.black.stronger}`,
             }}
           />
           <Box sx={{ flex: 1, color: 'common.white' }}>
@@ -274,7 +274,7 @@ export default function AccountMenu() {
             fontSize: '1.25rem',
             border: '2px solid',
             borderColor: 'common.white',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+            boxShadow: `0 2px 8px ${theme.palette.customColors.overlay.black.stronger}`,
           }}
         />
         <Box sx={{ flex: 1, color: 'common.white', minWidth: 0 }}>
@@ -453,7 +453,7 @@ export default function AccountMenu() {
           slotProps={{
             backdrop: {
               sx: {
-                bgcolor: 'rgba(0, 0, 0, 0.5)',
+                bgcolor: theme.palette.customColors.overlay.black.veryStrong,
               },
             },
           }}

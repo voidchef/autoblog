@@ -17,6 +17,7 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  useTheme,
 } from '@mui/material';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PublishIcon from '@mui/icons-material/Publish';
@@ -87,6 +88,7 @@ function EnhancedTable({
   isPublishingWP,
   isPublishingMedium,
 }: EnhancedTableProps) {
+  const theme = useTheme();
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<string>('title');
   const [selected, setSelected] = useState<number>(0);
@@ -279,7 +281,7 @@ function EnhancedTable({
           sx: {
             mt: 1,
             minWidth: 200,
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+            boxShadow: `0 4px 20px ${theme.palette.customColors.overlay.black.light}`,
           },
         }}
       >

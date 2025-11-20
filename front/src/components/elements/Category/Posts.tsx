@@ -144,7 +144,7 @@ const AllPosts = ({ category }: { category: string }) => {
                         gap: 2,
                         mt: 2,
                         alignItems: 'center',
-                        color: '#6D6E76',
+                        color: (theme) => theme.palette.customColors.textMuted,
                       }}
                     >
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>

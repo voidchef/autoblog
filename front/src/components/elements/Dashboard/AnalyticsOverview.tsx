@@ -85,7 +85,7 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
       change: data.pageViewsChange,
       icon: <VisibilityIcon />,
       color: theme.palette.primary.main,
-      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      gradient: theme.palette.customColors.gradients.analyticsMetric1,
       description: 'All page views across the site',
     },
     {
@@ -93,8 +93,8 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
       value: data.blogViews,
       change: data.blogViewsChange,
       icon: <VisibilityIcon />,
-      color: '#2196f3',
-      gradient: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
+      color: theme.palette.customColors.charts.analytics.metric1,
+      gradient: theme.palette.customColors.gradients.analyticsMetric2,
       description: 'Views on blog posts',
     },
     {
@@ -102,8 +102,8 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
       value: data.totalLikes,
       change: data.likesChange,
       icon: <ThumbUpIcon />,
-      color: '#4caf50',
-      gradient: 'linear-gradient(135deg, #4caf50 0%, #2e7d32 100%)',
+      color: theme.palette.customColors.charts.analytics.metric2,
+      gradient: theme.palette.customColors.gradients.analyticsMetric3,
       description: 'Likes across all posts',
     },
     {
@@ -111,8 +111,8 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
       value: data.totalShares,
       change: data.sharesChange,
       icon: <ShareIcon />,
-      color: '#ff9800',
-      gradient: 'linear-gradient(135deg, #ff9800 0%, #f57c00 100%)',
+      color: theme.palette.customColors.charts.analytics.metric3,
+      gradient: theme.palette.customColors.gradients.analyticsMetric4,
       description: 'Social shares and link copies',
     },
     {
@@ -120,8 +120,8 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
       value: data.audioPlays,
       change: data.audioPlaysChange,
       icon: <PlayArrowIcon />,
-      color: '#9c27b0',
-      gradient: 'linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%)',
+      color: theme.palette.customColors.charts.analytics.metric4,
+      gradient: theme.palette.customColors.gradients.analyticsMetric5,
       description: 'Audio narration plays',
     },
     {
@@ -129,8 +129,8 @@ const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
       value: data.avgEngagementRate,
       change: data.engagementRateChange,
       icon: <TrendingUpIcon />,
-      color: '#00bcd4',
-      gradient: 'linear-gradient(135deg, #00bcd4 0%, #0097a7 100%)',
+      color: theme.palette.customColors.charts.analytics.metric5,
+      gradient: theme.palette.customColors.gradients.analyticsMetric6,
       description: 'Average engagement percentage',
     },
   ];

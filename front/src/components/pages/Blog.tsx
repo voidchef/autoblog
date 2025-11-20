@@ -13,6 +13,7 @@ import {
   IconButton,
   Tooltip,
   Avatar,
+  useTheme,
 } from '@mui/material';
 import { VolumeUp as VolumeUpIcon, Star as StarIcon, StarBorder as StarBorderIcon } from '@mui/icons-material';
 import Title from '../elements/Blog/Title';
@@ -38,6 +39,7 @@ import { showSuccess, showError } from '../../reducers/alert';
 import { stringAvatar } from '../../utils/utils';
 
 export default function Blog() {
+  const theme = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -378,11 +380,10 @@ export default function Blog() {
                       onClick={handleToggleFeatured}
                       size="small"
                       sx={{
-                        color: currentBlogData.isFeatured ? '#FFD700' : 'text.secondary',
+                        color: currentBlogData.isFeatured ? theme.palette.customColors.featured.highlight : 'text.secondary',
                         '&:hover': {
-                          color: '#FFD700',
-                          bgcolor: (theme) =>
-                            theme.palette.mode === 'dark' ? 'rgba(255, 215, 0, 0.1)' : 'rgba(255, 215, 0, 0.1)',
+                          color: theme.palette.customColors.featured.highlight,
+                          bgcolor: theme.palette.customColors.featured.highlightBg,
                         },
                       }}
                     >

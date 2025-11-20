@@ -2,7 +2,7 @@ import * as React from 'react';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import LightModeIcon from '@mui/icons-material/LightMode';
@@ -16,19 +16,19 @@ const StyledToggleButton = styled(Box)(({ theme }) => ({
   height: 32,
   borderRadius: 16,
   background: theme.palette.mode === 'dark' 
-    ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
-    : 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
+    ? `linear-gradient(135deg, ${theme.palette.customColors.accent.slate.darker} 0%, ${theme.palette.customColors.accent.slate.dark} 100%)`
+    : `linear-gradient(135deg, ${theme.palette.customColors.accent.blue.lighter} 30%, #bfdbfe 100%)`,
   cursor: 'pointer',
   transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  border: `2px solid ${theme.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(29, 78, 216, 0.2)'}`,
+  border: `2px solid ${theme.palette.mode === 'dark' ? theme.palette.customColors.borders.primaryDark : theme.palette.customColors.borders.primaryLight}`,
   boxShadow: theme.palette.mode === 'dark'
-    ? '0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.1)'
-    : '0 2px 8px rgba(29, 78, 216, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.5)',
+    ? `0 2px 8px ${theme.palette.customColors.overlay.black.almostOpaque}, inset 0 1px 2px ${theme.palette.customColors.overlay.white.light}`
+    : `0 2px 8px ${theme.palette.customColors.shadows.primaryLight}, inset 0 1px 2px ${theme.palette.customColors.overlay.white.veryStrong}`,
   '&:hover': {
     transform: 'scale(1.05)',
     boxShadow: theme.palette.mode === 'dark'
-      ? '0 4px 12px rgba(59, 130, 246, 0.3)'
-      : '0 4px 12px rgba(29, 78, 216, 0.25)',
+      ? `0 4px 12px ${theme.palette.customColors.shadows.primary}`
+      : `0 4px 12px ${theme.palette.customColors.shadows.primaryLight}`,
   },
   '&:active': {
     transform: 'scale(0.98)',
@@ -43,10 +43,10 @@ const StyledThumb = styled(Box)(({ theme }) => ({
   borderRadius: '50%',
   background: theme.palette.mode === 'dark'
     ? 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)'
-    : 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+    : `linear-gradient(135deg, ${theme.palette.customColors.accent.blue.light} 0%, ${theme.palette.customColors.accent.blue.main} 100%)`,
   boxShadow: theme.palette.mode === 'dark'
     ? '0 2px 6px rgba(245, 158, 11, 0.4)'
-    : '0 2px 6px rgba(29, 78, 216, 0.4)',
+    : `0 2px 6px ${theme.palette.customColors.shadows.primary}`,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',

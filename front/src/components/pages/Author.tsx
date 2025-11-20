@@ -17,6 +17,7 @@ import {
   Tabs,
   CircularProgress,
   Button,
+  useTheme,
 } from '@mui/material';
 import {
   Twitter as TwitterIcon,
@@ -62,6 +63,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const Author: React.FC = () => {
+  const theme = useTheme();
   const { authorId } = useParams<{ authorId: string }>();
   const navigate = useNavigate();
   const { userId } = useAuth();
@@ -139,10 +141,10 @@ const Author: React.FC = () => {
       {/* Hero Section with Author Info */}
       <Box
         sx={{
-          background: (theme) =>
+          background:
             theme.palette.mode === 'dark'
-              ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)'
-              : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              ? theme.palette.customColors.author.headerGradientDark
+              : theme.palette.customColors.author.headerGradientLight,
           color: 'white',
           py: 8,
           position: 'relative',
@@ -154,10 +156,10 @@ const Author: React.FC = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            background: (theme) =>
+            background:
               theme.palette.mode === 'dark'
-                ? 'radial-gradient(circle at 20% 50%, rgba(99,102,241,0.15) 0%, transparent 50%)'
-                : 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%)',
+                ? theme.palette.customColors.author.radialOverlayDark
+                : theme.palette.customColors.author.radialOverlayLight,
           },
         }}
       >
@@ -172,8 +174,8 @@ const Author: React.FC = () => {
                   height: 180,
                   fontSize: '3rem',
                   margin: { xs: '0 auto', md: 0 },
-                  boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-                  border: '4px solid rgba(255,255,255,0.2)',
+                  boxShadow: theme.palette.customColors.author.profileShadow,
+                  border: theme.palette.customColors.author.profileBorder,
                 }}
               />
             </Grid>
@@ -188,12 +190,12 @@ const Author: React.FC = () => {
                     label={authorData.role.toUpperCase()}
                     sx={{
                       mb: 2,
-                      bgcolor: 'rgba(255,255,255,0.25)',
+                      bgcolor: theme.palette.customColors.author.statsBgOverlay,
                       color: 'white',
                       fontWeight: 700,
                       backdropFilter: 'blur(10px)',
                       fontSize: '0.875rem',
-                      border: '1px solid rgba(255,255,255,0.3)',
+                      border: theme.palette.customColors.author.profileBorder,
                     }}
                   />
                 )}
@@ -263,8 +265,8 @@ const Author: React.FC = () => {
                         rel="noopener noreferrer"
                         sx={{
                           color: 'white',
-                          bgcolor: 'rgba(255,255,255,0.2)',
-                          '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+                          bgcolor: theme.palette.customColors.author.statsItemBg,
+                          '&:hover': { bgcolor: theme.palette.customColors.author.statsItemHover },
                         }}
                       >
                         <TwitterIcon />
@@ -279,8 +281,8 @@ const Author: React.FC = () => {
                         rel="noopener noreferrer"
                         sx={{
                           color: 'white',
-                          bgcolor: 'rgba(255,255,255,0.2)',
-                          '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+                          bgcolor: theme.palette.customColors.author.statsItemBg,
+                          '&:hover': { bgcolor: theme.palette.customColors.author.statsItemHover },
                         }}
                       >
                         <LinkedInIcon />
@@ -295,8 +297,8 @@ const Author: React.FC = () => {
                         rel="noopener noreferrer"
                         sx={{
                           color: 'white',
-                          bgcolor: 'rgba(255,255,255,0.2)',
-                          '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+                          bgcolor: theme.palette.customColors.author.statsItemBg,
+                          '&:hover': { bgcolor: theme.palette.customColors.author.statsItemHover },
                         }}
                       >
                         <GitHubIcon />
@@ -311,8 +313,8 @@ const Author: React.FC = () => {
                         rel="noopener noreferrer"
                         sx={{
                           color: 'white',
-                          bgcolor: 'rgba(255,255,255,0.2)',
-                          '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+                          bgcolor: theme.palette.customColors.author.statsItemBg,
+                          '&:hover': { bgcolor: theme.palette.customColors.author.statsItemHover },
                         }}
                       >
                         <LanguageIcon />
@@ -331,11 +333,11 @@ const Author: React.FC = () => {
                           px: 3,
                           py: 1.2,
                           fontSize: '1rem',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.2)',
+                          boxShadow: theme.palette.customColors.author.contactButtonShadow,
                           '&:hover': {
-                            bgcolor: 'rgba(255,255,255,0.95)',
+                            bgcolor: theme.palette.customColors.author.contactButtonHover,
                             transform: 'translateY(-2px)',
-                            boxShadow: '0 6px 16px rgba(0,0,0,0.3)',
+                            boxShadow: theme.palette.customColors.author.contactButtonHoverShadow,
                           },
                         },
                       }}
@@ -360,10 +362,10 @@ const Author: React.FC = () => {
         <Paper
           elevation={0}
           sx={{
-            bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#1e293b' : '#ffffff'),
+            bgcolor: theme.palette.mode === 'dark' ? theme.palette.customColors.author.bioCardBgDark : theme.palette.customColors.author.bioCardBgLight,
             borderRadius: 3,
             overflow: 'hidden',
-            border: (theme) => (theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : 'none'),
+            border: theme.palette.mode === 'dark' ? theme.palette.customColors.author.bioCardBorder : 'none',
           }}
         >
           <Tabs
@@ -372,19 +374,19 @@ const Author: React.FC = () => {
             centered
             sx={{
               borderBottom: 1,
-              borderColor: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'divider'),
+              borderColor: theme.palette.mode === 'dark' ? theme.palette.customColors.overlay.white.light : 'divider',
               '& .MuiTab-root': {
                 textTransform: 'none',
                 fontSize: '1rem',
                 fontWeight: 600,
                 minWidth: 120,
-                color: (theme) => (theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.7)' : 'inherit'),
+                color: theme.palette.mode === 'dark' ? theme.palette.customColors.overlay.white.almostOpaque : 'inherit',
                 '&.Mui-selected': {
-                  color: (theme) => (theme.palette.mode === 'dark' ? '#60a5fa' : 'primary.main'),
+                  color: theme.palette.mode === 'dark' ? theme.palette.customColors.author.accentBlue : 'primary.main',
                 },
               },
               '& .MuiTabs-indicator': {
-                bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#60a5fa' : 'primary.main'),
+                bgcolor: theme.palette.mode === 'dark' ? theme.palette.customColors.author.accentBlue : 'primary.main',
               },
             }}
           >
@@ -413,19 +415,19 @@ const Author: React.FC = () => {
                         transition: 'all 0.3s ease',
                         '&:hover': {
                           transform: 'translateY(-4px)',
-                          boxShadow: (theme) =>
+                          boxShadow:
                             theme.palette.mode === 'dark'
-                              ? '0 8px 24px rgba(99,102,241,0.3), 0 4px 12px rgba(0,0,0,0.5)'
-                              : '0 8px 24px rgba(0,0,0,0.15)',
+                              ? theme.palette.customColors.author.articleCardShadowDark
+                              : theme.palette.customColors.author.articleCardShadowLight,
                         },
                         height: '100%',
                         display: 'flex',
                         flexDirection: { xs: 'column', sm: 'row' },
-                        bgcolor: (theme) => (theme.palette.mode === 'dark' ? '#0f172a' : '#fafafa'),
-                        border: (theme) => (theme.palette.mode === 'dark' ? '1px solid rgba(255,255,255,0.1)' : 'none'),
-                        backgroundImage: (theme) =>
+                        bgcolor: theme.palette.mode === 'dark' ? theme.palette.customColors.author.articleCardBgDark : theme.palette.customColors.author.articleCardBgLight,
+                        border: theme.palette.mode === 'dark' ? theme.palette.customColors.author.bioCardBorder : 'none',
+                        backgroundImage:
                           theme.palette.mode === 'dark'
-                            ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)'
+                            ? theme.palette.customColors.author.articleCardGradientDark
                             : 'none',
                       }}
                       onClick={() => handleBlogClick(blog.slug)}
@@ -454,10 +456,10 @@ const Author: React.FC = () => {
                               variant="outlined"
                               sx={{
                                 fontWeight: 600,
-                                borderColor: (theme) =>
-                                  theme.palette.mode === 'dark' ? 'rgba(99,102,241,0.5)' : undefined,
-                                color: (theme) =>
-                                  theme.palette.mode === 'dark' ? 'rgba(99,102,241,1)' : undefined,
+                                borderColor:
+                                  theme.palette.mode === 'dark' ? theme.palette.customColors.author.accentPurple : undefined,
+                                color:
+                                  theme.palette.mode === 'dark' ? theme.palette.customColors.author.accentPurpleHover : undefined,
                               }}
                             />
                             <Typography variant="caption" color="text.secondary">
@@ -505,13 +507,13 @@ const Author: React.FC = () => {
                                   size="small"
                                   variant="filled"
                                   sx={{
-                                    bgcolor: (theme) =>
-                                      theme.palette.mode === 'dark' ? 'rgba(99,102,241,0.2)' : 'rgba(0,0,0,0.08)',
-                                    color: (theme) =>
-                                      theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.9)' : 'inherit',
+                                    bgcolor:
+                                      theme.palette.mode === 'dark' ? theme.palette.customColors.author.categoryChipBgDark : theme.palette.customColors.author.categoryChipBgLight,
+                                    color:
+                                      theme.palette.mode === 'dark' ? theme.palette.customColors.author.categoryChipText : 'inherit',
                                     fontSize: '0.75rem',
-                                    border: (theme) =>
-                                      theme.palette.mode === 'dark' ? '1px solid rgba(99,102,241,0.3)' : 'none',
+                                    border:
+                                      theme.palette.mode === 'dark' ? theme.palette.customColors.author.categoryChipBorder : 'none',
                                   }}
                                 />
                               ))}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Card, CardContent, Typography, alpha, Skeleton } from '@mui/material';
+import { Box, Card, CardContent, Typography, alpha, Skeleton, useTheme } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
   Visibility as VisibilityIcon,
@@ -54,7 +54,7 @@ const QuickStatCard: React.FC<QuickStatProps> = ({ title, value, change, icon, c
         background: (theme) =>
           theme.palette.mode === 'dark'
             ? alpha(theme.palette.background.paper, 0.6)
-            : 'rgba(255, 255, 255, 0.9)',
+            : theme.palette.customColors.overlay.white.almostOpaque,
         backdropFilter: 'blur(10px)',
         '&:hover': {
           transform: 'translateY(-4px)',
@@ -112,14 +112,14 @@ const QuickStatCard: React.FC<QuickStatProps> = ({ title, value, change, icon, c
                 px: 1,
                 py: 0.5,
                 borderRadius: 1,
-                bgcolor: isPositive ? alpha('#10b981', 0.1) : alpha('#ef4444', 0.1),
+                bgcolor: (theme) => isPositive ? theme.palette.customColors.status.positiveAlpha : theme.palette.customColors.status.negativeAlpha,
               }}
             >
               <Typography
                 variant="caption"
                 sx={{
                   fontWeight: 600,
-                  color: isPositive ? '#10b981' : '#ef4444',
+                  color: (theme) => isPositive ? theme.palette.customColors.status.positive : theme.palette.customColors.status.negative,
                   display: 'flex',
                   alignItems: 'center',
                 }}
@@ -161,41 +161,43 @@ export default function QuickStats({
   totalReachChange = 0,
   isLoading = false,
 }: QuickStatsProps) {
+  const theme = useTheme();
+  
   const stats = [
     {
       title: 'Views This Week',
       value: weeklyViews.toLocaleString(),
       change: Number(weeklyViewsChange.toFixed(1)),
       icon: <VisibilityIcon />,
-      color: '#3b82f6',
+      color: (theme.palette as any).customColors.charts.metrics.stat1,
     },
     {
       title: 'New Followers',
       value: newFollowers,
       change: Number(newFollowersChange.toFixed(1)),
       icon: <PeopleIcon />,
-      color: '#8b5cf6',
+      color: (theme.palette as any).customColors.charts.metrics.stat2,
     },
     {
       title: 'Avg. Read Time',
       value: `${avgReadTime} min`,
       change: Number(avgReadTimeChange.toFixed(1)),
       icon: <AccessTimeIcon />,
-      color: '#f59e0b',
+      color: (theme.palette as any).customColors.charts.metrics.stat3,
     },
     {
       title: 'Engagement Rate',
       value: `${engagementRate.toFixed(1)}%`,
       change: Number(engagementRateChange.toFixed(1)),
       icon: <TrendingUpIcon />,
-      color: '#10b981',
+      color: (theme.palette as any).customColors.charts.metrics.stat4,
     },
     {
       title: 'Total Reach',
       value: totalReach.toLocaleString(),
       change: Number(totalReachChange.toFixed(1)),
       icon: <AutoGraphIcon />,
-      color: '#ec4899',
+      color: (theme.palette as any).customColors.charts.metrics.stat5,
     },
   ];
 

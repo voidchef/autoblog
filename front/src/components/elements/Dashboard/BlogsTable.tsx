@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material';
 import { useAuth } from '../../../utils/hooks';
 import { showError, showSuccess } from '../../../reducers/alert';
 
@@ -120,6 +121,7 @@ interface IProps {
 }
 
 export default function BlogsTable({ handleSelectBlog }: IProps) {
+  const theme = useTheme();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState<ReturnType<typeof createData>[]>([]);
@@ -231,10 +233,10 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
       ) : rows.length > 0 ? (
         <Box
           sx={{
-            background: (theme) =>
+            background:
               theme.palette.mode === 'dark'
-                ? 'rgba(19, 24, 39, 0.6)'
-                : 'rgba(255, 255, 255, 0.9)',
+                ? theme.palette.customColors.overlay.black.almostOpaque
+                : theme.palette.customColors.overlay.white.opaque,
             backdropFilter: 'blur(10px)',
             borderRadius: 3,
             border: '1px solid',
@@ -301,10 +303,10 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
             textAlign: 'center',
             py: 8,
             px: 3,
-            background: (theme) =>
+            background:
               theme.palette.mode === 'dark'
-                ? 'rgba(19, 24, 39, 0.4)'
-                : 'rgba(255, 255, 255, 0.7)',
+                ? theme.palette.customColors.overlay.black.medium
+                : theme.palette.customColors.overlay.white.strong,
             borderRadius: 3,
             border: '2px dashed',
             borderColor: 'divider',

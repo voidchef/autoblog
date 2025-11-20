@@ -24,7 +24,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
     <Box sx={{ mb: 8 }}>
       <Box sx={{ mb: 5, textAlign: 'center' }} className="animate-fade-in-up">
         <Chip
-          icon={<TrendingUp sx={{ fontSize: { xs: '1rem', md: '1.2rem' }, color: '#fff !important' }} />}
+          icon={<TrendingUp sx={{ fontSize: { xs: '1rem', md: '1.2rem' }, color: (theme) => theme.palette.customColors.icon.onBrand }} />}
           label="Featured Content"
           sx={{
             mb: 3,
@@ -40,7 +40,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
               boxShadow: (theme) => `0 6px 24px ${theme.palette.customColors.shadows.primaryHeavy}`,
             },
             '& .MuiChip-icon': {
-              color: '#fff !important',
+              color: (theme) => theme.palette.customColors.icon.onBrand,
             },
           }}
         />

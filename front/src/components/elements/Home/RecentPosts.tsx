@@ -29,7 +29,7 @@ const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
       >
         <Box>
           <Chip
-            icon={<AccessTime sx={{ fontSize: { xs: '1rem', md: '1.2rem' }, color: '#fff !important' }} />}
+            icon={<AccessTime sx={{ fontSize: { xs: '1rem', md: '1.2rem' }, color: (theme) => theme.palette.customColors.icon.onBrand }} />}
             label="Latest Articles"
             sx={{
               mb: 3,
@@ -45,7 +45,7 @@ const RecentPosts = ({ recentBlogs }: RecentPostProps) => {
                 boxShadow: (theme) => `0 6px 24px ${theme.palette.customColors.shadows.secondaryHeavy}`,
               },
               '& .MuiChip-icon': {
-                color: '#fff !important',
+                color: (theme) => theme.palette.customColors.icon.onBrand,
               },
             }}
           />

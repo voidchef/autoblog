@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Card, CardContent, Typography, CircularProgress, Alert, Chip } from '@mui/material';
+import { Box, Card, CardContent, Typography, CircularProgress, Alert, Chip, useTheme } from '@mui/material';
 import {
   Article as ArticleIcon,
   ThumbUp as ThumbUpIcon,
@@ -33,7 +33,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, color, grad
           : 'divider',
         background: (theme) => theme.palette.mode === 'dark'
           ? theme.palette.customColors.gradients.cardDark
-          : 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)',
+          : theme.palette.customColors.gradients.cardLight,
         backdropFilter: 'blur(10px)',
         '&:hover': {
           transform: 'translateY(-8px) scale(1.02)',
@@ -114,6 +114,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, color, grad
 };
 
 export default function EngagementMetrics() {
+  const theme = useTheme();
   const { data: stats, isLoading, error } = useGetAllBlogsEngagementStatsQuery();
 
   if (isLoading) {
@@ -141,43 +142,43 @@ export default function EngagementMetrics() {
       title: 'Total Posts',
       value: stats.totalBlogs,
       icon: <ArticleIcon />,
-      color: '#1976d2',
-      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      color: (theme.palette as any).customColors.charts.metrics.stat6,
+      gradient: (theme.palette as any).customColors.gradients.metricStat1,
     },
     {
       title: 'Total Likes',
       value: stats.totalLikes,
       icon: <ThumbUpIcon />,
-      color: '#2e7d32',
-      gradient: 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+      color: (theme.palette as any).customColors.charts.metrics.stat7,
+      gradient: (theme.palette as any).customColors.gradients.metricStat2,
     },
     {
       title: 'Total Dislikes',
       value: stats.totalDislikes,
       icon: <ThumbDownIcon />,
-      color: '#d32f2f',
-      gradient: 'linear-gradient(135deg, #ee0979 0%, #ff6a00 100%)',
+      color: (theme.palette as any).customColors.charts.metrics.stat8,
+      gradient: (theme.palette as any).customColors.gradients.metricStat3,
     },
     {
       title: 'Total Comments',
       value: stats.totalComments,
       icon: <CommentIcon />,
-      color: '#ed6c02',
-      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      color: (theme.palette as any).customColors.charts.metrics.stat9,
+      gradient: (theme.palette as any).customColors.gradients.metricStat4,
     },
     {
       title: 'Total Engagement',
       value: stats.totalEngagement,
       icon: <TrendingUpIcon />,
-      color: '#9c27b0',
-      gradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      color: (theme.palette as any).customColors.charts.metrics.stat10,
+      gradient: (theme.palette as any).customColors.gradients.metricStat5,
     },
     {
       title: 'Avg Per Post',
       value: stats.avgEngagementPerBlog,
       icon: <TimelineIcon />,
-      color: '#0288d1',
-      gradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      color: (theme.palette as any).customColors.charts.metrics.stat11,
+      gradient: (theme.palette as any).customColors.gradients.metricStat6,
     },
   ];
 

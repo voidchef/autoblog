@@ -10,6 +10,7 @@ import {
   Chip,
   IconButton,
   Tooltip,
+  useTheme,
 } from '@mui/material';
 import {
   Google as GoogleIcon,
@@ -23,6 +24,7 @@ import {
 import OAuthLinkButtons from './OAuthLinkButtons';
 
 const ConnectedAccounts: React.FC = () => {
+  const theme = useTheme();
   const { data, isLoading, error } = useGetOAuthConnectionsQuery();
   const [unlinkConnection, { isLoading: isUnlinking }] = useUnlinkOAuthConnectionMutation();
 
@@ -39,9 +41,9 @@ const ConnectedAccounts: React.FC = () => {
   const getProviderIcon = (provider: string) => {
     switch (provider) {
       case 'google':
-        return <GoogleIcon sx={{ fontSize: 40, color: '#4285F4' }} />;
+        return <GoogleIcon sx={{ fontSize: 40, color: theme.palette.customColors.oauth.google }} />;
       case 'apple':
-        return <AppleIcon sx={{ fontSize: 40, color: '#000000' }} />;
+        return <AppleIcon sx={{ fontSize: 40, color: theme.palette.customColors.oauth.apple }} />;
       default:
         return null;
     }

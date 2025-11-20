@@ -5,6 +5,7 @@ import {
   Typography,
   LinearProgress,
   Chip,
+  useTheme,
 } from '@mui/material';
 import {
   AutoAwesome as AutoAwesomeIcon,
@@ -28,6 +29,7 @@ export default function GeneratingBanner({
   error,
 }: GeneratingBannerProps) {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const handleViewBlog = () => {
     navigate(`${ROUTES.PREVIEW}/${blogId}?preview=true`);
@@ -112,7 +114,7 @@ export default function GeneratingBanner({
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: 'white' }}>
             {getTitle()}
           </Typography>
-          <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.9)' }}>
+          <Typography variant="body2" sx={{ color: theme.palette.customColors.overlay.white.almostOpaque }}>
             {getMessage()}
           </Typography>
 
@@ -122,7 +124,7 @@ export default function GeneratingBanner({
                 label={blogTitle}
                 size="small"
                 sx={{
-                  bgcolor: 'rgba(255, 255, 255, 0.2)',
+                  bgcolor: theme.palette.customColors.overlay.white.medium,
                   color: 'white',
                   maxWidth: '300px',
                 }}
@@ -137,7 +139,7 @@ export default function GeneratingBanner({
             <Box>
               <LinearProgress
                 sx={{
-                  bgcolor: 'rgba(255, 255, 255, 0.3)',
+                  bgcolor: theme.palette.customColors.overlay.white.stronger,
                   '& .MuiLinearProgress-bar': {
                     bgcolor: 'white',
                   },
@@ -145,7 +147,7 @@ export default function GeneratingBanner({
               />
               <Typography
                 variant="caption"
-                sx={{ mt: 0.5, display: 'block', color: 'rgba(255, 255, 255, 0.9)', textAlign: 'center' }}
+                sx={{ mt: 0.5, display: 'block', color: theme.palette.customColors.overlay.white.almostOpaque, textAlign: 'center' }}
               >
                 Processing...
               </Typography>

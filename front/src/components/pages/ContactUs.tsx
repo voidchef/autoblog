@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
-import { Button, MenuItem, Typography, Container, Paper, Divider, Alert, CircularProgress, Snackbar } from '@mui/material';
+import { Button, MenuItem, Typography, Container, Paper, Divider, Alert, CircularProgress, Snackbar, useTheme } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -14,6 +14,7 @@ import { useCreateContactMutation } from '../../services/contactApi';
 import { useAppSelector } from '../../utils/reduxHooks';
 
 export default function ContactUs() {
+  const theme = useTheme();
   const queryTypes = useAppSelector((state) => state.appSettings.queryType || []);
   const [createContact, { isLoading, isSuccess, isError, error }] = useCreateContactMutation();
   
@@ -152,7 +153,7 @@ export default function ContactUs() {
             sx={{
               width: 60,
               height: 4,
-              background: 'linear-gradient(90deg, #1d4ed8 0%, #0d9488 100%)',
+              background: theme.palette.customColors.gradients.primary,
               mx: 'auto',
               borderRadius: 2,
               mb: 3,
@@ -211,10 +212,10 @@ export default function ContactUs() {
                         width: 40,
                         height: 40,
                         borderRadius: '50%',
-                        background: (theme) =>
+                        background:
                           theme.palette.mode === 'dark'
-                            ? 'rgba(29, 78, 216, 0.2)'
-                            : 'rgba(29, 78, 216, 0.1)',
+                            ? theme.palette.customColors.componentOverlays.accentBlueDark
+                            : theme.palette.customColors.componentOverlays.accentBlueLight,
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',

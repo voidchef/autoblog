@@ -20,6 +20,7 @@ import {
   Zoom,
   Collapse,
   alpha,
+  useTheme,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -53,6 +54,7 @@ interface LanguageModel {
 }
 
 export default function AppSettings() {
+  const theme = useTheme();
   const { data: appSettingsData, isLoading } = useAppSettings();
   const [updateAllAppSettings, { isLoading: isUpdating }] = useUpdateAllAppSettingsMutation();
 
@@ -187,14 +189,11 @@ export default function AppSettings() {
               borderRadius: { xs: 2, md: 3 },
               position: 'relative',
               overflow: 'hidden',
-              background: (theme) =>
-                theme.palette.mode === 'dark'
-                  ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                  : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: theme.palette.customColors.analytics.headerTextGradientDark,
               boxShadow: (theme) =>
                 theme.palette.mode === 'dark'
-                  ? '0 20px 60px rgba(102, 126, 234, 0.3)'
-                  : '0 20px 60px rgba(102, 126, 234, 0.2)',
+                  ? `0 20px 60px ${theme.palette.customColors.shadows.primary}`
+                  : `0 20px 60px ${theme.palette.customColors.shadows.primaryLight}`,
               mb: { xs: 3, md: 4 },
             }}
           >
@@ -226,9 +225,9 @@ export default function AppSettings() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  background: 'rgba(255, 255, 255, 0.2)',
+                  background: theme.palette.customColors.overlay.white.medium,
                   backdropFilter: 'blur(10px)',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                  boxShadow: `0 8px 32px ${theme.palette.customColors.overlay.black.light}`,
                 }}
               >
                 <SettingsIcon sx={{ fontSize: { xs: 32, sm: 40 }, color: 'white' }} />
@@ -246,7 +245,7 @@ export default function AppSettings() {
                 <Typography 
                   variant="body1" 
                   sx={{ 
-                    color: 'rgba(255, 255, 255, 0.9)',
+                    color: theme.palette.customColors.overlay.white.almostOpaque,
                     fontSize: { xs: '0.875rem', sm: '1rem' },
                   }}
                 >
@@ -267,27 +266,24 @@ export default function AppSettings() {
               overflow: 'hidden',
               border: '1px solid',
               borderColor: (theme) =>
-                theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
+                theme.palette.mode === 'dark' ? theme.palette.customColors.overlay.white.light : theme.palette.customColors.overlay.black.light,
               boxShadow: (theme) =>
                 theme.palette.mode === 'dark'
-                  ? '0 10px 40px rgba(0, 0, 0, 0.3)'
-                  : '0 10px 40px rgba(0, 0, 0, 0.08)',
+                  ? `0 10px 40px ${theme.palette.customColors.overlay.black.almostOpaque}`
+                  : `0 10px 40px ${theme.palette.customColors.overlay.black.light}`,
               transition: 'all 0.3s ease',
               '&:hover': {
                 boxShadow: (theme) =>
                   theme.palette.mode === 'dark'
-                    ? '0 15px 50px rgba(0, 0, 0, 0.4)'
-                    : '0 15px 50px rgba(0, 0, 0, 0.12)',
+                    ? `0 15px 50px ${theme.palette.customColors.overlay.black.almostOpaque}`
+                    : `0 15px 50px ${theme.palette.customColors.overlay.black.medium}`,
                 transform: 'translateY(-2px)',
               },
             }}
           >
             <Box
               sx={{
-                background: (theme) =>
-                  theme.palette.mode === 'dark'
-                    ? 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
-                    : 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+                background: theme.palette.customColors.gradients.category,
                 p: { xs: 2, sm: 2.5, md: 3 },
                 position: 'relative',
                 overflow: 'hidden',
@@ -302,7 +298,7 @@ export default function AppSettings() {
                   width: { xs: 100, sm: 150 },
                   height: { xs: 100, sm: 150 },
                   borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.1)',
+                  background: theme.palette.customColors.overlay.white.light,
                 }}
               />
               <Stack 
@@ -321,7 +317,7 @@ export default function AppSettings() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: 'rgba(255, 255, 255, 0.25)',
+                      background: theme.palette.customColors.overlay.white.strong,
                       backdropFilter: 'blur(10px)',
                     }}
                   >
@@ -340,7 +336,7 @@ export default function AppSettings() {
                     <Typography 
                       variant="body2" 
                       sx={{ 
-                        color: 'rgba(255, 255, 255, 0.9)',
+                        color: theme.palette.customColors.overlay.white.almostOpaque,
                         fontSize: { xs: '0.75rem', sm: '0.875rem' },
                         display: { xs: 'none', sm: 'block' },
                       }}
@@ -357,16 +353,16 @@ export default function AppSettings() {
                   sx={{
                     width: { xs: '100%', sm: 'auto' },
                     fontSize: { xs: '0.875rem', sm: '1rem' },
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    color: '#fa709a',
+                    background: theme.palette.customColors.overlay.white.almostOpaque,
+                    color: theme.palette.customColors.accent.pink.main,
                     fontWeight: 'bold',
                     px: { xs: 2, sm: 3 },
                     borderRadius: 2,
-                    boxShadow: '0 4px 14px rgba(0, 0, 0, 0.15)',
+                    boxShadow: `0 4px 14px ${theme.palette.customColors.overlay.black.strong}`,
                     '&:hover': {
                       background: 'white',
                       transform: 'translateY(-2px)',
-                      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                      boxShadow: `0 6px 20px ${theme.palette.customColors.overlay.black.stronger}`,
                     },
                   }}
                 >
@@ -387,18 +383,18 @@ export default function AppSettings() {
                           borderRadius: 2,
                           border: '1px solid',
                           borderColor: (theme) =>
-                            theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
+                            theme.palette.mode === 'dark' ? theme.palette.customColors.overlay.white.light : theme.palette.customColors.overlay.black.light,
                           background: (theme) =>
                             theme.palette.mode === 'dark'
                               ? alpha(theme.palette.background.paper, 0.6)
                               : alpha(theme.palette.background.paper, 0.8),
                           transition: 'all 0.3s ease',
                           '&:hover': {
-                            borderColor: '#fa709a',
+                            borderColor: theme.palette.customColors.accent.pink.main,
                             boxShadow: (theme) =>
                               theme.palette.mode === 'dark'
-                                ? '0 8px 24px rgba(250, 112, 154, 0.2)'
-                                : '0 8px 24px rgba(250, 112, 154, 0.15)',
+                                ? `0 8px 24px ${theme.palette.customColors.accent.pink.light}`
+                                : `0 8px 24px ${theme.palette.customColors.accent.pink.lighter}`,
                           },
                         }}
                       >
@@ -438,8 +434,8 @@ export default function AppSettings() {
                               sx={{
                                 background: (theme) =>
                                   theme.palette.mode === 'dark'
-                                    ? 'rgba(244, 67, 54, 0.1)'
-                                    : 'rgba(244, 67, 54, 0.05)',
+                                    ? theme.palette.customColors.accent.error.light
+                                    : theme.palette.customColors.accent.error.lighter,
                                 '&:hover': {
                                   background: 'error.main',
                                   color: 'white',
@@ -470,27 +466,24 @@ export default function AppSettings() {
               overflow: 'hidden',
               border: '1px solid',
               borderColor: (theme) =>
-                theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
+                theme.palette.mode === 'dark' ? theme.palette.customColors.overlay.white.light : theme.palette.customColors.overlay.black.light,
               boxShadow: (theme) =>
                 theme.palette.mode === 'dark'
-                  ? '0 10px 40px rgba(0, 0, 0, 0.3)'
-                  : '0 10px 40px rgba(0, 0, 0, 0.08)',
+                  ? `0 10px 40px ${theme.palette.customColors.overlay.black.almostOpaque}`
+                  : `0 10px 40px ${theme.palette.customColors.overlay.black.light}`,
               transition: 'all 0.3s ease',
               '&:hover': {
                 boxShadow: (theme) =>
                   theme.palette.mode === 'dark'
-                    ? '0 15px 50px rgba(0, 0, 0, 0.4)'
-                    : '0 15px 50px rgba(0, 0, 0, 0.12)',
+                    ? `0 15px 50px ${theme.palette.customColors.overlay.black.almostOpaque}`
+                    : `0 15px 50px ${theme.palette.customColors.overlay.black.medium}`,
                 transform: 'translateY(-2px)',
               },
             }}
           >
             <Box
               sx={{
-                background: (theme) =>
-                  theme.palette.mode === 'dark'
-                    ? 'linear-gradient(135deg, #0093E9 0%, #80D0C7 100%)'
-                    : 'linear-gradient(135deg, #0093E9 0%, #80D0C7 100%)',
+                background: theme.palette.customColors.gradients.language,
                 p: { xs: 2, sm: 2.5, md: 3 },
                 position: 'relative',
                 overflow: 'hidden',
@@ -504,7 +497,7 @@ export default function AppSettings() {
                   width: { xs: 100, sm: 150 },
                   height: { xs: 100, sm: 150 },
                   borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.1)',
+                  background: theme.palette.customColors.overlay.white.light,
                 }}
               />
               <Stack 
@@ -523,7 +516,7 @@ export default function AppSettings() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: 'rgba(255, 255, 255, 0.25)',
+                      background: theme.palette.customColors.overlay.white.strong,
                       backdropFilter: 'blur(10px)',
                     }}
                   >
@@ -542,7 +535,7 @@ export default function AppSettings() {
                     <Typography 
                       variant="body2" 
                       sx={{ 
-                        color: 'rgba(255, 255, 255, 0.9)',
+                        color: theme.palette.customColors.overlay.white.almostOpaque,
                         fontSize: { xs: '0.75rem', sm: '0.875rem' },
                         display: { xs: 'none', sm: 'block' },
                       }}
@@ -559,16 +552,16 @@ export default function AppSettings() {
                   sx={{
                     width: { xs: '100%', sm: 'auto' },
                     fontSize: { xs: '0.875rem', sm: '1rem' },
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    color: '#0093E9',
+                    background: theme.palette.customColors.overlay.white.almostOpaque,
+                    color: theme.palette.customColors.accent.cyan.main,
                     fontWeight: 'bold',
                     px: { xs: 2, sm: 3 },
                     borderRadius: 2,
-                    boxShadow: '0 4px 14px rgba(0, 0, 0, 0.15)',
+                    boxShadow: `0 4px 14px ${theme.palette.customColors.overlay.black.strong}`,
                     '&:hover': {
                       background: 'white',
                       transform: 'translateY(-2px)',
-                      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                      boxShadow: `0 6px 20px ${theme.palette.customColors.overlay.black.stronger}`,
                     },
                   }}
                 >
@@ -589,15 +582,15 @@ export default function AppSettings() {
                           borderRadius: 2,
                           border: '1px solid',
                           borderColor: (theme) =>
-                            theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
+                            theme.palette.mode === 'dark' ? theme.palette.customColors.overlay.white.light : theme.palette.customColors.overlay.black.light,
                           background: (theme) =>
                             theme.palette.mode === 'dark'
                               ? alpha(theme.palette.background.paper, 0.6)
                               : alpha(theme.palette.background.paper, 0.8),
                           transition: 'all 0.3s ease',
                           '&:hover': {
-                            borderColor: '#0093E9',
-                            boxShadow: '0 8px 24px rgba(0, 147, 233, 0.15)',
+                            borderColor: theme.palette.customColors.accent.cyan.main,
+                            boxShadow: `0 8px 24px ${theme.palette.customColors.accent.cyan.light}`,
                           },
                         }}
                       >
@@ -630,8 +623,8 @@ export default function AppSettings() {
                             sx={{
                               background: (theme) =>
                                 theme.palette.mode === 'dark'
-                                  ? 'rgba(244, 67, 54, 0.1)'
-                                  : 'rgba(244, 67, 54, 0.05)',
+                                  ? theme.palette.customColors.accent.error.light
+                                  : theme.palette.customColors.accent.error.lighter,
                               '&:hover': {
                                 background: 'error.main',
                                 color: 'white',
@@ -661,27 +654,24 @@ export default function AppSettings() {
               overflow: 'hidden',
               border: '1px solid',
               borderColor: (theme) =>
-                theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
+                theme.palette.mode === 'dark' ? theme.palette.customColors.overlay.white.light : theme.palette.customColors.overlay.black.light,
               boxShadow: (theme) =>
                 theme.palette.mode === 'dark'
-                  ? '0 10px 40px rgba(0, 0, 0, 0.3)'
-                  : '0 10px 40px rgba(0, 0, 0, 0.08)',
+                  ? `0 10px 40px ${theme.palette.customColors.overlay.black.almostOpaque}`
+                  : `0 10px 40px ${theme.palette.customColors.overlay.black.light}`,
               transition: 'all 0.3s ease',
               '&:hover': {
                 boxShadow: (theme) =>
                   theme.palette.mode === 'dark'
-                    ? '0 15px 50px rgba(0, 0, 0, 0.4)'
-                    : '0 15px 50px rgba(0, 0, 0, 0.12)',
+                    ? `0 15px 50px ${theme.palette.customColors.overlay.black.almostOpaque}`
+                    : `0 15px 50px ${theme.palette.customColors.overlay.black.medium}`,
                 transform: 'translateY(-2px)',
               },
             }}
           >
             <Box
               sx={{
-                background: (theme) =>
-                  theme.palette.mode === 'dark'
-                    ? 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
-                    : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                background: theme.palette.customColors.analytics.headerTextGradientDark,
                 p: { xs: 2, sm: 2.5, md: 3 },
                 position: 'relative',
                 overflow: 'hidden',
@@ -695,7 +685,7 @@ export default function AppSettings() {
                   width: { xs: 100, sm: 150 },
                   height: { xs: 100, sm: 150 },
                   borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.1)',
+                  background: theme.palette.customColors.overlay.white.light,
                 }}
               />
               <Stack 
@@ -714,7 +704,7 @@ export default function AppSettings() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: 'rgba(255, 255, 255, 0.25)',
+                      background: theme.palette.customColors.overlay.white.strong,
                       backdropFilter: 'blur(10px)',
                     }}
                   >
@@ -733,7 +723,7 @@ export default function AppSettings() {
                     <Typography 
                       variant="body2" 
                       sx={{ 
-                        color: 'rgba(255, 255, 255, 0.9)',
+                        color: theme.palette.customColors.overlay.white.almostOpaque,
                         fontSize: { xs: '0.75rem', sm: '0.875rem' },
                         display: { xs: 'none', sm: 'block' },
                       }}
@@ -750,16 +740,16 @@ export default function AppSettings() {
                   sx={{
                     width: { xs: '100%', sm: 'auto' },
                     fontSize: { xs: '0.875rem', sm: '1rem' },
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    color: (theme) => (theme.palette.mode === 'dark' ? '#a8edea' : '#667eea'),
+                    background: theme.palette.customColors.overlay.white.almostOpaque,
+                    color: theme.palette.customColors.accent.blue.main,
                     fontWeight: 'bold',
                     px: { xs: 2, sm: 3 },
                     borderRadius: 2,
-                    boxShadow: '0 4px 14px rgba(0, 0, 0, 0.15)',
+                    boxShadow: `0 4px 14px ${theme.palette.customColors.overlay.black.strong}`,
                     '&:hover': {
                       background: 'white',
                       transform: 'translateY(-2px)',
-                      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                      boxShadow: `0 6px 20px ${theme.palette.customColors.overlay.black.stronger}`,
                     },
                   }}
                 >
@@ -780,15 +770,15 @@ export default function AppSettings() {
                           borderRadius: 2,
                           border: '1px solid',
                           borderColor: (theme) =>
-                            theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
+                            theme.palette.mode === 'dark' ? theme.palette.customColors.overlay.white.light : theme.palette.customColors.overlay.black.light,
                           background: (theme) =>
                             theme.palette.mode === 'dark'
                               ? alpha(theme.palette.background.paper, 0.6)
                               : alpha(theme.palette.background.paper, 0.8),
                           transition: 'all 0.3s ease',
                           '&:hover': {
-                            borderColor: '#667eea',
-                            boxShadow: '0 8px 24px rgba(102, 126, 234, 0.15)',
+                            borderColor: theme.palette.customColors.accent.blue.main,
+                            boxShadow: `0 8px 24px ${theme.palette.customColors.shadows.primaryLight}`,
                           },
                         }}
                       >
@@ -836,8 +826,8 @@ export default function AppSettings() {
                               sx={{
                                 background: (theme) =>
                                   theme.palette.mode === 'dark'
-                                    ? 'rgba(244, 67, 54, 0.1)'
-                                    : 'rgba(244, 67, 54, 0.05)',
+                                    ? theme.palette.customColors.accent.error.light
+                                    : theme.palette.customColors.accent.error.lighter,
                                 '&:hover': {
                                   background: 'error.main',
                                   color: 'white',
@@ -868,27 +858,24 @@ export default function AppSettings() {
               overflow: 'hidden',
               border: '1px solid',
               borderColor: (theme) =>
-                theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
+                theme.palette.mode === 'dark' ? theme.palette.customColors.overlay.white.light : theme.palette.customColors.overlay.black.light,
               boxShadow: (theme) =>
                 theme.palette.mode === 'dark'
-                  ? '0 10px 40px rgba(0, 0, 0, 0.3)'
-                  : '0 10px 40px rgba(0, 0, 0, 0.08)',
+                  ? `0 10px 40px ${theme.palette.customColors.overlay.black.almostOpaque}`
+                  : `0 10px 40px ${theme.palette.customColors.overlay.black.light}`,
               transition: 'all 0.3s ease',
               '&:hover': {
                 boxShadow: (theme) =>
                   theme.palette.mode === 'dark'
-                    ? '0 15px 50px rgba(0, 0, 0, 0.4)'
-                    : '0 15px 50px rgba(0, 0, 0, 0.12)',
+                    ? `0 15px 50px ${theme.palette.customColors.overlay.black.almostOpaque}`
+                    : `0 15px 50px ${theme.palette.customColors.overlay.black.medium}`,
                 transform: 'translateY(-2px)',
               },
             }}
           >
             <Box
               sx={{
-                background: (theme) =>
-                  theme.palette.mode === 'dark'
-                    ? 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'
-                    : 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                background: theme.palette.customColors.gradients.queryTypes,
                 p: { xs: 2, sm: 2.5, md: 3 },
                 position: 'relative',
                 overflow: 'hidden',
@@ -902,7 +889,7 @@ export default function AppSettings() {
                   width: { xs: 100, sm: 150 },
                   height: { xs: 100, sm: 150 },
                   borderRadius: '50%',
-                  background: 'rgba(255, 255, 255, 0.1)',
+                  background: theme.palette.customColors.overlay.white.light,
                 }}
               />
               <Stack 
@@ -921,7 +908,7 @@ export default function AppSettings() {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      background: 'rgba(255, 255, 255, 0.25)',
+                      background: theme.palette.customColors.overlay.white.strong,
                       backdropFilter: 'blur(10px)',
                     }}
                   >
@@ -940,7 +927,7 @@ export default function AppSettings() {
                     <Typography 
                       variant="body2" 
                       sx={{ 
-                        color: 'rgba(255, 255, 255, 0.9)',
+                        color: theme.palette.customColors.overlay.white.almostOpaque,
                         fontSize: { xs: '0.75rem', sm: '0.875rem' },
                         display: { xs: 'none', sm: 'block' },
                       }}
@@ -957,16 +944,16 @@ export default function AppSettings() {
                   sx={{
                     width: { xs: '100%', sm: 'auto' },
                     fontSize: { xs: '0.875rem', sm: '1rem' },
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    color: '#f5576c',
+                    background: theme.palette.customColors.overlay.white.almostOpaque,
+                    color: theme.palette.customColors.accent.red.main,
                     fontWeight: 'bold',
                     px: { xs: 2, sm: 3 },
                     borderRadius: 2,
-                    boxShadow: '0 4px 14px rgba(0, 0, 0, 0.15)',
+                    boxShadow: `0 4px 14px ${theme.palette.customColors.overlay.black.strong}`,
                     '&:hover': {
                       background: 'white',
                       transform: 'translateY(-2px)',
-                      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
+                      boxShadow: `0 6px 20px ${theme.palette.customColors.overlay.black.stronger}`,
                     },
                   }}
                 >
@@ -987,15 +974,15 @@ export default function AppSettings() {
                           borderRadius: 2,
                           border: '1px solid',
                           borderColor: (theme) =>
-                            theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.08)',
+                            theme.palette.mode === 'dark' ? theme.palette.customColors.overlay.white.light : theme.palette.customColors.overlay.black.light,
                           background: (theme) =>
                             theme.palette.mode === 'dark'
                               ? alpha(theme.palette.background.paper, 0.6)
                               : alpha(theme.palette.background.paper, 0.8),
                           transition: 'all 0.3s ease',
                           '&:hover': {
-                            borderColor: '#f5576c',
-                            boxShadow: '0 8px 24px rgba(245, 87, 108, 0.15)',
+                            borderColor: theme.palette.customColors.accent.red.main,
+                            boxShadow: `0 8px 24px ${theme.palette.customColors.accent.red.light}`,
                           },
                         }}
                       >
@@ -1028,8 +1015,8 @@ export default function AppSettings() {
                             sx={{
                               background: (theme) =>
                                 theme.palette.mode === 'dark'
-                                  ? 'rgba(244, 67, 54, 0.1)'
-                                  : 'rgba(244, 67, 54, 0.05)',
+                                  ? theme.palette.customColors.accent.error.light
+                                  : theme.palette.customColors.accent.error.lighter,
                               '&:hover': {
                                 background: 'error.main',
                                 color: 'white',
@@ -1073,12 +1060,12 @@ export default function AppSettings() {
                 fontSize: { xs: '1rem', sm: '1.1rem', md: '1.2rem' },
                 fontWeight: 'bold',
                 borderRadius: 3,
-                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                boxShadow: '0 8px 32px rgba(102, 126, 234, 0.3)',
+                background: theme.palette.customColors.analytics.headerTextGradientDark,
+                boxShadow: `0 8px 32px ${theme.palette.customColors.shadows.primary}`,
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
-                  boxShadow: '0 12px 48px rgba(102, 126, 234, 0.4)',
+                  boxShadow: `0 12px 48px ${theme.palette.customColors.shadows.primaryHeavy}`,
                   transform: 'translateY(-4px)',
                 },
                 '&:active': {
@@ -1113,7 +1100,7 @@ export default function AppSettings() {
             width: '100%',
             fontSize: '1rem',
             borderRadius: 2,
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
+            boxShadow: `0 8px 32px ${theme.palette.customColors.overlay.black.stronger}`,
           }}
         >
           {snackbar.message}

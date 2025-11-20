@@ -10,6 +10,30 @@ html {
   overflow-x: hidden;
 }
 
+:root {
+  /* Primary colors - modify these to change the theme */
+  --color-primary-main: #1d4ed8;
+  --color-primary-light: #3b82f6;
+  --color-primary-lighter: #60a5fa;
+  --color-primary-dark: #1e3a8a;
+  --color-secondary-main: #0d9488;
+  --color-secondary-light: #14b8a6;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  
+  /* Background colors */
+  --bg-light-primary: #f8fafc;
+  --bg-light-track: #fafbfc;
+  --bg-dark-primary: #0a0e1a;
+  --bg-dark-secondary: #131827;
+  
+  /* Overlay colors */
+  --overlay-light-selection: rgba(29, 78, 216, 0.3);
+  --overlay-dark-selection: rgba(59, 130, 246, 0.4);
+  --overlay-light-gradient: rgba(29, 78, 216, 0.4);
+  --overlay-dark-gradient: rgba(13, 148, 136, 0.4);
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -21,23 +45,23 @@ body {
 
 /* Text Selection Highlighting - Light Mode */
 ::selection {
-  background-color: rgba(29, 78, 216, 0.3) !important;
+  background-color: var(--overlay-light-selection) !important;
   color: inherit !important;
 }
 
 ::-moz-selection {
-  background-color: rgba(29, 78, 216, 0.3) !important;
+  background-color: var(--overlay-light-selection) !important;
   color: inherit !important;
 }
 
 /* Text Selection Highlighting - Dark Mode */
 .dark ::selection {
-  background-color: rgba(59, 130, 246, 0.4) !important;
+  background-color: var(--overlay-dark-selection) !important;
   color: inherit !important;
 }
 
 .dark ::-moz-selection {
-  background-color: rgba(59, 130, 246, 0.4) !important;
+  background-color: var(--overlay-dark-selection) !important;
   color: inherit !important;
 }
 
@@ -48,49 +72,49 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: linear-gradient(180deg, #fafbfc 0%, #f1f5f9 100%);
+  background: linear-gradient(180deg, var(--bg-light-track) 0%, #f1f5f9 100%);
   border-radius: 10px;
   margin: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #1d4ed8 0%, #0d9488 70%, #0d9488 100%);
+  background: linear-gradient(135deg, var(--color-primary-main) 0%, var(--color-secondary-main) 70%, var(--color-secondary-main) 100%);
   border-radius: 10px;
-  border: 2px solid #fafbfc;
+  border: 2px solid var(--bg-light-track);
   transition: all 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #1e3a8a 0%, #0f766e 70%, #0f766e 100%);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, #0f766e 70%, #0f766e 100%);
   border-color: #e2e8f0;
   transform: scale(1.05);
 }
 
 /* Dark mode scrollbar */
 .dark ::-webkit-scrollbar-track {
-  background: linear-gradient(180deg, #0a0e1a 0%, #131827 100%);
+  background: linear-gradient(180deg, var(--bg-dark-primary) 0%, var(--bg-dark-secondary) 100%);
   border-radius: 10px;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #1d4ed8 0%, #0d9488 70%, #3b82f6 100%);
-  border-color: #0a0e1a;
+  background: linear-gradient(135deg, var(--color-primary-main) 0%, var(--color-secondary-main) 70%, var(--color-primary-light) 100%);
+  border-color: var(--bg-dark-primary);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #3b82f6 0%, #14b8a6 70%, #60a5fa 100%);
-  border-color: #131827;
+  background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-secondary-light) 70%, var(--color-primary-lighter) 100%);
+  border-color: var(--bg-dark-secondary);
 }
 
 /* Enhanced Selection Styling with Gradient */
 ::selection {
-  background: linear-gradient(135deg, rgba(29, 78, 216, 0.4) 0%, rgba(13, 148, 136, 0.4) 100%);
+  background: linear-gradient(135deg, var(--overlay-light-gradient) 0%, var(--overlay-dark-gradient) 100%);
   color: inherit;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 ::-moz-selection {
-  background: linear-gradient(135deg, rgba(29, 78, 216, 0.4) 0%, rgba(13, 148, 136, 0.4) 100%);
+  background: linear-gradient(135deg, var(--overlay-light-gradient) 0%, var(--overlay-dark-gradient) 100%);
   color: inherit;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
@@ -183,7 +207,7 @@ body {
 
 @keyframes glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(29, 78, 216, 0.4), 0 0 40px rgba(13, 148, 136, 0.25);
+    box-shadow: 0 0 20px var(--overlay-light-gradient), 0 0 40px rgba(13, 148, 136, 0.25);
   }
   50% {
     box-shadow: 0 0 40px rgba(29, 78, 216, 0.6), 0 0 80px rgba(13, 148, 136, 0.45);
@@ -238,7 +262,7 @@ body {
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #1d4ed8 0%, #0d9488 50%, #3b82f6 100%);
+  background: linear-gradient(135deg, var(--color-primary-main) 0%, var(--color-secondary-main) 50%, var(--color-primary-light) 100%);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -248,7 +272,7 @@ body {
 
 /* Enhanced Focus Visible Styling */
 *:focus-visible {
-  outline: 3px solid #1d4ed8;
+  outline: 3px solid var(--color-primary-main);
   outline-offset: 3px;
   border-radius: 8px;
   box-shadow: 0 0 0 6px rgba(29, 78, 216, 0.2);
@@ -440,12 +464,12 @@ button, a, input, textarea, select {
 
 /* MDXEditor Text Selection */
 .mdxeditor-root-contenteditable ::selection {
-  background-color: rgba(29, 78, 216, 0.3) !important;
+  background-color: var(--overlay-light-selection) !important;
   color: inherit !important;
 }
 
 .mdxeditor-root-contenteditable ::-moz-selection {
-  background-color: rgba(29, 78, 216, 0.3) !important;
+  background-color: var(--overlay-light-selection) !important;
   color: inherit !important;
 }
 
@@ -460,12 +484,12 @@ button, a, input, textarea, select {
 }
 
 .dark .mdxeditor-root-contenteditable ::selection {
-  background-color: rgba(59, 130, 246, 0.4) !important;
+  background-color: var(--overlay-dark-selection) !important;
   color: inherit !important;
 }
 
 .dark .mdxeditor-root-contenteditable ::-moz-selection {
-  background-color: rgba(59, 130, 246, 0.4) !important;
+  background-color: var(--overlay-dark-selection) !important;
   color: inherit !important;
 }
 

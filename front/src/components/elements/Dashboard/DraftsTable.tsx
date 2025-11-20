@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material';
 
 function createData(
   index: number,
@@ -92,6 +93,7 @@ const headCells = [
 ];
 
 export default function DraftsTable() {
+  const theme = useTheme();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [rows, setRows] = React.useState<any[]>([]);
@@ -164,10 +166,10 @@ export default function DraftsTable() {
       ) : rows.length > 0 ? (
         <Box
           sx={{
-            background: (theme) =>
+            background:
               theme.palette.mode === 'dark'
-                ? 'rgba(19, 24, 39, 0.6)'
-                : 'rgba(255, 255, 255, 0.9)',
+                ? theme.palette.customColors.overlay.black.almostOpaque
+                : theme.palette.customColors.overlay.white.almostOpaque,
             backdropFilter: 'blur(10px)',
             borderRadius: 3,
             border: '1px solid',
@@ -230,10 +232,10 @@ export default function DraftsTable() {
             textAlign: 'center',
             py: 8,
             px: 3,
-            background: (theme) =>
+            background:
               theme.palette.mode === 'dark'
-                ? 'rgba(19, 24, 39, 0.4)'
-                : 'rgba(255, 255, 255, 0.7)',
+                ? theme.palette.customColors.overlay.black.medium
+                : theme.palette.customColors.overlay.white.strong,
             borderRadius: 3,
             border: '2px dashed',
             borderColor: 'divider',

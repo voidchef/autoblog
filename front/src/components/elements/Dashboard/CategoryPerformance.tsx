@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Box, Card, CardContent, Typography, alpha, Skeleton } from '@mui/material';
+import { Box, Card, CardContent, Typography, alpha, Skeleton, useTheme } from '@mui/material';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { BarChart } from '@mui/x-charts/BarChart';
 
@@ -16,7 +16,8 @@ interface CategoryPerformanceProps {
 }
 
 export default function CategoryPerformance({ categories = [], isLoading = false }: CategoryPerformanceProps) {
-  const colors = ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ec4899', '#06b6d4', '#f97316'];
+  const theme = useTheme();
+  const colors = theme.palette.customColors.charts.extended;
 
   if (isLoading) {
     return (
@@ -52,8 +53,8 @@ export default function CategoryPerformance({ categories = [], isLoading = false
             fontWeight: 700,
             background: (theme) =>
               theme.palette.mode === 'dark'
-                ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                : 'linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%)',
+                ? theme.palette.customColors.analytics.headerTextGradientDark
+                : theme.palette.customColors.analytics.headerTextGradientLight,
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -69,7 +70,7 @@ export default function CategoryPerformance({ categories = [], isLoading = false
             background: (theme) =>
               theme.palette.mode === 'dark'
                 ? alpha(theme.palette.background.paper, 0.6)
-                : 'rgba(255, 255, 255, 0.9)',
+                : theme.palette.customColors.overlay.white.almostOpaque,
           }}
         >
           <Typography variant="h6" color="text.secondary">
@@ -103,8 +104,8 @@ export default function CategoryPerformance({ categories = [], isLoading = false
             fontWeight: 700,
             background: (theme) =>
               theme.palette.mode === 'dark'
-                ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                : 'linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%)',
+                ? theme.palette.customColors.analytics.headerTextGradientDark
+                : theme.palette.customColors.analytics.headerTextGradientLight,
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
@@ -126,7 +127,7 @@ export default function CategoryPerformance({ categories = [], isLoading = false
             background: (theme) =>
               theme.palette.mode === 'dark'
                 ? alpha(theme.palette.background.paper, 0.6)
-                : 'rgba(255, 255, 255, 0.9)',
+                : theme.palette.customColors.overlay.white.almostOpaque,
             backdropFilter: 'blur(10px)',
             border: '1px solid',
             borderColor: 'divider',
@@ -192,7 +193,7 @@ export default function CategoryPerformance({ categories = [], isLoading = false
             background: (theme) =>
               theme.palette.mode === 'dark'
                 ? alpha(theme.palette.background.paper, 0.6)
-                : 'rgba(255, 255, 255, 0.9)',
+                : theme.palette.customColors.overlay.white.almostOpaque,
             backdropFilter: 'blur(10px)',
             border: '1px solid',
             borderColor: 'divider',
@@ -229,8 +230,8 @@ export default function CategoryPerformance({ categories = [], isLoading = false
                   },
                 }]}
                 series={[
-                  { dataKey: 'views', label: 'Views', color: '#3b82f6' },
-                  { dataKey: 'engagement', label: 'Engagement', color: '#10b981' },
+                  { dataKey: 'views', label: 'Views', color: (theme.palette as any).customColors.charts.metrics.stat1 },
+                  { dataKey: 'engagement', label: 'Engagement', color: (theme.palette as any).customColors.charts.metrics.stat4 },
                 ]}
                 margin={{ top: 10, bottom: 70, left: 60, right: 20 }}
                 sx={{

@@ -11,7 +11,7 @@ import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
-import { alpha } from '@mui/material/styles';
+import { alpha, useTheme } from '@mui/material/styles';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import StarIcon from '@mui/icons-material/Star';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
@@ -47,6 +47,7 @@ interface PricingTier {
 }
 
 export default function Pricing() {
+  const theme = useTheme();
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuth();
   const [createOrder, { isLoading: isCreatingOrder }] = useCreateOrderMutation();
@@ -117,7 +118,7 @@ export default function Pricing() {
           plan: 'pro',
         },
         theme: {
-          color: '#667eea',
+          color: (theme.palette as any).customColors.payment.brandColor,
         },
         modal: {
           ondismiss: () => {
@@ -139,7 +140,7 @@ export default function Pricing() {
       price: '0',
       period: 'Forever free',
       description: 'Perfect for getting started with AI-powered content creation',
-      gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      gradient: theme.palette.customColors.analytics.headerTextGradientDark,
       features: [
         { text: 'AI-powered blog generation', included: true },
         { text: 'SEO optimization', included: true },
@@ -160,7 +161,7 @@ export default function Pricing() {
       period: 'per month',
       description: 'Unlock the full power of AI content creation and analytics',
       popular: true,
-      gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      gradient: theme.palette.customColors.gradients.queryTypes,
       features: [
         { text: 'Everything in Free, plus:', included: true, highlight: true },
         { text: 'Advanced analytics & insights', included: true },
@@ -254,7 +255,7 @@ export default function Pricing() {
             component="h1"
             sx={{
               fontWeight: 900,
-              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              background: theme.palette.customColors.analytics.headerTextGradientDark,
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
