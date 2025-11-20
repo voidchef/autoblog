@@ -110,9 +110,7 @@ const BlogCard: React.FC<{ blog: Blog; rank: number }> = ({ blog, rank }) => {
                     height: 24,
                     fontSize: '0.75rem',
                     fontWeight: 500,
-                    bgcolor: alpha(rankColor, 0.1),
-                    color: rankColor,
-                    border: `1px solid ${alpha(rankColor, 0.2)}`,
+                    color: 'white',
                   }}
                 />
               )}

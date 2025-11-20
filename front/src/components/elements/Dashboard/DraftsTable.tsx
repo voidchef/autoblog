@@ -63,13 +63,13 @@ const headCells = [
     id: 'createdAt',
     numeric: true,
     disablePadding: false,
-    label: 'Created At',
+    label: 'Created',
   },
   {
     id: 'updatedAt',
     numeric: true,
     disablePadding: false,
-    label: 'Updated At',
+    label: 'Updated',
   },
   {
     id: 'status',

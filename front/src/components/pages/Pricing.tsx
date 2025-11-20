@@ -142,13 +142,11 @@ export default function Pricing() {
       gradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
       features: [
         { text: 'AI-powered blog generation', included: true },
-        { text: 'SEO optimization tools', included: true },
+        { text: 'SEO optimization', included: true },
         { text: 'Multi-language support', included: true },
         { text: 'Custom blog templates', included: true },
         { text: 'AI image generation', included: true },
         { text: 'Text-to-speech narration', included: true },
-        { text: 'Blog management dashboard', included: true },
-        { text: 'Public blog publishing', included: true },
         { text: 'Reader comments & engagement', included: true },
         { text: 'Social media sharing', included: true },
         { text: 'Basic analytics', included: true },
@@ -158,46 +156,21 @@ export default function Pricing() {
     },
     {
       name: 'Pro',
-      price: '29',
+      price: '5',
       period: 'per month',
       description: 'Unlock the full power of AI content creation and analytics',
       popular: true,
       gradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
       features: [
         { text: 'Everything in Free, plus:', included: true, highlight: true },
-        { 
-          text: 'Advanced analytics & insights', 
-          included: true, 
-          icon: <TrendingUpIcon fontSize="small" /> 
-        },
-        { 
-          text: 'Export to Medium', 
-          included: true, 
-          icon: <CloudUploadIcon fontSize="small" /> 
-        },
-        { 
-          text: 'Export to WordPress', 
-          included: true, 
-          icon: <CloudUploadIcon fontSize="small" /> 
-        },
-        { 
-          text: 'Regenerate text blocks with AI', 
-          included: true, 
-          icon: <EditIcon fontSize="small" /> 
-        },
-        { 
-          text: 'Priority support (24/7)', 
-          included: true, 
-          icon: <SupportAgentIcon fontSize="small" /> 
-        },
-        { text: 'Traffic source tracking', included: true },
+        { text: 'Advanced analytics & insights', included: true },
+        { text: 'Export to Medium', included: true },
+        { text: 'Export to WordPress', included: true },
+        { text: 'Regenerate text blocks with AI', included: true },
+        { text: 'Priority support (24/7)', included: true },
         { text: 'Reader engagement metrics', included: true },
-        { text: 'Custom domain integration', included: true },
-        { text: 'Remove AutoBlog branding', included: true },
-        { text: 'Team collaboration', included: true },
-        { text: 'Bulk content generation', included: true },
         { text: 'API access', included: true },
-        { text: 'Early feature access', included: true, icon: <SpeedIcon fontSize="small" /> },
+        { text: 'Early feature access', included: true },
       ],
       buttonText: 'Upgrade to Pro',
     },
@@ -276,20 +249,6 @@ export default function Pricing() {
 
         {/* Header */}
         <Stack spacing={2} alignItems="center" sx={{ textAlign: 'center', mb: { xs: 6, md: 10 } }}>
-          <Chip
-            icon={<AutoAwesomeIcon />}
-            label="Pricing Plans"
-            sx={{
-              background: (theme) =>
-                `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
-              color: 'white',
-              fontWeight: 700,
-              fontSize: '0.875rem',
-              px: 2,
-              py: 0.5,
-              boxShadow: (theme) => `0 4px 20px ${alpha(theme.palette.primary.main, 0.3)}`,
-            }}
-          />
           <Typography
             variant="h1"
             component="h1"
@@ -326,16 +285,13 @@ export default function Pricing() {
         {/* Pricing Cards */}
         <Grid container spacing={4} justifyContent="center" sx={{ mb: 10 }}>
           {pricingTiers.map((tier, index) => (
-            <Grid size={{ xs: 12, md: 6 }} key={index}>
+            <Grid size={{ xs: 12, md: 6 }} key={index} my={{ xs: 1, md: 0 }}>
               <Card
                 elevation={0}
                 sx={{
                   height: '100%',
                   position: 'relative',
-                  borderRadius: 5,
                   transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-                  border: tier.popular ? 3 : 2,
-                  borderColor: tier.popular ? 'primary.main' : (theme) => alpha(theme.palette.divider, 0.5),
                   background: (theme) =>
                     tier.popular
                       ? `linear-gradient(135deg, ${alpha(theme.palette.primary.main, 0.03)} 0%, ${alpha(
@@ -343,8 +299,7 @@ export default function Pricing() {
                           0.03
                         )} 100%)`
                       : theme.palette.background.paper,
-                  overflow: 'visible',
-                  transform: tier.popular ? 'scale(1.05)' : 'scale(1)',
+                  overflow: 'hidden',
                   boxShadow: tier.popular
                     ? (theme) => `0 20px 60px ${alpha(theme.palette.primary.main, 0.2)}`
                     : (theme) => `0 10px 40px ${alpha('#000', 0.08)}`,
@@ -354,7 +309,6 @@ export default function Pricing() {
                       tier.popular
                         ? `0 30px 80px ${alpha(theme.palette.primary.main, 0.3)}`
                         : `0 20px 60px ${alpha('#000', 0.15)}`,
-                    borderColor: 'primary.main',
                   },
                 }}
               >
@@ -362,7 +316,7 @@ export default function Pricing() {
                   <Box
                     sx={{
                       position: 'absolute',
-                      top: -20,
+                      top: 0,
                       left: 0,
                       right: 0,
                       display: 'flex',
@@ -389,7 +343,7 @@ export default function Pricing() {
                   </Box>
                 )}
 
-                <CardContent sx={{ p: { xs: 3, md: 5 }, pt: tier.popular ? 6 : 5 }}>
+                <CardContent sx={{ p: { xs: 5, md: 5 }, pt: tier.popular ? 9 : 5 }}>
                   {/* Tier Header */}
                   <Box sx={{ mb: 4, textAlign: 'center' }}>
                     <Typography
@@ -637,25 +591,6 @@ export default function Pricing() {
                 }}
               >
                 Contact Support
-              </Button>
-              <Button
-                variant="outlined"
-                size="large"
-                onClick={() => navigate(ROUTES.DASHBOARD)}
-                sx={{
-                  borderRadius: 3,
-                  px: 5,
-                  py: 1.75,
-                  fontWeight: 700,
-                  fontSize: '1.05rem',
-                  borderWidth: 2,
-                  '&:hover': {
-                    borderWidth: 2,
-                    transform: 'translateY(-2px)',
-                  },
-                }}
-              >
-                View Dashboard
               </Button>
             </Stack>
           </Stack>

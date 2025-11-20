@@ -73,6 +73,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, color, grad
             >
               {title}
             </Typography>
+            
             <Typography 
               className="metric-value"
               variant="h3" 
@@ -193,18 +194,18 @@ export default function EngagementMetrics() {
         }}
       >
         <Box>
-          <Typography 
-            variant="h4" 
-            component="h2" 
-            fontWeight="bold"
+          <Typography
+            variant="h5"
             sx={{
-              background: (theme) => theme.palette.mode === 'dark'
-                ? theme.palette.customColors.gradients.textDark
-                : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              fontWeight: 700,
+              background: (theme) =>
+                theme.palette.mode === 'dark'
+                  ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                  : 'linear-gradient(135deg, #1d4ed8 0%, #7c3aed 100%)',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
-              mb: 1,
+              mb: 0.5,
             }}
           >
             Engagement Overview

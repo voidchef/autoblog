@@ -190,7 +190,7 @@ function EnhancedTable({
                             })
                           ) : typeof cellValue === 'boolean' ? (
                             <Button
-                              variant={'contained'}
+                              variant={'outlined'}
                               color={'primary'}
                               size={'small'}
                               onClick={() => handleChangePublishStatus(row.id as string, !cellValue)}
@@ -205,7 +205,7 @@ function EnhancedTable({
                     })}
                     <TableCell align="right">
                       <Button
-                        variant={'contained'}
+                        variant={'outlined'}
                         color={'primary'}
                         size={'small'}
                         onClick={() => handleEditBlog(row.id as string)}
@@ -215,8 +215,8 @@ function EnhancedTable({
                     </TableCell>
                     <TableCell align="right">
                       <Button
-                        variant={'contained'}
-                        color={'primary'}
+                        variant={'outlined'}
+                        color={'error'}
                         size={'small'}
                         onClick={() => handleDeleteBlog(row.id as string)}
                       >

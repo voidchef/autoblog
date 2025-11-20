@@ -194,8 +194,6 @@ export default function Dashboard() {
           />
         </Box>
 
-        <Divider sx={{ my: 5 }} />
-
         {/* Top Performing Blogs */}
         <Box sx={{ my: 5 }}>
           <TopPerformingBlogs blogs={topBlogs} isLoading={blogsLoading} />
@@ -205,8 +203,6 @@ export default function Dashboard() {
         <Box sx={{ my: 5 }}>
           <CategoryPerformance categories={categoryData} isLoading={blogsLoading} />
         </Box>
-
-        <Divider sx={{ my: 5 }} />
 
         {/* Blog Views Graph Section */}
         <Card
