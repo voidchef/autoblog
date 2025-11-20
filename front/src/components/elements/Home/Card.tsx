@@ -10,21 +10,15 @@ import { ArrowForward } from '@mui/icons-material';
 
 interface Props {
   categoryId?: string;
-  categoryIcon: any;
   categoryName: string;
   categoryDescription: string;
 }
 
-export default function CategoryCard({ categoryId, categoryIcon, categoryName, categoryDescription }: Props) {
+export default function CategoryCard({ categoryId, categoryName, categoryDescription }: Props) {
   const navigate = useNavigate();
-  const [imageError, setImageError] = React.useState(false);
   
   const handleClick = (categoryName: string) => {
     navigate(`/category/${categoryName}`);
-  };
-
-  const handleImageError = () => {
-    setImageError(true);
   };
 
   return (
@@ -103,32 +97,16 @@ export default function CategoryCard({ categoryId, categoryIcon, categoryName, c
               overflow: 'hidden',
             }}
           >
-            {categoryIcon && !imageError ? (
-              <Box
-                component="img"
-                src={categoryIcon}
-                alt={categoryName}
-                onError={handleImageError}
-                sx={{
-                  width: '60%',
-                  height: '60%',
-                  objectFit: 'contain',
-                  filter: (theme) => `drop-shadow(0 2px 8px ${theme.palette.customColors.shadows.primary})`,
-                  transition: 'all 0.3s ease',
-                }}
-              />
-            ) : (
-              <SvgIcon
-                component={SpaceShip}
-                inheritViewBox
-                sx={{
-                  fontSize: '3rem',
-                  color: 'primary.main',
-                  filter: (theme) => `drop-shadow(0 2px 8px ${theme.palette.customColors.shadows.primary})`,
-                  transition: 'all 0.3s ease',
-                }}
-              />
-            )}
+            <SvgIcon
+              component={SpaceShip}
+              inheritViewBox
+              sx={{
+                fontSize: '3rem',
+                color: 'primary.main',
+                filter: (theme) => `drop-shadow(0 2px 8px ${theme.palette.customColors.shadows.primary})`,
+                transition: 'all 0.3s ease',
+              }}
+            />
           </Box>
 
           <Box sx={{ textAlign: 'center', flexGrow: 1 }}>

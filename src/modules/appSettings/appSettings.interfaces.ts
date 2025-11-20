@@ -4,7 +4,6 @@ import { QueryResult } from '../paginate/paginate';
 export interface ICategories {
   categoryName: string;
   categoryDescription: string;
-  categoryPicUrl: string;
 }
 
 export interface IFieldData {

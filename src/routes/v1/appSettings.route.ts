@@ -87,7 +87,6 @@ export default router;
  *                   required:
  *                     - categoryName
  *                     - categoryDescription
- *                     - categoryPicUrl
  *                   properties:
  *                     categoryName:
  *                       type: string
@@ -95,17 +94,12 @@ export default router;
  *                     categoryDescription:
  *                       type: string
  *                       description: Description of the category
- *                     categoryPicUrl:
- *                       type: string
- *                       description: URL of the category image
  *             example:
  *               categories:
  *                 - categoryName: "Technology"
  *                   categoryDescription: "Latest technology trends and news"
- *                   categoryPicUrl: "https://example.com/tech.jpg"
  *                 - categoryName: "Health"
  *                   categoryDescription: "Health and wellness articles"
- *                   categoryPicUrl: "https://example.com/health.jpg"
  *     responses:
  *       "200":
  *         description: Categories updated successfully

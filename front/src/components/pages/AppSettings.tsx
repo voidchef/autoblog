@@ -39,7 +39,6 @@ interface Category {
   _id?: string;
   categoryName: string;
   categoryDescription: string;
-  categoryPicUrl: string;
 }
 
 interface FieldData {
@@ -107,7 +106,7 @@ export default function AppSettings() {
 
   // Category handlers
   const addCategory = () => {
-    setCategories([...categories, { categoryName: '', categoryDescription: '', categoryPicUrl: '' }]);
+    setCategories([...categories, { categoryName: '', categoryDescription: '' }]);
   };
 
   const updateCategory = (index: number, field: keyof Category, value: string) => {
@@ -346,7 +345,7 @@ export default function AppSettings() {
                         display: { xs: 'none', sm: 'block' },
                       }}
                     >
-                      Manage blog categories with name, description, and image
+                      Manage blog categories with name and description
                     </Typography>
                   </Box>
                 </Stack>
@@ -404,7 +403,7 @@ export default function AppSettings() {
                         }}
                       >
                         <Grid container spacing={2} alignItems="center">
-                          <Grid size={{ xs: 12, sm: 3 }}>
+                          <Grid size={{ xs: 12, sm: 4 }}>
                             <TextField
                               fullWidth
                               label="Category Name"
@@ -418,26 +417,12 @@ export default function AppSettings() {
                               }}
                             />
                           </Grid>
-                          <Grid size={{ xs: 12, sm: 4 }}>
+                          <Grid size={{ xs: 12, sm: 7 }}>
                             <TextField
                               fullWidth
                               label="Description"
                               value={category.categoryDescription}
                               onChange={(e) => updateCategory(index, 'categoryDescription', e.target.value)}
-                              size="small"
-                              sx={{
-                                '& .MuiOutlinedInput-root': {
-                                  borderRadius: 2,
-                                },
-                              }}
-                            />
-                          </Grid>
-                          <Grid size={{ xs: 12, sm: 4 }}>
-                            <TextField
-                              fullWidth
-                              label="Image URL"
-                              value={category.categoryPicUrl}
-                              onChange={(e) => updateCategory(index, 'categoryPicUrl', e.target.value)}
                               size="small"
                               sx={{
                                 '& .MuiOutlinedInput-root': {

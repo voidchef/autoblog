@@ -15,11 +15,6 @@ const categorySchema = new mongoose.Schema(
       trim: true,
       required: true,
     },
-    categoryPicUrl: {
-      type: String,
-      trim: true,
-      required: true,
-    },
   },
   { _id: false }
 );

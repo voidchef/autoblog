@@ -6,7 +6,6 @@ export const updateCategories = {
       .items({
         categoryName: Joi.string().trim(),
         categoryDescription: Joi.string().trim(),
-        categoryPicUrl: Joi.string().trim(),
       })
       .min(1),
   }),
@@ -48,7 +47,6 @@ export const updateAllAppSettings = {
       categories: Joi.array().items({
         categoryName: Joi.string().trim(),
         categoryDescription: Joi.string().trim(),
-        categoryPicUrl: Joi.string().trim(),
       }),
       languages: Joi.array().items({
         value: Joi.string().trim(),

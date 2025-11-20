@@ -44,13 +44,11 @@ const adminAccessToken = tokenService.generateToken(admin._id, accessTokenExpire
 const categoryOne: ICategories = {
   categoryName: 'Technology',
   categoryDescription: 'Latest technology trends and news',
-  categoryPicUrl: 'https://example.com/tech.jpg',
 };
 
 const categoryTwo: ICategories = {
   categoryName: 'Health',
   categoryDescription: 'Health and wellness articles',
-  categoryPicUrl: 'https://example.com/health.jpg',
 };
 
 const languagesData: IFieldData[] = [
@@ -149,7 +147,6 @@ describe('AppSettings routes', () => {
       const newCategory: ICategories = {
         categoryName: 'Science',
         categoryDescription: 'Science and research articles',
-        categoryPicUrl: 'https://example.com/science.jpg',
       };
 
       const res = await request(app)
@@ -196,7 +193,7 @@ describe('AppSettings routes', () => {
 
       const invalidCategory = {
         categoryName: 'Technology',
-        // Missing categoryDescription and categoryPicUrl
+        // Missing categoryDescription
       };
 
       await request(app)

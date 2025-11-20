@@ -163,7 +163,6 @@ function Carousel() {
                       <Card
                         key={`card-${index}`}
                         categoryId={category._id}
-                        categoryIcon={category.categoryPicUrl}
                         categoryName={category.categoryName}
                         categoryDescription={category.categoryDescription}
                       />

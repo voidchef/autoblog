@@ -5,7 +5,6 @@ export interface ICategory {
   _id?: string;
   categoryName: string;
   categoryDescription: string;
-  categoryPicUrl: string;
 }
 
 export interface IFieldData {
