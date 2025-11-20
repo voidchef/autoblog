@@ -1053,7 +1053,7 @@ describe('Blog routes', () => {
         const userId = admin._id;
 
         await expect(blogService.publishToWordPress(blogId, userId)).rejects.toThrow(
-          'WordPress configuration is not set'
+          'WordPress configuration is not set. Please update your profile settings.'
         );
       });
 
@@ -1129,7 +1129,9 @@ describe('Blog routes', () => {
         const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
         const userId = admin._id;
 
-        await expect(blogService.publishToMedium(blogId, userId)).rejects.toThrow('Medium configuration is not set');
+        await expect(blogService.publishToMedium(blogId, userId)).rejects.toThrow(
+          'Medium configuration is not set. Please update your profile settings.'
+        );
       });
 
       test('should throw error if blog not found', async () => {

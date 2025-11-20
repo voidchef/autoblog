@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
-import S3Utils from '../aws/s3utils';
+import S3Utils from '../aws/S3Utils';
 import ApiError from '../errors/ApiError';
 import { IOptions } from '../paginate/paginate';
 import catchAsync from '../utils/catchAsync';

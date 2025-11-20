@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import config from '../../config/config';
+import { cacheService } from '../cache';
 
 const setupTestDB = () => {
   beforeAll(async () => {
@@ -10,6 +11,8 @@ const setupTestDB = () => {
     await Promise.all(
       Object.values(mongoose.connection.collections).map(async (collection) => collection.deleteMany({}))
     );
+    // Clear cache to prevent cached data from affecting tests
+    await cacheService.clear();
   });
 
   afterAll(async () => {

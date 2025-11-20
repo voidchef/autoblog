@@ -117,7 +117,8 @@ export const updateUserById = async (
   userId: mongoose.Types.ObjectId,
   updateBody: UpdateUserBody
 ): Promise<any | null> => {
-  const user = await getUserById(userId);
+  // Fetch directly from DB to avoid cached document issues when saving
+  const user = await User.findById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
@@ -143,7 +144,8 @@ export const updateUserById = async (
  * @returns {Promise<IUserDoc | null>}
  */
 export const deleteUserById = async (userId: mongoose.Types.ObjectId): Promise<IUserDoc | null> => {
-  const user = await getUserById(userId);
+  // Fetch directly from DB to avoid cached document issues when deleting
+  const user = await User.findById(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
@@ -172,8 +174,9 @@ export const followUser = async (
     throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot follow yourself');
   }
 
-  const user = await getUserById(userId);
-  const targetUser = await getUserById(targetUserId);
+  // Fetch directly from DB to avoid cached document issues when saving
+  const user = await User.findById(userId);
+  const targetUser = await User.findById(targetUserId);
 
   if (!user || !targetUser) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -192,6 +195,10 @@ export const followUser = async (
   targetUser.followers.push(userId);
   await targetUser.save();
 
+  // Invalidate user caches
+  await cacheService.del(`user:id:${userId.toString()}`);
+  await cacheService.del(`user:id:${targetUserId.toString()}`);
+
   return user.toJSON();
 };
 
@@ -209,8 +216,9 @@ export const unfollowUser = async (
     throw new ApiError(httpStatus.BAD_REQUEST, 'You cannot unfollow yourself');
   }
 
-  const user = await getUserById(userId);
-  const targetUser = await getUserById(targetUserId);
+  // Fetch directly from DB to avoid cached document issues when saving
+  const user = await User.findById(userId);
+  const targetUser = await User.findById(targetUserId);
 
   if (!user || !targetUser) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -228,6 +236,10 @@ export const unfollowUser = async (
   // Remove from followers list of target user
   targetUser.followers = targetUser.followers.filter((id) => id.toString() !== userId.toString());
   await targetUser.save();
+
+  // Invalidate user caches
+  await cacheService.del(`user:id:${userId.toString()}`);
+  await cacheService.del(`user:id:${targetUserId.toString()}`);
 
   return user.toJSON();
 };

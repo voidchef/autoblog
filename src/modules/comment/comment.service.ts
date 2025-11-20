@@ -82,7 +82,8 @@ export const updateCommentById = async (
   commentId: mongoose.Types.ObjectId,
   updateBody: UpdateCommentBody
 ): Promise<ICommentDoc | null> => {
-  const comment = await getCommentById(commentId);
+  // Fetch directly from DB to avoid cached document issues when saving
+  const comment = await Comment.findOne({ _id: commentId, isDeleted: false });
   if (!comment) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Comment not found');
   }
@@ -105,7 +106,8 @@ export const updateCommentById = async (
  * @returns {Promise<ICommentDoc | null>}
  */
 export const deleteCommentById = async (commentId: mongoose.Types.ObjectId): Promise<ICommentDoc | null> => {
-  const comment = await getCommentById(commentId);
+  // Fetch directly from DB to avoid cached document issues when saving
+  const comment = await Comment.findOne({ _id: commentId, isDeleted: false });
   if (!comment) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Comment not found');
   }
@@ -132,11 +134,14 @@ export const likeComment = async (
   commentId: mongoose.Types.ObjectId,
   userId: mongoose.Types.ObjectId
 ): Promise<ICommentDoc | null> => {
-  const comment = await getCommentById(commentId);
+  // Fetch directly from DB to use instance methods
+  const comment = await Comment.findOne({ _id: commentId, isDeleted: false });
   if (!comment) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Comment not found');
   }
   await comment.toggleLike(userId);
+  // Invalidate cache
+  await cacheService.del(`comment:id:${commentId.toString()}`);
   return comment;
 };
 
@@ -150,11 +155,14 @@ export const dislikeComment = async (
   commentId: mongoose.Types.ObjectId,
   userId: mongoose.Types.ObjectId
 ): Promise<ICommentDoc | null> => {
-  const comment = await getCommentById(commentId);
+  // Fetch directly from DB to use instance methods
+  const comment = await Comment.findOne({ _id: commentId, isDeleted: false });
   if (!comment) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Comment not found');
   }
   await comment.toggleDislike(userId);
+  // Invalidate cache
+  await cacheService.del(`comment:id:${commentId.toString()}`);
   return comment;
 };
 

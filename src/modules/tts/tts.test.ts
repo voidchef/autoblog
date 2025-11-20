@@ -1,6 +1,6 @@
 import { TextToSpeechClient } from '@google-cloud/text-to-speech';
 import { describe, expect, jest, beforeEach, afterEach, it } from '@jest/globals';
-import S3Utils from '../aws/s3utils';
+import S3Utils from '../aws/S3Utils';
 import logger from '../logger/logger';
 import { TTSService } from './tts.service';
 

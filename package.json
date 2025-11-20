@@ -109,6 +109,7 @@
     "@types/passport-google-oauth20": "^2.0.17",
     "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
+    "bullmq": "^5.64.0",
     "cors": "^2.8.5",
     "cross-env": "^10.1.0",
     "dotenv": "^17.2.3",

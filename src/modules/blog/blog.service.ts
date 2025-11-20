@@ -1,6 +1,6 @@
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
-import S3Utils from '../aws/s3utils';
+import S3Utils from '../aws/S3Utils';
 import { cacheService } from '../cache';
 import ApiError from '../errors/ApiError';
 import logger from '../logger/logger';
@@ -14,6 +14,7 @@ import {
   TemplatePost,
   TemplatePostPrompt,
 } from '../postGen';
+import { queueService, QueueName } from '../queue';
 import { ttsService } from '../tts';
 import User from '../user/user.model';
 import { getUserById } from '../user/user.service';
@@ -63,7 +64,7 @@ export const createBlog = async (blogBody: NewCreatedBlog): Promise<IBlogDoc> =>
  * @param {mongoose.Types.ObjectId} author
  * @returns {Promise<NewCreatedBlog>}
  */
-const generateBlogContent = async (
+export const generateBlogContent = async (
   generateBlogData: IGenerateBlog,
   author: mongoose.Types.ObjectId
 ): Promise<NewCreatedBlog> => {
@@ -147,7 +148,7 @@ export const generateBlog = async (
  * @param {mongoose.Types.ObjectId} author
  * @returns {Promise<NewCreatedBlog>}
  */
-const generateBlogContentFromTemplate = async (
+export const generateBlogContentFromTemplate = async (
   generateTemplateData: IGenerateTemplateBlog,
   author: mongoose.Types.ObjectId
 ): Promise<NewCreatedBlog> => {
@@ -278,41 +279,25 @@ export const initiateBlogGeneration = async (
     llmModel: generateBlogData.llmModel,
   });
 
-  // Start generation in background
-  void (async () => {
+  // Start generation using queue if available, otherwise fallback to background processing
+  if (queueService.isAvailable()) {
     try {
-      const blogContent = await generateBlogContent(generateBlogData, author);
-
-      // Upload images if any
-      let uploadedImages: string[] = [];
-      if (blogContent.generatedImages && blogContent.generatedImages.length > 0) {
-        const uploadResult = await S3Utils.uploadFromUrlsOrFiles({
-          sources: blogContent.generatedImages,
-          blogId: placeholderBlog.id,
-          uploadPath: `blogs/${placeholderBlog._id}`,
-        });
-        if (uploadResult.uploadedUrls.length > 0) {
-          uploadedImages = uploadResult.uploadedUrls;
-        }
-      }
-
-      // Update the placeholder with generated content
-      await Blog.findByIdAndUpdate(placeholderBlog._id, {
-        ...blogContent,
-        _id: placeholderBlog._id,
-        generatedImages: uploadedImages.length > 0 ? uploadedImages : blogContent.generatedImages,
-        selectedImage: uploadedImages.length > 0 ? uploadedImages[0] : undefined,
-        generationStatus: 'completed',
-        generationError: undefined,
+      await queueService.addJob(QueueName.BLOG_GENERATION, {
+        blogId: placeholderBlog.id,
+        authorId: author.toString(),
+        generateBlogData,
+        isTemplate: false,
       });
+      logger.info(`Blog generation job queued for blog: ${placeholderBlog.id}`);
     } catch (error) {
-      logger.error('Error in background blog generation:', error);
-      await Blog.findByIdAndUpdate(placeholderBlog._id, {
-        generationStatus: 'failed',
-        generationError: error instanceof Error ? error.message : 'Unknown error occurred',
-      });
+      logger.warn('Failed to queue blog generation, falling back to inline processing:', error);
+      // Fallback to inline processing
+      void processInlineGeneration(placeholderBlog._id as mongoose.Types.ObjectId, author, generateBlogData, false);
     }
-  })();
+  } else {
+    // Queue not available (in-memory mode), process inline
+    void processInlineGeneration(placeholderBlog._id as mongoose.Types.ObjectId, author, generateBlogData, false);
+  }
 
   return placeholderBlog;
 };
@@ -350,53 +335,29 @@ export const initiateBlogGenerationFromTemplate = async (
     llmModel: generateTemplateData.llmModel,
   });
 
-  // Start generation in background
-  void (async () => {
+  // Start generation using queue if available, otherwise fallback to background processing
+  if (queueService.isAvailable()) {
     try {
-      const blogContent = await generateBlogContentFromTemplate(generateTemplateData, author);
-
-      // Upload images if any
-      let uploadedImages: string[] = [];
-      if (blogContent.generatedImages && blogContent.generatedImages.length > 0) {
-        const uploadResult = await S3Utils.uploadFromUrlsOrFiles({
-          sources: blogContent.generatedImages,
-          blogId: placeholderBlog.id,
-          uploadPath: `blogs/${placeholderBlog._id}`,
-        });
-        if (uploadResult.uploadedUrls.length > 0) {
-          uploadedImages = uploadResult.uploadedUrls;
-        }
-      }
-
-      // Update the placeholder with generated content
-      await Blog.findByIdAndUpdate(placeholderBlog._id, {
-        ...blogContent,
-        _id: placeholderBlog._id,
-        generatedImages: uploadedImages.length > 0 ? uploadedImages : blogContent.generatedImages,
-        selectedImage: uploadedImages.length > 0 ? uploadedImages[0] : undefined,
-        generationStatus: 'completed',
-        generationError: undefined,
+      await queueService.addJob(QueueName.BLOG_GENERATION, {
+        blogId: placeholderBlog.id,
+        authorId: author.toString(),
+        generateBlogData: generateTemplateData,
+        isTemplate: true,
       });
-
-      // Clean up template file after successful generation
-      if (generateTemplateData.templateFile) {
-        const { cleanupTemplateFile } = await import('./template-upload.middleware');
-        cleanupTemplateFile(generateTemplateData.templateFile);
-      }
+      logger.info(`Template blog generation job queued for blog: ${placeholderBlog.id}`);
     } catch (error) {
-      logger.error('Error in background template blog generation:', error);
-      await Blog.findByIdAndUpdate(placeholderBlog._id, {
-        generationStatus: 'failed',
-        generationError: error instanceof Error ? error.message : 'Unknown error occurred',
-      });
-
-      // Clean up template file on error too
-      if (generateTemplateData.templateFile) {
-        const { cleanupTemplateFile } = await import('./template-upload.middleware');
-        cleanupTemplateFile(generateTemplateData.templateFile);
-      }
+      logger.warn('Failed to queue template blog generation, falling back to inline processing:', error);
+      // Fallback to inline processing
+      void processInlineTemplateGeneration(
+        placeholderBlog._id as mongoose.Types.ObjectId,
+        author,
+        generateTemplateData
+      );
     }
-  })();
+  } else {
+    // Queue not available (in-memory mode), process inline
+    void processInlineTemplateGeneration(placeholderBlog._id as mongoose.Types.ObjectId, author, generateTemplateData);
+  }
 
   return placeholderBlog;
 };
@@ -525,7 +486,8 @@ export const updateBlogById = async (
   blogId: mongoose.Types.ObjectId,
   updateBody: UpdateBlogBody
 ): Promise<IBlogDoc | null> => {
-  const blog = await getBlogById(blogId);
+  // Fetch directly from DB to avoid cached document issues when saving
+  const blog = await Blog.findById(blogId).populate('author');
   if (!blog) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
   }
@@ -550,7 +512,8 @@ export const updateBlogById = async (
  * @returns {Promise<IBlogDoc | null>}
  */
 export const deleteBlogById = async (blogId: mongoose.Types.ObjectId): Promise<IBlogDoc | null> => {
-  const blog = await getBlogById(blogId);
+  // Fetch directly from DB to avoid cached document issues when deleting
+  const blog = await Blog.findById(blogId);
   if (!blog) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
   }
@@ -597,11 +560,14 @@ export const likeBlog = async (
   blogId: mongoose.Types.ObjectId,
   userId: mongoose.Types.ObjectId
 ): Promise<IBlogDoc | null> => {
-  const blog = await getBlogById(blogId);
+  // Fetch directly from DB to use instance methods
+  const blog = await Blog.findById(blogId);
   if (!blog) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
   }
   await blog.toggleLike(userId);
+  // Invalidate cache
+  await cacheService.del(`blog:id:${blogId.toString()}`);
   return blog;
 };
 
@@ -615,11 +581,14 @@ export const dislikeBlog = async (
   blogId: mongoose.Types.ObjectId,
   userId: mongoose.Types.ObjectId
 ): Promise<IBlogDoc | null> => {
-  const blog = await getBlogById(blogId);
+  // Fetch directly from DB to use instance methods
+  const blog = await Blog.findById(blogId);
   if (!blog) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
   }
   await blog.toggleDislike(userId);
+  // Invalidate cache
+  await cacheService.del(`blog:id:${blogId.toString()}`);
   return blog;
 };
 
@@ -1260,3 +1229,100 @@ export const getDashboardStats = async (userId: mongoose.Types.ObjectId): Promis
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to fetch dashboard statistics');
   }
 };
+
+/**
+ * Helper function to process blog generation inline (when queue is not available)
+ */
+async function processInlineGeneration(
+  blogId: mongoose.Types.ObjectId,
+  author: mongoose.Types.ObjectId,
+  generateBlogData: IGenerateBlog,
+  isTemplate: boolean
+): Promise<void> {
+  try {
+    const blogContent = await generateBlogContent(generateBlogData, author);
+
+    // Upload images if any
+    let uploadedImages: string[] = [];
+    if (blogContent.generatedImages && blogContent.generatedImages.length > 0) {
+      const uploadResult = await S3Utils.uploadFromUrlsOrFiles({
+        sources: blogContent.generatedImages,
+        blogId: blogId.toString(),
+        uploadPath: `blogs/${blogId}`,
+      });
+      if (uploadResult.uploadedUrls.length > 0) {
+        uploadedImages = uploadResult.uploadedUrls;
+      }
+    }
+
+    // Update the placeholder with generated content
+    await Blog.findByIdAndUpdate(blogId, {
+      ...blogContent,
+      _id: blogId,
+      generatedImages: uploadedImages.length > 0 ? uploadedImages : blogContent.generatedImages,
+      selectedImage: uploadedImages.length > 0 ? uploadedImages[0] : undefined,
+      generationStatus: 'completed',
+      generationError: undefined,
+    });
+  } catch (error) {
+    logger.error('Error in inline blog generation:', error);
+    await Blog.findByIdAndUpdate(blogId, {
+      generationStatus: 'failed',
+      generationError: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
+  }
+}
+
+/**
+ * Helper function to process template blog generation inline (when queue is not available)
+ */
+async function processInlineTemplateGeneration(
+  blogId: mongoose.Types.ObjectId,
+  author: mongoose.Types.ObjectId,
+  generateTemplateData: IGenerateTemplateBlog
+): Promise<void> {
+  try {
+    const blogContent = await generateBlogContentFromTemplate(generateTemplateData, author);
+
+    // Upload images if any
+    let uploadedImages: string[] = [];
+    if (blogContent.generatedImages && blogContent.generatedImages.length > 0) {
+      const uploadResult = await S3Utils.uploadFromUrlsOrFiles({
+        sources: blogContent.generatedImages,
+        blogId: blogId.toString(),
+        uploadPath: `blogs/${blogId}`,
+      });
+      if (uploadResult.uploadedUrls.length > 0) {
+        uploadedImages = uploadResult.uploadedUrls;
+      }
+    }
+
+    // Update the placeholder with generated content
+    await Blog.findByIdAndUpdate(blogId, {
+      ...blogContent,
+      _id: blogId,
+      generatedImages: uploadedImages.length > 0 ? uploadedImages : blogContent.generatedImages,
+      selectedImage: uploadedImages.length > 0 ? uploadedImages[0] : undefined,
+      generationStatus: 'completed',
+      generationError: undefined,
+    });
+
+    // Clean up template file after successful generation
+    if (generateTemplateData.templateFile) {
+      const { cleanupTemplateFile } = await import('./template-upload.middleware');
+      cleanupTemplateFile(generateTemplateData.templateFile);
+    }
+  } catch (error) {
+    logger.error('Error in inline template blog generation:', error);
+    await Blog.findByIdAndUpdate(blogId, {
+      generationStatus: 'failed',
+      generationError: error instanceof Error ? error.message : 'Unknown error occurred',
+    });
+
+    // Clean up template file on error too
+    if (generateTemplateData.templateFile) {
+      const { cleanupTemplateFile } = await import('./template-upload.middleware');
+      cleanupTemplateFile(generateTemplateData.templateFile);
+    }
+  }
+}

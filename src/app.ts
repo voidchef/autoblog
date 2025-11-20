@@ -6,13 +6,30 @@ import passport from 'passport';
 import config from './config/config';
 import { jwtStrategy, googleStrategy, appleStrategy } from './modules/auth';
 import { ApiError, errorConverter, errorHandler } from './modules/errors';
-import { morgan } from './modules/logger';
+import { morgan, logger } from './modules/logger';
+import { queueService } from './modules/queue';
 import { initSubscriptionCronJobs } from './modules/subscription';
 import { authLimiter } from './modules/utils';
 import rootRoute from './routes/root.route';
 import routes from './routes/v1';
 
 const app: Express = express();
+
+// Initialize queue service (only if Redis is configured)
+if (config.env !== 'test') {
+  queueService
+    .initialize()
+    .then(() => {
+      if (queueService.isAvailable()) {
+        logger.info('Queue service initialized successfully');
+      } else {
+        logger.info('Queue service disabled - using in-memory cache mode');
+      }
+    })
+    .catch((error) => {
+      logger.error('Failed to initialize queue service:', error);
+    });
+}
 
 // Initialize cron jobs (only in non-test environment)
 if (config.env !== 'test') {

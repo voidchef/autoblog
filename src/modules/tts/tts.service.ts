@@ -3,7 +3,7 @@ import * as path from 'path';
 import { TextToSpeechClient, protos } from '@google-cloud/text-to-speech';
 import * as tmp from 'tmp';
 import { v4 as generateUUID } from 'uuid';
-import S3Utils from '../aws/s3utils';
+import S3Utils from '../aws/S3Utils';
 import logger from '../logger/logger';
 
 export interface TTSConfig {

@@ -1,1 +1,1 @@
-export * from './s3utils';
+export * from './S3Utils';
