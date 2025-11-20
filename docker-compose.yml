@@ -18,6 +18,24 @@ services:
       retries: 5
       start_period: 40s
 
+  redis:
+    container_name: autoblog-redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
   app:
     container_name: autoblog
     build: 
@@ -33,8 +51,13 @@ services:
       - MONGODB_URL=mongodb://mongo:27017/autoblog
       - CLIENT_URL=${CLIENT_URL}
       - PORT=${PORT:-3000}
+      - CACHE_TYPE=${CACHE_TYPE:-redis}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
     depends_on:
       mongo:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - backend
@@ -53,5 +76,7 @@ networks:
 
 volumes:
   mongo-data:
+    driver: local
+  redis-data:
     driver: local
     

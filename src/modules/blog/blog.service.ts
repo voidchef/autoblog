@@ -1,6 +1,7 @@
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
 import S3Utils from '../aws/s3utils';
+import { cacheService } from '../cache';
 import ApiError from '../errors/ApiError';
 import logger from '../logger/logger';
 import { mediumService } from '../medium';
@@ -48,6 +49,11 @@ export const createBlog = async (blogBody: NewCreatedBlog): Promise<IBlogDoc> =>
     }
   }
   await blog.save();
+
+  // Invalidate cache for blog queries
+  await cacheService.delPattern('blog:query:*');
+  await cacheService.delPattern('blog:stats:*');
+
   return blog;
 };
 
@@ -464,16 +470,50 @@ export const queryBlogsWithStats = async (
  * @param {mongoose.Types.ObjectId} id
  * @returns {Promise<IBlogDoc | null>}
  */
-export const getBlogById = async (id: mongoose.Types.ObjectId): Promise<IBlogDoc | null> =>
-  Blog.findById(id).populate('author');
+export const getBlogById = async (id: mongoose.Types.ObjectId): Promise<IBlogDoc | null> => {
+  const cacheKey = `blog:id:${id.toString()}`;
+
+  // Try to get from cache
+  const cached = await cacheService.get<IBlogDoc>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  // Fetch from database
+  const blog = await Blog.findById(id).populate('author');
+
+  // Cache the result (30 minutes TTL for blog details)
+  if (blog) {
+    await cacheService.set(cacheKey, blog, 1800);
+  }
+
+  return blog;
+};
 
 /**
  * Get blog by slug
  * @param {mongoose.Types.ObjectId} slug
  * @returns {Promise<IBlogDoc | null>}
  */
-export const getBlogBySlug = async (slug: string): Promise<IBlogDoc | null> =>
-  Blog.findOne({ slug }).populate('author');
+export const getBlogBySlug = async (slug: string): Promise<IBlogDoc | null> => {
+  const cacheKey = `blog:slug:${slug}`;
+
+  // Try to get from cache
+  const cached = await cacheService.get<IBlogDoc>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  // Fetch from database
+  const blog = await Blog.findOne({ slug }).populate('author');
+
+  // Cache the result (30 minutes TTL for blog details)
+  if (blog) {
+    await cacheService.set(cacheKey, blog, 1800);
+  }
+
+  return blog;
+};
 
 /**
  * Update blog by id
@@ -491,6 +531,16 @@ export const updateBlogById = async (
   }
   Object.assign(blog, updateBody);
   await blog.save();
+
+  // Invalidate cache for this blog
+  await cacheService.del(`blog:id:${blogId.toString()}`);
+  if (blog.slug) {
+    await cacheService.del(`blog:slug:${blog.slug}`);
+  }
+  // Invalidate query caches
+  await cacheService.delPattern('blog:query:*');
+  await cacheService.delPattern('blog:stats:*');
+
   return blog;
 };
 
@@ -505,6 +555,16 @@ export const deleteBlogById = async (blogId: mongoose.Types.ObjectId): Promise<I
     throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
   }
   await blog.deleteOne();
+
+  // Invalidate cache for this blog
+  await cacheService.del(`blog:id:${blogId.toString()}`);
+  if (blog.slug) {
+    await cacheService.del(`blog:slug:${blog.slug}`);
+  }
+  // Invalidate query caches
+  await cacheService.delPattern('blog:query:*');
+  await cacheService.delPattern('blog:stats:*');
+
   return blog;
 };
 

@@ -10,6 +10,16 @@ services:
     # Don't expose port in production (only internal access)
     ports: []
   
+  redis:
+    container_name: autoblog-redis-prod
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis-data-prod:/data
+    # Don't expose port in production (only internal access)
+    ports: []
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+  
   app:
     container_name: autoblog-prod
     build: 
@@ -20,6 +30,10 @@ services:
     environment:
       - NODE_ENV=production
       - MONGODB_URL=mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-changeme}@mongo:27017/autoblog?authSource=admin
+      - CACHE_TYPE=${CACHE_TYPE:-redis}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
     restart: always
     # Resource limits for production
     deploy:
@@ -40,5 +54,7 @@ services:
 
 volumes:
   mongo-data-prod:
+    driver: local
+  redis-data-prod:
     driver: local
 

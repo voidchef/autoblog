@@ -6,6 +6,11 @@ services:
     ports:
       - "27018:27017"
   
+  redis:
+    container_name: autoblog-redis-dev
+    ports:
+      - "6379:6379"
+  
   app:
     container_name: autoblog-dev
     build: 

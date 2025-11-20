@@ -30,7 +30,7 @@ declare module 'passport-apple' {
     passReqToCallback?: boolean;
   }
 
-  export type VerifyCallback = (error: any, user?: any, info?: any) => void;
+  export type VerifyCallback = (error: Error | null, user?: object | false, info?: object) => void;
 
   export type VerifyFunction = (
     accessToken: string,
@@ -43,6 +43,6 @@ declare module 'passport-apple' {
   export default class Strategy extends PassportStrategy {
     constructor(options: StrategyOptions, verify: VerifyFunction);
     name: string;
-    authenticate(req: Request, options?: any): void;
+    authenticate(req: Request, options?: object): void;
   }
 }

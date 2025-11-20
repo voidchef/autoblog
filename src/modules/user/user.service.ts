@@ -1,5 +1,6 @@
 import httpStatus from 'http-status';
 import mongoose from 'mongoose';
+import { cacheService } from '../cache';
 import ApiError from '../errors/ApiError';
 import { IOptions, QueryResult } from '../paginate/paginate';
 import { NewCreatedUser, UpdateUserBody, IUserDoc, NewRegisteredUser } from './user.interfaces';
@@ -49,7 +50,22 @@ export const queryUsers = async (filter: Record<string, any>, options: IOptions)
  * @returns {Promise<IUserDoc | null>}
  */
 export const getUserById = async (id: mongoose.Types.ObjectId): Promise<IUserDoc | null> => {
+  const cacheKey = `user:id:${id.toString()}`;
+
+  // Try to get from cache
+  const cached = await cacheService.get<IUserDoc>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  // Fetch from database
   const user = await User.findById(id);
+
+  // Cache the result (15 minutes TTL for user data)
+  if (user) {
+    await cacheService.set(cacheKey, user, 900);
+  }
+
   return user;
 };
 
@@ -71,7 +87,25 @@ export const getUserByIdForFrontend = async (id: mongoose.Types.ObjectId): Promi
  * @param {string} email
  * @returns {Promise<IUserDoc | null>}
  */
-export const getUserByEmail = async (email: string): Promise<IUserDoc | null> => User.findOne({ email });
+export const getUserByEmail = async (email: string): Promise<IUserDoc | null> => {
+  const cacheKey = `user:email:${email.toLowerCase()}`;
+
+  // Try to get from cache
+  const cached = await cacheService.get<IUserDoc>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
+  // Fetch from database
+  const user = await User.findOne({ email });
+
+  // Cache the result (15 minutes TTL for user data)
+  if (user) {
+    await cacheService.set(cacheKey, user, 900);
+  }
+
+  return user;
+};
 
 /**
  * Update user by id
@@ -93,6 +127,12 @@ export const updateUserById = async (
   Object.assign(user, updateBody);
   await user.save();
 
+  // Invalidate cache for this user
+  await cacheService.del(`user:id:${userId.toString()}`);
+  if (user.email) {
+    await cacheService.del(`user:email:${user.email.toLowerCase()}`);
+  }
+
   // Return user data with hasOpenAiKey virtual
   return user.toJSON();
 };
@@ -108,6 +148,13 @@ export const deleteUserById = async (userId: mongoose.Types.ObjectId): Promise<I
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
   await user.deleteOne();
+
+  // Invalidate cache for this user
+  await cacheService.del(`user:id:${userId.toString()}`);
+  if (user.email) {
+    await cacheService.del(`user:email:${user.email.toLowerCase()}`);
+  }
+
   return user;
 };
 
