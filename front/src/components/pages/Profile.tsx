@@ -5,7 +5,6 @@ import {
   Typography,
   Card,
   CardContent,
-  Grid,
   TextField,
   Button,
   Avatar,
@@ -25,6 +24,7 @@ import {
   Slide,
   useTheme,
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import {
   Person as PersonIcon,
   Email as EmailIcon,
@@ -597,7 +597,7 @@ const Profile: React.FC = () => {
                 },
               }}
             >
-              <Stack direction={{ xs: 'column', md: 'row' }} spacing={3} alignItems="center">
+              <Stack direction={{ xs: 'column', md: 'row' }} spacing={{ xs: 2, sm: 2.5, md: 3 }} alignItems="center">
                 {/* Profile Avatar Section */}
                 <Box>
                   <Badge
@@ -683,7 +683,7 @@ const Profile: React.FC = () => {
                     alignItems="center" 
                     justifyContent={{ xs: 'center', md: 'flex-start' }}
                     flexWrap="wrap"
-                    sx={{ mb: 2 }}
+                    sx={{ mb: 2, gap: { xs: 2, sm: 0 } }}
                   >
                     <Chip
                       icon={<EmailIcon />}
@@ -723,19 +723,20 @@ const Profile: React.FC = () => {
                 </Box>
 
                 {/* Quick Actions */}
-                <Stack direction="column" spacing={1.5}>
+                <Stack direction="column" spacing={1.5} sx={{ width: { xs: '100%', md: 'auto' } }}>
                   {!isEditing ? (
                     <Button
                       variant="contained"
                       size="large"
                       onClick={() => setIsEditing(true)}
                       startIcon={<EditIcon />}
+                      fullWidth
                       sx={{
                         borderRadius: 3,
                         textTransform: 'none',
-                        px: 4,
-                        py: 1.5,
-                        fontSize: '1rem',
+                        px: { xs: 3, sm: 4 },
+                        py: { xs: 1.25, sm: 1.5 },
+                        fontSize: { xs: '0.875rem', sm: '1rem' },
                         fontWeight: 600,
                         background: (theme) => theme.palette.customColors.gradients.primary,
                         boxShadow: theme.palette.customColors.componentShadows.buttonPrimary,
@@ -758,12 +759,13 @@ const Profile: React.FC = () => {
                         onClick={handleSubmit}
                         startIcon={updateLoading ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
                         disabled={updateLoading}
+                        fullWidth
                         sx={{
                           borderRadius: 3,
                           textTransform: 'none',
-                          px: 4,
-                          py: 1.5,
-                          fontSize: '1rem',
+                          px: { xs: 3, sm: 4 },
+                          py: { xs: 1.25, sm: 1.5 },
+                          fontSize: { xs: '0.875rem', sm: '1rem' },
                           fontWeight: 600,
                           background: (theme) => theme.palette.customColors.gradients.primary,
                           boxShadow: theme.palette.customColors.componentShadows.buttonPrimary,
@@ -781,12 +783,13 @@ const Profile: React.FC = () => {
                         onClick={handleCancel}
                         startIcon={<CancelIcon />}
                         disabled={updateLoading}
+                        fullWidth
                         sx={{
                           borderRadius: 3,
                           textTransform: 'none',
-                          px: 4,
-                          py: 1.5,
-                          fontSize: '1rem',
+                          px: { xs: 3, sm: 4 },
+                          py: { xs: 1.25, sm: 1.5 },
+                          fontSize: { xs: '0.875rem', sm: '1rem' },
                           fontWeight: 600,
                         }}
                       >
@@ -830,7 +833,7 @@ const Profile: React.FC = () => {
           {/* Main Content with Tabs */}
           <Grid container spacing={3}>
             {/* Left Sidebar - Quick Stats */}
-            <Grid size={{ xs: 12, lg: 3 }}>
+            <Grid size={{ xs: 12, lg: 3 }} sx={{ display: { xs: 'none', lg: 'block' } }}>
               <Stack spacing={2}>
                 {/* Quick Stats Card */}
                 <Fade in timeout={1000}>
@@ -1074,7 +1077,7 @@ const Profile: React.FC = () => {
             </Grid>
 
             {/* Main Content Area with Tabs */}
-            <Grid size={{ xs: 12, lg: 9 }}>
+            <Grid size={{ xs: 12, lg: 9 }} sx={{ width: '100%' }}>
               <Fade in timeout={1000}>
                 <Card
                   elevation={0}
@@ -1095,20 +1098,22 @@ const Profile: React.FC = () => {
                   }}
                 >
                   {/* Tabs Navigation */}
-                  <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                  <Box sx={{ borderBottom: 1, borderColor: 'divider', overflowX: 'auto' }}>
                     <Tabs
                       value={activeTab}
                       onChange={(e, newValue) => setActiveTab(newValue)}
                       variant="scrollable"
                       scrollButtons="auto"
+                      allowScrollButtonsMobile
                       sx={{
-                        px: { xs: 1, sm: 2 },
+                        px: { xs: 0.5, sm: 2 },
                         '& .MuiTab-root': {
                           textTransform: 'none',
                           fontWeight: 600,
-                          fontSize: { xs: '0.875rem', sm: '1rem' },
-                          minHeight: { xs: 56, sm: 64 },
-                          px: { xs: 2, sm: 3 },
+                          fontSize: { xs: '0.75rem', sm: '0.875rem', md: '1rem' },
+                          minHeight: { xs: 48, sm: 56, md: 64 },
+                          px: { xs: 1, sm: 2, md: 3 },
+                          minWidth: { xs: 'auto', sm: 90 },
                         },
                         '& .Mui-selected': {
                           color: 'primary.main',
@@ -1118,13 +1123,36 @@ const Profile: React.FC = () => {
                           borderRadius: '3px 3px 0 0',
                           background: (theme) => theme.palette.customColors.gradients.primary,
                         },
+                        '& .MuiTabs-scrollButtons': {
+                          width: { xs: 32, sm: 48 },
+                        },
                       }}
                     >
-                      <Tab icon={<PersonIcon />} iconPosition="start" label="Basic Info" />
-                      <Tab icon={<VpnKeyIcon />} iconPosition="start" label="Security & APIs" />
-                      <Tab icon={<CloudUploadIcon />} iconPosition="start" label="Publishing" />
-                      <Tab icon={<LinkIcon />} iconPosition="start" label="Connected Accounts" />
-                      {!isEditing && <Tab icon={<ReceiptIcon />} iconPosition="start" label="Order History" />}
+                      <Tab 
+                        icon={<PersonIcon sx={{ fontSize: { xs: 18, sm: 20, md: 24 } }} />} 
+                        iconPosition="start" 
+                        label="Basic Info" 
+                      />
+                      <Tab 
+                        icon={<VpnKeyIcon sx={{ fontSize: { xs: 18, sm: 20, md: 24 } }} />} 
+                        iconPosition="start" 
+                        label="Security" 
+                      />
+                      <Tab 
+                        icon={<CloudUploadIcon sx={{ fontSize: { xs: 18, sm: 20, md: 24 } }} />} 
+                        iconPosition="start" 
+                        label="Publishing" 
+                      />
+                      <Tab 
+                        icon={<LinkIcon sx={{ fontSize: { xs: 18, sm: 20, md: 24 } }} />} 
+                        iconPosition="start" 
+                        label="Connected" 
+                      />
+                      {!isEditing && <Tab 
+                        icon={<ReceiptIcon sx={{ fontSize: { xs: 18, sm: 20, md: 24 } }} />} 
+                        iconPosition="start" 
+                        label="Orders" 
+                      />}
                     </Tabs>
                   </Box>
 

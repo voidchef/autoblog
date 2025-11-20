@@ -25,6 +25,7 @@ env:
   CLIENT_URL: http://localhost:5173
   RAZORPAY_KEY_ID: your_razorpay_key_id
   RAZORPAY_KEY_SECRET: your_razorpay_key_secret
+  CACHE_TYPE: memory
 
 jobs:
   setup:

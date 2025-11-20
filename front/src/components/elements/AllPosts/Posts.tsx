@@ -4,23 +4,52 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import TablePagination from '@mui/material/TablePagination';
 import { ThumbUp, ThumbDown, ChatBubbleOutline } from '@mui/icons-material';
-import { useGetBlogsQuery } from '../../../services/blogApi';
+import { useGetBlogsQuery, useSearchBlogsQuery } from '../../../services/blogApi';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { stringAvatar } from '../../../utils/utils';
 import Avatar from '@mui/material/Avatar';
+import SearchBar from '../Search/SearchBar';
 
 const AllPosts = () => {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [isSearching, setIsSearching] = React.useState(false);
 
-  const { data: allBlogs, isLoading } = useGetBlogsQuery({
+  const { data: allBlogs, isLoading: isLoadingBlogs } = useGetBlogsQuery({
     limit: rowsPerPage,
     page: page + 1, // API expects 1-based page
     isPublished: true,
+  }, {
+    skip: isSearching,
   });
 
+  const { data: searchResults, isLoading: isLoadingSearch } = useSearchBlogsQuery({
+    query: searchQuery,
+    limit: rowsPerPage,
+    page: page + 1,
+  }, {
+    skip: !isSearching || !searchQuery,
+  });
+
+  const displayData = isSearching ? searchResults : allBlogs;
+  const isLoading = isSearching ? isLoadingSearch : isLoadingBlogs;
+
   const navigate = useNavigate();
+
+  const handleSearch = () => {
+    setIsSearching(!!searchQuery);
+    setPage(0);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    if (!value) {
+      setIsSearching(false);
+      setPage(0);
+    }
+  };
 
   const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
@@ -37,22 +66,28 @@ const AllPosts = () => {
 
   return (
     <Box sx={{ flexGrow: 1, marginX: { xs: '1rem', sm: '7rem' } }}>
+      <SearchBar
+        value={searchQuery}
+        onChange={handleSearchChange}
+        onSearch={handleSearch}
+        isLoading={isLoading}
+      />
       {isLoading ? (
         <Box display={'flex'} justifyContent={'center'} margin={3}>
           <Typography fontSize={{ sm: 22 }} fontWeight={500} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
             Loading blogs...
           </Typography>
         </Box>
-      ) : !allBlogs || allBlogs.results.length === 0 ? (
+      ) : !displayData || displayData.results.length === 0 ? (
         <Box display={'flex'} justifyContent={'center'} margin={3}>
           <Typography fontSize={{ sm: 22 }} fontWeight={500} component="div" sx={{ flexGrow: 1, marginBottom: 1 }}>
-            No blogs found
+            {isSearching ? 'No blogs found matching your search' : 'No blogs found'}
           </Typography>
         </Box>
       ) : (
         <React.Fragment>
           <Grid container spacing={3}>
-            {allBlogs.results.map((post: any, index: number) => (
+            {displayData.results.map((post: any, index: number) => (
               <Grid size={{ xs: 12, sm: 4 }} key={index}>
                 <Box
                   sx={{ py: 1, cursor: 'pointer' }}
@@ -164,11 +199,11 @@ const AllPosts = () => {
               </Grid>
             ))}
           </Grid>
-          {allBlogs.results.length >= 0 && (
+          {displayData.results.length >= 0 && (
             <Box display={'flex'} justifyContent={'center'} margin={3}>
               <TablePagination
                 component="div"
-                count={allBlogs.totalResults}
+                count={displayData.totalResults}
                 page={page}
                 rowsPerPage={rowsPerPage}
                 onPageChange={handleChangePage}

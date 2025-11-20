@@ -25,6 +25,7 @@ import {
 } from '@mui/icons-material';
 import { alpha } from '@mui/material/styles';
 import { useRegenerateTextMutation } from '../../../services/blogApi';
+import { useGetAppSettingsQuery } from '../../../services/appSettingsApi';
 
 interface TextRegenerationDialogProps {
   open: boolean;
@@ -52,6 +53,12 @@ export default function TextRegenerationDialog({
   const [copied, setCopied] = React.useState(false);
 
   const [regenerateText, { isLoading, error }] = useRegenerateTextMutation();
+  const { data: appSettings } = useGetAppSettingsQuery();
+
+  // Get available language models from app settings
+  const availableModels = React.useMemo(() => {
+    return appSettings?.languageModels || [];
+  }, [appSettings]);
 
   // Reset state when dialog opens/closes
   React.useEffect(() => {
@@ -101,13 +108,19 @@ export default function TextRegenerationDialog({
 
   const handleModelChange = (model: string) => {
     setLlmModel(model);
-    // Auto-detect provider based on model
-    if (model.startsWith('gemini')) {
-      setLlmProvider('google');
-    } else if (model.startsWith('mistral')) {
-      setLlmProvider('mistral');
+    // Auto-detect provider from app settings
+    const selectedModel = availableModels.find(m => m.value === model);
+    if (selectedModel) {
+      setLlmProvider(selectedModel.provider);
     } else {
-      setLlmProvider('openai');
+      // Fallback to auto-detection based on model name
+      if (model.startsWith('gemini')) {
+        setLlmProvider('google');
+      } else if (model.startsWith('mistral')) {
+        setLlmProvider('mistral');
+      } else {
+        setLlmProvider('openai');
+      }
     }
   };
 
@@ -180,16 +193,15 @@ export default function TextRegenerationDialog({
               onChange={(e) => handleModelChange(e.target.value)}
               label="AI Model"
             >
-              <MenuItem value="gpt-4o">GPT-4o (Best quality)</MenuItem>
-              <MenuItem value="gpt-4o-mini">GPT-4o Mini (Fast & cost-effective)</MenuItem>
-              <MenuItem value="o1-preview">O1 Preview</MenuItem>
-              <MenuItem value="o1-mini">O1 Mini</MenuItem>
-              <MenuItem value="gemini-2.0-flash">Gemini 2.0 Flash</MenuItem>
-              <MenuItem value="gemini-2.5-flash">Gemini 2.5 Flash</MenuItem>
-              <MenuItem value="gemini-2.5-pro">Gemini 2.5 Pro</MenuItem>
-              <MenuItem value="mistral-small-latest">Mistral Small</MenuItem>
-              <MenuItem value="mistral-medium-latest">Mistral Medium</MenuItem>
-              <MenuItem value="mistral-large-latest">Mistral Large</MenuItem>
+              {availableModels.length > 0 ? (
+                availableModels.map((model) => (
+                  <MenuItem key={model.value} value={model.value}>
+                    {model.label}
+                  </MenuItem>
+                ))
+              ) : (
+                <MenuItem value="gpt-4o-mini">GPT-4o Mini (Default)</MenuItem>
+              )}
             </Select>
           </FormControl>
 
@@ -263,7 +275,10 @@ export default function TextRegenerationDialog({
             variant="contained"
             onClick={handleRegenerate}
             disabled={isLoading || !userPrompt.trim()}
-            startIcon={isLoading ? <CircularProgress size={16} /> : <AutoFixHighIcon />}
+            startIcon={isLoading ? <CircularProgress size={16} sx={{ color: 'inherit' }} /> : <AutoFixHighIcon />}
+            sx={{
+              color: (theme) => theme.palette.mode === 'dark' ? theme.palette.common.white : theme.palette.primary.contrastText,
+            }}
           >
             {isLoading ? 'Regenerating...' : 'Regenerate'}
           </Button>

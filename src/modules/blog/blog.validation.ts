@@ -74,6 +74,23 @@ export const getBlogs = {
   }),
 };
 
+export const searchBlogs = {
+  query: Joi.object().keys({
+    query: Joi.string().optional(),
+    author: Joi.custom(objectId),
+    category: Joi.string(),
+    tags: Joi.array(),
+    isFeatured: Joi.boolean(),
+    isPublished: Joi.boolean(),
+    isDraft: Joi.boolean(),
+    sortBy: Joi.string(),
+    projectBy: Joi.string(),
+    limit: Joi.number().integer(),
+    page: Joi.number().integer(),
+    populate: Joi.string(),
+  }),
+};
+
 export const getBlog = {
   params: Joi.object().keys({
     blogId: Joi.string(),
