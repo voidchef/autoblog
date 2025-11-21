@@ -1,0 +1,42 @@
+/* Custom MDXEditor Toolbar Button Styles */
+
+/* Active button states - trying all possible selectors */
+.mdxeditor-toolbar button[data-active="true"],
+.mdxeditor-toolbar button[aria-pressed="true"],
+.mdxeditor-toolbar button[data-state="on"],
+.mdxeditor-toolbar button.active,
+.mdxeditor .mdxeditor-toolbar button[data-active="true"],
+.mdxeditor .mdxeditor-toolbar button[aria-pressed="true"] {
+  background-color: rgba(29, 78, 216, 0.35) !important;
+  color: #60a5fa !important;
+  border: 2px solid #60a5fa !important;
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.5) !important;
+}
+
+/* Light mode active buttons */
+html[data-theme="light"] .mdxeditor-toolbar button[data-active="true"],
+html[data-theme="light"] .mdxeditor-toolbar button[aria-pressed="true"],
+html[data-theme="light"] .mdxeditor-toolbar button[data-state="on"],
+html[data-theme="light"] .mdxeditor-toolbar button.active {
+  background-color: rgba(29, 78, 216, 0.25) !important;
+  color: #1d4ed8 !important;
+  border: 2px solid #1d4ed8 !important;
+  box-shadow: 0 0 12px rgba(29, 78, 216, 0.4) !important;
+}
+
+/* Active button SVG icons */
+.mdxeditor-toolbar button[data-active="true"] svg,
+.mdxeditor-toolbar button[aria-pressed="true"] svg,
+.mdxeditor-toolbar button[data-state="on"] svg,
+.mdxeditor-toolbar button.active svg {
+  color: #60a5fa !important;
+  fill: #60a5fa !important;
+}
+
+html[data-theme="light"] .mdxeditor-toolbar button[data-active="true"] svg,
+html[data-theme="light"] .mdxeditor-toolbar button[aria-pressed="true"] svg,
+html[data-theme="light"] .mdxeditor-toolbar button[data-state="on"] svg,
+html[data-theme="light"] .mdxeditor-toolbar button.active svg {
+  color: #1d4ed8 !important;
+  fill: #1d4ed8 !important;
+}

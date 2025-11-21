@@ -265,7 +265,7 @@ const FeaturedPost = ({ featuredBlogs }: FeaturedPostProps) => {
                   handleClick(featuredBlogs[0].slug);
                 }}
                 sx={{
-                  mt: 'auto',
+                  mt: 2,
                   py: 0.6,
                   fontSize: '0.75rem',
                   fontWeight: 700,

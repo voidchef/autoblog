@@ -49,10 +49,10 @@ const AllPosts = ({ category }: { category: string }) => {
         </Box>
       ) : (
         <Grid container spacing={2}>
-          <Grid container size={{ xs: 12, sm: 8 }} spacing={2}>
+          <Grid container size={{ xs: 12, sm: 12 }} spacing={2}>
             {allBlogs.results.length > 0 ? (
               allBlogs.results.map((post: any, index: number) => (
-                <Grid size={{ xs: 12, sm: 6 }} key={index}>
+                <Grid size={{ xs: 12, sm: 4 }} key={index}>
                   <Box
                     sx={{ py: 1, cursor: 'pointer' }}
                     height={{ xs: '15rem', sm: '18rem' }}

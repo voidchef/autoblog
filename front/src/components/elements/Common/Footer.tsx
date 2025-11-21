@@ -61,12 +61,6 @@ const Footer = () => {
         <Box
           sx={{
             mb: 6,
-            p: { xs: 2, sm: 2.5, md: 4 },
-            borderRadius: { xs: 2, md: 3 },
-            background: (theme) => theme.palette.customColors.overlay.white.medium,
-            backdropFilter: 'blur(10px)',
-            border: (theme) => `1px solid ${theme.palette.customColors.overlay.white.strong}`,
-            boxShadow: (theme) => `0 8px 32px ${theme.palette.customColors.overlay.black.medium}`,
           }}
         >
           <Grid container spacing={{ xs: 1.5, sm: 2, md: 4 }} alignItems="center">

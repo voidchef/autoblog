@@ -427,11 +427,30 @@ export default function AppSettings() {
                               }}
                             />
                           </Grid>
-                          <Grid size={{ xs: 12, sm: 1 }} sx={{ display: 'flex', justifyContent: { xs: 'flex-end', sm: 'center' } }}>
+                          <Grid size={{ xs: 12, sm: 1 }} sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              onClick={() => deleteCategory(index)}
+                              startIcon={<DeleteIcon />}
+                              fullWidth
+                              sx={{
+                                display: { xs: 'flex', sm: 'none' },
+                                mt: 1,
+                                borderRadius: 2,
+                                fontWeight: 'bold',
+                                '&:hover': {
+                                  transform: 'translateY(-2px)',
+                                },
+                              }}
+                            >
+                              Delete
+                            </Button>
                             <IconButton
                               color="error"
                               onClick={() => deleteCategory(index)}
                               sx={{
+                                display: { xs: 'none', sm: 'flex' },
                                 background: (theme) =>
                                   theme.palette.mode === 'dark'
                                     ? theme.palette.customColors.accent.error.light
@@ -594,8 +613,49 @@ export default function AppSettings() {
                           },
                         }}
                       >
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <Box flex={1}>
+                        <Stack spacing={1}>
+                          <Stack direction="row" spacing={1} alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+                            <Box flex={1}>
+                              <TextField
+                                fullWidth
+                                label="Value"
+                                value={language.value}
+                                onChange={(e) => updateLanguage(index, 'value', e.target.value)}
+                                size="small"
+                                sx={{ 
+                                  mb: 1,
+                                  '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                                }}
+                              />
+                              <TextField
+                                fullWidth
+                                label="Label"
+                                value={language.label}
+                                onChange={(e) => updateLanguage(index, 'label', e.target.value)}
+                                size="small"
+                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                              />
+                            </Box>
+                            <IconButton
+                              color="error"
+                              size="small"
+                              onClick={() => deleteLanguage(index)}
+                              sx={{
+                                background: (theme) =>
+                                  theme.palette.mode === 'dark'
+                                    ? theme.palette.customColors.accent.error.light
+                                    : theme.palette.customColors.accent.error.lighter,
+                                '&:hover': {
+                                  background: 'error.main',
+                                  color: 'white',
+                                  transform: 'scale(1.1)',
+                                },
+                              }}
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Stack>
+                          <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
                             <TextField
                               fullWidth
                               label="Value"
@@ -615,25 +675,24 @@ export default function AppSettings() {
                               size="small"
                               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                             />
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              onClick={() => deleteLanguage(index)}
+                              startIcon={<DeleteIcon />}
+                              fullWidth
+                              sx={{
+                                mt: 1,
+                                borderRadius: 2,
+                                fontWeight: 'bold',
+                                '&:hover': {
+                                  transform: 'translateY(-2px)',
+                                },
+                              }}
+                            >
+                              Delete
+                            </Button>
                           </Box>
-                          <IconButton
-                            color="error"
-                            size="small"
-                            onClick={() => deleteLanguage(index)}
-                            sx={{
-                              background: (theme) =>
-                                theme.palette.mode === 'dark'
-                                  ? theme.palette.customColors.accent.error.light
-                                  : theme.palette.customColors.accent.error.lighter,
-                              '&:hover': {
-                                background: 'error.main',
-                                color: 'white',
-                                transform: 'scale(1.1)',
-                              },
-                            }}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
                         </Stack>
                       </Paper>
                     </Fade>
@@ -803,7 +862,7 @@ export default function AppSettings() {
                               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                             />
                           </Grid>
-                          <Grid size={{ xs: 10, sm: 3 }}>
+                          <Grid size={{ xs: 12, sm: 3 }}>
                             <TextField
                               fullWidth
                               select
@@ -818,12 +877,31 @@ export default function AppSettings() {
                               <MenuItem value="mistral">Mistral</MenuItem>
                             </TextField>
                           </Grid>
-                          <Grid size={{ xs: 2, sm: 1 }} sx={{ display: 'flex', justifyContent: 'center' }}>
+                          <Grid size={{ xs: 12, sm: 1 }} sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              onClick={() => deleteLanguageModel(index)}
+                              startIcon={<DeleteIcon />}
+                              fullWidth
+                              sx={{
+                                display: { xs: 'flex', sm: 'none' },
+                                mt: 1,
+                                borderRadius: 2,
+                                fontWeight: 'bold',
+                                '&:hover': {
+                                  transform: 'translateY(-2px)',
+                                },
+                              }}
+                            >
+                              Delete
+                            </Button>
                             <IconButton
                               color="error"
                               size="small"
                               onClick={() => deleteLanguageModel(index)}
                               sx={{
+                                display: { xs: 'none', sm: 'flex' },
                                 background: (theme) =>
                                   theme.palette.mode === 'dark'
                                     ? theme.palette.customColors.accent.error.light
@@ -986,8 +1064,49 @@ export default function AppSettings() {
                           },
                         }}
                       >
-                        <Stack direction="row" spacing={1} alignItems="center">
-                          <Box flex={1}>
+                        <Stack spacing={1}>
+                          <Stack direction="row" spacing={1} alignItems="center" sx={{ display: { xs: 'none', sm: 'flex' } }}>
+                            <Box flex={1}>
+                              <TextField
+                                fullWidth
+                                label="Value"
+                                value={queryType.value}
+                                onChange={(e) => updateQueryType(index, 'value', e.target.value)}
+                                size="small"
+                                sx={{ 
+                                  mb: 1,
+                                  '& .MuiOutlinedInput-root': { borderRadius: 2 },
+                                }}
+                              />
+                              <TextField
+                                fullWidth
+                                label="Label"
+                                value={queryType.label}
+                                onChange={(e) => updateQueryType(index, 'label', e.target.value)}
+                                size="small"
+                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                              />
+                            </Box>
+                            <IconButton
+                              color="error"
+                              size="small"
+                              onClick={() => deleteQueryType(index)}
+                              sx={{
+                                background: (theme) =>
+                                  theme.palette.mode === 'dark'
+                                    ? theme.palette.customColors.accent.error.light
+                                    : theme.palette.customColors.accent.error.lighter,
+                                '&:hover': {
+                                  background: 'error.main',
+                                  color: 'white',
+                                  transform: 'scale(1.1)',
+                                },
+                              }}
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          </Stack>
+                          <Box sx={{ display: { xs: 'block', sm: 'none' } }}>
                             <TextField
                               fullWidth
                               label="Value"
@@ -1007,25 +1126,24 @@ export default function AppSettings() {
                               size="small"
                               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                             />
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              onClick={() => deleteQueryType(index)}
+                              startIcon={<DeleteIcon />}
+                              fullWidth
+                              sx={{
+                                mt: 1,
+                                borderRadius: 2,
+                                fontWeight: 'bold',
+                                '&:hover': {
+                                  transform: 'translateY(-2px)',
+                                },
+                              }}
+                            >
+                              Delete
+                            </Button>
                           </Box>
-                          <IconButton
-                            color="error"
-                            size="small"
-                            onClick={() => deleteQueryType(index)}
-                            sx={{
-                              background: (theme) =>
-                                theme.palette.mode === 'dark'
-                                  ? theme.palette.customColors.accent.error.light
-                                  : theme.palette.customColors.accent.error.lighter,
-                              '&:hover': {
-                                background: 'error.main',
-                                color: 'white',
-                                transform: 'scale(1.1)',
-                              },
-                            }}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
                         </Stack>
                       </Paper>
                     </Fade>
