@@ -34,7 +34,7 @@ jobs:
       node-version: ${{ steps.node-version.outputs.value }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -68,7 +68,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -105,10 +105,14 @@ jobs:
     needs: test
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Download coverage report
         uses: actions/download-artifact@v4
         with:
           name: coverage
+          path: coverage
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
