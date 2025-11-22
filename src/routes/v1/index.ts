@@ -6,6 +6,7 @@ import authRoute from './auth.route';
 import blogRoute from './blog.route';
 import commentRoute from './comment.route';
 import contactRoute from './contact.route';
+import newsletterRoute from './newsletter.route';
 import paymentRoute from './payment.route';
 import docsRoute from './swagger.route';
 import userRoute from './user.route';
@@ -41,6 +42,10 @@ const defaultIRoute: IRoute[] = [
   {
     path: '/contact',
     route: contactRoute,
+  },
+  {
+    path: '/newsletter',
+    route: newsletterRoute,
   },
   {
     path: '/oauth-connections',

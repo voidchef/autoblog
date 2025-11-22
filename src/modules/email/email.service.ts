@@ -252,6 +252,54 @@ export const sendSubscriptionExpiryWarning = async (
 };
 
 /**
+ * Send newsletter welcome email
+ * @param {string} to
+ * @returns {Promise<void>}
+ */
+export const sendNewsletterWelcomeEmail = async (to: string): Promise<void> => {
+  const subject = 'Welcome to Our Newsletter! 📰';
+  const unsubscribeUrl = `${config.clientUrl}/newsletter/unsubscribe?email=${encodeURIComponent(to)}`;
+  const text = `Hi there,
+  
+  Thank you for subscribing to our newsletter!
+  
+  You'll now receive the latest updates, articles, and news delivered directly to your inbox.
+  
+  We promise to keep our content valuable and relevant. You can unsubscribe at any time by clicking the link below.
+  
+  Unsubscribe: ${unsubscribeUrl}
+  
+  Regards,
+  Autoblog Team`;
+  const html = `<div style="margin:30px; padding:30px; border:1px solid #4CAF50; border-radius: 10px; font-family: Arial, sans-serif;">
+    <h2 style="color: #4CAF50;">Welcome to Our Newsletter! 📰</h2>
+    <h4><strong>Hi there,</strong></h4>
+    <p>Thank you for subscribing to our newsletter!</p>
+    
+    <p>You'll now receive the latest updates, articles, and news delivered directly to your inbox.</p>
+    
+    <div style="background-color: #f5f5f5; padding: 20px; border-radius: 5px; margin: 20px 0;">
+      <h3 style="margin-top: 0;">What to Expect</h3>
+      <ul>
+        <li>Latest blog posts and articles</li>
+        <li>Exclusive content and updates</li>
+        <li>News and announcements</li>
+      </ul>
+    </div>
+    
+    <p>We promise to keep our content valuable and relevant. You can unsubscribe at any time.</p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+      <a href="${unsubscribeUrl}" style="color: #666; text-decoration: underline; font-size: 0.9em;">Unsubscribe</a>
+    </div>
+    
+    <p>Regards,</p>
+    <p><strong>Autoblog Team</strong></p>
+  </div>`;
+  await sendEmail(to, subject, text, html);
+};
+
+/**
  * Send refund confirmation email
  * @param {string} to
  * @param {string} name

@@ -1,4 +1,4 @@
-import { Box, Button, Container, Divider, TextField, Typography, IconButton, Stack } from '@mui/material';
+import { Box, Button, Container, Divider, TextField, Typography, IconButton, Stack, CircularProgress } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import * as React from 'react';
 import FacebookIcon from '@mui/icons-material/Facebook';
@@ -8,11 +8,19 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import { AutoAwesome, Email, Phone } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
+import { useSubscribeNewsletterMutation } from '../../../services/newsletterApi';
+import { showSuccess, showError } from '../../../reducers/alert';
+import { useAppDispatch } from '../../../utils/reduxHooks';
 
 const navItems = ['Home', 'Blog', 'About Us', 'Contact Us'];
 
 const Footer = () => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const [newsletterEmail, setNewsletterEmail] = React.useState('');
+  const [emailError, setEmailError] = React.useState('');
+  
+  const [subscribeNewsletter, { isLoading: isSubscribing }] = useSubscribeNewsletterMutation();
 
   function handleClick(item: string) {
     switch (item) {
@@ -32,6 +40,42 @@ const Footer = () => {
         break;
     }
   }
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleNewsletterSubscribe = async () => {
+    // Reset error
+    setEmailError('');
+
+    // Validate email
+    if (!newsletterEmail.trim()) {
+      setEmailError('Email is required');
+      return;
+    }
+
+    if (!validateEmail(newsletterEmail)) {
+      setEmailError('Please enter a valid email address');
+      return;
+    }
+
+    try {
+      await subscribeNewsletter({ email: newsletterEmail }).unwrap();
+      dispatch(showSuccess('Successfully subscribed to newsletter! Check your email for confirmation.'));
+      setNewsletterEmail('');
+    } catch (err: any) {
+      const errorMessage = err?.data?.message || 'Failed to subscribe. Please try again.';
+      dispatch(showError(errorMessage));
+    }
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleNewsletterSubscribe();
+    }
+  };
   
   return (
     <Box
@@ -98,6 +142,15 @@ const Footer = () => {
                   variant="outlined"
                   fullWidth
                   size="small"
+                  value={newsletterEmail}
+                  onChange={(e) => {
+                    setNewsletterEmail(e.target.value);
+                    setEmailError('');
+                  }}
+                  onKeyPress={handleKeyPress}
+                  error={!!emailError}
+                  helperText={emailError}
+                  disabled={isSubscribing}
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       bgcolor: (theme) => theme.palette.customColors.overlay.white.full,
@@ -108,13 +161,13 @@ const Footer = () => {
                         ? theme.palette.customColors.textDark.primary 
                         : theme.palette.customColors.textLight.primary,
                       '& fieldset': {
-                        borderColor: 'transparent',
+                        borderColor: emailError ? 'error.main' : 'transparent',
                       },
                       '&:hover fieldset': {
-                        borderColor: (theme) => theme.palette.customColors.overlay.white.veryStrong,
+                        borderColor: (theme) => emailError ? 'error.main' : theme.palette.customColors.overlay.white.veryStrong,
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: (theme) => theme.palette.customColors.overlay.white.almostOpaque,
+                        borderColor: (theme) => emailError ? 'error.main' : theme.palette.customColors.overlay.white.almostOpaque,
                       },
                       '& input': {
                         py: { xs: 1, sm: 1.25, md: 1.5 },
@@ -129,10 +182,23 @@ const Footer = () => {
                         },
                       },
                     },
+                    '& .MuiFormHelperText-root': {
+                      color: 'error.main',
+                      bgcolor: (theme) => theme.palette.mode === 'dark' 
+                        ? theme.palette.customColors.accent.blue.darker 
+                        : theme.palette.customColors.accent.blue.main,
+                      margin: 0,
+                      mt: 0.5,
+                      px: 1,
+                      py: 0.5,
+                      borderRadius: 1,
+                    },
                   }}
                 />
                 <Button
                   variant="contained"
+                  onClick={handleNewsletterSubscribe}
+                  disabled={isSubscribing}
                   sx={{
                     background: 'white',
                     color: (theme) => theme.palette.customColors.accent.blue.main,
@@ -155,10 +221,14 @@ const Footer = () => {
                     '&:active': {
                       transform: 'translateY(0)',
                     },
+                    '&.Mui-disabled': {
+                      background: (theme) => theme.palette.customColors.overlay.white.medium,
+                      color: (theme) => theme.palette.customColors.textDark.secondary,
+                    },
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 >
-                  Subscribe
+                  {isSubscribing ? <CircularProgress size={20} sx={{ color: 'inherit' }} /> : 'Subscribe'}
                 </Button>
               </Box>
             </Grid>
