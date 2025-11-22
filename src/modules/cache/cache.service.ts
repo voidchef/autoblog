@@ -20,8 +20,10 @@ class CacheService implements ICacheService {
         this.cacheImpl = new RedisCache(
           config.cache.redis.host,
           config.cache.redis.port,
+          config.cache.redis.username,
           config.cache.redis.password,
-          config.cache.redis.db
+          config.cache.redis.db,
+          config.cache.redis.tls
         );
         logger.info('Cache service initialized with Redis');
       } catch (error) {

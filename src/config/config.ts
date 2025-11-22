@@ -37,8 +37,10 @@ const envVarsSchema = Joi.object()
     CACHE_TYPE: Joi.string().valid('redis', 'memory').default('memory').description('Cache type: redis or memory'),
     REDIS_HOST: Joi.string().default('localhost').description('Redis host'),
     REDIS_PORT: Joi.number().default(6379).description('Redis port'),
+    REDIS_USERNAME: Joi.string().allow('').description('Redis username'),
     REDIS_PASSWORD: Joi.string().allow('').description('Redis password'),
     REDIS_DB: Joi.number().default(0).description('Redis database number'),
+    REDIS_TLS: Joi.boolean().default(false).description('Enable TLS for Redis connection'),
     CACHE_TTL: Joi.number().default(3600).description('Default cache TTL in seconds'),
   })
   .unknown();
@@ -111,8 +113,10 @@ const config = {
         ? {
             host: envVars.REDIS_HOST,
             port: envVars.REDIS_PORT,
+            username: envVars.REDIS_USERNAME || undefined,
             password: envVars.REDIS_PASSWORD || undefined,
             db: envVars.REDIS_DB,
+            tls: envVars.REDIS_TLS,
           }
         : undefined,
     defaultTTL: envVars.CACHE_TTL,

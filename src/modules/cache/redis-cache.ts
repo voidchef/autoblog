@@ -9,11 +9,12 @@ class RedisCache implements ICacheService {
   private client: RedisClientType;
   private isReady: boolean = false;
 
-  constructor(host: string, port: number, password?: string, db: number = 0) {
+  constructor(host: string, port: number, username?: string, password?: string, db: number = 0, tls = false) {
     const config: any = {
       socket: {
         host,
         port,
+        tls,
         reconnectStrategy: (retries: number) => {
           const delay = Math.min(retries * 50, 2000);
           return delay;
@@ -22,7 +23,8 @@ class RedisCache implements ICacheService {
       database: db,
     };
 
-    if (password) {
+    if (username && password) {
+      config.username = username;
       config.password = password;
     }
 
