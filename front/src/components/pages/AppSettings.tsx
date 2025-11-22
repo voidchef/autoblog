@@ -13,7 +13,6 @@ import {
   TextField,
   Typography,
   Alert,
-  Snackbar,
   Stack,
   Chip,
   Fade,
@@ -35,6 +34,8 @@ import Footer from '../elements/Common/Footer';
 import { useAppSettings } from '../../utils/hooks';
 import { useUpdateAllAppSettingsMutation } from '../../services/appSettingsApi';
 import Loading from '../elements/Common/Loading';
+import { useAppDispatch } from '../../utils/reduxHooks';
+import { showSuccess, showError } from '../../reducers/alert';
 
 interface Category {
   _id?: string;
@@ -55,6 +56,7 @@ interface LanguageModel {
 
 export default function AppSettings() {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
   const { data: appSettingsData, isLoading } = useAppSettings();
   const [updateAllAppSettings, { isLoading: isUpdating }] = useUpdateAllAppSettingsMutation();
 
@@ -62,16 +64,6 @@ export default function AppSettings() {
   const [languages, setLanguages] = React.useState<FieldData[]>([]);
   const [languageModels, setLanguageModels] = React.useState<LanguageModel[]>([]);
   const [queryTypes, setQueryTypes] = React.useState<FieldData[]>([]);
-
-  const [snackbar, setSnackbar] = React.useState<{
-    open: boolean;
-    message: string;
-    severity: 'success' | 'error';
-  }>({
-    open: false,
-    message: '',
-    severity: 'success',
-  });
 
   // Initialize state from appSettings data
   React.useEffect(() => {
@@ -92,17 +84,9 @@ export default function AppSettings() {
         queryType: queryTypes,
       }).unwrap();
 
-      setSnackbar({
-        open: true,
-        message: 'Settings saved successfully!',
-        severity: 'success',
-      });
+      dispatch(showSuccess('Settings saved successfully!'));
     } catch (error) {
-      setSnackbar({
-        open: true,
-        message: 'Failed to save settings. Please try again.',
-        severity: 'error',
-      });
+      dispatch(showError('Failed to save settings. Please try again.'));
     }
   };
 
@@ -1202,28 +1186,6 @@ export default function AppSettings() {
       </Container>
 
       <Footer />
-
-      {/* Snackbar for notifications */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={() => setSnackbar({ ...snackbar, open: false })}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={() => setSnackbar({ ...snackbar, open: false })}
-          severity={snackbar.severity}
-          variant="filled"
-          sx={{
-            width: '100%',
-            fontSize: '1rem',
-            borderRadius: 2,
-            boxShadow: `0 8px 32px ${theme.palette.customColors.overlay.black.stronger}`,
-          }}
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Typography, Paper, Fade, Divider } from '@mui/material';
 import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
 import { setReplyingToComment, setEditingComment, toggleShowReplies } from '../../../reducers/comment';
+import { showSuccess, showError } from '../../../reducers/alert';
 import {
   useUpdateCommentMutation,
   useDeleteCommentMutation,
@@ -60,6 +61,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, blogId, isReply = fa
       await likeComment(comment.id).unwrap();
     } catch (error) {
       console.error('Failed to like comment:', error);
+      dispatch(showError('Failed to like comment. Please try again.'));
     }
   };
 
@@ -68,6 +70,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, blogId, isReply = fa
       await dislikeComment(comment.id).unwrap();
     } catch (error) {
       console.error('Failed to dislike comment:', error);
+      dispatch(showError('Failed to dislike comment. Please try again.'));
     }
   };
 
@@ -86,8 +89,10 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, blogId, isReply = fa
     try {
       await updateComment({ id: comment.id, data: { content: editContent } }).unwrap();
       dispatch(setEditingComment(null));
+      dispatch(showSuccess('Comment updated successfully!'));
     } catch (error) {
       console.error('Failed to update comment:', error);
+      dispatch(showError('Failed to update comment. Please try again.'));
     }
   };
 
@@ -96,8 +101,10 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, blogId, isReply = fa
       try {
         await deleteComment(comment.id).unwrap();
         handleMenuClose();
+        dispatch(showSuccess('Comment deleted successfully!'));
       } catch (error) {
         console.error('Failed to delete comment:', error);
+        dispatch(showError('Failed to delete comment. Please try again.'));
       }
     }
   };
@@ -124,8 +131,10 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, blogId, isReply = fa
       setReplyContent('');
       dispatch(setReplyingToComment(null));
       dispatch(toggleShowReplies(comment.id));
+      dispatch(showSuccess('Reply posted successfully!'));
     } catch (error) {
       console.error('Failed to create reply:', error);
+      dispatch(showError('Failed to post reply. Please try again.'));
     }
   };
 

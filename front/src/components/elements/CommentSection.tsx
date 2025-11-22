@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Box, CircularProgress, Alert } from '@mui/material';
-import { useAppSelector } from '../../utils/reduxHooks';
+import { useAppSelector, useAppDispatch } from '../../utils/reduxHooks';
 import { useGetCommentsByBlogQuery, useCreateCommentMutation } from '../../services/commentApi';
 import { CommentsHeader, NewCommentForm, CommentItem, EmptyComments } from './Comments';
+import { showSuccess, showError } from '../../reducers/alert';
 
 interface CommentSectionProps {
   blogId: string;
 }
 
 const CommentSection: React.FC<CommentSectionProps> = ({ blogId }) => {
+  const dispatch = useAppDispatch();
   const { userId } = useAppSelector((state) => state.auth);
   const [newComment, setNewComment] = useState('');
 
@@ -33,8 +35,10 @@ const CommentSection: React.FC<CommentSectionProps> = ({ blogId }) => {
         blog: blogId,
       }).unwrap();
       setNewComment('');
+      dispatch(showSuccess('Comment posted successfully!'));
     } catch (error) {
       console.error('Failed to create comment:', error);
+      dispatch(showError('Failed to post comment. Please try again.'));
     }
   };
 

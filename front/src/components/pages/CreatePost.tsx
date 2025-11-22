@@ -27,6 +27,7 @@ import {
 import { setBlogData, clearBlog, IBlog, generateBlogWithProgress, setActiveGeneration, clearActiveGeneration } from '../../reducers/blog';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import { useAuth } from '../../utils/hooks';
+import { showSuccess, showError, showInfo } from '../../reducers/alert';
 import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { AWS_BASEURL } from '../../utils/consts';
@@ -290,10 +291,12 @@ export default function CreatePost() {
       updateBlog({ id: blog.id, data: updateData, preview: true })
         .unwrap()
         .then(() => {
+          dispatch(showSuccess('Blog preview updated!'));
           navigate(`${ROUTES.PREVIEW}/${blog.slug}?preview=${true}`);
         })
         .catch((error) => {
           console.error('Failed to update blog:', error);
+          dispatch(showError('Failed to update blog preview. Please try again.'));
         });
       return;
     }
@@ -302,14 +305,14 @@ export default function CreatePost() {
     if (generationMode === 'template') {
       // Template-based generation
       if (!templateFile) {
-        alert('Please upload a template file');
+        dispatch(showError('Please upload a template file'));
         return;
       }
 
       // Validate all variables are filled
       const missingVariables = templatePreview?.variables.filter((v) => !templateVariables[v]);
       if (missingVariables && missingVariables.length > 0) {
-        alert(`Please fill in all template variables: ${missingVariables.join(', ')}`);
+        dispatch(showError(`Please fill in all template variables: ${missingVariables.join(', ')}`));
         return;
       }
 
@@ -332,11 +335,12 @@ export default function CreatePost() {
             // Start polling for this blog
             setGeneratingBlogId(newBlog.id);
             dispatch(setActiveGeneration({ blogId: newBlog.id, status: 'processing' }));
+            dispatch(showInfo('Blog generation started! This may take a few minutes...'));
           }
         })
         .catch((error) => {
           console.error('Failed to generate blog from template:', error);
-          alert(`Failed to generate blog: ${error}`);
+          dispatch(showError(`Failed to generate blog: ${error?.data?.message || error.message || 'Unknown error'}`));
         });
     } else {
       // Regular generation
@@ -359,11 +363,12 @@ export default function CreatePost() {
             // Start polling for this blog
             setGeneratingBlogId(newBlog.id);
             dispatch(setActiveGeneration({ blogId: newBlog.id, status: 'processing' }));
+            dispatch(showInfo('Blog generation started! This may take a few minutes...'));
           }
         })
         .catch((error) => {
           console.error('Failed to generate blog:', error);
-          alert(`Failed to generate blog: ${error}`);
+          dispatch(showError(`Failed to generate blog: ${error?.data?.message || error.message || 'Unknown error'}`));
         });
     }
   };
@@ -404,8 +409,12 @@ export default function CreatePost() {
 
     updateBlog({ id: blog.id, data: updatedFields })
       .unwrap()
+      .then(() => {
+        dispatch(showSuccess('Blog updated successfully!'));
+      })
       .catch((error) => {
         console.error('Failed to update blog:', error);
+        dispatch(showError('Failed to update blog. Please try again.'));
       });
   };
 

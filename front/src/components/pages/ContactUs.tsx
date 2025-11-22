@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
-import { Button, MenuItem, Typography, Container, Paper, Divider, Alert, CircularProgress, Snackbar, useTheme } from '@mui/material';
+import { Button, MenuItem, Typography, Container, Paper, Divider, Alert, CircularProgress, useTheme } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
@@ -11,10 +11,12 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import SendIcon from '@mui/icons-material/Send';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useCreateContactMutation } from '../../services/contactApi';
-import { useAppSelector } from '../../utils/reduxHooks';
+import { useAppSelector, useAppDispatch } from '../../utils/reduxHooks';
+import { showSuccess, showError } from '../../reducers/alert';
 
 export default function ContactUs() {
   const theme = useTheme();
+  const dispatch = useAppDispatch();
   const queryTypes = useAppSelector((state) => state.appSettings.queryType || []);
   const [createContact, { isLoading, isSuccess, isError, error }] = useCreateContactMutation();
   
@@ -33,9 +35,6 @@ export default function ContactUs() {
     queryType: '',
     message: '',
   });
-  
-  // Snackbar state
-  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   
   // Handle input changes
   const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,15 +98,11 @@ export default function ContactUs() {
         queryType: '',
         message: '',
       });
-      setSnackbarOpen(true);
+      dispatch(showSuccess("Message sent successfully! We'll get back to you within 24 hours."));
     } catch (err) {
       console.error('Failed to send message:', err);
+      dispatch(showError('Failed to send message. Please try again later.'));
     }
-  };
-  
-  // Close snackbar
-  const handleCloseSnackbar = () => {
-    setSnackbarOpen(false);
   };
 
   const contactInfo = [
@@ -437,24 +432,6 @@ export default function ContactUs() {
       </Container>
 
       <Footer />
-      
-      {/* Success Snackbar */}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity="success"
-          variant="filled"
-          icon={<CheckCircleIcon />}
-          sx={{ width: '100%' }}
-        >
-          Message sent successfully! We'll get back to you within 24 hours.
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

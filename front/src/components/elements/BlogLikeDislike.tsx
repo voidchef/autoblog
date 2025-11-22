@@ -2,8 +2,9 @@ import React from 'react';
 import { Box, IconButton, Typography, Tooltip } from '@mui/material';
 import { ThumbUp, ThumbDown } from '@mui/icons-material';
 import { useLikeBlogMutation, useDislikeBlogMutation, IBlog } from '../../services/blogApi';
-import { useAppSelector } from '../../utils/reduxHooks';
+import { useAppSelector, useAppDispatch } from '../../utils/reduxHooks';
 import * as analytics from '../../utils/analytics';
+import { showError, showInfo } from '../../reducers/alert';
 
 interface BlogLikeDislikeProps {
   blog: IBlog;
@@ -16,6 +17,7 @@ const BlogLikeDislike: React.FC<BlogLikeDislikeProps> = ({
   size = 'medium', 
   showCounts = true 
 }) => {
+  const dispatch = useAppDispatch();
   const { userId } = useAppSelector((state) => state.auth);
   const [likeBlog, { isLoading: isLiking }] = useLikeBlogMutation();
   const [dislikeBlog, { isLoading: isDisliking }] = useDislikeBlogMutation();
@@ -28,8 +30,7 @@ const BlogLikeDislike: React.FC<BlogLikeDislikeProps> = ({
     e.stopPropagation();
     
     if (!userId) {
-      // You can show a login prompt here
-      alert('Please log in to like this post');
+      dispatch(showInfo('Please log in to like this post'));
       return;
     }
 
@@ -40,6 +41,7 @@ const BlogLikeDislike: React.FC<BlogLikeDislikeProps> = ({
       analytics.trackBlogLike(blog.id, blog.title);
     } catch (error) {
       console.error('Failed to like blog:', error);
+      dispatch(showError('Failed to like this post. Please try again.'));
     }
   };
 
@@ -48,8 +50,7 @@ const BlogLikeDislike: React.FC<BlogLikeDislikeProps> = ({
     e.stopPropagation();
     
     if (!userId) {
-      // You can show a login prompt here
-      alert('Please log in to dislike this post');
+      dispatch(showInfo('Please log in to dislike this post'));
       return;
     }
 
@@ -60,6 +61,7 @@ const BlogLikeDislike: React.FC<BlogLikeDislikeProps> = ({
       analytics.trackBlogDislike(blog.id, blog.title);
     } catch (error) {
       console.error('Failed to dislike blog:', error);
+      dispatch(showError('Failed to dislike this post. Please try again.'));
     }
   };
 

@@ -7,8 +7,6 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Snackbar,
-  Alert,
 } from '@mui/material';
 import {
   Share as ShareIcon,
@@ -20,6 +18,8 @@ import {
 } from '@mui/icons-material';
 import { IBlog } from '../../services/blogApi';
 import * as analytics from '../../utils/analytics';
+import { useAppDispatch } from '../../utils/reduxHooks';
+import { showSuccess, showError } from '../../reducers/alert';
 
 interface ShareButtonProps {
   blog: IBlog;
@@ -27,9 +27,8 @@ interface ShareButtonProps {
 }
 
 const ShareButton: React.FC<ShareButtonProps> = ({ blog, size = 'medium' }) => {
+  const dispatch = useAppDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
   const open = Boolean(anchorEl);
 
   const shareUrl = window.location.href;
@@ -51,7 +50,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ blog, size = 'medium' }) => {
           text: shareText,
           url: shareUrl,
         });
-        showSnackbar('Shared successfully!');
+        dispatch(showSuccess('Shared successfully!'));
       } catch (error: any) {
         // User cancelled or error occurred
         if (error.name !== 'AbortError') {
@@ -70,15 +69,10 @@ const ShareButton: React.FC<ShareButtonProps> = ({ blog, size = 'medium' }) => {
     setAnchorEl(null);
   };
 
-  const showSnackbar = (message: string) => {
-    setSnackbarMessage(message);
-    setSnackbarOpen(true);
-  };
-
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(shareUrl);
-      showSnackbar('Link copied to clipboard!');
+      dispatch(showSuccess('Link copied to clipboard!'));
       
       // Track share event
       analytics.trackBlogShare(blog.id, blog.title, 'copy_link');
@@ -86,7 +80,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ blog, size = 'medium' }) => {
       handleClose();
     } catch (error) {
       console.error('Failed to copy link:', error);
-      showSnackbar('Failed to copy link');
+      dispatch(showError('Failed to copy link'));
     }
   };
 
@@ -210,22 +204,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({ blog, size = 'medium' }) => {
           <ListItemText>Share via Email</ListItemText>
         </MenuItem>
       </Menu>
-
-      {/* Success Snackbar */}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={() => setSnackbarOpen(false)}
-          severity="success"
-          sx={{ width: '100%' }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </>
   );
 };

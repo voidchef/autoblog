@@ -13,7 +13,7 @@ const Alerts = () => {
 
   return (
     <Box
-      width={{ xs: '80%', sm: '50%' }}
+      width={{ xs: '100%', sm: '50%' }}
       right={0}
       position="fixed"
       zIndex={10000}

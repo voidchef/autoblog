@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Button, CircularProgress, Tooltip, Snackbar, Alert } from '@mui/material';
+import { Button, CircularProgress, Tooltip } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { useFollowUserMutation, useUnfollowUserMutation } from '../../services/userApi';
-import { useAppSelector } from '../../utils/reduxHooks';
+import { useAppSelector, useAppDispatch } from '../../utils/reduxHooks';
+import { showSuccess, showError } from '../../reducers/alert';
 
 interface FollowButtonProps {
   authorId: string;
@@ -18,20 +19,11 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   size = 'small',
   variant = 'outlined'
 }) => {
+  const dispatch = useAppDispatch();
   const { userId } = useAppSelector((state) => state.auth);
   const { userData } = useAppSelector((state) => state.user);
   const [followUser, { isLoading: isFollowing }] = useFollowUserMutation();
   const [unfollowUser, { isLoading: isUnfollowing }] = useUnfollowUserMutation();
-  
-  const [snackbar, setSnackbar] = React.useState<{
-    open: boolean;
-    message: string;
-    severity: 'success' | 'error';
-  }>({
-    open: false,
-    message: '',
-    severity: 'success',
-  });
   
   // Check if current user is following this author
   const isFollowingAuthor = React.useMemo(() => {
@@ -47,32 +39,16 @@ const FollowButton: React.FC<FollowButtonProps> = ({
     try {
       if (isFollowingAuthor) {
         await unfollowUser(authorId).unwrap();
-        setSnackbar({
-          open: true,
-          message: `You unfollowed ${authorName}`,
-          severity: 'success',
-        });
+        dispatch(showSuccess(`You unfollowed ${authorName}`));
       } else {
         await followUser(authorId).unwrap();
-        setSnackbar({
-          open: true,
-          message: `You are now following ${authorName}`,
-          severity: 'success',
-        });
+        dispatch(showSuccess(`You are now following ${authorName}`));
       }
     } catch (error: any) {
       console.error('Failed to follow/unfollow user:', error);
       const errorMessage = error?.data?.message || 'Failed to update follow status. Please try again.';
-      setSnackbar({
-        open: true,
-        message: errorMessage,
-        severity: 'error',
-      });
+      dispatch(showError(errorMessage));
     }
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
   };
 
   const isLoading = isFollowing || isUnfollowing;
@@ -110,18 +86,6 @@ const FollowButton: React.FC<FollowButtonProps> = ({
           {isFollowingAuthor ? 'Following' : 'Follow'}
         </Button>
       </Tooltip>
-      
-      {/* Snackbar for notifications */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </>
   );
 };

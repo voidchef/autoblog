@@ -7,8 +7,6 @@ import {
   Paper,
   Divider,
   Button,
-  Snackbar,
-  Alert,
   CircularProgress,
   IconButton,
   Tooltip,
@@ -35,7 +33,7 @@ import AudioPlayer from '../elements/AudioPlayer';
 import { ROUTES } from '../../utils/routing/routes';
 import * as analytics from '../../utils/analytics';
 import { useAuth } from '../../utils/hooks';
-import { showSuccess, showError } from '../../reducers/alert';
+import { showSuccess, showError, showInfo } from '../../reducers/alert';
 import { stringAvatar } from '../../utils/utils';
 
 export default function Blog() {
@@ -82,17 +80,6 @@ export default function Blog() {
     setShouldPoll(currentBlogData?.audioGenerationStatus === 'processing');
   }, [currentBlogData?.audioGenerationStatus]);
 
-  // Snackbar state for notifications
-  const [snackbar, setSnackbar] = React.useState<{
-    open: boolean;
-    message: string;
-    severity: 'success' | 'error' | 'info';
-  }>({
-    open: false,
-    message: '',
-    severity: 'info',
-  });
-
   // Track blog view when blog loads (only for non-preview mode)
   React.useEffect(() => {
     if (!isPreviewMode && currentBlogData && analytics.isGAInitialized()) {
@@ -107,31 +94,19 @@ export default function Blog() {
     const currentStatus = currentBlogData?.audioGenerationStatus;
 
     if (prevStatus === 'processing' && currentStatus === 'completed') {
-      setSnackbar({
-        open: true,
-        message: 'Audio narration is ready! You can now listen to the article.',
-        severity: 'success',
-      });
+      dispatch(showSuccess('Audio narration is ready! You can now listen to the article.'));
     } else if (prevStatus === 'processing' && currentStatus === 'failed') {
-      setSnackbar({
-        open: true,
-        message: 'Audio generation failed. Please try again.',
-        severity: 'error',
-      });
+      dispatch(showError('Audio generation failed. Please try again.'));
     }
 
     prevAudioStatusRef.current = currentStatus;
-  }, [currentBlogData?.audioGenerationStatus]);
+  }, [currentBlogData?.audioGenerationStatus, dispatch]);
 
   const handleGenerateAudio = async () => {
     if (currentBlogData?.id) {
       try {
         await generateAudio(currentBlogData.id).unwrap();
-        setSnackbar({
-          open: true,
-          message: 'Audio generation started! This may take a minute...',
-          severity: 'success',
-        });
+        dispatch(showInfo('Audio generation started! This may take a minute...'));
         // Trigger a refetch to get updated status
         refetch();
       } catch (error: any) {
@@ -145,11 +120,7 @@ export default function Blog() {
           errorMessage = error.data.message;
         }
 
-        setSnackbar({
-          open: true,
-          message: errorMessage,
-          severity: 'error',
-        });
+        dispatch(showError(errorMessage));
       }
     }
   };
@@ -165,10 +136,6 @@ export default function Blog() {
         dispatch(showError(error?.data?.message || 'Failed to toggle featured status'));
       }
     }
-  };
-
-  const handleCloseSnackbar = () => {
-    setSnackbar({ ...snackbar, open: false });
   };
 
   return (
@@ -527,18 +494,6 @@ export default function Blog() {
       </Box>
       <Box sx={{ my: 6 }} />
       <Footer />
-
-      {/* Snackbar for notifications */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
     </Box>
   );
 }

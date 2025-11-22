@@ -22,8 +22,11 @@ import {
   useUnlinkOAuthConnectionMutation,
 } from '../../services/authApi';
 import OAuthLinkButtons from './OAuthLinkButtons';
+import { useAppDispatch } from '../../utils/reduxHooks';
+import { showSuccess, showError } from '../../reducers/alert';
 
 const ConnectedAccounts: React.FC = () => {
+  const dispatch = useAppDispatch();
   const theme = useTheme();
   const { data, isLoading, error } = useGetOAuthConnectionsQuery();
   const [unlinkConnection, { isLoading: isUnlinking }] = useUnlinkOAuthConnectionMutation();
@@ -32,8 +35,10 @@ const ConnectedAccounts: React.FC = () => {
     if (window.confirm(`Are you sure you want to unlink your ${provider} account?`)) {
       try {
         await unlinkConnection(connectionId).unwrap();
+        dispatch(showSuccess(`${provider} account unlinked successfully!`));
       } catch (err) {
         console.error('Failed to unlink account:', err);
+        dispatch(showError(`Failed to unlink ${provider} account. Please try again.`));
       }
     }
   };
