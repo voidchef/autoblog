@@ -75,8 +75,7 @@ router.route('/:blogId/toggle-featured').patch(auth('manageBlogs'), blogControll
 router.route('/:blogId/like').post(auth(), blogController.likeBlog);
 router.route('/:blogId/dislike').post(auth(), blogController.dislikeBlog);
 
-// Audio narration routes
-router.route('/:blogId/audio').post(auth('manageBlogs'), blogController.generateAudioNarration);
+// Audio narration status route (GET only - generation is automatic)
 router.route('/:blogId/audio').get(blogController.getAudioNarrationStatus);
 
 // Blog generation status route

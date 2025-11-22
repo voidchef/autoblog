@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import config from '../../config/config';
 import { cacheService } from '../cache';
+import { queueService } from '../queue';
 
 const setupTestDB = () => {
   beforeAll(async () => {
@@ -16,7 +17,16 @@ const setupTestDB = () => {
   });
 
   afterAll(async () => {
+    // Disconnect from MongoDB
     await mongoose.disconnect();
+
+    // Disconnect cache service (Redis)
+    await cacheService.disconnect();
+
+    // Shutdown queue service if initialized
+    if (queueService.isAvailable()) {
+      await queueService.shutdown();
+    }
   });
 };
 

@@ -307,7 +307,7 @@ describe('TTS Service', () => {
       await ttsService.textToSpeech(text, mockBlogId);
 
       const callArgs = mockSynthesizeSpeech.mock.calls[0]?.[0] as any;
-      expect(callArgs?.input?.text).toContain('console.log()');
+      expect(callArgs?.input?.text).toContain('Use the console.');
       expect(callArgs?.input?.text).not.toContain('`');
     });
 

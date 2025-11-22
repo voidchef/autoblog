@@ -13,12 +13,11 @@ import {
   Avatar,
   useTheme,
 } from '@mui/material';
-import { VolumeUp as VolumeUpIcon, Star as StarIcon, StarBorder as StarBorderIcon } from '@mui/icons-material';
+import { Star as StarIcon, StarBorder as StarBorderIcon } from '@mui/icons-material';
 import Title from '../elements/Blog/Title';
 import { marked } from 'marked';
 import {
   useGetBlogQuery,
-  useGenerateAudioNarrationMutation,
   useToggleFeaturedMutation,
   IBlog as IBlogAPI,
 } from '../../services/blogApi';
@@ -69,9 +68,6 @@ export default function Blog() {
 
   const currentBlogData = (isPreviewMode ? previewBlogData : blogData) as IBlogAPI | null;
 
-  // Audio narration mutation
-  const [generateAudio, { isLoading: isGeneratingAudio }] = useGenerateAudioNarrationMutation();
-
   // Toggle featured mutation
   const [toggleFeatured] = useToggleFeaturedMutation();
 
@@ -96,35 +92,11 @@ export default function Blog() {
     if (prevStatus === 'processing' && currentStatus === 'completed') {
       dispatch(showSuccess('Audio narration is ready! You can now listen to the article.'));
     } else if (prevStatus === 'processing' && currentStatus === 'failed') {
-      dispatch(showError('Audio generation failed. Please try again.'));
+      dispatch(showError('Audio generation failed.'));
     }
 
     prevAudioStatusRef.current = currentStatus;
   }, [currentBlogData?.audioGenerationStatus, dispatch]);
-
-  const handleGenerateAudio = async () => {
-    if (currentBlogData?.id) {
-      try {
-        await generateAudio(currentBlogData.id).unwrap();
-        dispatch(showInfo('Audio narration is being generated. This may take a minute...'));
-        // The cache will be invalidated automatically and polling will handle updates
-      } catch (error: any) {
-        console.error('Failed to generate audio:', error);
-        let errorMessage = 'Failed to generate audio. Please try again.';
-
-        // Handle conflict error (audio already being generated)
-        if (error?.status === 409) {
-          errorMessage = 'Audio is already being generated. Please wait...';
-          dispatch(showInfo(errorMessage));
-        } else if (error?.data?.message) {
-          errorMessage = error.data.message;
-          dispatch(showError(errorMessage));
-        } else {
-          dispatch(showError(errorMessage));
-        }
-      }
-    }
-  };
 
   const handleToggleFeatured = async () => {
     if (currentBlogData?.id) {
@@ -371,52 +343,33 @@ export default function Blog() {
             </Box>
 
             {/* Audio Narration Player */}
-            <Box sx={{ my: 3 }}>
-              {currentBlogData.audioNarrationUrl ? (
-                <AudioPlayer
-                  audioUrl={currentBlogData.audioNarrationUrl}
-                  title={currentBlogData.title}
-                  blogId={currentBlogData.id}
-                  loading={isGeneratingAudio || currentBlogData.audioGenerationStatus === 'processing'}
-                />
-              ) : currentBlogData.audioGenerationStatus === 'processing' ? (
-                <Paper elevation={2} sx={{ p: 3, mb: 3, bgcolor: 'info.lighter' }}>
-                  <Box display="flex" alignItems="center" gap={2}>
-                    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-                      <CircularProgress size={24} />
+            {(currentBlogData.audioNarrationUrl || currentBlogData.audioGenerationStatus === 'processing') && (
+              <Box sx={{ my: 3 }}>
+                {currentBlogData.audioGenerationStatus === 'processing' ? (
+                  <Paper elevation={2} sx={{ p: 3, mb: 3, bgcolor: 'info.lighter' }}>
+                    <Box display="flex" alignItems="center" gap={2}>
+                      <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+                        <CircularProgress size={24} />
+                      </Box>
+                      <Box>
+                        <Typography variant="body2" color="text.primary" fontWeight={500}>
+                          Audio is being generated...
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          This may take a minute. The page will update automatically when ready.
+                        </Typography>
+                      </Box>
                     </Box>
-                    <Box>
-                      <Typography variant="body2" color="text.primary" fontWeight={500}>
-                        Audio is being generated...
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        This may take a minute. The page will update automatically when ready.
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Paper>
-              ) : (
-                <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-                  <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={2}>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <VolumeUpIcon color="action" />
-                      <Typography variant="body2" color="text.secondary">
-                        Listen to this article
-                      </Typography>
-                    </Box>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      startIcon={<VolumeUpIcon />}
-                      onClick={handleGenerateAudio}
-                      disabled={isGeneratingAudio}
-                    >
-                      {isGeneratingAudio ? 'Starting...' : 'Generate Audio'}
-                    </Button>
-                  </Box>
-                </Paper>
-              )}
-            </Box>
+                  </Paper>
+                ) : currentBlogData.audioNarrationUrl ? (
+                  <AudioPlayer
+                    audioUrl={currentBlogData.audioNarrationUrl}
+                    title={currentBlogData.title}
+                    blogId={currentBlogData.id}
+                  />
+                ) : null}
+              </Box>
+            )}
 
             <Typography component={'div'} fontSize={{ sx: '1rem', sm: '1.1rem' }} textAlign={'left'}>
               <div dangerouslySetInnerHTML={{ __html: marked(currentBlogData.content) }} />

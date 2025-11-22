@@ -651,60 +651,6 @@ export const getAllBlogsEngagementStats = async (userId: mongoose.Types.ObjectId
 };
 
 /**
- * Generate audio narration for a blog post
- * @param {mongoose.Types.ObjectId} blogId - Blog ID
- * @returns {Promise<IBlogDoc>}
- */
-export const generateAudioNarration = async (blogId: mongoose.Types.ObjectId): Promise<IBlogDoc> => {
-  const blog = await Blog.findById(blogId);
-  if (!blog) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Blog not found');
-  }
-
-  // Check if audio is already being generated
-  if (blog.audioGenerationStatus === 'processing') {
-    throw new ApiError(httpStatus.CONFLICT, 'Audio narration is already being generated');
-  }
-
-  // Update status to processing
-  blog.audioGenerationStatus = 'processing';
-  await blog.save();
-
-  try {
-    // Generate audio using TTS service
-    const result = await ttsService.textToSpeech(blog.content, blog.id, {
-      languageCode: blog.language === 'en' ? 'en-US' : blog.language,
-    });
-
-    // Update blog with audio URL
-    blog.audioNarrationUrl = result.audioUrl;
-    blog.audioGenerationStatus = 'completed';
-    await blog.save();
-
-    // Clear cache for this blog to ensure fresh data is fetched
-    await cacheService.del(`blog:id:${blogId.toString()}`);
-    if (blog.slug) {
-      await cacheService.del(`blog:slug:${blog.slug}`);
-    }
-
-    return blog;
-  } catch (error) {
-    // Update status to failed
-    blog.audioGenerationStatus = 'failed';
-    await blog.save();
-
-    // Clear cache even on failure to ensure status is updated
-    await cacheService.del(`blog:id:${blogId.toString()}`);
-    if (blog.slug) {
-      await cacheService.del(`blog:slug:${blog.slug}`);
-    }
-
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, `Failed to generate audio narration: ${errorMessage}`);
-  }
-};
-
-/**
  * Get audio narration status for a blog post
  * @param {mongoose.Types.ObjectId} blogId - Blog ID
  * @returns {Promise<{audioNarrationUrl?: string | undefined, audioGenerationStatus?: string | undefined}>}

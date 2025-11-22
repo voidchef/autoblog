@@ -4,7 +4,8 @@ import S3Utils from '../../aws/S3Utils';
 import Blog from '../../blog/blog.model';
 import { generateBlogContent, generateBlogContentFromTemplate } from '../../blog/blog.service';
 import logger from '../../logger/logger';
-import { BlogGenerationJobData } from '../queue.interfaces';
+import { BlogGenerationJobData, QueueName, TTSGenerationJobData } from '../queue.interfaces';
+import queueService from '../queue.service';
 
 /**
  * Process blog generation job
@@ -47,9 +48,30 @@ export async function processBlogGenerationJob(job: Job<BlogGenerationJobData>):
       content: blogContent['content'],
       images: uploadedImages,
       generationStatus: 'completed',
+      audioGenerationStatus: 'processing',
     });
 
     logger.info(`Blog generation completed successfully for blog: ${blogId}`);
+
+    // Add TTS generation job to queue
+    try {
+      const ttsJobData: TTSGenerationJobData = {
+        blogId,
+        text: blogContent['content'],
+        config: {
+          languageCode: generateBlogData.language === 'en' ? 'en-US' : generateBlogData.language || 'en-US',
+        },
+      };
+      
+      await queueService.addJob(QueueName.TTS_GENERATION, ttsJobData);
+      logger.info(`TTS generation job queued for blog: ${blogId}`);
+    } catch (ttsError) {
+      logger.error(`Failed to queue TTS generation for blog ${blogId}:`, ttsError);
+      // Don't fail the blog generation if TTS queueing fails
+      await Blog.findByIdAndUpdate(blogId, {
+        audioGenerationStatus: 'failed',
+      });
+    }
   } catch (error) {
     logger.error(`Error in blog generation job for blog ${blogId}:`, error);
 

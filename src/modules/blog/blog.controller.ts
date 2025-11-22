@@ -290,17 +290,6 @@ export const getAllBlogsEngagementStats = catchAsync(async (req: Request, res: R
   res.send(stats);
 });
 
-export const generateAudioNarration = catchAsync(async (req: Request, res: Response) => {
-  if (typeof req.params['blogId'] === 'string') {
-    const blog = await blogService.generateAudioNarration(new mongoose.Types.ObjectId(req.params['blogId']));
-    res.status(httpStatus.OK).send({
-      message: 'Audio narration generated successfully',
-      audioNarrationUrl: blog.audioNarrationUrl,
-      audioGenerationStatus: blog.audioGenerationStatus,
-    });
-  }
-});
-
 export const getAudioNarrationStatus = catchAsync(async (req: Request, res: Response) => {
   if (typeof req.params['blogId'] === 'string') {
     const status = await blogService.getAudioNarrationStatus(new mongoose.Types.ObjectId(req.params['blogId']));

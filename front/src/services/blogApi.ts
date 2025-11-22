@@ -575,30 +575,6 @@ export const blogApi = api.injectEndpoints({
       invalidatesTags: ['Blog', 'Draft'],
     }),
 
-    generateAudioNarration: builder.mutation<{ message: string; audioNarrationUrl: string; audioGenerationStatus: string }, string>({
-      query: (blogId) => ({
-        url: `/blogs/${blogId}/audio`,
-        method: 'POST',
-      }),
-      invalidatesTags: (result, error, blogId) => [{ type: 'Blog', id: blogId }, 'Blog'],
-      async onQueryStarted(blogId, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          // Optimistically update the cache with the new audio URL
-          dispatch(
-            blogApi.util.updateQueryData('getBlog', blogId, (draft) => {
-              if (draft) {
-                draft.audioNarrationUrl = data.audioNarrationUrl;
-                draft.audioGenerationStatus = data.audioGenerationStatus as any;
-              }
-            })
-          );
-        } catch {
-          // If the request fails, the cache invalidation will trigger a refetch
-        }
-      },
-    }),
-
     getAudioNarrationStatus: builder.query<{ audioNarrationUrl?: string; audioGenerationStatus?: string }, string>({
       query: (blogId) => `/blogs/${blogId}/audio`,
       providesTags: (result, error, blogId) => [{ type: 'Blog', id: blogId }],
@@ -680,7 +656,6 @@ export const {
   useLazyGetBlogBySlugQuery,
   useLazyGetBlogViewsQuery,
   useLazySearchBlogsQuery,
-  useGenerateAudioNarrationMutation,
   useGetAudioNarrationStatusQuery,
   useLazyGetAudioNarrationStatusQuery,
   usePublishToWordPressMutation,

@@ -23,10 +23,9 @@ interface AudioPlayerProps {
   title?: string;
   blogId?: string;
   loading?: boolean;
-  onGenerateAudio?: () => void;
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, blogId, loading, onGenerateAudio }) => {
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, blogId, loading }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -105,17 +104,6 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, blogId, load
     }
   };
 
-  const handleGenerateAudio = () => {
-    if (onGenerateAudio) {
-      onGenerateAudio();
-      
-      // Track audio generation request
-      if (blogId && title) {
-        analytics.trackAudioGenerate(blogId, title);
-      }
-    }
-  };
-
   const handleSeek = (_event: Event, value: number | number[]) => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -167,49 +155,16 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, blogId, load
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  if (loading) {
-    return (
-      <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-        <Stack direction="row" spacing={2} alignItems="center">
-          <CircularProgress size={24} />
-          <Typography variant="body2" color="text.secondary">
-            Generating audio narration...
-          </Typography>
-        </Stack>
-      </Paper>
-    );
-  }
-
   if (!audioUrl) {
-    return (
-      <Paper elevation={2} sx={{ p: 3, mb: 3 }}>
-        <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
-          <Typography variant="body2" color="text.secondary">
-            Audio narration not available
-          </Typography>
-          {onGenerateAudio && (
-            <IconButton onClick={handleGenerateAudio} color="primary" size="small">
-              <VolumeUpIcon />
-            </IconButton>
-          )}
-        </Stack>
-      </Paper>
-    );
+    return null;
   }
 
   if (audioError) {
     return (
       <Paper elevation={2} sx={{ p: 3, mb: 3, bgcolor: 'error.lighter' }}>
-        <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
-          <Typography variant="body2" color="error">
-            Failed to load audio. The file may be unavailable or in an unsupported format.
-          </Typography>
-          {onGenerateAudio && (
-            <IconButton onClick={handleGenerateAudio} color="primary" size="small">
-              <VolumeUpIcon />
-            </IconButton>
-          )}
-        </Stack>
+        <Typography variant="body2" color="error">
+          Failed to load audio. The file may be unavailable or in an unsupported format.
+        </Typography>
       </Paper>
     );
   }
