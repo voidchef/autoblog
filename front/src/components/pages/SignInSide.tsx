@@ -39,34 +39,6 @@ export default function SignInSide() {
   const [login, { isLoading: loginLoading, error: loginError }] = useLoginMutation();
   const [register, { isLoading: registerLoading, error: registerError }] = useRegisterMutation();
 
-  // Common TextField styles to prevent highlight issues
-  const textFieldStyles = {
-    '& .MuiOutlinedInput-root': {
-      borderRadius: 2,
-      '& input': {
-        backgroundColor: 'transparent !important',
-        boxShadow: 'none !important',
-      },
-      '& textarea': {
-        backgroundColor: 'transparent !important',
-        boxShadow: 'none !important',
-      },
-      '& input:-webkit-autofill': {
-        WebkitBoxShadow: '0 0 0 100px transparent inset !important',
-        WebkitTextFillColor: 'inherit !important',
-        transition: 'background-color 5000s ease-in-out 0s',
-      },
-      '&.Mui-focused': {
-        '& input': {
-          backgroundColor: 'transparent !important',
-        },
-        '& textarea': {
-          backgroundColor: 'transparent !important',
-        },
-      },
-    },
-  };
-
   // Validate form
   const validateForm = () => {
     const errors: Record<string, string> = {};
@@ -251,7 +223,6 @@ export default function SignInSide() {
                       helperText={formErrors.firstName}
                       disabled={isLoading}
                       autoFocus
-                      sx={textFieldStyles}
                     />
                   </Grid>
                   <Grid size={{ xs: 12, sm: 6 }}>
@@ -267,7 +238,6 @@ export default function SignInSide() {
                       error={!!formErrors.lastName}
                       helperText={formErrors.lastName}
                       disabled={isLoading}
-                      sx={textFieldStyles}
                     />
                   </Grid>
                 </Grid>
@@ -288,7 +258,6 @@ export default function SignInSide() {
               helperText={formErrors.email}
               disabled={isLoading}
               autoFocus={!signUp}
-              sx={textFieldStyles}
             />
 
             <TextField
@@ -305,7 +274,6 @@ export default function SignInSide() {
               error={!!formErrors.password}
               helperText={formErrors.password}
               disabled={isLoading}
-              sx={textFieldStyles}
             />
 
             {signUp && (
@@ -323,7 +291,6 @@ export default function SignInSide() {
                 error={!!formErrors.confirmPassword}
                 helperText={formErrors.confirmPassword}
                 disabled={isLoading}
-                sx={textFieldStyles}
               />
             )}
 

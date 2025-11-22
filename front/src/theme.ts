@@ -616,10 +616,29 @@ const components = {
             },
           },
           '&.Mui-focused': {
+            '& input': {
+              backgroundColor: 'transparent !important',
+            },
+            '& textarea': {
+              backgroundColor: 'transparent !important',
+            },
             '& .MuiOutlinedInput-notchedOutline': {
               borderWidth: 2,
               boxShadow: '0 0 0 4px rgba(29, 78, 216, 0.1)',
             },
+          },
+          '& input': {
+            backgroundColor: 'transparent !important',
+            boxShadow: 'none !important',
+          },
+          '& textarea': {
+            backgroundColor: 'transparent !important',
+            boxShadow: 'none !important',
+          },
+          '& input:-webkit-autofill': {
+            WebkitBoxShadow: '0 0 0 100px transparent inset !important',
+            WebkitTextFillColor: 'inherit !important',
+            transition: 'background-color 5000s ease-in-out 0s',
           },
         },
       },
