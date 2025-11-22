@@ -24,13 +24,17 @@ export async function processTTSGenerationJob(job: Job<TTSGenerationJobData>): P
     });
 
     // Clear cache for this blog to ensure fresh data is fetched
-    await cacheService.del(`blog:${blogId}`);
+    await cacheService.del(`blog:id:${blogId}`);
     
     // Also clear the blog by slug cache if the blog exists
     const blog = await Blog.findById(blogId);
     if (blog?.slug) {
       await cacheService.del(`blog:slug:${blog.slug}`);
     }
+    
+    // Invalidate query caches
+    await cacheService.delPattern('blog:query:*');
+    await cacheService.delPattern('blog:stats:*');
 
     logger.info(`TTS generation completed for blog: ${blogId}, audio URL: ${result.audioUrl}`);
   } catch (error) {
@@ -43,7 +47,9 @@ export async function processTTSGenerationJob(job: Job<TTSGenerationJobData>): P
       });
       
       // Clear cache to ensure fresh data is fetched
-      await cacheService.del(`blog:${blogId}`);
+      await cacheService.del(`blog:id:${blogId}`);
+      await cacheService.delPattern('blog:query:*');
+      await cacheService.delPattern('blog:stats:*');
     } catch (updateError) {
       logger.error(`Failed to update blog status for ${blogId}:`, updateError);
     }

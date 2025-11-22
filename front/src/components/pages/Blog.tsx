@@ -62,11 +62,12 @@ export default function Blog() {
     isLoading,
     refetch,
   } = useGetBlogQuery(slug, {
-    skip: !!isPreviewMode, // Skip query if in preview mode
+    skip: isPreviewMode && !!previewBlogData, // Skip query only if in preview mode AND have preview data
     pollingInterval: shouldPoll ? 3000 : 0, // Poll every 3s when processing
   });
 
-  const currentBlogData = (isPreviewMode ? previewBlogData : blogData) as IBlogAPI | null;
+  // Use preview data if available and in preview mode, otherwise use fetched data
+  const currentBlogData = (isPreviewMode && previewBlogData ? previewBlogData : blogData) as IBlogAPI | null;
 
   // Toggle featured mutation
   const [toggleFeatured] = useToggleFeaturedMutation();

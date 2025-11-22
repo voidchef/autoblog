@@ -34,7 +34,10 @@ export class ChainBuilder {
       },
       {
         ...inputMapping,
-        history: (previousOutput: { memory: MemoryObject }) => previousOutput.memory.history,
+        history: (previousOutput: { memory: MemoryObject }) => {
+          // Safely extract history, default to empty array if not present
+          return previousOutput?.memory?.history || [];
+        },
       },
       chatPrompt,
       llmWithStructuredOutput,
@@ -62,7 +65,10 @@ export class ChainBuilder {
       },
       {
         ...inputMapping,
-        history: (previousOutput: { memory: MemoryObject }) => previousOutput.memory.history,
+        history: (previousOutput: { memory: MemoryObject }) => {
+          // Safely extract history, default to empty array if not present
+          return previousOutput?.memory?.history || [];
+        },
       },
       chatPrompt,
       llm,

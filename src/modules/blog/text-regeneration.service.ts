@@ -4,7 +4,7 @@ import ApiError from '../errors/ApiError';
 import logger from '../logger/logger';
 import { buildLLM } from '../postGen/llm';
 import { BasePostPrompt, llm } from '../postGen/types';
-import { getUserById } from '../user/user.service';
+import { getUserByIdFresh } from '../user/user.service';
 import Blog from './blog.model';
 
 interface IRegenerateTextRequest {
@@ -29,8 +29,8 @@ export const regenerateText = async (
 ): Promise<string> => {
   const { blogId, selectedText, userPrompt, llmModel, llmProvider, contextBefore, contextAfter } = data;
 
-  // Get the user to retrieve the decrypted API key
-  const user = await getUserById(userId);
+  // Get the user to retrieve the decrypted API key (use fresh data, not cached)
+  const user = await getUserByIdFresh(userId);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }

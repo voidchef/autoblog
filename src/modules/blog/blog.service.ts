@@ -17,7 +17,7 @@ import {
 import { queueService, QueueName } from '../queue';
 import { ttsService } from '../tts';
 import User from '../user/user.model';
-import { getUserById } from '../user/user.service';
+import { getUserById, getUserByIdFresh } from '../user/user.service';
 import runReport, {
   IRunReportResponse,
   getAnalyticsOverview,
@@ -68,8 +68,8 @@ export const generateBlogContent = async (
   generateBlogData: IGenerateBlog,
   author: mongoose.Types.ObjectId
 ): Promise<NewCreatedBlog> => {
-  // Get the user to retrieve the decrypted API key
-  const user = await getUserById(author);
+  // Get the user to retrieve the decrypted API key (use fresh data, not cached)
+  const user = await getUserByIdFresh(author);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
@@ -152,8 +152,8 @@ export const generateBlogContentFromTemplate = async (
   generateTemplateData: IGenerateTemplateBlog,
   author: mongoose.Types.ObjectId
 ): Promise<NewCreatedBlog> => {
-  // Get the user to retrieve the decrypted API key
-  const user = await getUserById(author);
+  // Get the user to retrieve the decrypted API key (use fresh data, not cached)
+  const user = await getUserByIdFresh(author);
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
@@ -1210,20 +1210,41 @@ async function processInlineGeneration(
     }
 
     // Update the placeholder with generated content
-    await Blog.findByIdAndUpdate(blogId, {
-      ...blogContent,
-      _id: blogId,
-      generatedImages: uploadedImages.length > 0 ? uploadedImages : blogContent.generatedImages,
-      selectedImage: uploadedImages.length > 0 ? uploadedImages[0] : undefined,
-      generationStatus: 'completed',
-      generationError: undefined,
-    });
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        ...blogContent,
+        _id: blogId,
+        generatedImages: uploadedImages.length > 0 ? uploadedImages : blogContent.generatedImages,
+        selectedImage: uploadedImages.length > 0 ? uploadedImages[0] : undefined,
+        generationStatus: 'completed',
+        generationError: undefined,
+      },
+      { new: true }
+    );
+
+    // Invalidate cache for this blog
+    await cacheService.del(`blog:id:${blogId.toString()}`);
+    if (updatedBlog?.slug) {
+      await cacheService.del(`blog:slug:${updatedBlog.slug}`);
+    }
+    // Invalidate query caches
+    await cacheService.delPattern('blog:query:*');
+    await cacheService.delPattern('blog:stats:*');
   } catch (error) {
     logger.error('Error in inline blog generation:', error);
-    await Blog.findByIdAndUpdate(blogId, {
-      generationStatus: 'failed',
-      generationError: error instanceof Error ? error.message : 'Unknown error occurred',
-    });
+    // Delete the placeholder blog since generation failed
+    try {
+      await Blog.findByIdAndDelete(blogId);
+      logger.info(`Deleted failed blog ${blogId} from database`);
+    } catch (deleteError) {
+      logger.error(`Failed to delete blog ${blogId}:`, deleteError);
+      // If deletion fails, at least mark it as failed
+      await Blog.findByIdAndUpdate(blogId, {
+        generationStatus: 'failed',
+        generationError: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
+    }
   }
 }
 
@@ -1252,14 +1273,27 @@ async function processInlineTemplateGeneration(
     }
 
     // Update the placeholder with generated content
-    await Blog.findByIdAndUpdate(blogId, {
-      ...blogContent,
-      _id: blogId,
-      generatedImages: uploadedImages.length > 0 ? uploadedImages : blogContent.generatedImages,
-      selectedImage: uploadedImages.length > 0 ? uploadedImages[0] : undefined,
-      generationStatus: 'completed',
-      generationError: undefined,
-    });
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      blogId,
+      {
+        ...blogContent,
+        _id: blogId,
+        generatedImages: uploadedImages.length > 0 ? uploadedImages : blogContent.generatedImages,
+        selectedImage: uploadedImages.length > 0 ? uploadedImages[0] : undefined,
+        generationStatus: 'completed',
+        generationError: undefined,
+      },
+      { new: true }
+    );
+
+    // Invalidate cache for this blog
+    await cacheService.del(`blog:id:${blogId.toString()}`);
+    if (updatedBlog?.slug) {
+      await cacheService.del(`blog:slug:${updatedBlog.slug}`);
+    }
+    // Invalidate query caches
+    await cacheService.delPattern('blog:query:*');
+    await cacheService.delPattern('blog:stats:*');
 
     // Clean up template file after successful generation
     if (generateTemplateData.templateFile) {
@@ -1268,10 +1302,19 @@ async function processInlineTemplateGeneration(
     }
   } catch (error) {
     logger.error('Error in inline template blog generation:', error);
-    await Blog.findByIdAndUpdate(blogId, {
-      generationStatus: 'failed',
-      generationError: error instanceof Error ? error.message : 'Unknown error occurred',
-    });
+    
+    // Delete the placeholder blog since generation failed
+    try {
+      await Blog.findByIdAndDelete(blogId);
+      logger.info(`Deleted failed blog ${blogId} from database`);
+    } catch (deleteError) {
+      logger.error(`Failed to delete blog ${blogId}:`, deleteError);
+      // If deletion fails, at least mark it as failed
+      await Blog.findByIdAndUpdate(blogId, {
+        generationStatus: 'failed',
+        generationError: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
+    }
 
     // Clean up template file on error too
     if (generateTemplateData.templateFile) {

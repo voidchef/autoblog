@@ -39,6 +39,8 @@ function buildOpenAI(postPrompt: BasePostPrompt, forJson: boolean = false) {
     presencePenalty: forJson ? 0 : (postPrompt.presencePenalty ?? 1),
     verbose: postPrompt.debugapi ?? false,
     apiKey: postPrompt.apiKey,
+    timeout: 120000, // 2 minute timeout
+    maxRetries: 2,
   };
   return new ChatOpenAI(llmParams);
 }
@@ -57,6 +59,8 @@ function buildMistral(postPrompt: BasePostPrompt, forJson: boolean = false) {
     presencePenalty: forJson ? 0 : (postPrompt.presencePenalty ?? 1),
     verbose: postPrompt.debugapi ?? false,
     apiKey: postPrompt.apiKey,
+    timeout: 120000, // 2 minute timeout
+    maxRetries: 2,
   };
   return new ChatMistralAI(llmParams);
 }
@@ -73,6 +77,8 @@ function buildGoogleGenAI(postPrompt: BasePostPrompt, _forJson: boolean = false)
     temperature: postPrompt.temperature ?? 0.8,
     verbose: postPrompt.debugapi ?? false,
     apiKey: postPrompt.apiKey,
+    timeout: 120000, // 2 minute timeout
+    maxRetries: 2,
   };
   return new ChatGoogleGenerativeAI(llmParams);
 }

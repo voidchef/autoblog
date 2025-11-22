@@ -53,20 +53,33 @@ export const getUserById = async (id: mongoose.Types.ObjectId): Promise<IUserDoc
   const cacheKey = `user:id:${id.toString()}`;
 
   // Try to get from cache
-  const cached = await cacheService.get<IUserDoc>(cacheKey);
+  const cached = await cacheService.get<any>(cacheKey);
   if (cached) {
-    return cached;
+    // Re-hydrate the cached plain object as a Mongoose document to restore instance methods
+    // Note: We don't include virtuals in cache because they depend on current data state
+    const hydrated = User.hydrate(cached);
+    return hydrated;
   }
 
   // Fetch from database
   const user = await User.findById(id);
 
   // Cache the result (15 minutes TTL for user data)
+  // Store as plain object without virtuals (virtuals are computed on access)
   if (user) {
-    await cacheService.set(cacheKey, user, 900);
+    await cacheService.set(cacheKey, user.toObject({ virtuals: false }), 900);
   }
 
   return user;
+};
+
+/**
+ * Get user by id without caching - for operations requiring fresh data like API key checks
+ * @param {mongoose.Types.ObjectId} id
+ * @returns {Promise<IUserDoc | null>}
+ */
+export const getUserByIdFresh = async (id: mongoose.Types.ObjectId): Promise<IUserDoc | null> => {
+  return User.findById(id);
 };
 
 /**

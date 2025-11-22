@@ -129,16 +129,30 @@ export class PostGenerator extends BasePostGenerator<AutoPostPrompt, Post> {
         'intent',
       ]);
 
-      const outline = await chain.invoke({
-        topic: this.config.topic,
-        language: this.config.language,
-        country: this.config.country,
-        audience: this.config.audience || 'everyone',
-        intent: this.config.intent || 'informative',
-        memory: await this.getMemoryState(),
-      });
+      let outline;
+      try {
+        outline = await chain.invoke({
+          topic: this.config.topic,
+          language: this.config.language,
+          country: this.config.country,
+          audience: this.config.audience || 'everyone',
+          intent: this.config.intent || 'informative',
+          memory: await this.getMemoryState(),
+        });
+      } catch (invokeError: any) {
+        // Log API-specific errors with more detail
+        logger.error('LLM API call failed during outline generation:', {
+          error: invokeError.message,
+          name: invokeError.name,
+          status: invokeError.status,
+          statusText: invokeError.statusText,
+          response: invokeError.response,
+        });
+        throw invokeError;
+      }
 
       if (!ValidationUtils.validateOutline(outline)) {
+        logger.error('Invalid outline structure:', outline);
         throw new ValidationError('Invalid outline structure');
       }
 
@@ -158,6 +172,19 @@ export class PostGenerator extends BasePostGenerator<AutoPostPrompt, Post> {
 
       return outline as PostOutline;
     } catch (error) {
+      // Log detailed error information
+      if (error instanceof Error) {
+        logger.error('Outline generation failed:', {
+          message: error.message,
+          name: error.name,
+          config: {
+            topic: this.config.topic,
+            language: this.config.language,
+            model: this.config.model,
+          },
+          cause: (error as any).cause,
+        });
+      }
       throw new OutlineGenerationError('Failed to generate outline', error);
     }
   }
