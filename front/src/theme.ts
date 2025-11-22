@@ -635,10 +635,8 @@ const components = {
             backgroundColor: 'transparent !important',
             boxShadow: 'none !important',
           },
-          '& input:-webkit-autofill': {
-            WebkitBoxShadow: '0 0 0 100px transparent inset !important',
-            WebkitTextFillColor: 'inherit !important',
-            transition: 'background-color 5000s ease-in-out 0s',
+          '& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active': {
+            transition: 'background-color 5000s ease-in-out 0s !important',
           },
         },
       },
@@ -679,7 +677,7 @@ const components = {
   },
 };
 
-// Light mode theme with enhanced colors and gradients
+// Light mode theme with bright, clean aesthetics
 const lightTheme = createTheme({
   palette: {
     mode: 'light',
@@ -699,6 +697,22 @@ const lightTheme = createTheme({
   typography,
   components: {
     ...components,
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          ...components.MuiTextField.styleOverrides.root,
+          '& .MuiOutlinedInput-root': {
+            ...components.MuiTextField.styleOverrides.root['& .MuiOutlinedInput-root'],
+            '& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active': {
+              WebkitBoxShadow: `0 0 0 100px ${customColors.bgLight.paper} inset !important`,
+              WebkitTextFillColor: `${customColors.textLight.primary} !important`,
+              caretColor: `${customColors.textLight.primary} !important`,
+              transition: 'background-color 5000s ease-in-out 0s !important',
+            },
+          },
+        },
+      },
+    },
     MuiAppBar: {
       styleOverrides: {
         root: {
@@ -774,6 +788,22 @@ const darkTheme = createTheme({
   typography,
   components: {
     ...components,
+    MuiTextField: {
+      styleOverrides: {
+        root: {
+          ...components.MuiTextField.styleOverrides.root,
+          '& .MuiOutlinedInput-root': {
+            ...components.MuiTextField.styleOverrides.root['& .MuiOutlinedInput-root'],
+            '& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active': {
+              WebkitBoxShadow: `0 0 0 100px ${customColors.bgDark.paper} inset !important`,
+              WebkitTextFillColor: `${customColors.textDark.primary} !important`,
+              caretColor: `${customColors.textDark.primary} !important`,
+              transition: 'background-color 5000s ease-in-out 0s !important',
+            },
+          },
+        },
+      },
+    },
     MuiAppBar: {
       styleOverrides: {
         root: {

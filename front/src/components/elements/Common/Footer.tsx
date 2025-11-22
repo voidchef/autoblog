@@ -1,4 +1,15 @@
-import { Box, Button, Container, Divider, TextField, Typography, IconButton, Stack, CircularProgress } from '@mui/material';
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  TextField,
+  Typography,
+  IconButton,
+  Stack,
+  CircularProgress,
+  InputAdornment,
+} from '@mui/material';
 import Grid from '@mui/material/Grid';
 import * as React from 'react';
 import FacebookIcon from '@mui/icons-material/Facebook';
@@ -19,7 +30,7 @@ const Footer = () => {
   const dispatch = useAppDispatch();
   const [newsletterEmail, setNewsletterEmail] = React.useState('');
   const [emailError, setEmailError] = React.useState('');
-  
+
   const [subscribeNewsletter, { isLoading: isSubscribing }] = useSubscribeNewsletterMutation();
 
   function handleClick(item: string) {
@@ -76,7 +87,7 @@ const Footer = () => {
       handleNewsletterSubscribe();
     }
   };
-  
+
   return (
     <Box
       sx={{
@@ -85,7 +96,7 @@ const Footer = () => {
             ? theme.palette.customColors.gradients.footerDark
             : theme.palette.customColors.gradients.footerLight,
         color: 'white',
-        pt: 8,
+        pt: 4,
         pb: 4,
         position: 'relative',
         overflow: 'hidden',
@@ -96,144 +107,192 @@ const Footer = () => {
           left: 0,
           right: 0,
           height: '1px',
-          background: (theme) => `linear-gradient(90deg, transparent, ${theme.palette.customColors.overlay.white.stronger}, transparent)`,
+          background: (theme) =>
+            `linear-gradient(90deg, transparent, ${theme.palette.customColors.overlay.white.stronger}, transparent)`,
         },
       }}
     >
       <Container maxWidth="lg">
         {/* Newsletter Section */}
-        <Box
-          sx={{
-            mb: 6,
-          }}
-        >
-          <Grid container spacing={{ xs: 1.5, sm: 2, md: 4 }} alignItems="center">
-            <Grid size={{ xs: 12, md: 6 }}>
+        <Grid container spacing={{ xs: 2, sm: 3, md: 4 }} alignItems="center" mb={4}>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: { xs: 1, md: 1.5 } }}>
+              <Email
+                sx={{
+                  fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+                }}
+              />
               <Typography
                 variant="h4"
                 sx={{
-                  fontWeight: 700,
-                  mb: { xs: 0.5, md: 1 },
-                  fontSize: { xs: '1rem', sm: '1.25rem', md: '2rem' },
-                  lineHeight: 1.3,
+                  fontWeight: 800,
+                  fontSize: { xs: '1.25rem', sm: '1.5rem', md: '2rem' },
+                  lineHeight: 1.2,
+                  background: 'linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
                 }}
               >
-                Subscribe to Our Newsletter
+                Stay Updated!
               </Typography>
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  opacity: 0.95,
-                  fontSize: { xs: '0.8125rem', sm: '0.875rem', md: '1rem' },
-                  display: { xs: 'none', sm: 'block' },
-                }}
-              >
-                Get the latest updates, articles, and news delivered to your inbox.
-              </Typography>
-            </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Box sx={{ 
-                display: 'flex', 
-                gap: { xs: 0.75, sm: 1 },
-                flexDirection: { xs: 'column', sm: 'row' },
-              }}>
-                <TextField
-                  placeholder="Enter your email"
-                  variant="outlined"
-                  fullWidth
-                  size="small"
-                  value={newsletterEmail}
-                  onChange={(e) => {
-                    setNewsletterEmail(e.target.value);
-                    setEmailError('');
-                  }}
-                  onKeyPress={handleKeyPress}
-                  error={!!emailError}
-                  helperText={emailError}
-                  disabled={isSubscribing}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      bgcolor: (theme) => theme.palette.customColors.overlay.white.full,
-                      borderRadius: { xs: 1.5, md: 2 },
-                      fontSize: { xs: '0.875rem', md: '1rem' },
-                      minHeight: { xs: '40px', sm: '44px', md: '56px' },
-                      color: (theme) => theme.palette.mode === 'dark' 
-                        ? theme.palette.customColors.textDark.primary 
-                        : theme.palette.customColors.textLight.primary,
-                      '& fieldset': {
-                        borderColor: emailError ? 'error.main' : 'transparent',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: (theme) => emailError ? 'error.main' : theme.palette.customColors.overlay.white.veryStrong,
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: (theme) => emailError ? 'error.main' : theme.palette.customColors.overlay.white.almostOpaque,
-                      },
-                      '& input': {
-                        py: { xs: 1, sm: 1.25, md: 1.5 },
-                        color: (theme) => theme.palette.mode === 'dark' 
-                          ? theme.palette.customColors.accent.slate.darker 
-                          : theme.palette.customColors.textLight.primary,
-                        '&::placeholder': {
-                          color: (theme) => theme.palette.mode === 'dark' 
-                            ? theme.palette.customColors.textDark.secondary 
-                            : theme.palette.customColors.textLight.secondary,
-                          opacity: 0.7,
-                        },
-                      },
-                    },
-                    '& .MuiFormHelperText-root': {
-                      color: 'error.main',
-                      bgcolor: (theme) => theme.palette.mode === 'dark' 
-                        ? theme.palette.customColors.accent.blue.darker 
-                        : theme.palette.customColors.accent.blue.main,
-                      margin: 0,
-                      mt: 0.5,
-                      px: 1,
-                      py: 0.5,
-                      borderRadius: 1,
-                    },
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  onClick={handleNewsletterSubscribe}
-                  disabled={isSubscribing}
-                  sx={{
-                    background: 'white',
-                    color: (theme) => theme.palette.customColors.accent.blue.main,
-                    px: { xs: 2.5, sm: 3, md: 4 },
-                    py: { xs: 1, sm: 1.25, md: 1.5 },
-                    borderRadius: { xs: 1.5, md: 2 },
-                    fontWeight: 700,
-                    fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' },
-                    whiteSpace: 'nowrap',
-                    textTransform: 'none',
-                    boxShadow: (theme) => `0 4px 14px ${theme.palette.customColors.overlay.black.veryStrong}`,
-                    border: '2px solid transparent',
-                    minHeight: { xs: '40px', sm: '44px', md: '56px' },
-                    '&:hover': {
-                      background: 'white',
-                      transform: 'translateY(-2px)',
-                      boxShadow: (theme) => `0 8px 24px ${theme.palette.customColors.overlay.black.almostOpaque}`,
-                      borderColor: (theme) => theme.palette.customColors.overlay.white.stronger,
-                    },
-                    '&:active': {
-                      transform: 'translateY(0)',
-                    },
-                    '&.Mui-disabled': {
-                      background: (theme) => theme.palette.customColors.overlay.white.medium,
-                      color: (theme) => theme.palette.customColors.textDark.secondary,
-                    },
-                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-                  }}
-                >
-                  {isSubscribing ? <CircularProgress size={20} sx={{ color: 'inherit' }} /> : 'Subscribe'}
-                </Button>
-              </Box>
-            </Grid>
+            </Stack>
+            <Typography
+              variant="body1"
+              sx={{
+                opacity: 0.95,
+                fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' },
+                lineHeight: 1.6,
+                mb: { xs: 2, md: 0 },
+              }}
+            >
+              Subscribe to our newsletter and get the latest articles, updates, and exclusive content delivered straight to
+              your inbox.
+            </Typography>
           </Grid>
-        </Box>
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                gap: { xs: 1, sm: 1.5 },
+                flexDirection: { xs: 'column', sm: 'row' },
+              }}
+            >
+              <TextField
+                placeholder="Enter your email address"
+                variant="outlined"
+                fullWidth
+                size="medium"
+                value={newsletterEmail}
+                onChange={(e) => {
+                  setNewsletterEmail(e.target.value);
+                  setEmailError('');
+                }}
+                onKeyPress={handleKeyPress}
+                error={!!emailError}
+                helperText={emailError}
+                disabled={isSubscribing}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Email
+                        sx={{
+                          color: 'text.secondary',
+                          fontSize: '1.25rem',
+                        }}
+                      />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    bgcolor: (theme) =>
+                      theme.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.98)',
+                    borderRadius: 2,
+                    fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' },
+                    minHeight: { xs: '48px', sm: '52px', md: '56px' },
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+                    transition: 'all 0.3s ease',
+                    '& fieldset': {
+                      borderColor: emailError ? 'error.main' : 'rgba(0, 0, 0, 0.1)',
+                      borderWidth: '2px',
+                    },
+                    '&:hover': {
+                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.12)',
+                      '& fieldset': {
+                        borderColor: emailError ? 'error.main' : 'primary.main',
+                      },
+                    },
+                    '&.Mui-focused': {
+                      boxShadow: '0 4px 16px rgba(59, 130, 246, 0.25)',
+                      '& fieldset': {
+                        borderColor: emailError ? 'error.main' : 'primary.main',
+                        borderWidth: '2px',
+                      },
+                    },
+                    '& input': {
+                      py: { xs: 1.25, sm: 1.5 },
+                      color: '#0f172a',
+                      fontWeight: 500,
+                      '&::placeholder': {
+                        color: 'rgba(0, 0, 0, 0.6)',
+                        opacity: 1,
+                      },
+                    },
+                    '& input:-webkit-autofill, & input:-webkit-autofill:hover, & input:-webkit-autofill:focus, & input:-webkit-autofill:active': {
+                      WebkitBoxShadow: '0 0 0 100px rgba(255, 255, 255, 0.98) inset !important',
+                      WebkitTextFillColor: '#0f172a !important',
+                      caretColor: '#0f172a !important',
+                      transition: 'background-color 5000s ease-in-out 0s !important',
+                    },
+                  },
+                  '& .MuiFormHelperText-root': {
+                    color: '#fff',
+                    bgcolor: 'error.main',
+                    margin: 0,
+                    mt: 1,
+                    px: 1.5,
+                    py: 0.75,
+                    borderRadius: 1,
+                    fontSize: '0.813rem',
+                    fontWeight: 500,
+                  },
+                }}
+              />
+              <Button
+                variant="contained"
+                onClick={handleNewsletterSubscribe}
+                disabled={isSubscribing}
+                startIcon={!isSubscribing && <Email />}
+                sx={{
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                  color: 'white',
+                  px: { xs: 3, sm: 3.5, md: 4 },
+                  py: { xs: 1.5, sm: 1.75 },
+                  borderRadius: 2,
+                  fontWeight: 700,
+                  fontSize: { xs: '0.875rem', sm: '0.9375rem', md: '1rem' },
+                  whiteSpace: 'nowrap',
+                  textTransform: 'none',
+                  boxShadow: '0 4px 14px rgba(59, 130, 246, 0.4)',
+                  border: 'none',
+                  minHeight: { xs: '48px', sm: '52px', md: '56px' },
+                  minWidth: { xs: '100%', sm: '140px' },
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  position: 'relative',
+                  overflow: 'hidden',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: '-100%',
+                    width: '100%',
+                    height: '100%',
+                    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+                    transition: 'left 0.5s',
+                  },
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                    transform: 'translateY(-2px)',
+                    boxShadow: '0 8px 24px rgba(59, 130, 246, 0.5)',
+                    '&::before': {
+                      left: '100%',
+                    },
+                  },
+                  '&:active': {
+                    transform: 'translateY(0)',
+                  },
+                  '&.Mui-disabled': {
+                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.5) 0%, rgba(37, 99, 235, 0.5) 100%)',
+                    color: 'rgba(255, 255, 255, 0.7)',
+                  },
+                }}
+              >
+                {isSubscribing ? <CircularProgress size={20} sx={{ color: 'white' }} /> : 'Subscribe'}
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
 
         {/* Main Footer Content */}
         <Grid container spacing={{ xs: 3, md: 4 }} sx={{ mb: 6 }}>
@@ -245,11 +304,11 @@ const Footer = () => {
                 AUTOBLOG
               </Typography>
             </Box>
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                mb: 3, 
-                opacity: 0.95, 
+            <Typography
+              variant="body2"
+              sx={{
+                mb: 3,
+                opacity: 0.95,
                 lineHeight: 1.8,
                 fontSize: { xs: '0.875rem', md: '0.9375rem' },
                 pr: { md: 2 },
@@ -428,9 +487,9 @@ const Footer = () => {
             py: 2,
           }}
         >
-          <Typography 
-            variant="body2" 
-            sx={{ 
+          <Typography
+            variant="body2"
+            sx={{
               opacity: 0.9,
               fontSize: { xs: '0.875rem', sm: '0.9375rem' },
             }}

@@ -15,7 +15,6 @@ import {
   TemplatePostPrompt,
 } from '../postGen';
 import { queueService, QueueName } from '../queue';
-import { ttsService } from '../tts';
 import User from '../user/user.model';
 import { getUserById, getUserByIdFresh } from '../user/user.service';
 import runReport, {
@@ -1302,7 +1301,7 @@ async function processInlineTemplateGeneration(
     }
   } catch (error) {
     logger.error('Error in inline template blog generation:', error);
-    
+
     // Delete the placeholder blog since generation failed
     try {
       await Blog.findByIdAndDelete(blogId);

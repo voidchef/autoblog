@@ -101,22 +101,7 @@ export const getUserByIdForFrontend = async (id: mongoose.Types.ObjectId): Promi
  * @returns {Promise<IUserDoc | null>}
  */
 export const getUserByEmail = async (email: string): Promise<IUserDoc | null> => {
-  const cacheKey = `user:email:${email.toLowerCase()}`;
-
-  // Try to get from cache
-  const cached = await cacheService.get<IUserDoc>(cacheKey);
-  if (cached) {
-    return cached;
-  }
-
-  // Fetch from database
   const user = await User.findOne({ email });
-
-  // Cache the result (15 minutes TTL for user data)
-  if (user) {
-    await cacheService.set(cacheKey, user, 900);
-  }
-
   return user;
 };
 

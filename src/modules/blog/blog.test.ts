@@ -10,7 +10,6 @@ import config from '../../config/config';
 import setupTestDB from '../jest/setupTestDB';
 import * as tokenService from '../token/token.service';
 import tokenTypes from '../token/token.types';
-import { ttsService } from '../tts';
 import User from '../user/user.model';
 import { NewCreatedBlog } from './blog.interfaces';
 import Blog from './blog.model';

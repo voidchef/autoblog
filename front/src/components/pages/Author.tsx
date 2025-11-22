@@ -11,6 +11,7 @@ import {
   Tooltip,
   CircularProgress,
   useTheme,
+  TablePagination,
 } from '@mui/material';
 import {
   Twitter as TwitterIcon,
@@ -37,19 +38,23 @@ const Author: React.FC = () => {
   const navigate = useNavigate();
   const { userId } = useAuth();
 
+  // Pagination state
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(9);
+
   // Fetch author data
   const { data: authorData, isLoading: authorLoading, error: authorError } = useGetUserQuery(authorId || '', {
     skip: !authorId,
   });
 
-  // Fetch author's published blogs (not drafts)
+  // Fetch author's published blogs (not drafts) with pagination
   const { data: blogsData, isLoading: blogsLoading } = useGetBlogsQuery(
     {
       author: authorId || '',
       isPublished: true,
       isDraft: false,
-      limit: 100,
-      page: 1,
+      limit: rowsPerPage,
+      page: page + 1,
     },
     {
       skip: !authorId,
@@ -58,6 +63,17 @@ const Author: React.FC = () => {
 
   const handleBlogClick = (slug: string) => {
     navigate(`${ROUTES.BLOG}/${slug}`);
+  };
+
+  const handleChangePage = (event: unknown, newPage: number) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   if (authorLoading) {
@@ -450,6 +466,35 @@ const Author: React.FC = () => {
               </Grid>
             ))}
           </Grid>
+        )}
+
+        {/* Pagination */}
+        {publishedBlogs.length > 0 && (
+          <Box
+            sx={{
+              mt: 4,
+              display: 'flex',
+              justifyContent: 'center',
+            }}
+          >
+            <TablePagination
+              component="div"
+              count={totalArticles}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPageOptions={[6, 9, 12, 18]}
+              sx={{
+                '& .MuiTablePagination-toolbar': {
+                  flexWrap: 'wrap',
+                },
+                '& .MuiTablePagination-selectLabel, & .MuiTablePagination-displayedRows': {
+                  fontSize: { xs: '0.875rem', sm: '1rem' },
+                },
+              }}
+            />
+          </Box>
         )}
       </Container>
 

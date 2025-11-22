@@ -78,7 +78,7 @@ export async function processBlogGenerationJob(job: Job<BlogGenerationJobData>):
           languageCode: generateBlogData.language === 'en' ? 'en-US' : generateBlogData.language || 'en-US',
         },
       };
-      
+
       await queueService.addJob(QueueName.TTS_GENERATION, ttsJobData);
       logger.info(`TTS generation job queued for blog: ${blogId}`);
     } catch (ttsError) {

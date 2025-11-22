@@ -25,3 +25,6 @@ backups/
 
 # google cloud credentials
 service-account.json
+
+# eslint cache
+.eslintcache
