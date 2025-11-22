@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
-import mongoose from 'mongoose';
 import ApiError from '../errors/ApiError';
 import { OAuthConnection, oauthConnectionService, IOAuthConnectionDoc } from '../oauthConnection';
 import { IUserDoc } from '../user/user.interfaces';

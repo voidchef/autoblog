@@ -31,6 +31,7 @@ import nodePlugin from 'eslint-plugin-node';
 import prettierPlugin from 'eslint-plugin-prettier';
 import promisePlugin from 'eslint-plugin-promise';
 import securityPlugin from 'eslint-plugin-security';
+import unusedImports from 'eslint-plugin-unused-imports';
 import globals from 'globals';
 
 export default [
@@ -74,8 +75,23 @@ export default [
       promise: promisePlugin,
       security: securityPlugin,
       prettier: prettierPlugin,
+      'unused-imports': unusedImports,
     },
     rules: {
+      // Unused imports
+      'no-unused-vars': 'off',
+      'unused-imports/no-unused-imports': 'warn',
+      'unused-imports/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_|error',
+        },
+      ],
+
       // Best Practices
       'no-console': 'error',
       'no-debugger': 'error',
@@ -191,6 +207,7 @@ export default [
       promise: promisePlugin,
       security: securityPlugin,
       prettier: prettierPlugin,
+      'unused-imports': unusedImports,
     },
     settings: {
       'import/resolver': {
@@ -214,13 +231,16 @@ export default [
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/explicit-function-return-type': 'off',
-      '@typescript-eslint/no-unused-vars': [
+      '@typescript-eslint/no-unused-vars': 'off', // Turned off in favor of unused-imports plugin
+      'unused-imports/no-unused-imports': 'warn',
+      'unused-imports/no-unused-vars': [
         'warn',
         {
-          argsIgnorePattern: '^_',
+          vars: 'all',
           varsIgnorePattern: '^_',
+          args: 'after-used',
+          argsIgnorePattern: '^_',
           caughtErrorsIgnorePattern: '^_|error',
-          destructuredArrayIgnorePattern: '^_',
         },
       ],
       '@typescript-eslint/no-use-before-define': ['error', { functions: false, classes: true }],

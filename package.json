@@ -83,6 +83,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-promise": "^7.2.1",
     "eslint-plugin-security": "^3.0.1",
+    "eslint-plugin-unused-imports": "^4.3.0",
     "extensionless": "^2.0.2",
     "globals": "^16.5.0",
     "husky": "^9.1.7",

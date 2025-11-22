@@ -11,7 +11,7 @@ import Newsletter from './newsletter.model';
  */
 export const subscribe = async (email: string): Promise<INewsletterDoc> => {
   const existingSubscriber = await Newsletter.findOne({ email });
-  
+
   if (existingSubscriber) {
     if (existingSubscriber.isActive) {
       throw new ApiError(httpStatus.BAD_REQUEST, 'Email is already subscribed to newsletter');
@@ -35,19 +35,19 @@ export const subscribe = async (email: string): Promise<INewsletterDoc> => {
  */
 export const unsubscribe = async (email: string): Promise<INewsletterDoc> => {
   const subscriber = await Newsletter.findOne({ email });
-  
+
   if (!subscriber) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Email not found in newsletter subscribers');
   }
-  
+
   if (!subscriber.isActive) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email is already unsubscribed');
   }
-  
+
   subscriber.isActive = false;
   subscriber.unsubscribedAt = new Date();
   await subscriber.save();
-  
+
   return subscriber;
 };
 

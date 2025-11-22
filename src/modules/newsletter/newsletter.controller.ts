@@ -8,7 +8,7 @@ import * as newsletterService from './newsletter.service';
 export const subscribe = catchAsync(async (req: Request, res: Response) => {
   const { email } = req.body;
   const subscriber = await newsletterService.subscribe(email);
-  
+
   // Send welcome email
   try {
     await sendNewsletterWelcomeEmailQueued(email);
@@ -16,7 +16,7 @@ export const subscribe = catchAsync(async (req: Request, res: Response) => {
     // Log error but don't fail the subscription
     // Error is already logged in email queue service
   }
-  
+
   res.status(httpStatus.CREATED).send({
     message: 'Successfully subscribed to newsletter',
     subscriber,
@@ -26,7 +26,7 @@ export const subscribe = catchAsync(async (req: Request, res: Response) => {
 export const unsubscribe = catchAsync(async (req: Request, res: Response) => {
   const { email } = req.body;
   const subscriber = await newsletterService.unsubscribe(email);
-  
+
   res.send({
     message: 'Successfully unsubscribed from newsletter',
     subscriber,

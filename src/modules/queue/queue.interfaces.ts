@@ -1,5 +1,4 @@
 import { Job, JobsOptions } from 'bullmq';
-import mongoose from 'mongoose';
 
 /**
  * Queue names enum

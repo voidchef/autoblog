@@ -4,7 +4,6 @@ import logger from '../logger/logger';
 import {
   QueueName,
   IQueueService,
-  QueueConfig,
   BlogGenerationJobData,
   EmailJobData,
   ImageGenerationJobData,
