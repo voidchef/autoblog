@@ -66,10 +66,7 @@ export const deleteComment = catchAsync(async (req: Request, res: Response) => {
 export const likeComment = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IUserDoc;
   if (typeof req.params['commentId'] === 'string') {
-    const comment = await commentService.likeComment(
-      new mongoose.Types.ObjectId(req.params['commentId']),
-      user._id as mongoose.Types.ObjectId
-    );
+    const comment = await commentService.likeComment(new mongoose.Types.ObjectId(req.params['commentId']), user._id);
     res.send(comment);
   }
 });
@@ -77,10 +74,7 @@ export const likeComment = catchAsync(async (req: Request, res: Response) => {
 export const dislikeComment = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IUserDoc;
   if (typeof req.params['commentId'] === 'string') {
-    const comment = await commentService.dislikeComment(
-      new mongoose.Types.ObjectId(req.params['commentId']),
-      user._id as mongoose.Types.ObjectId
-    );
+    const comment = await commentService.dislikeComment(new mongoose.Types.ObjectId(req.params['commentId']), user._id);
     res.send(comment);
   }
 });

@@ -49,10 +49,7 @@ export const deleteUser = catchAsync(async (req: Request, res: Response) => {
 export const followUser = catchAsync(async (req: Request, res: Response) => {
   if (typeof req.params['userId'] === 'string') {
     const currentUser = req.user as IUserDoc;
-    const user = await userService.followUser(
-      currentUser._id as mongoose.Types.ObjectId,
-      new mongoose.Types.ObjectId(req.params['userId'])
-    );
+    const user = await userService.followUser(currentUser._id, new mongoose.Types.ObjectId(req.params['userId']));
     res.send(user);
   }
 });
@@ -60,10 +57,7 @@ export const followUser = catchAsync(async (req: Request, res: Response) => {
 export const unfollowUser = catchAsync(async (req: Request, res: Response) => {
   if (typeof req.params['userId'] === 'string') {
     const currentUser = req.user as IUserDoc;
-    const user = await userService.unfollowUser(
-      currentUser._id as mongoose.Types.ObjectId,
-      new mongoose.Types.ObjectId(req.params['userId'])
-    );
+    const user = await userService.unfollowUser(currentUser._id, new mongoose.Types.ObjectId(req.params['userId']));
     res.send(user);
   }
 });
@@ -74,7 +68,7 @@ export const uploadProfilePictureFile = catchAsync(async (req: Request, res: Res
     const currentUser = req.user as IUserDoc;
 
     // Check if user is updating their own profile picture or is an admin
-    const currentUserId = currentUser._id as mongoose.Types.ObjectId;
+    const currentUserId = currentUser._id;
     if (currentUserId.toString() !== userId.toString() && currentUser.role !== 'admin') {
       throw new ApiError(httpStatus.FORBIDDEN, 'You can only upload your own profile picture');
     }

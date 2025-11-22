@@ -311,7 +311,7 @@ describe('Payment routes', () => {
         status: 'success',
         plan: 'pro',
       });
-      paymentId = (payment._id as mongoose.Types.ObjectId).toString();
+      paymentId = payment._id.toString();
     });
 
     test('should return 200 and process refund for admin', async () => {

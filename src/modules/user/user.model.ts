@@ -186,7 +186,7 @@ userSchema.pre('save', async function (next) {
     user.password = await bcrypt.hash(user.password, 8);
   }
 
-  const userId = (user._id as mongoose.Types.ObjectId).toString();
+  const userId = user._id.toString();
 
   // Encrypt OpenAI key if modified and not already encrypted
   if (user.isModified('openAiKey') && user.openAiKey && !isEncrypted(user.openAiKey)) {
@@ -221,7 +221,7 @@ userSchema.pre('save', async function (next) {
  */
 userSchema.method('getDecryptedOpenAiKey', function (): string {
   if (!this.openAiKey) return '';
-  return decrypt(this.openAiKey, (this._id as mongoose.Types.ObjectId).toString());
+  return decrypt(this.openAiKey, this._id.toString());
 });
 
 /**
@@ -230,7 +230,7 @@ userSchema.method('getDecryptedOpenAiKey', function (): string {
  */
 userSchema.method('getDecryptedGoogleApiKey', function (): string {
   if (!this.googleApiKey) return '';
-  return decrypt(this.googleApiKey, (this._id as mongoose.Types.ObjectId).toString());
+  return decrypt(this.googleApiKey, this._id.toString());
 });
 
 /**
@@ -249,7 +249,7 @@ userSchema.method('getDecryptedWordPressPassword', function (): string {
   if (!this.wordpressAppPassword) {
     throw new Error('WordPress app password not set');
   }
-  const userId = (this._id as mongoose.Types.ObjectId).toString();
+  const userId = this._id.toString();
   return decrypt(this.wordpressAppPassword, userId);
 });
 
@@ -269,7 +269,7 @@ userSchema.method('getDecryptedMediumToken', function (): string {
   if (!this.mediumIntegrationToken) {
     throw new Error('Medium integration token not set');
   }
-  const userId = (this._id as mongoose.Types.ObjectId).toString();
+  const userId = this._id.toString();
   return decrypt(this.mediumIntegrationToken, userId);
 });
 

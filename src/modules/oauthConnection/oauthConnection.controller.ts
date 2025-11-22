@@ -11,7 +11,7 @@ import catchAsync from '../utils/catchAsync';
  */
 export const getConnections = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IUserDoc;
-  const connections = await OAuthConnection.findAllByUser(user._id as mongoose.Types.ObjectId);
+  const connections = await OAuthConnection.findAllByUser(user._id);
 
   // Return sanitized connection data (without tokens)
   const sanitizedConnections = connections.map((conn: IOAuthConnectionDoc) => ({
@@ -41,12 +41,12 @@ export const unlinkConnection = catchAsync(async (req: Request, res: Response) =
   }
 
   // Verify the connection belongs to the authenticated user
-  if (connection.userId.toString() !== (user._id as mongoose.Types.ObjectId).toString()) {
+  if (connection.userId.toString() !== user._id.toString()) {
     throw new ApiError(httpStatus.FORBIDDEN, 'You can only unlink your own OAuth connections');
   }
 
   // Check if user has a password or other OAuth connections
-  const allConnections = await OAuthConnection.findAllByUser(user._id as mongoose.Types.ObjectId);
+  const allConnections = await OAuthConnection.findAllByUser(user._id);
 
   if (!user.password && allConnections.length <= 1) {
     throw new ApiError(
@@ -59,7 +59,7 @@ export const unlinkConnection = catchAsync(async (req: Request, res: Response) =
   await connection.deactivate();
 
   // Update user flag if no more OAuth connections
-  const remainingConnections = await OAuthConnection.findAllByUser(user._id as mongoose.Types.ObjectId);
+  const remainingConnections = await OAuthConnection.findAllByUser(user._id);
   if (remainingConnections.length === 0) {
     user.hasOAuthConnection = false;
     await user.save();
@@ -82,7 +82,7 @@ export const refreshConnectionToken = catchAsync(async (req: Request, res: Respo
   }
 
   // Verify the connection belongs to the authenticated user
-  if (connection.userId.toString() !== (user._id as mongoose.Types.ObjectId).toString()) {
+  if (connection.userId.toString() !== user._id.toString()) {
     throw new ApiError(httpStatus.FORBIDDEN, 'You can only refresh your own OAuth connections');
   }
 
@@ -116,7 +116,7 @@ export const getConnectionStatus = catchAsync(async (req: Request, res: Response
   }
 
   // Verify the connection belongs to the authenticated user
-  if (connection.userId.toString() !== (user._id as mongoose.Types.ObjectId).toString()) {
+  if (connection.userId.toString() !== user._id.toString()) {
     throw new ApiError(httpStatus.FORBIDDEN, 'You can only view your own OAuth connections');
   }
 

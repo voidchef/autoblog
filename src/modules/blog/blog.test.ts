@@ -882,7 +882,7 @@ describe('Blog routes', () => {
       test('should generate audio and update blog', async () => {
         await insertUsers([admin]);
         const blogs = await insertBlogs([blogOne]);
-        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+        const blogId = blogs[0]!._id;
 
         const result = await blogService.generateAudioNarration(blogId);
 
@@ -893,7 +893,7 @@ describe('Blog routes', () => {
       test('should set status to processing before generation', async () => {
         await insertUsers([admin]);
         const blogs = await insertBlogs([blogOne]);
-        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+        const blogId = blogs[0]!._id;
 
         // Mock TTS to take some time
         (ttsService.textToSpeech as jest.Mock).mockImplementation(
@@ -928,7 +928,7 @@ describe('Blog routes', () => {
       test('should throw error if already processing', async () => {
         await insertUsers([admin]);
         const blogs = await insertBlogs([blogOne]);
-        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+        const blogId = blogs[0]!._id;
 
         await Blog.findByIdAndUpdate(blogId, { audioGenerationStatus: 'processing' });
 
@@ -942,7 +942,7 @@ describe('Blog routes', () => {
 
         await insertUsers([admin]);
         const blogs = await insertBlogs([blogOne]);
-        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+        const blogId = blogs[0]!._id;
 
         await expect(blogService.generateAudioNarration(blogId)).rejects.toThrow();
 
@@ -955,7 +955,7 @@ describe('Blog routes', () => {
       test('should return audio status for blog', async () => {
         await insertUsers([admin]);
         const blogs = await insertBlogs([blogOne]);
-        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+        const blogId = blogs[0]!._id;
 
         const audioUrl = 'https://s3.amazonaws.com/bucket/audio.mp3';
         await Blog.findByIdAndUpdate(blogId, {
@@ -972,7 +972,7 @@ describe('Blog routes', () => {
       test('should return empty object if no audio data', async () => {
         await insertUsers([admin]);
         const blogs = await insertBlogs([blogOne]);
-        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+        const blogId = blogs[0]!._id;
 
         const result = await blogService.getAudioNarrationStatus(blogId);
 
@@ -1006,8 +1006,8 @@ describe('Blog routes', () => {
         const insertedUser = await User.create({ ...userWithWpConfig, password: hashedPassword });
 
         const blogs = await insertBlogs([blogOne]);
-        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
-        const userId = insertedUser._id as mongoose.Types.ObjectId;
+        const blogId = blogs[0]!._id;
+        const userId = insertedUser._id;
 
         // Mock WordPress API responses
         const mockCategoriesResponse = { data: [{ id: 1, name: 'Technology' }] };
@@ -1049,7 +1049,7 @@ describe('Blog routes', () => {
       test('should throw error if user has no WordPress configuration', async () => {
         await insertUsers([admin]);
         const blogs = await insertBlogs([blogOne]);
-        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+        const blogId = blogs[0]!._id;
         const userId = admin._id;
 
         await expect(blogService.publishToWordPress(blogId, userId)).rejects.toThrow(
@@ -1083,8 +1083,8 @@ describe('Blog routes', () => {
         const insertedUser = await User.create({ ...userWithMediumConfig, password: hashedPassword });
 
         const blogs = await insertBlogs([blogOne]);
-        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
-        const userId = insertedUser._id as mongoose.Types.ObjectId;
+        const blogId = blogs[0]!._id;
+        const userId = insertedUser._id;
 
         // Mock Medium API responses
         const mockUserResponse = {
@@ -1126,7 +1126,7 @@ describe('Blog routes', () => {
       test('should throw error if user has no Medium configuration', async () => {
         await insertUsers([admin]);
         const blogs = await insertBlogs([blogOne]);
-        const blogId = blogs[0]!._id as mongoose.Types.ObjectId;
+        const blogId = blogs[0]!._id;
         const userId = admin._id;
 
         await expect(blogService.publishToMedium(blogId, userId)).rejects.toThrow(

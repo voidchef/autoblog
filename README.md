@@ -140,6 +140,7 @@
 - MongoDB database
 - OpenAI API key
 - AWS account (for S3 storage)
+- Google Cloud account (for Text-to-Speech)
 
 ## 🐳 Docker Installation (Recommended)
 

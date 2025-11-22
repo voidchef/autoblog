@@ -292,11 +292,11 @@ export const initiateBlogGeneration = async (
     } catch (error) {
       logger.warn('Failed to queue blog generation, falling back to inline processing:', error);
       // Fallback to inline processing
-      void processInlineGeneration(placeholderBlog._id as mongoose.Types.ObjectId, author, generateBlogData, false);
+      void processInlineGeneration(placeholderBlog._id, author, generateBlogData, false);
     }
   } else {
     // Queue not available (in-memory mode), process inline
-    void processInlineGeneration(placeholderBlog._id as mongoose.Types.ObjectId, author, generateBlogData, false);
+    void processInlineGeneration(placeholderBlog._id, author, generateBlogData, false);
   }
 
   return placeholderBlog;
@@ -348,15 +348,11 @@ export const initiateBlogGenerationFromTemplate = async (
     } catch (error) {
       logger.warn('Failed to queue template blog generation, falling back to inline processing:', error);
       // Fallback to inline processing
-      void processInlineTemplateGeneration(
-        placeholderBlog._id as mongoose.Types.ObjectId,
-        author,
-        generateTemplateData
-      );
+      void processInlineTemplateGeneration(placeholderBlog._id, author, generateTemplateData);
     }
   } else {
     // Queue not available (in-memory mode), process inline
-    void processInlineTemplateGeneration(placeholderBlog._id as mongoose.Types.ObjectId, author, generateTemplateData);
+    void processInlineTemplateGeneration(placeholderBlog._id, author, generateTemplateData);
   }
 
   return placeholderBlog;
@@ -685,11 +681,23 @@ export const generateAudioNarration = async (blogId: mongoose.Types.ObjectId): P
     blog.audioGenerationStatus = 'completed';
     await blog.save();
 
+    // Clear cache for this blog to ensure fresh data is fetched
+    await cacheService.del(`blog:id:${blogId.toString()}`);
+    if (blog.slug) {
+      await cacheService.del(`blog:slug:${blog.slug}`);
+    }
+
     return blog;
   } catch (error) {
     // Update status to failed
     blog.audioGenerationStatus = 'failed';
     await blog.save();
+
+    // Clear cache even on failure to ensure status is updated
+    await cacheService.del(`blog:id:${blogId.toString()}`);
+    if (blog.slug) {
+      await cacheService.del(`blog:slug:${blog.slug}`);
+    }
 
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, `Failed to generate audio narration: ${errorMessage}`);

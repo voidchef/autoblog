@@ -123,13 +123,39 @@ describe('TTS Service', () => {
       expect(callArgs?.input?.text).not.toContain('const x = 1');
     });
 
-    it('should truncate text longer than 5000 characters', async () => {
-      const longText = 'a'.repeat(6000);
-      await ttsService.textToSpeech(longText, mockBlogId);
+    it('should handle text within byte limit with single request', async () => {
+      const normalText = 'a'.repeat(3000);
+      await ttsService.textToSpeech(normalText, mockBlogId);
 
-      const callArgs = mockSynthesizeSpeech.mock.calls[0]?.[0] as any;
-      expect(callArgs?.input?.text?.length).toBeLessThanOrEqual(5000);
-      expect(callArgs?.input?.text).toContain('...');
+      // Should only call synthesizeSpeech once for text under limit
+      expect(mockSynthesizeSpeech).toHaveBeenCalledTimes(1);
+      expect(mockUploadFromUrlsOrFiles).toHaveBeenCalledTimes(1);
+    });
+
+    it('should split text exceeding byte limit into chunks and concatenate', async () => {
+      // Create text with sentences that will exceed 4500 bytes
+      const longSentence = 'This is a very long sentence. '.repeat(200); // ~6000 bytes
+
+      // Mock multiple audio responses for chunks
+      const audioChunk1 = Buffer.from('audio chunk 1');
+      const audioChunk2 = Buffer.from('audio chunk 2');
+      (mockSynthesizeSpeech as any)
+        .mockResolvedValueOnce([{ audioContent: audioChunk1 }])
+        .mockResolvedValueOnce([{ audioContent: audioChunk2 }]);
+
+      // Mock successful upload
+      (mockUploadFromUrlsOrFiles as any).mockResolvedValue({
+        uploadedUrls: [mockS3Url],
+        errors: [],
+      });
+
+      const result = await ttsService.textToSpeech(longSentence, mockBlogId);
+
+      // Should call synthesizeSpeech multiple times for chunks
+      expect(mockSynthesizeSpeech.mock.calls.length).toBeGreaterThan(1);
+      // Should still successfully upload concatenated audio
+      expect(result.audioUrl).toBe(mockS3Url);
+      expect(mockUploadFromUrlsOrFiles).toHaveBeenCalledTimes(1);
     });
 
     it('should upload audio to correct S3 path', async () => {

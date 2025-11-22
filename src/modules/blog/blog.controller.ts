@@ -13,7 +13,7 @@ import { validateTemplateFile, getTemplatePreview } from './template.utils';
 
 export const generateBlog = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IUserDoc;
-  const blog = await blogService.initiateBlogGeneration(req.body, user._id as mongoose.Types.ObjectId);
+  const blog = await blogService.initiateBlogGeneration(req.body, user._id);
   res.status(httpStatus.ACCEPTED).send(blog);
 });
 
@@ -60,10 +60,7 @@ export const generateBlogFromTemplate = catchAsync(async (req: Request, res: Res
       imagesPerSection: req.body.imagesPerSection ? parseInt(req.body.imagesPerSection, 10) : 2,
     };
 
-    const blog = await blogService.initiateBlogGenerationFromTemplate(
-      templateData,
-      user._id as mongoose.Types.ObjectId
-    );
+    const blog = await blogService.initiateBlogGenerationFromTemplate(templateData, user._id);
 
     // Note: Template file cleanup will happen after generation completes
 
@@ -242,7 +239,7 @@ export const getBlogsWithStats = catchAsync(async (req: Request, res: Response) 
     options.populate += ',author';
   }
 
-  const result = await blogService.queryBlogsWithStats(filter, options, user._id as mongoose.Types.ObjectId);
+  const result = await blogService.queryBlogsWithStats(filter, options, user._id);
   res.send(result);
 });
 
@@ -267,10 +264,7 @@ export const generateRobots = catchAsync(async (req: Request, res: Response) => 
 export const likeBlog = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IUserDoc;
   if (typeof req.params['blogId'] === 'string') {
-    const blog = await blogService.likeBlog(
-      new mongoose.Types.ObjectId(req.params['blogId']),
-      user._id as mongoose.Types.ObjectId
-    );
+    const blog = await blogService.likeBlog(new mongoose.Types.ObjectId(req.params['blogId']), user._id);
     res.send(blog);
   }
 });
@@ -278,10 +272,7 @@ export const likeBlog = catchAsync(async (req: Request, res: Response) => {
 export const dislikeBlog = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IUserDoc;
   if (typeof req.params['blogId'] === 'string') {
-    const blog = await blogService.dislikeBlog(
-      new mongoose.Types.ObjectId(req.params['blogId']),
-      user._id as mongoose.Types.ObjectId
-    );
+    const blog = await blogService.dislikeBlog(new mongoose.Types.ObjectId(req.params['blogId']), user._id);
     res.send(blog);
   }
 });
@@ -295,7 +286,7 @@ export const getBlogEngagementStats = catchAsync(async (req: Request, res: Respo
 
 export const getAllBlogsEngagementStats = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IUserDoc;
-  const stats = await blogService.getAllBlogsEngagementStats(user._id as mongoose.Types.ObjectId);
+  const stats = await blogService.getAllBlogsEngagementStats(user._id);
   res.send(stats);
 });
 
@@ -338,7 +329,7 @@ export const publishToWordPress = catchAsync(async (req: Request, res: Response)
   if (typeof req.params['blogId'] === 'string') {
     const blog = await blogService.publishToWordPress(
       new mongoose.Types.ObjectId(req.params['blogId']),
-      user._id as mongoose.Types.ObjectId,
+      user._id,
       req.body.wordpressConfig
     );
     res.send(blog);
@@ -350,7 +341,7 @@ export const publishToMedium = catchAsync(async (req: Request, res: Response) =>
   if (typeof req.params['blogId'] === 'string') {
     const blog = await blogService.publishToMedium(
       new mongoose.Types.ObjectId(req.params['blogId']),
-      user._id as mongoose.Types.ObjectId,
+      user._id,
       req.body.mediumConfig
     );
     res.send(blog);
@@ -364,11 +355,7 @@ export const getComprehensiveAnalytics = catchAsync(async (req: Request, res: Re
   const user = req.user as IUserDoc;
   const { startDate, endDate } = req.query;
 
-  const analytics = await blogService.getComprehensiveAnalytics(
-    startDate as string,
-    endDate as string,
-    user._id as mongoose.Types.ObjectId
-  );
+  const analytics = await blogService.getComprehensiveAnalytics(startDate as string, endDate as string, user._id);
 
   res.send(analytics);
 });
@@ -380,10 +367,7 @@ export const getAnalyticsByTimeRange = catchAsync(async (req: Request, res: Resp
   const user = req.user as IUserDoc;
   const { timeRange } = req.query;
 
-  const analytics = await blogService.getAnalyticsByTimeRange(
-    user._id as mongoose.Types.ObjectId,
-    timeRange as '7d' | '30d' | '90d' | '1y'
-  );
+  const analytics = await blogService.getAnalyticsByTimeRange(user._id, timeRange as '7d' | '30d' | '90d' | '1y');
 
   res.send(analytics);
 });
@@ -395,11 +379,7 @@ export const getEventBasedAnalytics = catchAsync(async (req: Request, res: Respo
   const user = req.user as IUserDoc;
   const { startDate, endDate } = req.query;
 
-  const analytics = await blogService.getEventBasedAnalytics(
-    startDate as string,
-    endDate as string,
-    user._id as mongoose.Types.ObjectId
-  );
+  const analytics = await blogService.getEventBasedAnalytics(startDate as string, endDate as string, user._id);
 
   res.send(analytics);
 });
@@ -410,7 +390,7 @@ export const getEventBasedAnalytics = catchAsync(async (req: Request, res: Respo
 export const getDashboardStats = catchAsync(async (req: Request, res: Response) => {
   const user = req.user as IUserDoc;
 
-  const stats = await blogService.getDashboardStats(user._id as mongoose.Types.ObjectId);
+  const stats = await blogService.getDashboardStats(user._id);
 
   res.send(stats);
 });
@@ -422,7 +402,7 @@ export const regenerateText = catchAsync(async (req: Request, res: Response) => 
   const user = req.user as IUserDoc;
   const { regenerateText } = await import('./text-regeneration.service');
 
-  const regeneratedText = await regenerateText(req.body, user._id as mongoose.Types.ObjectId);
+  const regeneratedText = await regenerateText(req.body, user._id);
 
   res.send({ regeneratedText });
 });
