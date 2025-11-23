@@ -2,6 +2,7 @@ import nodemailer from 'nodemailer';
 import type { Transporter } from 'nodemailer';
 import config from '../../config/config';
 import logger from '../logger/logger';
+import { queueService, QueueName } from '../queue';
 import { Message } from './email.interfaces';
 
 let _transport: Transporter | null = null;
@@ -26,8 +27,8 @@ export const getTransport = (): Transporter => {
 export const transport = getTransport();
 
 // For testing - allow setting a custom transport
-export const setTransport = (transport: Transporter): void => {
-  _transport = transport;
+export const setTransport = (newTransport: Transporter): void => {
+  _transport = newTransport;
 };
 
 /**
@@ -50,28 +51,29 @@ export const sendEmail = async (to: string, subject: string, text: string, html:
 };
 
 /**
- * Send reset password email
+ * Send reset password email through queue
  * @param {string} to
  * @param {string} token
  * @returns {Promise<void>}
  */
 export const sendResetPasswordEmail = async (to: string, token: string): Promise<void> => {
   const subject = 'Reset password';
-  // replace this url with the link to the reset password page of your front-end app
   const resetPasswordUrl = `${config.clientUrl}/reset-password?token=${token}`;
   const text = `Hi,
-  To reset your password, click on this link: ${resetPasswordUrl}
-  If you did not request any password resets, then ignore this email.`;
+To reset your password, click on this link: ${resetPasswordUrl}
+If you did not request any password resets, then ignore this email.`;
   const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Dear user,</strong></h4>
   <p>To reset your password, click on this link: ${resetPasswordUrl}</p>
   <p>If you did not request any password resets, please ignore this email.</p>
   <p>Thanks,</p>
   <p><strong>Team</strong></p></div>`;
-  await sendEmail(to, subject, text, html);
+
+  await queueService.addJob(QueueName.EMAIL, { to, subject, text, html, timestamp: Date.now() });
+  logger.info(`Reset password email queued for: ${to}`);
 };
 
 /**
- * Send verification email
+ * Send verification email through queue
  * @param {string} to
  * @param {string} token
  * @param {string} name
@@ -79,19 +81,20 @@ export const sendResetPasswordEmail = async (to: string, token: string): Promise
  */
 export const sendVerificationEmail = async (to: string, token: string, name: string): Promise<void> => {
   const subject = 'Email Verification';
-  // replace this url with the link to the email verification page of your front-end app
   const verificationEmailUrl = `${config.clientUrl}/verify-email?token=${token}`;
   const text = `Hi ${name},
-  To verify your email, click on this link: ${verificationEmailUrl}
-  If you did not create an account, then ignore this email.`;
+To verify your email, click on this link: ${verificationEmailUrl}
+If you did not create an account, then ignore this email.`;
   const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
   <p>To verify your email, click on this link: ${verificationEmailUrl}</p>
   <p>If you did not create an account, then ignore this email.</p></div>`;
-  await sendEmail(to, subject, text, html);
+
+  await queueService.addJob(QueueName.EMAIL, { to, subject, text, html, timestamp: Date.now() });
+  logger.info(`Verification email queued for: ${to}`);
 };
 
 /**
- * Send email verification after registration
+ * Send email verification after registration through queue
  * @param {string} to
  * @param {string} token
  * @param {string} name
@@ -99,46 +102,48 @@ export const sendVerificationEmail = async (to: string, token: string, name: str
  */
 export const sendSuccessfulRegistration = async (to: string, token: string, name: string): Promise<void> => {
   const subject = 'Email Verification';
-  // replace this url with the link to the email verification page of your front-end app
   const verificationEmailUrl = `${config.clientUrl}/verify-email?token=${token}`;
   const text = `Hi ${name},
-  Congratulations! Your account has been created. 
-  You are almost there. Complete the final step by verifying your email at: ${verificationEmailUrl}
-  Don't hesitate to contact us if you face any problems
-  Regards,
-  Team`;
+Congratulations! Your account has been created. 
+You are almost there. Complete the final step by verifying your email at: ${verificationEmailUrl}
+Don't hesitate to contact us if you face any problems
+Regards,
+Team`;
   const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
   <p>Congratulations! Your account has been created.</p>
   <p>You are almost there. Complete the final step by verifying your email at: ${verificationEmailUrl}</p>
   <p>Don't hesitate to contact us if you face any problems</p>
   <p>Regards,</p>
   <p><strong>Team</strong></p></div>`;
-  await sendEmail(to, subject, text, html);
+
+  await queueService.addJob(QueueName.EMAIL, { to, subject, text, html, timestamp: Date.now() });
+  logger.info(`Registration email queued for: ${to}`);
 };
 
 /**
- * Send email verification after registration
+ * Send account created notification through queue
  * @param {string} to
  * @param {string} name
  * @returns {Promise<void>}
  */
 export const sendAccountCreated = async (to: string, name: string): Promise<void> => {
   const subject = 'Account Created Successfully';
-  // replace this url with the link to the email verification page of your front-end app
   const loginUrl = `${config.clientUrl}/auth/login`;
   const text = `Hi ${name},
-  Congratulations! Your account has been created successfully. 
-  You can now login at: ${loginUrl}
-  Don't hesitate to contact us if you face any problems
-  Regards,
-  Team`;
+Congratulations! Your account has been created successfully. 
+You can now login at: ${loginUrl}
+Don't hesitate to contact us if you face any problems
+Regards,
+Team`;
   const html = `<div style="margin:30px; padding:30px; border:1px solid black; border-radius: 20px 10px;"><h4><strong>Hi ${name},</strong></h4>
   <p>Congratulations! Your account has been created successfully.</p>
   <p>You can now login at: ${loginUrl}</p>
   <p>Don't hesitate to contact us if you face any problems</p>
   <p>Regards,</p>
   <p><strong>Team</strong></p></div>`;
-  await sendEmail(to, subject, text, html);
+
+  await queueService.addJob(QueueName.EMAIL, { to, subject, text, html, timestamp: Date.now() });
+  logger.info(`Account created email queued for: ${to}`);
 };
 
 /**
@@ -198,7 +203,9 @@ export const sendPaymentSuccessEmail = async (
     <p>Regards,</p>
     <p><strong>Team</strong></p>
   </div>`;
-  await sendEmail(to, subject, text, html);
+
+  await queueService.addJob(QueueName.EMAIL, { to, subject, text, html, timestamp: Date.now() });
+  logger.info(`Payment success email queued for: ${to}`);
 };
 
 /**
@@ -248,7 +255,9 @@ export const sendSubscriptionExpiryWarning = async (
     <p>Regards,</p>
     <p><strong>Team</strong></p>
   </div>`;
-  await sendEmail(to, subject, text, html);
+
+  await queueService.addJob(QueueName.EMAIL, { to, subject, text, html, timestamp: Date.now() });
+  logger.info(`Subscription expiry warning email queued for: ${to}`);
 };
 
 /**
@@ -296,7 +305,9 @@ export const sendNewsletterWelcomeEmail = async (to: string): Promise<void> => {
     <p>Regards,</p>
     <p><strong>Autoblog Team</strong></p>
   </div>`;
-  await sendEmail(to, subject, text, html);
+
+  await queueService.addJob(QueueName.EMAIL, { to, subject, text, html, timestamp: Date.now() });
+  logger.info(`Newsletter welcome email queued for: ${to}`);
 };
 
 /**
@@ -343,5 +354,7 @@ export const sendRefundConfirmationEmail = async (
     <p>Regards,</p>
     <p><strong>Team</strong></p>
   </div>`;
-  await sendEmail(to, subject, text, html);
+
+  await queueService.addJob(QueueName.EMAIL, { to, subject, text, html, timestamp: Date.now() });
+  logger.info(`Refund confirmation email queued for: ${to}`);
 };

@@ -52,7 +52,6 @@ services:
       - CLIENT_URL=${CLIENT_URL}
       - PORT=${PORT:-3000}
       - TRUST_PROXY=${TRUST_PROXY:-true}
-      - CACHE_TYPE=${CACHE_TYPE:-redis}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_USERNAME=${REDIS_USERNAME:-}

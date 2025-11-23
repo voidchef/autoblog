@@ -18,14 +18,10 @@ env:
   PORT: 3000
   MONGODB_URL: mongodb://127.0.0.1:27017/autoblog
   JWT_SECRET: thisisasamplesecret
-  JWT_ACCESS_EXPIRATION_MINUTES: 30
-  JWT_REFRESH_EXPIRATION_DAYS: 30
-  JWT_RESET_PASSWORD_EXPIRATION_MINUTES: 10
-  JWT_VERIFY_EMAIL_EXPIRATION_MINUTES: 10
   CLIENT_URL: http://localhost:5173
   RAZORPAY_KEY_ID: your_razorpay_key_id
   RAZORPAY_KEY_SECRET: your_razorpay_key_secret
-  CACHE_TYPE: memory
+  REDIS_HOST: localhost
 
 jobs:
   setup:
@@ -62,6 +58,16 @@ jobs:
           - 27017:27017
         options: >-
           --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval=5s
+          --health-timeout=2s
+          --health-retries=5
+
+      redis:
+        image: redis:8-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
           --health-interval=5s
           --health-timeout=2s
           --health-retries=5

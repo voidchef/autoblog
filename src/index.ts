@@ -20,9 +20,7 @@ const exitHandler = async () => {
       logger.info('Server closed');
 
       // Gracefully shutdown queue service
-      if (queueService.isAvailable()) {
-        await queueService.shutdown();
-      }
+      await queueService.shutdown();
 
       // Disconnect cache service
       await cacheService.disconnect();
@@ -31,9 +29,7 @@ const exitHandler = async () => {
     });
   } else {
     // Shutdown services even if server is not running
-    if (queueService.isAvailable()) {
-      await queueService.shutdown();
-    }
+    await queueService.shutdown();
     await cacheService.disconnect();
     process.exit(1);
   }
@@ -54,9 +50,7 @@ process.on('SIGTERM', async () => {
       logger.info('Server closed gracefully');
 
       // Gracefully shutdown queue service
-      if (queueService.isAvailable()) {
-        await queueService.shutdown();
-      }
+      await queueService.shutdown();
 
       // Disconnect cache service
       await cacheService.disconnect();

@@ -1,44 +1,25 @@
 import config from '../../config/config';
 import logger from '../logger/logger';
 import { ICacheService } from './cache.interfaces';
-import MemoryCache from './memory-cache';
 import RedisCache from './redis-cache';
 
 /**
  * Cache service that provides a unified interface for caching
- * Supports both Redis and in-memory caching based on configuration
+ * Uses Redis for all caching operations
  */
 class CacheService implements ICacheService {
   private cacheImpl: ICacheService;
-  private type: 'redis' | 'memory';
 
   constructor() {
-    this.type = config.cache.type;
-
-    if (this.type === 'redis' && config.cache.redis) {
-      try {
-        this.cacheImpl = new RedisCache(
-          config.cache.redis.host,
-          config.cache.redis.port,
-          config.cache.redis.username,
-          config.cache.redis.password,
-          config.cache.redis.db,
-          config.cache.redis.tls
-        );
-        logger.info('Cache service initialized with Redis');
-      } catch (error) {
-        logger.error('Failed to initialize Redis cache, falling back to memory cache:', error);
-        this.cacheImpl = new MemoryCache(config.cache.defaultTTL);
-        this.type = 'memory';
-      }
-    } else {
-      this.cacheImpl = new MemoryCache(config.cache.defaultTTL);
-      logger.info('Cache service initialized with in-memory cache');
-    }
-  }
-
-  getCacheType(): 'redis' | 'memory' {
-    return this.type;
+    this.cacheImpl = new RedisCache(
+      config.cache.redis.host,
+      config.cache.redis.port,
+      config.cache.redis.username,
+      config.cache.redis.password,
+      config.cache.redis.db,
+      config.cache.redis.tls
+    );
+    logger.info('Cache service initialized with Redis');
   }
 
   async get<T>(key: string): Promise<T | null> {

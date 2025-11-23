@@ -23,6 +23,8 @@ module.exports = {
 
   clearMocks: true,
   verbose: true,
+  forceExit: true,
+  testTimeout: 30000,
 
   // Coverage setup
   collectCoverage: true,

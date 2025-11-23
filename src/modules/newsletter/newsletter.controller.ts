@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
-import { sendNewsletterWelcomeEmailQueued } from '../email/email.queue';
+import { sendNewsletterWelcomeEmail } from '../email/email.service';
 import catchAsync from '../utils/catchAsync';
 import pick from '../utils/pick';
 import * as newsletterService from './newsletter.service';
@@ -11,7 +11,7 @@ export const subscribe = catchAsync(async (req: Request, res: Response) => {
 
   // Send welcome email
   try {
-    await sendNewsletterWelcomeEmailQueued(email);
+    await sendNewsletterWelcomeEmail(email);
   } catch (error) {
     // Log error but don't fail the subscription
     // Error is already logged in email queue service

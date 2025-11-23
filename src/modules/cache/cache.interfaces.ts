@@ -7,15 +7,14 @@ export interface ICacheService {
   disconnect(): Promise<void>;
 }
 
-export type CacheType = 'redis' | 'memory';
-
 export interface CacheConfig {
-  type: CacheType;
-  redis?: {
+  redis: {
     host: string;
     port: number;
+    username?: string;
     password?: string;
     db?: number;
+    tls?: boolean;
   };
   defaultTTL: number;
 }

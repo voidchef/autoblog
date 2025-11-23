@@ -34,8 +34,7 @@ const envVarsSchema = Joi.object()
     RAZORPAY_KEY_ID: Joi.string().description('Razorpay API Key ID'),
     RAZORPAY_KEY_SECRET: Joi.string().description('Razorpay API Key Secret'),
     RAZORPAY_WEBHOOK_SECRET: Joi.string().description('Razorpay Webhook Secret'),
-    CACHE_TYPE: Joi.string().valid('redis', 'memory').default('memory').description('Cache type: redis or memory'),
-    REDIS_HOST: Joi.string().default('localhost').description('Redis host'),
+    REDIS_HOST: Joi.string().required().description('Redis host (required)'),
     REDIS_PORT: Joi.number().default(6379).description('Redis port'),
     REDIS_USERNAME: Joi.string().allow('').description('Redis username'),
     REDIS_PASSWORD: Joi.string().allow('').description('Redis password'),
@@ -108,18 +107,14 @@ const config = {
     webhookSecret: envVars.RAZORPAY_WEBHOOK_SECRET,
   },
   cache: {
-    type: envVars.CACHE_TYPE as 'redis' | 'memory',
-    redis:
-      envVars.CACHE_TYPE === 'redis'
-        ? {
-            host: envVars.REDIS_HOST,
-            port: envVars.REDIS_PORT,
-            username: envVars.REDIS_USERNAME || undefined,
-            password: envVars.REDIS_PASSWORD || undefined,
-            db: envVars.REDIS_DB,
-            tls: envVars.REDIS_TLS,
-          }
-        : undefined,
+    redis: {
+      host: envVars.REDIS_HOST,
+      port: envVars.REDIS_PORT,
+      username: envVars.REDIS_USERNAME || undefined,
+      password: envVars.REDIS_PASSWORD || undefined,
+      db: envVars.REDIS_DB,
+      tls: envVars.REDIS_TLS,
+    },
     defaultTTL: envVars.CACHE_TTL,
   },
   trustProxy: envVars.TRUST_PROXY,

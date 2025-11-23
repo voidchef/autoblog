@@ -6,6 +6,18 @@ import moment from 'moment';
 import mongoose from 'mongoose';
 import httpMocks from 'node-mocks-http';
 import request from 'supertest';
+
+// Mock the queue service before other imports that use it
+const mockAddJob = jest.fn<() => Promise<any>>().mockResolvedValue(undefined);
+const mockShutdown = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+jest.mock('../queue/queue.service', () => ({
+  __esModule: true,
+  default: {
+    addJob: (...args: any[]) => mockAddJob(...args),
+    shutdown: (...args: any[]) => mockShutdown(...args),
+  },
+}));
+
 import app from '../../app';
 import config from '../../config/config';
 import * as emailService from '../email/email.service';
@@ -34,6 +46,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   mockSendMail.mockClear();
+  mockAddJob.mockClear();
 });
 
 const password = 'password1';

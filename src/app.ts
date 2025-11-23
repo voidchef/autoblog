@@ -20,16 +20,12 @@ if (config.trustProxy) {
   app.set('trust proxy', true);
 }
 
-// Initialize queue service (only if Redis is configured)
+// Initialize queue service
 if (config.env !== 'test') {
   queueService
     .initialize()
     .then(() => {
-      if (queueService.isAvailable()) {
-        logger.info('Queue service initialized successfully');
-      } else {
-        logger.info('Queue service disabled - using in-memory cache mode');
-      }
+      logger.info('Queue service initialized successfully');
     })
     .catch((error) => {
       logger.error('Failed to initialize queue service:', error);

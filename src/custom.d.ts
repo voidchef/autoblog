@@ -37,7 +37,7 @@ declare module 'passport-apple' {
     refreshToken: string,
     idToken: string,
     profile: Profile,
-    done: VerifyCallback
+    done: VerifyCallback,
   ) => void;
 
   export default class Strategy extends PassportStrategy {

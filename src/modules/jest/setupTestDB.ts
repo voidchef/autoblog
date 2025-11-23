@@ -23,10 +23,8 @@ const setupTestDB = () => {
     // Disconnect cache service (Redis)
     await cacheService.disconnect();
 
-    // Shutdown queue service if initialized
-    if (queueService.isAvailable()) {
-      await queueService.shutdown();
-    }
+    // Shutdown queue service
+    await queueService.shutdown();
   });
 };
 

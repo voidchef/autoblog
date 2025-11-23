@@ -12,24 +12,21 @@ import {
 
 /**
  * Queue service that manages BullMQ queues and workers
- * Uses Redis if configured, otherwise uses in-memory mode
+ * Requires Redis for all queue operations
  */
 class QueueService implements IQueueService {
   private queues: Map<QueueName, Queue> = new Map();
   private workers: Map<QueueName, Worker> = new Map();
-  private connection: ConnectionOptions | undefined;
+  private connection: ConnectionOptions;
   private isInitialized: boolean = false;
 
   constructor() {
-    // Only configure Redis connection if using Redis cache
-    if (config.cache.type === 'redis' && config.cache.redis) {
-      this.connection = {
-        host: config.cache.redis.host,
-        port: config.cache.redis.port,
-        password: config.cache.redis.password,
-        db: config.cache.redis.db,
-      };
-    }
+    this.connection = {
+      host: config.cache.redis.host,
+      port: config.cache.redis.port,
+      password: config.cache.redis.password,
+      db: config.cache.redis.db,
+    };
   }
 
   /**
@@ -42,25 +39,19 @@ class QueueService implements IQueueService {
     }
 
     try {
-      // Only create queues if Redis is available
-      if (this.connection) {
-        logger.info('Initializing BullMQ with Redis connection');
+      logger.info('Initializing BullMQ with Redis connection');
 
-        // Create queues
-        this.createQueue(QueueName.BLOG_GENERATION);
-        this.createQueue(QueueName.EMAIL);
-        this.createQueue(QueueName.IMAGE_GENERATION);
-        this.createQueue(QueueName.TTS_GENERATION);
+      // Create queues
+      this.createQueue(QueueName.BLOG_GENERATION);
+      this.createQueue(QueueName.EMAIL);
+      this.createQueue(QueueName.IMAGE_GENERATION);
+      this.createQueue(QueueName.TTS_GENERATION);
 
-        // Register workers
-        await this.registerWorkers();
+      // Register workers
+      await this.registerWorkers();
 
-        this.isInitialized = true;
-        logger.info('Queue service initialized with Redis');
-      } else {
-        logger.info('Queue service disabled (in-memory cache mode)');
-        this.isInitialized = false;
-      }
+      this.isInitialized = true;
+      logger.info('Queue service initialized with Redis');
     } catch (error) {
       logger.error('Failed to initialize queue service:', error);
       throw error;
@@ -72,7 +63,7 @@ class QueueService implements IQueueService {
    */
   private createQueue(queueName: QueueName): void {
     const queue = new Queue(queueName, {
-      connection: this.connection!,
+      connection: this.connection,
       defaultJobOptions: {
         attempts: 3,
         backoff: {
@@ -133,7 +124,7 @@ class QueueService implements IQueueService {
    */
   private registerWorker(queueName: QueueName, processor: (job: Job) => Promise<any>): void {
     const worker = new Worker(queueName, processor, {
-      connection: this.connection!,
+      connection: this.connection,
       concurrency: this.getWorkerConcurrency(queueName),
     });
 
@@ -171,7 +162,7 @@ class QueueService implements IQueueService {
    */
   async addJob(queueName: QueueName, data: any, options?: any): Promise<Job> {
     if (!this.isInitialized) {
-      throw new Error('Queue service not initialized. Using in-memory cache mode.');
+      throw new Error('Queue service not initialized.');
     }
 
     const queue = this.queues.get(queueName);
@@ -218,13 +209,6 @@ class QueueService implements IQueueService {
       await job.remove();
       logger.info(`Job removed from ${queueName}: ${jobId}`);
     }
-  }
-
-  /**
-   * Check if queue service is available
-   */
-  isAvailable(): boolean {
-    return this.isInitialized;
   }
 
   /**
