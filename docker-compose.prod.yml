@@ -30,10 +30,16 @@ services:
     environment:
       - NODE_ENV=production
       - MONGODB_URL=mongodb://${MONGO_USERNAME:-admin}:${MONGO_PASSWORD:-changeme}@mongo:27017/autoblog?authSource=admin
+      - CLIENT_URL=${CLIENT_URL}
+      - PORT=${PORT:-3000}
+      - TRUST_PROXY=${TRUST_PROXY:-false}
       - CACHE_TYPE=${CACHE_TYPE:-redis}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - REDIS_USERNAME=${REDIS_USERNAME:-}
       - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - REDIS_DB=${REDIS_DB:-0}
+      - REDIS_TLS=${REDIS_TLS:-false}
     restart: always
     # Resource limits for production
     deploy:

@@ -42,6 +42,7 @@ const envVarsSchema = Joi.object()
     REDIS_DB: Joi.number().default(0).description('Redis database number'),
     REDIS_TLS: Joi.boolean().default(false).description('Enable TLS for Redis connection'),
     CACHE_TTL: Joi.number().default(3600).description('Default cache TTL in seconds'),
+    TRUST_PROXY: Joi.boolean().default(false).description('Trust proxy headers (X-Forwarded-For, etc.)'),
   })
   .unknown();
 
@@ -121,6 +122,7 @@ const config = {
         : undefined,
     defaultTTL: envVars.CACHE_TTL,
   },
+  trustProxy: envVars.TRUST_PROXY,
 };
 
 export default config;

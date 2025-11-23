@@ -15,6 +15,11 @@ import routes from './routes/v1';
 
 const app: Express = express();
 
+// Trust proxy headers when behind a reverse proxy (e.g., nginx, AWS ALB, Render)
+if (config.trustProxy) {
+  app.set('trust proxy', true);
+}
+
 // Initialize queue service (only if Redis is configured)
 if (config.env !== 'test') {
   queueService
