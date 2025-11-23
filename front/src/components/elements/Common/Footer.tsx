@@ -227,7 +227,7 @@ const Footer = () => {
                     },
                   },
                   '& .MuiFormHelperText-root': {
-                    color: '#fff',
+                    color: '#fff !important',
                     bgcolor: 'error.main',
                     margin: 0,
                     mt: 1,

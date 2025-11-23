@@ -14,8 +14,8 @@ const mockSendMail = jest.fn<(options: EmailOptions) => Promise<any>>();
 const mockVerify = jest.fn<() => Promise<boolean>>().mockResolvedValue(true);
 
 // Mock the queue service - needs to be before any imports that use it
-const mockAddJob = jest.fn<() => Promise<any>>().mockResolvedValue(undefined);
-const mockShutdown = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+const mockAddJob = jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(undefined);
+const mockShutdown = jest.fn<(...args: any[]) => Promise<void>>().mockResolvedValue(undefined);
 jest.mock('../queue/queue.service', () => ({
   __esModule: true,
   default: {
@@ -77,7 +77,7 @@ describe('Email Service', () => {
       await emailService.sendResetPasswordEmail(to, token);
 
       expect(mockAddJob).toHaveBeenCalledTimes(1);
-      const callArgs = mockAddJob.mock.calls[0]?.[1];
+      const callArgs = mockAddJob.mock.calls[0]![1];
 
       expect(callArgs.to).toBe(to);
       expect(callArgs.subject).toBe('Reset password');
@@ -93,7 +93,7 @@ describe('Email Service', () => {
 
       await emailService.sendResetPasswordEmail(to, token);
 
-      const callArgs = mockAddJob.mock.calls[0]?.[1];
+      const callArgs = mockAddJob.mock.calls[0]![1];
       const expectedUrl = `${config.clientUrl}/reset-password?token=${token}`;
 
       expect(callArgs.text).toContain(expectedUrl);
@@ -110,7 +110,7 @@ describe('Email Service', () => {
       await emailService.sendVerificationEmail(to, token, name);
 
       expect(mockAddJob).toHaveBeenCalledTimes(1);
-      const callArgs = mockAddJob.mock.calls[0]?.[1];
+      const callArgs = mockAddJob.mock.calls[0]![1];
 
       expect(callArgs.to).toBe(to);
       expect(callArgs.subject).toBe('Email Verification');
@@ -127,7 +127,7 @@ describe('Email Service', () => {
 
       await emailService.sendVerificationEmail(to, token, name);
 
-      const callArgs = mockAddJob.mock.calls[0]?.[1];
+      const callArgs = mockAddJob.mock.calls[0]![1];
       const expectedUrl = `${config.clientUrl}/verify-email?token=${token}`;
 
       expect(callArgs.text).toContain(expectedUrl);
@@ -144,7 +144,7 @@ describe('Email Service', () => {
       await emailService.sendSuccessfulRegistration(to, token, name);
 
       expect(mockAddJob).toHaveBeenCalledTimes(1);
-      const callArgs = mockAddJob.mock.calls[0]?.[1];
+      const callArgs = mockAddJob.mock.calls[0]![1];
 
       expect(callArgs.to).toBe(to);
       expect(callArgs.subject).toBe('Email Verification');
@@ -163,7 +163,7 @@ describe('Email Service', () => {
 
       await emailService.sendSuccessfulRegistration(to, token, name);
 
-      const callArgs = mockAddJob.mock.calls[0]?.[1];
+      const callArgs = mockAddJob.mock.calls[0]![1];
       const expectedUrl = `${config.clientUrl}/verify-email?token=${token}`;
 
       expect(callArgs.text).toContain(expectedUrl);
@@ -177,7 +177,7 @@ describe('Email Service', () => {
 
       await emailService.sendSuccessfulRegistration(to, token, name);
 
-      const callArgs = mockAddJob.mock.calls[0]?.[1];
+      const callArgs = mockAddJob.mock.calls[0]![1];
 
       expect(callArgs.text).toContain('account has been created');
       expect(callArgs.html).toContain('account has been created');

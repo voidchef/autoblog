@@ -12,9 +12,9 @@ import {
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import { useUploadProfilePictureMutation } from '../../services/userApi';
-import { useAppDispatch } from '../../utils/reduxHooks';
-import { showSuccess, showError } from '../../reducers/alert';
+import { useUploadProfilePictureMutation } from '../../../services/userApi';
+import { useAppDispatch } from '../../../utils/reduxHooks';
+import { showSuccess, showError } from '../../../reducers/alert';
 
 interface ProfilePictureUploadProps {
   userId: string;

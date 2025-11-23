@@ -29,7 +29,7 @@ import AnalyticsOverview from '../elements/Dashboard/AnalyticsOverview';
 import BlogPerformanceTable, { BlogPerformanceData } from '../elements/Dashboard/BlogPerformanceTable';
 import TrafficSources from '../elements/Dashboard/TrafficSources';
 import ViewsGraph from '../elements/Dashboard/ViewsGraph';
-import PaymentAnalytics from '../elements/PaymentAnalytics';
+import PaymentAnalytics from '../elements/Analytics/PaymentAnalytics';
 import { useGetAnalyticsByTimeRangeQuery, useToggleFeaturedMutation } from '../../services/blogApi';
 import { useAuth } from '../../utils/hooks';
 import { ROUTES } from '../../utils/routing/routes';

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Box, IconButton, Typography, Tooltip } from '@mui/material';
 import { ThumbUp, ThumbDown } from '@mui/icons-material';
-import { useLikeBlogMutation, useDislikeBlogMutation, IBlog } from '../../services/blogApi';
-import { useAppSelector, useAppDispatch } from '../../utils/reduxHooks';
-import * as analytics from '../../utils/analytics';
-import { showError, showInfo } from '../../reducers/alert';
+import { useLikeBlogMutation, useDislikeBlogMutation, IBlog } from '../../../services/blogApi';
+import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
+import * as analytics from '../../../utils/analytics';
+import { showError, showInfo } from '../../../reducers/alert';
 
 interface BlogLikeDislikeProps {
   blog: IBlog;

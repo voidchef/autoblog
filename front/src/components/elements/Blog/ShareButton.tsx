@@ -16,10 +16,10 @@ import {
   LinkedIn as LinkedInIcon,
   Email as EmailIcon,
 } from '@mui/icons-material';
-import { IBlog } from '../../services/blogApi';
-import * as analytics from '../../utils/analytics';
-import { useAppDispatch } from '../../utils/reduxHooks';
-import { showSuccess, showError } from '../../reducers/alert';
+import { IBlog } from '../../../services/blogApi';
+import * as analytics from '../../../utils/analytics';
+import { useAppDispatch } from '../../../utils/reduxHooks';
+import { showSuccess, showError } from '../../../reducers/alert';
 
 interface ShareButtonProps {
   blog: IBlog;

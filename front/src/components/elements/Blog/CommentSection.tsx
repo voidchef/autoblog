@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Box, CircularProgress, Alert } from '@mui/material';
-import { useAppSelector, useAppDispatch } from '../../utils/reduxHooks';
-import { useGetCommentsByBlogQuery, useCreateCommentMutation } from '../../services/commentApi';
-import { CommentsHeader, NewCommentForm, CommentItem, EmptyComments } from './Comments';
-import { showSuccess, showError } from '../../reducers/alert';
+import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
+import { useGetCommentsByBlogQuery, useCreateCommentMutation } from '../../../services/commentApi';
+import { CommentsHeader, NewCommentForm, CommentItem, EmptyComments } from '../Comments';
+import { showSuccess, showError } from '../../../reducers/alert';
 
 interface CommentSectionProps {
   blogId: string;

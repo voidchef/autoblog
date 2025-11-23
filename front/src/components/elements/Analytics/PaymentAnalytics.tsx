@@ -17,7 +17,7 @@ import {
 import { LineChart } from '@mui/x-charts/LineChart';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { PieChart } from '@mui/x-charts/PieChart';
-import { useGetPaymentAnalyticsQuery } from '../../services/paymentApi';
+import { useGetPaymentAnalyticsQuery } from '../../../services/paymentApi';
 
 const PaymentAnalytics: React.FC = () => {
   const theme = useTheme();

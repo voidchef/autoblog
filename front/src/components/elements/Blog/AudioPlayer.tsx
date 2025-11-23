@@ -16,7 +16,7 @@ import {
   VolumeOff as VolumeMuteIcon,
   Speed as SpeedIcon,
 } from '@mui/icons-material';
-import * as analytics from '../../utils/analytics';
+import * as analytics from '../../../utils/analytics';
 
 interface AudioPlayerProps {
   audioUrl?: string;

@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Button, CircularProgress, Tooltip } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
-import { useFollowUserMutation, useUnfollowUserMutation } from '../../services/userApi';
-import { useAppSelector, useAppDispatch } from '../../utils/reduxHooks';
-import { showSuccess, showError } from '../../reducers/alert';
+import { useFollowUserMutation, useUnfollowUserMutation } from '../../../services/userApi';
+import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
+import { showSuccess, showError } from '../../../reducers/alert';
 
 interface FollowButtonProps {
   authorId: string;

@@ -24,11 +24,11 @@ import {
 import { useAppSelector, useAppDispatch } from '../../utils/reduxHooks';
 import { Helmet } from 'react-helmet-async';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import BlogLikeDislike from '../elements/BlogLikeDislike';
-import CommentSection from '../elements/CommentSection';
-import ShareButton from '../elements/ShareButton';
-import FollowButton from '../elements/FollowButton';
-import AudioPlayer from '../elements/AudioPlayer';
+import BlogLikeDislike from '../elements/Blog/BlogLikeDislike';
+import CommentSection from '../elements/Blog/CommentSection';
+import ShareButton from '../elements/Blog/ShareButton';
+import FollowButton from '../elements/Common/FollowButton';
+import AudioPlayer from '../elements/Blog/AudioPlayer';
 import { ROUTES } from '../../utils/routing/routes';
 import * as analytics from '../../utils/analytics';
 import { useAuth } from '../../utils/hooks';

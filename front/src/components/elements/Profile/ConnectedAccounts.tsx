@@ -20,10 +20,10 @@ import {
 import {
   useGetOAuthConnectionsQuery,
   useUnlinkOAuthConnectionMutation,
-} from '../../services/authApi';
+} from '../../../services/authApi';
 import OAuthLinkButtons from './OAuthLinkButtons';
-import { useAppDispatch } from '../../utils/reduxHooks';
-import { showSuccess, showError } from '../../reducers/alert';
+import { useAppDispatch } from '../../../utils/reduxHooks';
+import { showSuccess, showError } from '../../../reducers/alert';
 
 const ConnectedAccounts: React.FC = () => {
   const dispatch = useAppDispatch();

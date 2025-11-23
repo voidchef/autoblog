@@ -541,6 +541,7 @@ export const likeBlog = async (
   await blog.toggleLike(userId);
   // Invalidate cache
   await cacheService.del(`blog:id:${blogId.toString()}`);
+  await cacheService.del(`blog:slug:${blog.slug}`);
   return blog;
 };
 
@@ -562,6 +563,7 @@ export const dislikeBlog = async (
   await blog.toggleDislike(userId);
   // Invalidate cache
   await cacheService.del(`blog:id:${blogId.toString()}`);
+  await cacheService.del(`blog:slug:${blog.slug}`);
   return blog;
 };
 

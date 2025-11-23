@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Stack, Typography, Alert, useTheme } from '@mui/material';
 import { Google as GoogleIcon, Apple as AppleIcon } from '@mui/icons-material';
-import { useGetOAuthConnectionsQuery } from '../../services/authApi';
+import { useGetOAuthConnectionsQuery } from '../../../services/authApi';
 
 const OAuthLinkButtons: React.FC = () => {
   const { data, isLoading } = useGetOAuthConnectionsQuery();

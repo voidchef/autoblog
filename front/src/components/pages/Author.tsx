@@ -29,7 +29,7 @@ import { useGetUserQuery } from '../../services/userApi';
 import { useGetBlogsQuery } from '../../services/blogApi';
 import { ROUTES } from '../../utils/routing/routes';
 import { stringAvatar } from '../../utils/utils';
-import FollowButton from '../elements/FollowButton';
+import FollowButton from '../elements/Common/FollowButton';
 import { useAuth } from '../../utils/hooks';
 
 const Author: React.FC = () => {

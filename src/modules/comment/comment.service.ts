@@ -142,6 +142,14 @@ export const likeComment = async (
   await comment.toggleLike(userId);
   // Invalidate cache
   await cacheService.del(`comment:id:${commentId.toString()}`);
+  // Invalidate cache for blog comments
+  if (comment.blog) {
+    await cacheService.delPattern(`comment:blog:${comment.blog.toString()}:*`);
+  }
+  // Invalidate parent comment replies cache if it's a reply
+  if (comment.parentComment) {
+    await cacheService.delPattern(`comment:replies:${comment.parentComment.toString()}:*`);
+  }
   return comment;
 };
 
@@ -163,6 +171,14 @@ export const dislikeComment = async (
   await comment.toggleDislike(userId);
   // Invalidate cache
   await cacheService.del(`comment:id:${commentId.toString()}`);
+  // Invalidate cache for blog comments
+  if (comment.blog) {
+    await cacheService.delPattern(`comment:blog:${comment.blog.toString()}:*`);
+  }
+  // Invalidate parent comment replies cache if it's a reply
+  if (comment.parentComment) {
+    await cacheService.delPattern(`comment:replies:${comment.parentComment.toString()}:*`);
+  }
   return comment;
 };
 

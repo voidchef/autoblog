@@ -25,7 +25,7 @@ import {
   Error as ErrorIcon,
   Pending as PendingIcon,
 } from '@mui/icons-material';
-import { useGetPaymentHistoryQuery } from '../../services/paymentApi';
+import { useGetPaymentHistoryQuery } from '../../../services/paymentApi';
 
 const OrderHistory: React.FC = () => {
   const theme = useTheme();
