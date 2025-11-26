@@ -41,7 +41,7 @@ jobs:
         id: node-version
         uses: actions/setup-node@v6
         with:
-          node-version: 22.x
+          node-version: 24.x
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -84,7 +84,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 22.x
+          node-version: 24.x
           cache: 'pnpm'
 
       - name: Install dependencies
@@ -96,8 +96,8 @@ jobs:
       - name: Run lint
         run: pnpm lint
 
-      - name: Run tests
-        run: pnpm test
+      - name: Run tests with coverage
+        run: pnpm coverage
 
       - name: Upload coverage artifact
         if: success()
@@ -105,6 +105,7 @@ jobs:
         with:
           name: coverage
           path: coverage/lcov.info
+          retention-days: 1
 
   coverage:
     runs-on: ubuntu-latest

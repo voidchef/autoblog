@@ -228,7 +228,7 @@ export default [
   // JS config / tooling files (lenient)
   // -------------------------------------------------------
   {
-    files: ['*.config.js', '*.config.cjs', '*.config.mjs', 'ecosystem.config.json'],
+    files: ['*.config.js', '*.config.cjs', '*.config.mjs'],
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: 'module',

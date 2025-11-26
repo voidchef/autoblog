@@ -4,16 +4,16 @@ services:
     volumes:
       - ./data:/data/db
     ports:
-      - "27018:27017"
-  
+      - '27018:27017'
+
   redis:
     container_name: autoblog-redis-dev
     ports:
-      - "6379:6379"
-  
+      - '6379:6379'
+
   app:
     container_name: autoblog-dev
-    build: 
+    build:
       target: development
     command: pnpm dev
     environment:
@@ -23,17 +23,16 @@ services:
       - ./src:/usr/src/app/src
       - ./front:/usr/src/app/front
       - ./tsconfig.json:/usr/src/app/tsconfig.json
-      - ./ecosystem.config.json:/usr/src/app/ecosystem.config.json
+      - ./ecosystem.config.cjs:/usr/src/app/ecosystem.config.cjs
       # Named volumes for node_modules to prevent conflicts with host
       - backend-node-modules:/usr/src/app/node_modules
       - frontend-node-modules:/usr/src/app/front/node_modules
       # Uploads
       - ./uploads:/usr/src/app/uploads
     ports:
-      - "${PORT:-3000}:${PORT:-3000}"
-      - "5173:5173"  # Vite dev server
+      - '${PORT:-3000}:${PORT:-3000}'
+      - '5173:5173' # Vite dev server
 
 volumes:
   backend-node-modules:
   frontend-node-modules:
-

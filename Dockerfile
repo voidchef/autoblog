@@ -48,7 +48,7 @@ ENV NODE_ENV=development
 
 # Copy dependency files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY tsconfig.json ecosystem.config.json ./
+COPY tsconfig.json ecosystem.config.cjs ./
 
 # Install all dependencies
 RUN pnpm install --frozen-lockfile
@@ -73,7 +73,7 @@ ENV NODE_ENV=production
 
 # Copy dependency files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY ecosystem.config.json ./
+COPY ecosystem.config.cjs ./
 
 # Install only production dependencies
 RUN pnpm install --frozen-lockfile --prod
