@@ -1,3 +1,4 @@
+import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import axios from 'axios';
 import { IMediumConfig, IMediumPost } from './medium.interfaces';
 import mediumService from './medium.service';
@@ -16,10 +17,10 @@ describe('Medium Service', () => {
 
     // Mock axios.create to return a mock client
     mockedAxios.create = jest.fn().mockReturnValue({
-      get: jest.fn(),
-      post: jest.fn(),
-      put: jest.fn(),
-      delete: jest.fn(),
+      get: jest.fn<(...args: any[]) => Promise<any>>(),
+      post: jest.fn<(...args: any[]) => Promise<any>>(),
+      put: jest.fn<(...args: any[]) => Promise<any>>(),
+      delete: jest.fn<(...args: any[]) => Promise<any>>(),
     }) as any;
   });
 
@@ -55,10 +56,10 @@ describe('Medium Service', () => {
       };
 
       const mockClient = {
-        get: jest.fn().mockResolvedValue(mockUserResponse),
-        post: jest.fn().mockResolvedValue(mockPostResponse),
-        put: jest.fn(),
-        delete: jest.fn(),
+        get: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockUserResponse),
+        post: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockPostResponse),
+        put: jest.fn<(...args: any[]) => Promise<any>>(),
+        delete: jest.fn<(...args: any[]) => Promise<any>>(),
       };
 
       mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;
@@ -96,10 +97,10 @@ describe('Medium Service', () => {
       };
 
       const mockClient = {
-        get: jest.fn().mockResolvedValue(mockUserResponse),
-        post: jest.fn().mockResolvedValue(mockPostResponse),
-        put: jest.fn(),
-        delete: jest.fn(),
+        get: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockUserResponse),
+        post: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockPostResponse),
+        put: jest.fn<(...args: any[]) => Promise<any>>(),
+        delete: jest.fn<(...args: any[]) => Promise<any>>(),
       };
 
       mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;
@@ -142,10 +143,10 @@ describe('Medium Service', () => {
       };
 
       const mockClient = {
-        get: jest.fn().mockResolvedValue(mockUserResponse),
-        post: jest.fn().mockResolvedValue(mockPostResponse),
-        put: jest.fn(),
-        delete: jest.fn(),
+        get: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockUserResponse),
+        post: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockPostResponse),
+        put: jest.fn<(...args: any[]) => Promise<any>>(),
+        delete: jest.fn<(...args: any[]) => Promise<any>>(),
       };
 
       mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;
@@ -185,10 +186,10 @@ describe('Medium Service', () => {
       };
 
       const mockClient = {
-        get: jest.fn().mockResolvedValue(mockUserResponse),
-        post: jest.fn().mockResolvedValue(mockPostResponse),
-        put: jest.fn(),
-        delete: jest.fn(),
+        get: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockUserResponse),
+        post: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockPostResponse),
+        put: jest.fn<(...args: any[]) => Promise<any>>(),
+        delete: jest.fn<(...args: any[]) => Promise<any>>(),
       };
 
       mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;
@@ -220,10 +221,10 @@ describe('Medium Service', () => {
       };
 
       const mockClient = {
-        get: jest.fn().mockResolvedValue(mockUserResponse),
-        post: jest.fn(),
-        put: jest.fn(),
-        delete: jest.fn(),
+        get: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockUserResponse),
+        post: jest.fn<(...args: any[]) => Promise<any>>(),
+        put: jest.fn<(...args: any[]) => Promise<any>>(),
+        delete: jest.fn<(...args: any[]) => Promise<any>>(),
       };
 
       mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;

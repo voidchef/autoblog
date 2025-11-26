@@ -1,6 +1,4 @@
 import { jest, describe, test, expect, beforeAll, beforeEach } from '@jest/globals';
-import config from '../../config/config';
-import * as emailService from './email.service';
 
 interface EmailOptions {
   from: string;
@@ -16,13 +14,17 @@ const mockVerify = jest.fn<() => Promise<boolean>>().mockResolvedValue(true);
 // Mock the queue service - needs to be before any imports that use it
 const mockAddJob = jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(undefined);
 const mockShutdown = jest.fn<(...args: any[]) => Promise<void>>().mockResolvedValue(undefined);
-jest.mock('../queue/queue.service', () => ({
+jest.unstable_mockModule('../queue/queue.service', () => ({
   __esModule: true,
   default: {
     addJob: (...args: any[]) => mockAddJob(...args),
     shutdown: (...args: any[]) => mockShutdown(...args),
   },
 }));
+
+// Dynamic imports after mocking
+const { default: config } = await import('../../config/config');
+const emailService = await import('./email.service');
 
 describe('Email Service', () => {
   beforeAll(() => {

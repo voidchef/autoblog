@@ -43,10 +43,17 @@ const AllPosts = () => {
     setPage(0);
   };
 
+  const handleClearSearch = () => {
+    setSearchQuery('');
+    setIsSearching(false);
+    setPage(0);
+  };
+
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
     if (!value) {
       setIsSearching(false);
+      
       setPage(0);
     }
   };
@@ -70,6 +77,7 @@ const AllPosts = () => {
         value={searchQuery}
         onChange={handleSearchChange}
         onSearch={handleSearch}
+        onClear={handleClearSearch}
         isLoading={isLoading}
       />
       {isLoading ? (

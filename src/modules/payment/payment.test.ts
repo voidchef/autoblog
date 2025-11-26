@@ -1,46 +1,58 @@
 import crypto from 'crypto';
 import { faker } from '@faker-js/faker';
+import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 import bcrypt from 'bcryptjs';
 import httpStatus from 'http-status';
 import moment from 'moment';
 import mongoose from 'mongoose';
-import Razorpay from 'razorpay';
 
-// Mock Razorpay and email service BEFORE importing app
-jest.mock('razorpay');
-jest.mock('../email/email.service');
-
-// Set up Razorpay mock implementation before any module that uses it is imported
+// Mock Razorpay - create mocks that can be referenced in the factory
 const mockOrders = {
-  create: jest.fn(),
-  fetch: jest.fn(),
+  create: jest.fn<(...args: any[]) => Promise<any>>(),
+  fetch: jest.fn<(...args: any[]) => Promise<any>>(),
 };
 
 const mockPayments = {
-  fetch: jest.fn(),
-  refund: jest.fn(),
+  fetch: jest.fn<(...args: any[]) => Promise<any>>(),
+  refund: jest.fn<(...args: any[]) => Promise<any>>(),
 };
 
-const MockedRazorpay = Razorpay as jest.MockedClass<typeof Razorpay>;
-MockedRazorpay.mockImplementation(
-  () =>
-    ({
-      orders: mockOrders,
-      payments: mockPayments,
-    }) as any
-);
+// Use jest.unstable_mockModule for ESM compatibility
+jest.unstable_mockModule('razorpay', () => ({
+  __esModule: true,
+  default: jest.fn(() => ({
+    orders: mockOrders,
+    payments: mockPayments,
+  })),
+}));
+
+jest.unstable_mockModule('../email/email.service', () => ({
+  __esModule: true,
+  sendEmail: jest.fn(),
+  sendResetPasswordEmail: jest.fn(),
+  sendVerificationEmail: jest.fn(),
+  sendSuccessfulRegistration: jest.fn(),
+  sendAccountCreated: jest.fn(),
+  sendPaymentSuccessEmail: jest.fn(),
+  sendSubscriptionExpiryWarning: jest.fn(),
+  sendNewsletterWelcomeEmail: jest.fn(),
+  sendRefundConfirmationEmail: jest.fn(),
+  getTransport: jest.fn(),
+  transport: {},
+  setTransport: jest.fn(),
+}));
 
 // Now import modules that depend on Razorpay
-import request from 'supertest';
-import app from '../../app';
-import config from '../../config/config';
-import * as emailService from '../email/email.service';
-import setupTestDB from '../jest/setupTestDB';
-import * as tokenService from '../token/token.service';
-import tokenTypes from '../token/token.types';
-import User from '../user/user.model';
-import Payment from './payment.model';
-import * as paymentService from './payment.service';
+const { default: request } = await import('supertest');
+const { default: app } = await import('../../app');
+const { default: config } = await import('../../config/config');
+const emailService = await import('../email/email.service');
+const { default: setupTestDB } = await import('../jest/setupTestDB');
+const tokenService = await import('../token/token.service');
+const { default: tokenTypes } = await import('../token/token.types');
+const { default: User } = await import('../user/user.model');
+const { default: Payment } = await import('./payment.model');
+const paymentServiceModule = await import('./payment.service');
 
 setupTestDB();
 
@@ -99,7 +111,7 @@ describe('Payment routes', () => {
   describe('POST /v1/payment/order', () => {
     test('should return 200 and create payment order for authenticated user', async () => {
       const orderResponse = {
-        id: 'order_' + faker.string.alphanumeric(14),
+        id: `order_${faker.string.alphanumeric(14)}`,
         entity: 'order',
         amount: 99900,
         currency: 'INR',
@@ -150,13 +162,13 @@ describe('Payment routes', () => {
 
   describe('POST /v1/payment/verify', () => {
     test('should return 200 and activate subscription on valid payment', async () => {
-      const orderId = 'order_' + faker.string.alphanumeric(14);
-      const paymentId = 'pay_' + faker.string.alphanumeric(14);
+      const orderId = `order_${faker.string.alphanumeric(14)}`;
+      const paymentId = `pay_${faker.string.alphanumeric(14)}`;
 
       // Create payment verification signature
       const generatedSignature = crypto
         .createHmac('sha256', RAZORPAY_KEY_SECRET)
-        .update(orderId + '|' + paymentId)
+        .update(`${orderId}|${paymentId}`)
         .digest('hex');
 
       // Mock razorpay.payments.fetch to return payment details
@@ -316,7 +328,7 @@ describe('Payment routes', () => {
 
     test('should return 200 and process refund for admin', async () => {
       const refundResponse = {
-        id: 'rfnd_' + faker.string.alphanumeric(14),
+        id: `rfnd_${faker.string.alphanumeric(14)}`,
         entity: 'refund',
         amount: 99900,
         status: 'processed',
@@ -488,7 +500,7 @@ describe('Payment service', () => {
         razorpay_signature: 'sig_service',
       };
 
-      const payment = await paymentService.savePayment(userOne._id, paymentData, 999, 'INR', 'pro');
+      const payment = await paymentServiceModule.savePayment(userOne._id, paymentData, 999, 'INR', 'pro');
 
       expect(payment).toBeDefined();
       expect(payment.userId.toString()).toBe(userOne._id.toString());
@@ -524,7 +536,7 @@ describe('Payment service', () => {
     });
 
     test('should return user payment history', async () => {
-      const result = await paymentService.getUserPaymentHistory(userOne._id, {
+      const result = await paymentServiceModule.getUserPaymentHistory(userOne._id, {
         page: 1,
         limit: 10,
       });
@@ -534,7 +546,7 @@ describe('Payment service', () => {
     });
 
     test('should support pagination', async () => {
-      const result = await paymentService.getUserPaymentHistory(userOne._id, {
+      const result = await paymentServiceModule.getUserPaymentHistory(userOne._id, {
         page: 1,
         limit: 1,
       });
@@ -550,14 +562,14 @@ describe('Payment service', () => {
       const bodyString = JSON.stringify(body);
       const signature = crypto.createHmac('sha256', RAZORPAY_WEBHOOK_SECRET).update(bodyString).digest('hex');
 
-      const isValid = paymentService.verifyWebhookSignature(bodyString, signature, RAZORPAY_WEBHOOK_SECRET);
+      const isValid = paymentServiceModule.verifyWebhookSignature(bodyString, signature, RAZORPAY_WEBHOOK_SECRET);
       expect(isValid).toBe(true);
     });
 
     test('should return false for invalid signature', () => {
       const body = { event: 'test', data: 'sample' };
       const bodyString = JSON.stringify(body);
-      const isValid = paymentService.verifyWebhookSignature(bodyString, 'invalid_signature', RAZORPAY_WEBHOOK_SECRET);
+      const isValid = paymentServiceModule.verifyWebhookSignature(bodyString, 'invalid_signature', RAZORPAY_WEBHOOK_SECRET);
       expect(isValid).toBe(false);
     });
   });
@@ -589,7 +601,7 @@ describe('Payment service', () => {
     });
 
     test('should return analytics data', async () => {
-      const analytics = (await paymentService.getPaymentAnalytics()) as any;
+      const analytics = (await paymentServiceModule.getPaymentAnalytics()) as any;
 
       expect(analytics['overview']).toBeDefined();
       expect(analytics['overview']['totalRevenue']).toBe(2998);
@@ -604,7 +616,7 @@ describe('Payment service', () => {
       const startDate = new Date(Date.now() - 1000 * 60 * 60 * 24); // 1 day ago
       const endDate = new Date();
 
-      const analytics = (await paymentService.getPaymentAnalytics(startDate, endDate)) as any;
+      const analytics = (await paymentServiceModule.getPaymentAnalytics(startDate, endDate)) as any;
 
       expect(analytics).toBeDefined();
       expect(analytics['overview']).toBeDefined();

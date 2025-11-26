@@ -1,3 +1,4 @@
+import { jest, describe, it, expect, beforeEach } from '@jest/globals';
 import axios from 'axios';
 import { IWordPressConfig, IWordPressPost } from './wordpress.interfaces';
 import wordpressService from './wordpress.service';
@@ -47,9 +48,12 @@ describe('WordPress Service', () => {
       };
 
       const mockClient = {
-        get: jest.fn().mockResolvedValueOnce(mockCategoriesResponse).mockResolvedValueOnce(mockTagsResponse),
-        post: jest.fn().mockResolvedValue(mockPostResponse),
-        put: jest.fn(),
+        get: jest
+          .fn<(...args: any[]) => Promise<any>>()
+          .mockResolvedValueOnce(mockCategoriesResponse)
+          .mockResolvedValueOnce(mockTagsResponse),
+        post: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockPostResponse),
+        put: jest.fn<(...args: any[]) => Promise<any>>(),
       };
 
       mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;
@@ -79,9 +83,9 @@ describe('WordPress Service', () => {
       };
 
       const mockClient = {
-        get: jest.fn().mockResolvedValue({ data: [] }),
-        post: jest.fn().mockResolvedValue(mockPostResponse),
-        put: jest.fn(),
+        get: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue({ data: [] }),
+        post: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockPostResponse),
+        put: jest.fn<(...args: any[]) => Promise<any>>(),
       };
 
       mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;
@@ -113,11 +117,11 @@ describe('WordPress Service', () => {
         },
       };
 
-      mockedAxios.get = jest.fn().mockResolvedValue(mockImageResponse);
+      mockedAxios.get = jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockImageResponse) as any;
       const mockClient = {
-        post: jest.fn().mockResolvedValue(mockMediaResponse),
-        get: jest.fn(),
-        put: jest.fn(),
+        post: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockMediaResponse),
+        get: jest.fn<(...args: any[]) => Promise<any>>(),
+        put: jest.fn<(...args: any[]) => Promise<any>>(),
       };
       mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;
 
@@ -137,9 +141,9 @@ describe('WordPress Service', () => {
     it('should return existing category', async () => {
       const mockCategoryResponse = { data: [{ id: 1, name: 'Technology' }] };
       const mockClient = {
-        get: jest.fn().mockResolvedValue(mockCategoryResponse),
-        post: jest.fn(),
-        put: jest.fn(),
+        get: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockCategoryResponse),
+        post: jest.fn<(...args: any[]) => Promise<any>>(),
+        put: jest.fn<(...args: any[]) => Promise<any>>(),
       };
 
       mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;
@@ -156,9 +160,9 @@ describe('WordPress Service', () => {
       const mockCreateResponse = { data: { id: 99, name: 'NewCategory' } };
 
       const mockClient = {
-        get: jest.fn().mockResolvedValue(mockEmptyResponse),
-        post: jest.fn().mockResolvedValue(mockCreateResponse),
-        put: jest.fn(),
+        get: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockEmptyResponse),
+        post: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockCreateResponse),
+        put: jest.fn<(...args: any[]) => Promise<any>>(),
       };
 
       mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;
@@ -179,9 +183,9 @@ describe('WordPress Service', () => {
     it('should return existing tag', async () => {
       const mockTagResponse = { data: [{ id: 10, name: 'test' }] };
       const mockClient = {
-        get: jest.fn().mockResolvedValue(mockTagResponse),
-        post: jest.fn(),
-        put: jest.fn(),
+        get: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockTagResponse),
+        post: jest.fn<(...args: any[]) => Promise<any>>(),
+        put: jest.fn<(...args: any[]) => Promise<any>>(),
       };
 
       mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;
@@ -197,9 +201,9 @@ describe('WordPress Service', () => {
       const mockCreateResponse = { data: { id: 99, name: 'newtag' } };
 
       const mockClient = {
-        get: jest.fn().mockResolvedValue(mockEmptyResponse),
-        post: jest.fn().mockResolvedValue(mockCreateResponse),
-        put: jest.fn(),
+        get: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockEmptyResponse),
+        post: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockCreateResponse),
+        put: jest.fn<(...args: any[]) => Promise<any>>(),
       };
 
       mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;

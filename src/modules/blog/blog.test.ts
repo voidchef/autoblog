@@ -1,19 +1,11 @@
 import { faker } from '@faker-js/faker';
+import { jest } from '@jest/globals';
 import axios from 'axios';
 import bcrypt from 'bcryptjs';
 import httpStatus from 'http-status';
 import moment from 'moment';
 import mongoose from 'mongoose';
 import request from 'supertest';
-import app from '../../app';
-import config from '../../config/config';
-import setupTestDB from '../jest/setupTestDB';
-import * as tokenService from '../token/token.service';
-import tokenTypes from '../token/token.types';
-import User from '../user/user.model';
-import { NewCreatedBlog } from './blog.interfaces';
-import Blog from './blog.model';
-import * as blogService from './blog.service';
 
 // Mock TTS service
 jest.mock('../tts', () => ({
@@ -24,6 +16,16 @@ jest.mock('../tts', () => ({
 
 // Mock axios for WordPress and Medium API calls
 jest.mock('axios');
+
+import app from '../../app';
+import config from '../../config/config';
+import setupTestDB from '../jest/setupTestDB';
+import * as tokenService from '../token/token.service';
+import tokenTypes from '../token/token.types';
+import User from '../user/user.model';
+import { NewCreatedBlog } from './blog.interfaces';
+import Blog from './blog.model';
+import * as blogService from './blog.service';
 
 setupTestDB();
 
@@ -840,9 +842,12 @@ describe('Blog routes', () => {
         };
 
         const mockClient = {
-          get: jest.fn().mockResolvedValueOnce(mockCategoriesResponse).mockResolvedValueOnce(mockTagsResponse),
-          post: jest.fn().mockResolvedValue(mockPostResponse),
-          put: jest.fn(),
+          get: jest
+            .fn<(...args: any[]) => Promise<any>>()
+            .mockResolvedValueOnce(mockCategoriesResponse)
+            .mockResolvedValueOnce(mockTagsResponse),
+          post: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockPostResponse),
+          put: jest.fn<(...args: any[]) => Promise<any>>(),
         };
 
         mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;
@@ -916,10 +921,10 @@ describe('Blog routes', () => {
         };
 
         const mockClient = {
-          get: jest.fn().mockResolvedValue(mockUserResponse),
-          post: jest.fn().mockResolvedValue(mockPostResponse),
-          put: jest.fn(),
-          delete: jest.fn(),
+          get: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockUserResponse),
+          post: jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(mockPostResponse),
+          put: jest.fn<(...args: any[]) => Promise<any>>(),
+          delete: jest.fn<(...args: any[]) => Promise<any>>(),
         };
 
         mockedAxios.create = jest.fn().mockReturnValue(mockClient) as any;

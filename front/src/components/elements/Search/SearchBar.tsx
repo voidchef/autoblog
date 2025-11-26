@@ -14,6 +14,7 @@ interface SearchBarProps {
   value: string;
   onChange: (value: string) => void;
   onSearch: () => void;
+  onClear: () => void;
   placeholder?: string;
   isLoading?: boolean;
 }
@@ -22,6 +23,7 @@ export default function SearchBar({
   value,
   onChange,
   onSearch,
+  onClear,
   placeholder = 'Search blogs by title, content, or description...',
   isLoading = false,
 }: SearchBarProps) {
@@ -33,7 +35,7 @@ export default function SearchBar({
 
   const handleClear = () => {
     onChange('');
-    onSearch();
+    onClear();
   };
 
   return (

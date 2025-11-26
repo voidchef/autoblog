@@ -1,16 +1,15 @@
 import { faker } from '@faker-js/faker';
-import { jest } from '@jest/globals';
+import { jest, describe, test, expect, beforeAll, beforeEach } from '@jest/globals';
 import bcrypt from 'bcryptjs';
 import httpStatus from 'http-status';
 import moment from 'moment';
 import mongoose from 'mongoose';
 import httpMocks from 'node-mocks-http';
-import request from 'supertest';
 
 // Mock the queue service before other imports that use it
 const mockAddJob = jest.fn<(...args: any[]) => Promise<any>>().mockResolvedValue(undefined);
 const mockShutdown = jest.fn<(...args: any[]) => Promise<void>>().mockResolvedValue(undefined);
-jest.mock('../queue/queue.service', () => ({
+jest.unstable_mockModule('../queue/queue.service', () => ({
   __esModule: true,
   default: {
     addJob: (...args: any[]) => mockAddJob(...args),
@@ -18,17 +17,20 @@ jest.mock('../queue/queue.service', () => ({
   },
 }));
 
-import app from '../../app';
-import config from '../../config/config';
-import * as emailService from '../email/email.service';
-import ApiError from '../errors/ApiError';
-import setupTestDB from '../jest/setupTestDB';
-import Token from '../token/token.model';
-import * as tokenService from '../token/token.service';
-import tokenTypes from '../token/token.types';
-import { IUserDoc, NewRegisteredUser } from '../user/user.interfaces';
-import User from '../user/user.model';
-import authMiddleware from './auth.middleware';
+// Dynamic imports after mocking
+const { default: request } = await import('supertest');
+const { default: app } = await import('../../app');
+const { default: config } = await import('../../config/config');
+const emailService = await import('../email/email.service');
+const { default: ApiError } = await import('../errors/ApiError');
+const { default: setupTestDB } = await import('../jest/setupTestDB');
+const { default: Token } = await import('../token/token.model');
+const tokenService = await import('../token/token.service');
+const { default: tokenTypes } = await import('../token/token.types');
+const { default: User } = await import('../user/user.model');
+const { default: authMiddleware } = await import('./auth.middleware');
+
+import type { IUserDoc, NewRegisteredUser } from '../user/user.interfaces';
 
 setupTestDB();
 
@@ -593,9 +595,7 @@ describe('Auth middleware', () => {
     await authMiddleware('anyRight')(req, httpMocks.createResponse(), next);
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
-    expect(next).toHaveBeenCalledWith(
-      expect.objectContaining({ statusCode: httpStatus.FORBIDDEN, message: 'Forbidden' })
-    );
+    expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode: httpStatus.FORBIDDEN, message: 'Forbidden' }));
   });
 
   test('should call next with no errors if user does not have required rights but userId is in params', async () => {

@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import { jest } from '@jest/globals';
 import bcrypt from 'bcryptjs';
 import httpStatus from 'http-status';
 import moment from 'moment';
