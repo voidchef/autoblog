@@ -54,7 +54,7 @@ commentSchema.plugin(paginate);
 // Override toJSON to preserve createdAt and updatedAt for comments
 commentSchema.set('toJSON', {
   virtuals: true,
-  transform: function (doc: any, ret: any) {
+  transform(doc: any, ret: any) {
     if (doc.createdAt) {
       ret.createdAt = doc.createdAt;
     }

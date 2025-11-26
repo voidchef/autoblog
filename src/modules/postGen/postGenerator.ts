@@ -40,7 +40,7 @@ export class PostGenerator extends BasePostGenerator<AutoPostPrompt, Post> {
       }
 
       // Generate outline
-      logger.info('Generating outline for: ' + this.config.topic);
+      logger.info(`Generating outline for: ${this.config.topic}`);
       const outline = await this.generateOutline();
 
       // Generate content sections

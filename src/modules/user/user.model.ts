@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
     },
     password: {
       type: String,
-      required: function (this: IUserDoc) {
+      required(this: IUserDoc) {
         // Password is optional if user has any OAuth connections
         return !this.hasOAuthConnection;
       },

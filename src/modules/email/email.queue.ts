@@ -1,6 +1,5 @@
 import logger from '../logger/logger';
 import { queueService, QueueName } from '../queue';
-import * as emailService from './email.service';
 
 /**
  * Send email through queue

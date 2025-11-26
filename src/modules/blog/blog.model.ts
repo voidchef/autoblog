@@ -165,7 +165,7 @@ blogSchema.plugin(paginate);
 // Override toJSON to preserve createdAt and updatedAt for blog posts
 blogSchema.set('toJSON', {
   virtuals: true,
-  transform: function (doc: any, ret: any) {
+  transform(doc: any, ret: any) {
     if (doc.createdAt) {
       ret.createdAt = doc.createdAt;
     }
@@ -217,7 +217,7 @@ blogSchema.method('generateExcerpt', function (this: IBlogDoc, maxLength: number
 
   // If no good sentence break, cut at word boundary
   const lastSpace = excerpt.lastIndexOf(' ');
-  return excerpt.substring(0, lastSpace) + '...';
+  return `${excerpt.substring(0, lastSpace)}...`;
 });
 
 /**

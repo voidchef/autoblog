@@ -595,7 +595,9 @@ describe('Auth middleware', () => {
     await authMiddleware('anyRight')(req, httpMocks.createResponse(), next);
 
     expect(next).toHaveBeenCalledWith(expect.any(ApiError));
-    expect(next).toHaveBeenCalledWith(expect.objectContaining({ statusCode: httpStatus.FORBIDDEN, message: 'Forbidden' }));
+    expect(next).toHaveBeenCalledWith(
+      expect.objectContaining({ statusCode: httpStatus.FORBIDDEN, message: 'Forbidden' })
+    );
   });
 
   test('should call next with no errors if user does not have required rights but userId is in params', async () => {

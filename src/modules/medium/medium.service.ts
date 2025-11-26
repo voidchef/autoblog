@@ -65,7 +65,7 @@ class MediumService {
    */
   private htmlToMarkdown(html: string): string {
     // Basic HTML to Markdown conversion
-    let markdown = html
+    const markdown = html
       // Remove script and style tags
       .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
       .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
@@ -127,7 +127,7 @@ class MediumService {
 
       // Convert content if needed
       let content = post.content;
-      let contentFormat = post.contentFormat;
+      const contentFormat = post.contentFormat;
 
       // If content is HTML and format is markdown, convert it
       if (contentFormat === 'markdown' && post.content.includes('<')) {

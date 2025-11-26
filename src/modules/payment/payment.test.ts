@@ -569,7 +569,11 @@ describe('Payment service', () => {
     test('should return false for invalid signature', () => {
       const body = { event: 'test', data: 'sample' };
       const bodyString = JSON.stringify(body);
-      const isValid = paymentServiceModule.verifyWebhookSignature(bodyString, 'invalid_signature', RAZORPAY_WEBHOOK_SECRET);
+      const isValid = paymentServiceModule.verifyWebhookSignature(
+        bodyString,
+        'invalid_signature',
+        RAZORPAY_WEBHOOK_SECRET
+      );
       expect(isValid).toBe(false);
     });
   });

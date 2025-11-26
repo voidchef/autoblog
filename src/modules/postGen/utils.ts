@@ -191,7 +191,7 @@ SEO Description: ${seoDescription}
     }
 
     const mdHeading = '#'.repeat(headingLevel);
-    let content = previousContent + '\n' + mdHeading + ' ' + currentHeading['title'];
+    let content = `${previousContent}\n${mdHeading} ${currentHeading['title']}`;
 
     if (currentHeading['headings'] && (currentHeading['headings'] as unknown[]).length > 0) {
       content = await this.buildMarkdownContent(
@@ -202,7 +202,7 @@ SEO Description: ${seoDescription}
       );
     } else {
       const generatedContent = await contentGenerator(currentHeading);
-      content += '\n' + generatedContent;
+      content += `\n${generatedContent}`;
     }
 
     return this.buildMarkdownContent(remainingHeadings, headingLevel, contentGenerator, content);

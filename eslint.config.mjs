@@ -19,7 +19,7 @@ const prettierRule = [
     trailingComma: 'es5',
     tabWidth: 2,
     semi: true,
-    printWidth: 125,
+    printWidth: 120,
   },
 ];
 

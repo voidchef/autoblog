@@ -102,7 +102,7 @@ describe('crypto utilities', () => {
 
     test('should return true for properly formatted encrypted string', () => {
       // Format: salt:iv:authTag:encrypted (all hex strings)
-      const mockEncrypted = 'a'.repeat(32) + ':' + 'b'.repeat(24) + ':' + 'c'.repeat(32) + ':' + 'd'.repeat(32);
+      const mockEncrypted = `${'a'.repeat(32)}:${'b'.repeat(24)}:${'c'.repeat(32)}:${'d'.repeat(32)}`;
 
       expect(isEncrypted(mockEncrypted)).toBe(true);
     });

@@ -251,7 +251,7 @@ export class TTSService {
               currentChunk = word;
             } else {
               // Even a single word exceeds limit, truncate it
-              chunks.push(word.substring(0, maxBytes - 3) + '...');
+              chunks.push(`${word.substring(0, maxBytes - 3)}...`);
               currentChunk = '';
             }
           } else {

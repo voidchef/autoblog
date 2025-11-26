@@ -26,7 +26,7 @@ export const createContact = catchAsync(async (req: Request, res: Response) => {
     await emailService.sendEmail(contact.email, subject, text, html);
   } catch (error) {
     // Log email error but don't fail the request
-    // eslint-disable-next-line no-console
+
     console.error('Failed to send confirmation email:', error);
   }
 

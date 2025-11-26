@@ -50,7 +50,7 @@ if (config.oauth.google.clientId && config.oauth.google.clientSecret) {
         }
 
         // Check if OAuth connection already exists
-        let oauthConnection = await OAuthConnection.findOne({
+        const oauthConnection = await OAuthConnection.findOne({
           provider: 'google',
           providerId: profile.id,
         });
@@ -83,7 +83,7 @@ if (config.oauth.google.clientId && config.oauth.google.clientSecret) {
               email,
               isEmailVerified: true,
               hasOAuthConnection: true,
-              password: Math.random().toString(36).slice(-8) + 'A1!', // Random password (won't be used)
+              password: `${Math.random().toString(36).slice(-8)}A1!`, // Random password (won't be used)
             });
           } else {
             // Link to existing user
@@ -152,7 +152,7 @@ if (config.env !== 'test' && config.oauth.apple.clientId && config.oauth.apple.p
           }
 
           // Check if OAuth connection already exists
-          let oauthConnection = await OAuthConnection.findOne({
+          const oauthConnection = await OAuthConnection.findOne({
             provider: 'apple',
             providerId: profile.sub,
           });
@@ -193,7 +193,7 @@ if (config.env !== 'test' && config.oauth.apple.clientId && config.oauth.apple.p
                 email,
                 isEmailVerified: true,
                 hasOAuthConnection: true,
-                password: Math.random().toString(36).slice(-8) + 'A1!', // Random password (won't be used)
+                password: `${Math.random().toString(36).slice(-8)}A1!`, // Random password (won't be used)
               });
             } else {
               // Link to existing user
@@ -232,7 +232,6 @@ if (config.env !== 'test' && config.oauth.apple.clientId && config.oauth.apple.p
       }
     );
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Failed to initialize Apple strategy:', error);
   }
 }

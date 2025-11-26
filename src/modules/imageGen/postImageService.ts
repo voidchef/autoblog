@@ -68,7 +68,7 @@ export class PostImageService {
    */
   async generateMainImage(title: string, keywords: string[] = []): Promise<GeneratedImage | null> {
     try {
-      logger.info('Generating main image for: ' + title);
+      logger.info(`Generating main image for: ${title}`);
 
       const prompt = ImageGenerator.createBlogImagePrompt(title, keywords, this.config.imageStyle);
       const context: PromptContext = {

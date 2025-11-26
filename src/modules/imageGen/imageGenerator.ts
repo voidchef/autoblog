@@ -75,7 +75,7 @@ export class ImageGenerator {
 
       const generatedImage: GeneratedImage = {
         url: imageURL,
-        prompt: prompt,
+        prompt,
         ...(optimizedPrompt !== prompt && { revisedPrompt: optimizedPrompt }),
         metadata: {
           model: this.config.model,

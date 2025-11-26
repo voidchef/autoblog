@@ -30,7 +30,7 @@ export const encrypt = (text: string, password: string): string => {
   const authTag = cipher.getAuthTag();
 
   // Combine salt, IV, auth tag, and encrypted data
-  return salt.toString('hex') + ':' + iv.toString('hex') + ':' + authTag.toString('hex') + ':' + encrypted;
+  return `${salt.toString('hex')}:${iv.toString('hex')}:${authTag.toString('hex')}:${encrypted}`;
 };
 
 /**
@@ -67,7 +67,6 @@ export const decrypt = (encryptedText: string, password: string): string => {
 
     return decrypted;
   } catch (error) {
-    // eslint-disable-next-line no-console
     console.error('Decryption error:', error);
     return '';
   }
