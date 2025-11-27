@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -18,8 +17,9 @@ import { LineChart } from '@mui/x-charts/LineChart';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { useGetPaymentAnalyticsQuery } from '../../../services/paymentApi';
+import { FC, ReactNode } from 'react';
 
-const PaymentAnalytics: React.FC = () => {
+const PaymentAnalytics: FC = () => {
   const theme = useTheme();
   const COLORS = theme.palette.customColors.charts.primary;
   const { data, isLoading, error } = useGetPaymentAnalyticsQuery({});
@@ -68,10 +68,10 @@ const PaymentAnalytics: React.FC = () => {
     label: item.plan.toUpperCase(),
   }));
 
-  const StatCard: React.FC<{
+  const StatCard: FC<{
     title: string;
     value: string | number;
-    icon: React.ReactNode;
+    icon: ReactNode;
     color: string;
   }> = ({ title, value, icon, color }) => (
     <Card sx={{ height: '100%', boxShadow: theme.palette.customColors.componentShadows.cardHover }}>

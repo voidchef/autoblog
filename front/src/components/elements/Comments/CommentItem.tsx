@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 import { Box, Typography, Paper, Fade, Divider } from '@mui/material';
 import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
 import { setReplyingToComment, setEditingComment, toggleShowReplies } from '../../../reducers/comment';
@@ -23,7 +23,7 @@ interface CommentItemProps {
   isReply?: boolean;
 }
 
-const CommentItem: React.FC<CommentItemProps> = ({ comment, blogId, isReply = false }) => {
+const CommentItem: FC<CommentItemProps> = ({ comment, blogId, isReply = false }) => {
   const dispatch = useAppDispatch();
   const { userId } = useAppSelector((state) => state.auth);
   const { replyingToCommentId, editingCommentId, showRepliesForCommentId } = useAppSelector((state) => state.comment);
@@ -53,7 +53,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, blogId, isReply = fa
   const showReplies = showRepliesForCommentId === comment.id;
 
   // Handler functions
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
+  const handleMenuOpen = (event: MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
   const handleMenuClose = () => setAnchorEl(null);
 
   const handleLike = async () => {

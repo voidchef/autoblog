@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Box, Card, CardContent, Typography, CircularProgress, Alert, Chip, useTheme } from '@mui/material';
 import {
   Article as ArticleIcon,
@@ -9,16 +8,17 @@ import {
   Timeline as TimelineIcon,
 } from '@mui/icons-material';
 import { useGetAllBlogsEngagementStatsQuery } from '../../../services/blogApi';
+import { ReactNode, FC } from 'react';
 
 interface MetricCardProps {
   title: string;
   value: number | string;
-  icon: React.ReactNode;
+  icon: ReactNode;
   color: string;
   gradient: string;
 }
 
-const MetricCard: React.FC<MetricCardProps> = ({ title, value, icon, color, gradient }) => {
+const MetricCard: FC<MetricCardProps> = ({ title, value, icon, color, gradient }) => {
   return (
     <Card
       sx={{

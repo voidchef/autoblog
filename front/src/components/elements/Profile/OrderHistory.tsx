@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Box,
   Paper,
@@ -26,12 +25,13 @@ import {
   Pending as PendingIcon,
 } from '@mui/icons-material';
 import { useGetPaymentHistoryQuery } from '../../../services/paymentApi';
+import { FC, useState, ChangeEvent } from 'react';
 
-const OrderHistory: React.FC = () => {
+const OrderHistory: FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const { data, isLoading, error } = useGetPaymentHistoryQuery({
     page: page + 1,
@@ -43,7 +43,7 @@ const OrderHistory: React.FC = () => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };

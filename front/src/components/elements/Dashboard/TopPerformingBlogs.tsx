@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Box,
   Card,
@@ -21,6 +20,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
+import { FC } from 'react';
 
 interface Blog {
   id: string;
@@ -38,7 +38,7 @@ interface TopPerformingBlogsProps {
   isLoading?: boolean;
 }
 
-const BlogCard: React.FC<{ blog: Blog; rank: number }> = ({ blog, rank }) => {
+const BlogCard: FC<{ blog: Blog; rank: number }> = ({ blog, rank }) => {
   const navigate = useNavigate();
 
   const rankColors = ['#FFD700', '#C0C0C0', '#CD7F32', '#667eea', '#764ba2'];
@@ -183,7 +183,7 @@ const BlogCard: React.FC<{ blog: Blog; rank: number }> = ({ blog, rank }) => {
   );
 };
 
-const SkeletonCard: React.FC = () => (
+const SkeletonCard: FC = () => (
   <Card sx={{ mb: 2, borderRadius: 2 }}>
     <CardContent sx={{ p: 2.5 }}>
       <Stack direction="row" spacing={2} alignItems="center">

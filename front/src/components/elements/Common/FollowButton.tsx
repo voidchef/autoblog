@@ -1,10 +1,10 @@
-import * as React from 'react';
 import { Button, CircularProgress, Tooltip } from '@mui/material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import PersonRemoveIcon from '@mui/icons-material/PersonRemove';
 import { useFollowUserMutation, useUnfollowUserMutation } from '../../../services/userApi';
 import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
 import { showSuccess, showError } from '../../../reducers/alert';
+import { FC, useMemo } from 'react';
 
 interface FollowButtonProps {
   authorId: string;
@@ -13,7 +13,7 @@ interface FollowButtonProps {
   variant?: 'contained' | 'outlined' | 'text';
 }
 
-const FollowButton: React.FC<FollowButtonProps> = ({ 
+const FollowButton: FC<FollowButtonProps> = ({ 
   authorId, 
   authorName,
   size = 'small',
@@ -26,7 +26,7 @@ const FollowButton: React.FC<FollowButtonProps> = ({
   const [unfollowUser, { isLoading: isUnfollowing }] = useUnfollowUserMutation();
   
   // Check if current user is following this author
-  const isFollowingAuthor = React.useMemo(() => {
+  const isFollowingAuthor = useMemo(() => {
     return userData?.following?.includes(authorId) || false;
   }, [userData, authorId]);
 

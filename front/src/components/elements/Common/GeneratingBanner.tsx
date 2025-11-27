@@ -1,7 +1,5 @@
-import * as React from 'react';
 import {
   Box,
-  Paper,
   Typography,
   LinearProgress,
   Chip,

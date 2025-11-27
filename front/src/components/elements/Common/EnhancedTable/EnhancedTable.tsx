@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, ChangeEvent, MouseEvent, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -29,9 +29,9 @@ interface EnhancedTableProps {
   columns: HeadCell[];
   rows: Data[];
   page: number;
-  handleChangePage: (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
+  handleChangePage: (event: MouseEvent<HTMLButtonElement> | null, newPage: number) => void;
   rowsPerPage: number;
-  handleChangeRowsPerPage: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
+  handleChangeRowsPerPage: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   handleSelectBlog?: (slugs: string) => void;
   handleEditBlog: (blogId: string) => void;
   handleDeleteBlog: (blogId: string) => void;
@@ -96,7 +96,7 @@ function EnhancedTable({
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRowId, setSelectedRowId] = useState<string | null>(null);
   
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, rowId: string) => {
+  const handleMenuOpen = (event: MouseEvent<HTMLElement>, rowId: string) => {
     setAnchorEl(event.currentTarget);
     setSelectedRowId(rowId);
   };
@@ -106,13 +106,13 @@ function EnhancedTable({
     setSelectedRowId(null);
   };
 
-  const handleRequestSort = (event: React.MouseEvent<unknown>, property: string) => {
+  const handleRequestSort = (event: MouseEvent<unknown>, property: string) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
-  const handleClick = (event: React.MouseEvent<unknown>, index: number) => {
+  const handleClick = (event: MouseEvent<unknown>, index: number) => {
     setSelected(index);
   };
 
@@ -128,7 +128,7 @@ function EnhancedTable({
     [order, orderBy, page, rowsPerPage, searchQuery],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (handleSelectBlog) {
       handleSelectBlog(rows[selected].slug as string);
     }
@@ -168,7 +168,7 @@ function EnhancedTable({
                             'aria-labelledby': labelId,
                           }}
                           disabled={row.isDraft as boolean}
-                          onClick={(event: React.MouseEvent<unknown, MouseEvent>) => handleClick(event, row.index as number)}
+                          onClick={(event) => handleClick(event, row.index as number)}
                           sx={{ cursor: 'pointer' }}
                         />
                       </TableCell>

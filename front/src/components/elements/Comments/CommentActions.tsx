@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, IconButton, Typography, Button } from '@mui/material';
 import {
   ThumbUp,
@@ -8,6 +7,7 @@ import {
   ThumbDownOutlined,
   ChatBubbleOutline,
 } from '@mui/icons-material';
+import { FC } from 'react';
 
 interface CommentActionsProps {
   hasLiked: boolean;
@@ -24,7 +24,7 @@ interface CommentActionsProps {
   onToggleReplies?: () => void;
 }
 
-const CommentActions: React.FC<CommentActionsProps> = ({
+const CommentActions: FC<CommentActionsProps> = ({
   hasLiked,
   hasDisliked,
   likesCount,

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -26,6 +25,7 @@ import {
 import { alpha } from '@mui/material/styles';
 import { useRegenerateTextMutation } from '../../../services/blogApi';
 import { useGetAppSettingsQuery } from '../../../services/appSettingsApi';
+import { useState, useMemo, useEffect } from 'react';
 
 interface TextRegenerationDialogProps {
   open: boolean;
@@ -46,22 +46,22 @@ export default function TextRegenerationDialog({
   contextAfter,
   onApplyRegeneration,
 }: TextRegenerationDialogProps) {
-  const [userPrompt, setUserPrompt] = React.useState('');
-  const [llmModel, setLlmModel] = React.useState('gpt-4o-mini');
-  const [llmProvider, setLlmProvider] = React.useState<'openai' | 'google' | 'mistral'>('openai');
-  const [regeneratedText, setRegeneratedText] = React.useState('');
-  const [copied, setCopied] = React.useState(false);
+  const [userPrompt, setUserPrompt] = useState('');
+  const [llmModel, setLlmModel] = useState('gpt-4o-mini');
+  const [llmProvider, setLlmProvider] = useState<'openai' | 'google' | 'mistral'>('openai');
+  const [regeneratedText, setRegeneratedText] = useState('');
+  const [copied, setCopied] = useState(false);
 
   const [regenerateText, { isLoading, error }] = useRegenerateTextMutation();
   const { data: appSettings } = useGetAppSettingsQuery();
 
   // Get available language models from app settings
-  const availableModels = React.useMemo(() => {
+  const availableModels = useMemo(() => {
     return appSettings?.languageModels || [];
   }, [appSettings]);
 
   // Reset state when dialog opens/closes
-  React.useEffect(() => {
+  useEffect(() => {
     if (!open) {
       setUserPrompt('');
       setRegeneratedText('');

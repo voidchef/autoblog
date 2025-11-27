@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Box, CircularProgress, Typography } from '@mui/material';
 import { useAppDispatch } from '../../utils/reduxHooks';
@@ -6,7 +6,7 @@ import { setTokens } from '../../reducers/auth';
 import { showSuccess, showError } from '../../reducers/alert';
 import { ROUTES } from '../../utils/routing/routes';
 
-const OAuthCallback: React.FC = () => {
+const OAuthCallback: FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();

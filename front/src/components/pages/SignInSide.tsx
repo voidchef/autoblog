@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
@@ -20,10 +19,11 @@ import { showSuccess, showError } from '../../reducers/alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import Divider from '@mui/material/Divider';
+import { useState, ChangeEvent, FormEvent } from 'react';
 
 export default function SignInSide() {
-  const [signUp, setSignUp] = React.useState(false);
-  const [formData, setFormData] = React.useState({
+  const [signUp, setSignUp] = useState(false);
+  const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
@@ -31,7 +31,7 @@ export default function SignInSide() {
     confirmPassword: '',
     rememberMe: false,
   });
-  const [formErrors, setFormErrors] = React.useState<Record<string, string>>({});
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -71,7 +71,7 @@ export default function SignInSide() {
     return Object.keys(errors).length === 0;
   };
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = event.target;
     setFormData((prev) => ({
       ...prev,
@@ -87,7 +87,7 @@ export default function SignInSide() {
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (!validateForm()) {

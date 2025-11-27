@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { Alert, Button, Box, Typography, Paper } from '@mui/material';
+import { Button, Box, Typography, Paper } from '@mui/material';
 import { 
   Warning as WarningIcon, 
   Settings as SettingsIcon,
@@ -9,6 +8,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
 import { alpha, keyframes } from '@mui/material/styles';
+import { FC } from 'react';
 
 interface OpenAiKeyBannerProps {
   hasOpenAiKey: boolean;
@@ -25,7 +25,7 @@ const pulse = keyframes`
   }
 `;
 
-const OpenAiKeyBanner: React.FC<OpenAiKeyBannerProps> = ({ hasOpenAiKey, hasGoogleApiKey = false, modelProvider }) => {
+const OpenAiKeyBanner: FC<OpenAiKeyBannerProps> = ({ hasOpenAiKey, hasGoogleApiKey = false, modelProvider }) => {
   const navigate = useNavigate();
 
   const handleGoToProfile = () => {

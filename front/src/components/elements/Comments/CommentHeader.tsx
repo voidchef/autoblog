@@ -1,7 +1,7 @@
-import React from 'react';
 import { Box, Avatar, Typography, IconButton, Menu, MenuItem, Divider, Chip } from '@mui/material';
 import { MoreVert, Edit, Delete } from '@mui/icons-material';
 import { stringAvatar } from '../../../utils/utils';
+import { FC, MouseEvent } from 'react';
 
 interface CommentHeaderProps {
   authorName: string;
@@ -9,13 +9,13 @@ interface CommentHeaderProps {
   updatedAt: Date;
   isOwner: boolean;
   anchorEl: HTMLElement | null;
-  onMenuOpen: (event: React.MouseEvent<HTMLElement>) => void;
+  onMenuOpen: (event: MouseEvent<HTMLElement>) => void;
   onMenuClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-const CommentHeader: React.FC<CommentHeaderProps> = ({
+const CommentHeader: FC<CommentHeaderProps> = ({
   authorName,
   createdAt,
   updatedAt,

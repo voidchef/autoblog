@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -14,12 +13,7 @@ import Alert from '@mui/material/Alert';
 import { alpha, useTheme } from '@mui/material/styles';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import StarIcon from '@mui/icons-material/Star';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import EditIcon from '@mui/icons-material/Edit';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-import SpeedIcon from '@mui/icons-material/Speed';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
 import { Helmet } from 'react-helmet-async';
@@ -27,11 +21,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../utils/hooks';
 import { ROUTES } from '../../utils/routing/routes';
 import { useCreateOrderMutation, useVerifyPaymentMutation } from '../../services/paymentApi';
+import { ReactNode, useState } from 'react';
 
 interface PricingFeature {
   text: string;
   included: boolean;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   highlight?: boolean;
 }
 
@@ -52,8 +47,8 @@ export default function Pricing() {
   const { isAuthenticated, user } = useAuth();
   const [createOrder, { isLoading: isCreatingOrder }] = useCreateOrderMutation();
   const [verifyPayment, { isLoading: isVerifyingPayment }] = useVerifyPaymentMutation();
-  const [paymentError, setPaymentError] = React.useState<string | null>(null);
-  const [paymentSuccess, setPaymentSuccess] = React.useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
 
   const handleGetStarted = (tier: string) => {
     if (tier === 'free') {
@@ -413,7 +408,7 @@ export default function Pricing() {
                     variant={tier.popular ? 'contained' : 'outlined'}
                     size="large"
                     onClick={() => handleGetStarted(tier.name.toLowerCase())}
-                    disabled={tier.popular && (isCreatingOrder || isVerifyingPayment)}
+                    disabled={true || (tier.popular && (isCreatingOrder || isVerifyingPayment))}
                     sx={{
                       mb: 4,
                       py: 2,

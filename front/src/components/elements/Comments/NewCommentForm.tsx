@@ -1,5 +1,5 @@
-import React from 'react';
 import { Paper, Typography, TextField, Button, CircularProgress, Zoom } from '@mui/material';
+import { FC } from 'react';
 
 interface NewCommentFormProps {
   comment: string;
@@ -8,7 +8,7 @@ interface NewCommentFormProps {
   onSubmit: () => void;
 }
 
-const NewCommentForm: React.FC<NewCommentFormProps> = ({ comment, isCreating, onCommentChange, onSubmit }) => {
+const NewCommentForm: FC<NewCommentFormProps> = ({ comment, isCreating, onCommentChange, onSubmit }) => {
   return (
     <Zoom in timeout={400}>
       <Paper

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Box, TextField, Typography, Paper, Stack } from '@mui/material';
+import { TextField, Typography, Paper, Stack } from '@mui/material';
+import { FC, ChangeEvent } from 'react';
 
 interface TemplateParametersFormProps {
   variables: string[];
@@ -7,12 +7,12 @@ interface TemplateParametersFormProps {
   onChange: (name: string, value: string | number | boolean) => void;
 }
 
-export const TemplateParametersForm: React.FC<TemplateParametersFormProps> = ({ variables, values, onChange }) => {
+export const TemplateParametersForm: FC<TemplateParametersFormProps> = ({ variables, values, onChange }) => {
   if (variables.length === 0) {
     return null;
   }
 
-  const handleChange = (name: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (name: string) => (event: ChangeEvent<HTMLInputElement>) => {
     onChange(name, event.target.value);
   };
 

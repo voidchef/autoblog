@@ -1,10 +1,10 @@
-import React from 'react';
 import { Box, IconButton, Typography, Tooltip } from '@mui/material';
 import { ThumbUp, ThumbDown } from '@mui/icons-material';
 import { useLikeBlogMutation, useDislikeBlogMutation, IBlog } from '../../../services/blogApi';
 import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
 import * as analytics from '../../../utils/analytics';
 import { showError, showInfo } from '../../../reducers/alert';
+import { FC, MouseEvent } from 'react';
 
 interface BlogLikeDislikeProps {
   blog: IBlog;
@@ -12,7 +12,7 @@ interface BlogLikeDislikeProps {
   showCounts?: boolean;
 }
 
-const BlogLikeDislike: React.FC<BlogLikeDislikeProps> = ({ 
+const BlogLikeDislike: FC<BlogLikeDislikeProps> = ({ 
   blog, 
   size = 'medium', 
   showCounts = true 
@@ -25,7 +25,7 @@ const BlogLikeDislike: React.FC<BlogLikeDislikeProps> = ({
   const hasLiked = userId ? blog.likes.includes(userId) : false;
   const hasDisliked = userId ? blog.dislikes.includes(userId) : false;
 
-  const handleLike = async (e: React.MouseEvent) => {
+  const handleLike = async (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     
@@ -45,7 +45,7 @@ const BlogLikeDislike: React.FC<BlogLikeDislikeProps> = ({
     }
   };
 
-  const handleDislike = async (e: React.MouseEvent) => {
+  const handleDislike = async (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     

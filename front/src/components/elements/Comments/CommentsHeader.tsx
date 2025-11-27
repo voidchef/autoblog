@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC } from 'react';
 import { Box, Typography, Chip } from '@mui/material';
 import { ChatBubbleOutline } from '@mui/icons-material';
 
@@ -6,7 +6,7 @@ interface CommentsHeaderProps {
   count: number;
 }
 
-const CommentsHeader: React.FC<CommentsHeaderProps> = ({ count }) => {
+const CommentsHeader: FC<CommentsHeaderProps> = ({ count }) => {
   return (
     <Box
       sx={{

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Box,
   Container,
@@ -17,21 +16,22 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ROUTES } from '../../utils/routing/routes';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
+import { FC, useState, useEffect } from 'react';
 
 interface VerificationState {
   status: 'loading' | 'success' | 'error';
   message: string;
 }
 
-const VerifyEmail: React.FC = () => {
+const VerifyEmail: FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [verificationState, setVerificationState] = React.useState<VerificationState>({
+  const [verificationState, setVerificationState] = useState<VerificationState>({
     status: 'loading',
     message: '',
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     const verifyEmailToken = async () => {
       const token = searchParams.get('token');
 

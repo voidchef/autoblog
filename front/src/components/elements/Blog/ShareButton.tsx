@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { FC, MouseEvent, useState } from 'react';
 import {
   Box,
   IconButton,
@@ -26,7 +26,7 @@ interface ShareButtonProps {
   size?: 'small' | 'medium' | 'large';
 }
 
-const ShareButton: React.FC<ShareButtonProps> = ({ blog, size = 'medium' }) => {
+const ShareButton: FC<ShareButtonProps> = ({ blog, size = 'medium' }) => {
   const dispatch = useAppDispatch();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -38,7 +38,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ blog, size = 'medium' }) => {
   // Check if native share is available (typically on mobile devices)
   const canUseNativeShare = typeof navigator !== 'undefined' && navigator.share;
 
-  const handleShare = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleShare = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
 

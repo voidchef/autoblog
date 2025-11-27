@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import { ToggleButton, ToggleButtonGroup, Typography, Alert } from '@mui/material';
 import NavBar from '../elements/Common/NavBar';
@@ -24,7 +23,7 @@ import {
   ITemplateBlogData,
   ITemplatePreview,
 } from '../../services/blogApi';
-import { setBlogData, clearBlog, IBlog, generateBlogWithProgress, setActiveGeneration, clearActiveGeneration } from '../../reducers/blog';
+import { clearBlog, IBlog, setActiveGeneration, clearActiveGeneration } from '../../reducers/blog';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import { useAuth } from '../../utils/hooks';
 import { showSuccess, showError, showInfo } from '../../reducers/alert';
@@ -33,6 +32,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { AWS_BASEURL } from '../../utils/consts';
 import { ROUTES } from '../../utils/routing/routes';
 import { useGetBlogGenerationStatusQuery } from '../../services/blogApi';
+import { useEffect, useState, ChangeEvent, FormEvent, MouseEvent } from 'react';
 
 async function fetchImages(blogId: string) {
   const newImages: string[] = [];
@@ -72,13 +72,13 @@ export default function CreatePost() {
   const { data: blog, isLoading } = useGetBlogQuery(blogId, { skip: !blogId });
   const [updateBlog] = useUpdateBlogMutation();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!blogId) {
       dispatch(clearBlog());
     }
   }, [blogId, dispatch]);
 
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = useState({
     topic: '',
     country: '',
     intent: '',
@@ -88,19 +88,19 @@ export default function CreatePost() {
     category: '',
     tags: '',
   });
-  const [blogTitle, setBlogTitle] = React.useState('');
-  const [open, setOpen] = React.useState(false);
-  const [blogContent, setBlogContent] = React.useState('');
-  const [images, setImages] = React.useState<string[]>([]);
-  const [blogImage, setBlogImage] = React.useState<string>('');
-  const [isPublished, setIsPublished] = React.useState(false);
+  const [blogTitle, setBlogTitle] = useState('');
+  const [open, setOpen] = useState(false);
+  const [blogContent, setBlogContent] = useState('');
+  const [images, setImages] = useState<string[]>([]);
+  const [blogImage, setBlogImage] = useState<string>('');
+  const [isPublished, setIsPublished] = useState(false);
 
   // Template mode state
-  const [generationMode, setGenerationMode] = React.useState<'regular' | 'template'>('regular');
-  const [templateFile, setTemplateFile] = React.useState<File | null>(null);
-  const [templatePreview, setTemplatePreview] = React.useState<ITemplatePreview | null>(null);
-  const [templateVariables, setTemplateVariables] = React.useState<Record<string, string | number | boolean>>({});
-  const [generatingBlogId, setGeneratingBlogId] = React.useState<string | null>(null);
+  const [generationMode, setGenerationMode] = useState<'regular' | 'template'>('regular');
+  const [templateFile, setTemplateFile] = useState<File | null>(null);
+  const [templatePreview, setTemplatePreview] = useState<ITemplatePreview | null>(null);
+  const [templateVariables, setTemplateVariables] = useState<Record<string, string | number | boolean>>({});
+  const [generatingBlogId, setGeneratingBlogId] = useState<string | null>(null);
 
   const [generateBlogFromTemplate] = useGenerateBlogFromTemplateMutation();
   const [generateBlog] = useGenerateBlogMutation();
@@ -112,7 +112,7 @@ export default function CreatePost() {
   });
 
   // Handle generation completion
-  React.useEffect(() => {
+  useEffect(() => {
     if (generationStatus && generatingBlogId) {
       if (generationStatus.generationStatus === 'completed') {
         // Wait a bit to show the success message, then navigate
@@ -133,7 +133,7 @@ export default function CreatePost() {
   }, [generationStatus, generatingBlogId, navigate, dispatch]);
 
   // Check for ongoing generation on mount
-  React.useEffect(() => {
+  useEffect(() => {
     const saved = localStorage.getItem('activeGeneration');
     if (saved) {
       try {
@@ -183,7 +183,7 @@ export default function CreatePost() {
     setIsPublished(!isPublished);
   };
 
-  const handleModeChange = (_event: React.MouseEvent<HTMLElement>, newMode: 'regular' | 'template' | null) => {
+  const handleModeChange = (_event: MouseEvent<HTMLElement>, newMode: 'regular' | 'template' | null) => {
     if (newMode !== null) {
       setGenerationMode(newMode);
       // Reset template-related state when switching modes
@@ -233,7 +233,7 @@ export default function CreatePost() {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchAndSetImages = async () => {
       if (blog?.id) {
         const images = await fetchImages(blog.id);
@@ -247,14 +247,14 @@ export default function CreatePost() {
     initialFormData();
   }, [blog]);
 
-  const handleFormDataChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFormDataChange = (field: string) => (event: ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [field]: event.target.value,
     });
   };
 
-  const handleBlogTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBlogTitleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setBlogTitle(event.target.value);
   };
 
@@ -262,7 +262,7 @@ export default function CreatePost() {
     setBlogContent(content);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     // Prevent new generation if one is already in progress

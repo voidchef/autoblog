@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, FC } from 'react';
 import {
   Box,
   IconButton,
   Slider,
   Typography,
-  CircularProgress,
   Paper,
   Stack,
   Tooltip,
@@ -25,7 +24,7 @@ interface AudioPlayerProps {
   loading?: boolean;
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ audioUrl, title, blogId, loading }) => {
+const AudioPlayer: FC<AudioPlayerProps> = ({ audioUrl, title, blogId, loading }) => {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);

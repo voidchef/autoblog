@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Box,
   Card,
@@ -33,6 +32,7 @@ import {
   StarBorder as StarBorderIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { FC, useState, useEffect, ChangeEvent } from 'react';
 
 export interface BlogPerformanceData {
   id: string;
@@ -59,7 +59,7 @@ interface BlogPerformanceTableProps {
   onToggleFeatured?: (blogId: string) => void;
 }
 
-const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
+const BlogPerformanceTable: FC<BlogPerformanceTableProps> = ({
   data = [],
   isLoading,
   error,
@@ -68,11 +68,11 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   // Debug: Log data when it changes
-  React.useEffect(() => {
+  useEffect(() => {
     console.log('BlogPerformanceTable data updated:', data.map(blog => ({ 
       id: blog.id, 
       title: blog.title, 
@@ -84,7 +84,7 @@ const BlogPerformanceTable: React.FC<BlogPerformanceTableProps> = ({
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };

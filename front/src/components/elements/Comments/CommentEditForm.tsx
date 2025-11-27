@@ -1,5 +1,5 @@
-import React from 'react';
 import { Box, TextField, Button, Fade } from '@mui/material';
+import { FC } from 'react';
 
 interface CommentEditFormProps {
   content: string;
@@ -8,7 +8,7 @@ interface CommentEditFormProps {
   onCancel: () => void;
 }
 
-const CommentEditForm: React.FC<CommentEditFormProps> = ({ content, onContentChange, onSave, onCancel }) => {
+const CommentEditForm: FC<CommentEditFormProps> = ({ content, onContentChange, onSave, onCancel }) => {
   return (
     <Fade in timeout={300}>
       <Box sx={{ mb: 2, p: 2, bgcolor: 'action.hover', borderRadius: 2 }}>

@@ -1,17 +1,17 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import { lazy, Suspense } from 'react';
 
 // Lazy load chart components to reduce initial bundle size
-const PieChartLazy = React.lazy(() => 
+const PieChartLazy = lazy(() => 
   import('@mui/x-charts/PieChart').then(module => ({ default: module.PieChart }))
 );
 
-const BarChartLazy = React.lazy(() => 
+const BarChartLazy = lazy(() => 
   import('@mui/x-charts/BarChart').then(module => ({ default: module.BarChart }))
 );
 
-const LineChartLazy = React.lazy(() => 
+const LineChartLazy = lazy(() => 
   import('@mui/x-charts/LineChart').then(module => ({ default: module.LineChart }))
 );
 
@@ -29,19 +29,19 @@ const ChartLoading = () => (
 
 // Wrapped components with suspense
 export const PieChart = (props: any) => (
-  <React.Suspense fallback={<ChartLoading />}>
+  <Suspense fallback={<ChartLoading />}>
     <PieChartLazy {...props} />
-  </React.Suspense>
+  </Suspense>
 );
 
 export const BarChart = (props: any) => (
-  <React.Suspense fallback={<ChartLoading />}>
+  <Suspense fallback={<ChartLoading />}>
     <BarChartLazy {...props} />
-  </React.Suspense>
+  </Suspense>
 );
 
 export const LineChart = (props: any) => (
-  <React.Suspense fallback={<ChartLoading />}>
+  <Suspense fallback={<ChartLoading />}>
     <LineChartLazy {...props} />
-  </React.Suspense>
+  </Suspense>
 );

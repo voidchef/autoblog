@@ -1,6 +1,4 @@
-import * as React from 'react';
 import {
-  Box,
   TextField,
   InputAdornment,
   IconButton,
@@ -9,6 +7,7 @@ import {
 } from '@mui/material';
 import { Search as SearchIcon, Clear as ClearIcon } from '@mui/icons-material';
 import { alpha } from '@mui/material/styles';
+import { KeyboardEvent } from 'react';
 
 interface SearchBarProps {
   value: string;
@@ -27,7 +26,7 @@ export default function SearchBar({
   placeholder = 'Search blogs by title, content, or description...',
   isLoading = false,
 }: SearchBarProps) {
-  const handleKeyPress = (event: React.KeyboardEvent) => {
+  const handleKeyPress = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
       onSearch();
     }

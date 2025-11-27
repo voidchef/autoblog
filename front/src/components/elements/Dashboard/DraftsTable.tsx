@@ -1,6 +1,4 @@
-import * as React from 'react';
 import EnhancedTable from '../Common/EnhancedTable/EnhancedTable';
-import { useAppSelector } from '../../../utils/reduxHooks';
 import { useGetBlogsWithStatsQuery, useUpdateBlogMutation, useDeleteBlogMutation } from '../../../services/blogApi';
 import { IBlog } from '../../../reducers/blog';
 import { useNavigate } from 'react-router-dom';
@@ -8,6 +6,7 @@ import { ROUTES } from '../../../utils/routing/routes';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material';
+import { useState, useEffect, ChangeEvent, MouseEvent, Fragment } from 'react';
 
 function createData(
   index: number,
@@ -94,9 +93,9 @@ const headCells = [
 
 export default function DraftsTable() {
   const theme = useTheme();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [rows, setRows] = React.useState<any[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rows, setRows] = useState<any[]>([]);
 
   const navigate = useNavigate();
 
@@ -111,7 +110,7 @@ export default function DraftsTable() {
   const [updateBlog] = useUpdateBlogMutation();
   const [deleteBlog] = useDeleteBlogMutation();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (drafts && drafts.results.length > 0) {
       setRows(
         drafts.results.map((blog: IBlog, index: number) =>
@@ -134,11 +133,11 @@ export default function DraftsTable() {
     }
   }, [drafts]);
 
-  function handleChangePage(event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) {
+  function handleChangePage(event: MouseEvent<HTMLButtonElement> | null, newPage: number) {
     setPage(newPage);
   }
 
-  function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+  function handleChangeRowsPerPage(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   }
@@ -156,7 +155,7 @@ export default function DraftsTable() {
   }
 
   return (
-    <React.Fragment>
+    <Fragment>
       {isLoading ? (
         <Box sx={{ textAlign: 'center', py: 4 }}>
           <Typography variant="body1" color="text.secondary">
@@ -249,6 +248,6 @@ export default function DraftsTable() {
           </Typography>
         </Box>
       )}
-    </React.Fragment>
+    </Fragment>
   );
 }

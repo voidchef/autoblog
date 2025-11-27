@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import { IconButton, Typography, Chip, Paper } from '@mui/material';
+import { IconButton, Typography, Chip } from '@mui/material';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Category as CategoryIcon } from '@mui/icons-material';

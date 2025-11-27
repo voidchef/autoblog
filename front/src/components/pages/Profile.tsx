@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Box,
   Container,
@@ -64,6 +63,7 @@ import { showSuccess, showError } from '../../reducers/alert';
 import { stringAvatar as baseStringAvatar } from '../../utils/utils';
 import { updateUserDataOptimistic } from '../../reducers/user';
 import { encrypt } from '../../utils/crypto';
+import { FC, useState, useEffect, ChangeEvent, FormEvent } from 'react';
 
 interface ProfileFormData {
   name: string;
@@ -103,7 +103,7 @@ interface FormErrors {
   website?: string;
 }
 
-const Profile: React.FC = () => {
+const Profile: FC = () => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const { user, isLoading: userLoading } = useAuth();
@@ -148,7 +148,7 @@ const Profile: React.FC = () => {
     },
   };
 
-  const [formData, setFormData] = React.useState<ProfileFormData>({
+  const [formData, setFormData] = useState<ProfileFormData>({
     name: '',
     email: '',
     bio: '',
@@ -168,20 +168,20 @@ const Profile: React.FC = () => {
     },
   });
 
-  const [errors, setErrors] = React.useState<FormErrors>({});
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
-  const [showOpenAiKey, setShowOpenAiKey] = React.useState(false);
-  const [showGoogleApiKey, setShowGoogleApiKey] = React.useState(false);
-  const [showWordPressPassword, setShowWordPressPassword] = React.useState(false);
-  const [showMediumToken, setShowMediumToken] = React.useState(false);
-  const [isEditing, setIsEditing] = React.useState(false);
-  const [showConfirmDialog, setShowConfirmDialog] = React.useState(false);
-  const [pendingChanges, setPendingChanges] = React.useState<any>(null);
-  const [activeTab, setActiveTab] = React.useState(0);
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showOpenAiKey, setShowOpenAiKey] = useState(false);
+  const [showGoogleApiKey, setShowGoogleApiKey] = useState(false);
+  const [showWordPressPassword, setShowWordPressPassword] = useState(false);
+  const [showMediumToken, setShowMediumToken] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingChanges, setPendingChanges] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState(0);
 
   // Initialize form data when user data is loaded
-  React.useEffect(() => {
+  useEffect(() => {
     if (user && user.id) {
       setFormData({
         name: user.name || '',
@@ -268,7 +268,7 @@ const Profile: React.FC = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleInputChange = (field: keyof ProfileFormData | string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (field: keyof ProfileFormData | string) => (event: ChangeEvent<HTMLInputElement>) => {
     // Handle nested socialLinks fields
     if (field.startsWith('socialLinks.')) {
       const socialField = field.split('.')[1] as keyof ProfileFormData['socialLinks'];
@@ -301,7 +301,7 @@ const Profile: React.FC = () => {
     }
   };
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
     if (!validateForm()) {

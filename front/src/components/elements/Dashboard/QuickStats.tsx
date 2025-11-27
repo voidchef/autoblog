@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Box, Card, CardContent, Typography, alpha, Skeleton, useTheme } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
@@ -7,17 +6,18 @@ import {
   AccessTime as AccessTimeIcon,
   AutoGraph as AutoGraphIcon,
 } from '@mui/icons-material';
+import { ReactNode, FC } from 'react';
 
 interface QuickStatProps {
   title: string;
   value: string | number;
   change?: number;
-  icon: React.ReactNode;
+  icon: ReactNode;
   color: string;
   isLoading?: boolean;
 }
 
-const QuickStatCard: React.FC<QuickStatProps> = ({ title, value, change, icon, color, isLoading }) => {
+const QuickStatCard: FC<QuickStatProps> = ({ title, value, change, icon, color, isLoading }) => {
   const isPositive = change && change > 0;
   const isNegative = change && change < 0;
 

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Box,
   Card,
@@ -22,12 +21,13 @@ import {
 } from '@mui/icons-material';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { BarChart } from '@mui/x-charts/BarChart';
+import { ReactNode, FC } from 'react';
 
 interface TrafficSource {
   name: string;
   value: number;
   percentage: number;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   color: string;
 }
 
@@ -56,7 +56,7 @@ interface TrafficSourcesProps {
   error?: any;
 }
 
-const TrafficSources: React.FC<TrafficSourcesProps> = ({ data, isLoading, error }) => {
+const TrafficSources: FC<TrafficSourcesProps> = ({ data, isLoading, error }) => {
   const theme = useTheme();
 
   if (isLoading) {

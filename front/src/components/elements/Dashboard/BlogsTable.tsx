@@ -1,6 +1,5 @@
-import * as React from 'react';
 import EnhancedTable from '../Common/EnhancedTable/EnhancedTable';
-import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
+import { useAppDispatch } from '../../../utils/reduxHooks';
 import { 
   useGetBlogsWithStatsQuery, 
   useUpdateBlogMutation, 
@@ -16,6 +15,7 @@ import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material';
 import { useAuth } from '../../../utils/hooks';
 import { showError, showSuccess } from '../../../reducers/alert';
+import { useState, useEffect, ChangeEvent, MouseEvent, Fragment } from 'react';
 
 function createData(
   index: number,
@@ -122,9 +122,9 @@ interface IProps {
 
 export default function BlogsTable({ handleSelectBlog }: IProps) {
   const theme = useTheme();
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [rows, setRows] = React.useState<ReturnType<typeof createData>[]>([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rows, setRows] = useState<ReturnType<typeof createData>[]>([]);
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -143,7 +143,7 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
   const [publishToWordPress, { isLoading: isPublishingWP }] = usePublishToWordPressMutation();
   const [publishToMedium, { isLoading: isPublishingMedium }] = usePublishToMediumMutation();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (blogs && blogs.results.length > 0) {
       setRows(
         blogs.results.map((blog: IBlog, index: number) =>
@@ -171,11 +171,11 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
     }
   }, [blogs]);
 
-  function handleChangePage(event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) {
+  function handleChangePage(event: MouseEvent<HTMLButtonElement> | null, newPage: number) {
     setPage(newPage);
   }
 
-  function handleChangeRowsPerPage(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+  function handleChangeRowsPerPage(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   }
@@ -223,7 +223,7 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
   }
 
   return (
-    <React.Fragment>
+    <Fragment>
       {isLoading ? (
         <Box sx={{ textAlign: 'center', py: 4 }}>
           <Typography variant="body1" color="text.secondary">
@@ -320,6 +320,6 @@ export default function BlogsTable({ handleSelectBlog }: IProps) {
           </Typography>
         </Box>
       )}
-    </React.Fragment>
+    </Fragment>
   );
 }

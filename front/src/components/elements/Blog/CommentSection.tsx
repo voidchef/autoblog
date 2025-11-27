@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { FC, useState } from 'react';
 import { Box, CircularProgress, Alert } from '@mui/material';
 import { useAppSelector, useAppDispatch } from '../../../utils/reduxHooks';
 import { useGetCommentsByBlogQuery, useCreateCommentMutation } from '../../../services/commentApi';
@@ -9,7 +9,7 @@ interface CommentSectionProps {
   blogId: string;
 }
 
-const CommentSection: React.FC<CommentSectionProps> = ({ blogId }) => {
+const CommentSection: FC<CommentSectionProps> = ({ blogId }) => {
   const dispatch = useAppDispatch();
   const { userId } = useAppSelector((state) => state.auth);
   const [newComment, setNewComment] = useState('');

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -20,12 +19,9 @@ import DarkMode from './DarkMode';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import { AutoAwesome } from '@mui/icons-material';
 import { Theme } from '@mui/material/styles';
+import { useState, cloneElement } from 'react';
 
 interface Props {
-  /**
-   * Injected by the documentation to work in an iframe.
-   * You won't need it on your project.
-   */
   children?: any;
   window?: () => Window;
 }
@@ -35,7 +31,7 @@ const navItems = ['Home', 'Blog', 'Pricing', 'About Us', 'Contact Us'];
 
 export default function DrawerAppBar(props: Props) {
   const { window } = props;
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const { isAuthenticated } = useAuth();
   const { themeMode } = useTheme();
@@ -83,7 +79,7 @@ export default function DrawerAppBar(props: Props) {
       ? trigger ? (theme: Theme) => theme.palette.customColors.bgDark.tertiary + 'cc' : 'rgba(15, 23, 42, 0)'
       : trigger ? (theme: Theme) => theme.palette.customColors.overlay.white.almostOpaque : 'rgba(255, 255, 255, 0)';
 
-    return React.cloneElement(children, {
+    return cloneElement(children, {
       elevation: trigger ? 2 : 0,
       sx: {
         backgroundColor: bgColor,

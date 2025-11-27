@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -10,12 +9,13 @@ import { ROUTES } from '../../../utils/routing/routes';
 import { stringAvatar } from '../../../utils/utils';
 import Avatar from '@mui/material/Avatar';
 import SearchBar from '../Search/SearchBar';
+import { useState, ChangeEvent, MouseEvent, Fragment } from 'react';
 
 const AllPosts = () => {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [isSearching, setIsSearching] = React.useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
 
   const { data: allBlogs, isLoading: isLoadingBlogs } = useGetBlogsQuery({
     limit: rowsPerPage,
@@ -58,11 +58,11 @@ const AllPosts = () => {
     }
   };
 
-  const handleChangePage = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+  const handleChangePage = (event: MouseEvent<HTMLButtonElement> | null, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -93,7 +93,7 @@ const AllPosts = () => {
           </Typography>
         </Box>
       ) : (
-        <React.Fragment>
+        <Fragment>
           <Grid container spacing={3}>
             {displayData.results.map((post: any, index: number) => (
               <Grid size={{ xs: 12, sm: 4 }} key={index}>
@@ -219,7 +219,7 @@ const AllPosts = () => {
               />
             </Box>
           )}
-        </React.Fragment>
+        </Fragment>
       )}
     </Box>
   );

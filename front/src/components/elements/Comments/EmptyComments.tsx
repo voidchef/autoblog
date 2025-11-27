@@ -1,8 +1,8 @@
-import React from 'react';
+import { FC } from 'react';
 import { Paper, Typography } from '@mui/material';
 import { ChatBubbleOutline } from '@mui/icons-material';
 
-const EmptyComments: React.FC = () => {
+const EmptyComments: FC = () => {
   return (
     <Paper
       elevation={0}

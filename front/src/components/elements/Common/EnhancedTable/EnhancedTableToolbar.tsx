@@ -1,4 +1,4 @@
-import React from 'react';
+import { ChangeEvent } from 'react';
 import { Toolbar, InputBase } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -8,7 +8,7 @@ interface EnhancedTableToolbarProps {
 }
 
 export function EnhancedTableToolbar({ searchQuery, setSearchQuery }: EnhancedTableToolbarProps) {
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
   };
 

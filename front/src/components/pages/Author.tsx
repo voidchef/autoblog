@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Box,
   Container,
@@ -31,16 +30,17 @@ import { ROUTES } from '../../utils/routing/routes';
 import { stringAvatar } from '../../utils/utils';
 import FollowButton from '../elements/Common/FollowButton';
 import { useAuth } from '../../utils/hooks';
+import { FC, useState, ChangeEvent } from 'react';
 
-const Author: React.FC = () => {
+const Author: FC = () => {
   const theme = useTheme();
   const { authorId } = useParams<{ authorId: string }>();
   const navigate = useNavigate();
   const { userId } = useAuth();
 
   // Pagination state
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(9);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(9);
 
   // Fetch author data
   const { data: authorData, isLoading: authorLoading, error: authorError } = useGetUserQuery(authorId || '', {
@@ -70,7 +70,7 @@ const Author: React.FC = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (event: ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
     window.scrollTo({ top: 0, behavior: 'smooth' });

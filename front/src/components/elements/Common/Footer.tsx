@@ -23,7 +23,7 @@ import { useSubscribeNewsletterMutation } from '../../../services/newsletterApi'
 import { showSuccess, showError } from '../../../reducers/alert';
 import { useAppDispatch } from '../../../utils/reduxHooks';
 
-const navItems = ['Home', 'Blog', 'About Us', 'Contact Us'];
+const navItems = ['Home', 'Blog', 'Pricing', 'About Us', 'Contact Us'];
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -40,6 +40,9 @@ const Footer = () => {
         break;
       case 'Blog':
         navigate(ROUTES.ALLPOSTS);
+        break;
+      case 'Pricing':
+        navigate(ROUTES.PRICING);
         break;
       case 'About Us':
         navigate(ROUTES.ABOUTUS);

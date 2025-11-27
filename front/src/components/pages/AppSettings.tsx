@@ -1,23 +1,18 @@
-import * as React from 'react';
 import {
   Box,
   Button,
   Card,
   CardContent,
   Container,
-  Divider,
   Grid,
   IconButton,
   MenuItem,
   Paper,
   TextField,
   Typography,
-  Alert,
   Stack,
-  Chip,
   Fade,
   Zoom,
-  Collapse,
   alpha,
   useTheme,
 } from '@mui/material';
@@ -36,6 +31,7 @@ import { useUpdateAllAppSettingsMutation } from '../../services/appSettingsApi';
 import Loading from '../elements/Common/Loading';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import { showSuccess, showError } from '../../reducers/alert';
+import { useState, useEffect } from 'react';
 
 interface Category {
   _id?: string;
@@ -60,13 +56,13 @@ export default function AppSettings() {
   const { data: appSettingsData, isLoading } = useAppSettings();
   const [updateAllAppSettings, { isLoading: isUpdating }] = useUpdateAllAppSettingsMutation();
 
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [languages, setLanguages] = React.useState<FieldData[]>([]);
-  const [languageModels, setLanguageModels] = React.useState<LanguageModel[]>([]);
-  const [queryTypes, setQueryTypes] = React.useState<FieldData[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [languages, setLanguages] = useState<FieldData[]>([]);
+  const [languageModels, setLanguageModels] = useState<LanguageModel[]>([]);
+  const [queryTypes, setQueryTypes] = useState<FieldData[]>([]);
 
   // Initialize state from appSettings data
-  React.useEffect(() => {
+  useEffect(() => {
     if (appSettingsData) {
       setCategories(appSettingsData.categories || []);
       setLanguages(appSettingsData.languages || []);

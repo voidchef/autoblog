@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Box,
   Container,
@@ -35,9 +34,10 @@ import { useAuth } from '../../utils/hooks';
 import { ROUTES } from '../../utils/routing/routes';
 import { useAppDispatch } from '../../utils/reduxHooks';
 import { showError, showSuccess } from '../../reducers/alert';
+import { ReactNode, SyntheticEvent, useEffect, useState } from 'react';
 
 interface TabPanelProps {
-  children?: React.ReactNode;
+  children?: ReactNode;
   index: number;
   value: number;
 }
@@ -65,9 +65,9 @@ export default function Analytics() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { user, isLoading: authLoading } = useAuth();
-  const [tabValue, setTabValue] = React.useState(0);
-  const [timeRange, setTimeRange] = React.useState<TimeRange>('30d');
-  const [blogPerformanceData, setBlogPerformanceData] = React.useState<BlogPerformanceData[]>([]);
+  const [tabValue, setTabValue] = useState(0);
+  const [timeRange, setTimeRange] = useState<TimeRange>('30d');
+  const [blogPerformanceData, setBlogPerformanceData] = useState<BlogPerformanceData[]>([]);
 
   // Check if user is admin
   const isAdmin = user?.role === 'admin';
@@ -81,7 +81,7 @@ export default function Analytics() {
   const [toggleFeatured] = useToggleFeaturedMutation();
 
   // Redirect non-admin users to dashboard
-  React.useEffect(() => {
+  useEffect(() => {
     if (!authLoading && !isAdmin) {
       navigate(ROUTES.DASHBOARD);
     }
@@ -153,7 +153,7 @@ export default function Analytics() {
     );
   }
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleTabChange = (event: SyntheticEvent, newValue: number) => {
     setTabValue(newValue);
   };
 
@@ -189,7 +189,7 @@ export default function Analytics() {
   } : undefined;
 
   // Update blog performance data when analytics data changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (analyticsData?.blogsPerformance) {
       const transformedData: BlogPerformanceData[] = analyticsData.blogsPerformance.map(blog => ({
         id: blog.id,

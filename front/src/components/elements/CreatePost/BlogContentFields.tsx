@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Box, TextField, Paper, Typography, InputAdornment, Chip, Menu, MenuItem, ListItemIcon, ListItemText, GlobalStyles, useTheme } from '@mui/material';
 import { 
   Title as TitleIcon,
@@ -36,6 +35,7 @@ import {
 import '@mdxeditor/editor/style.css';
 import './mdxeditor-custom.css';
 import TextRegenerationDialog from './TextRegenerationDialog';
+import { ChangeEvent, useRef, useState, useEffect, MouseEvent } from 'react';
 
 interface BlogContentFieldsProps {
   blogTitle: string;
@@ -43,7 +43,7 @@ interface BlogContentFieldsProps {
   isEditMode: boolean;
   disabled?: boolean;
   blogId?: string;
-  onBlogTitleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlogTitleChange: (event: ChangeEvent<HTMLInputElement>) => void;
   onBlogContentChange: (content: string) => void;
 }
 
@@ -56,14 +56,14 @@ export default function BlogContentFields({
   onBlogTitleChange,
   onBlogContentChange,
 }: BlogContentFieldsProps) {
-  const mdxEditorRef = React.useRef<MDXEditorMethods>(null);
-  const editorContainerRef = React.useRef<HTMLDivElement>(null);
-  const [editorKey, setEditorKey] = React.useState(0);
-  const [contextMenu, setContextMenu] = React.useState<{ mouseX: number; mouseY: number } | null>(null);
-  const [selectedText, setSelectedText] = React.useState('');
-  const [regenerationDialogOpen, setRegenerationDialogOpen] = React.useState(false);
-  const [contextBefore, setContextBefore] = React.useState('');
-  const [contextAfter, setContextAfter] = React.useState('');
+  const mdxEditorRef = useRef<MDXEditorMethods>(null);
+  const editorContainerRef = useRef<HTMLDivElement>(null);
+  const [editorKey, setEditorKey] = useState(0);
+  const [contextMenu, setContextMenu] = useState<{ mouseX: number; mouseY: number } | null>(null);
+  const [selectedText, setSelectedText] = useState('');
+  const [regenerationDialogOpen, setRegenerationDialogOpen] = useState(false);
+  const [contextBefore, setContextBefore] = useState('');
+  const [contextAfter, setContextAfter] = useState('');
   
   const theme = useTheme();
   const wordCount = blogContent.trim().split(/\s+/).filter(word => word.length > 0).length;
@@ -71,14 +71,14 @@ export default function BlogContentFields({
   const readingTime = Math.ceil(wordCount / 200); // Average reading speed
 
   // Update editor when blogContent changes externally (e.g., from AI generation or loading a blog)
-  React.useEffect(() => {
+  useEffect(() => {
     if (mdxEditorRef.current && blogContent !== mdxEditorRef.current.getMarkdown()) {
       setEditorKey(prev => prev + 1);
     }
   }, [blogContent]);
 
   // Handle context menu (right-click) on editor
-  const handleContextMenu = (event: React.MouseEvent) => {
+  const handleContextMenu = (event: MouseEvent) => {
     // Only show context menu if we're in edit mode and have a blog ID
     if (!isEditMode || !blogId || disabled || blogTitle === '') {
       return;

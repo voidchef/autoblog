@@ -1,5 +1,5 @@
-import React from 'react';
-import { TableHead, TableRow, TableCell, Box, Checkbox } from '@mui/material';
+import { MouseEvent } from 'react';
+import { TableHead, TableRow, TableCell, Box } from '@mui/material';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import { visuallyHidden } from '@mui/utils';
 
@@ -20,12 +20,12 @@ interface EnhancedTableHeadProps {
   columns: HeadCell[];
   order: Order;
   orderBy: string;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
+  onRequestSort: (event: MouseEvent<unknown>, property: string) => void;
   isDraftTable?: boolean;
 }
 
 export function EnhancedTableHead({ columns, order, orderBy, onRequestSort, isDraftTable }: EnhancedTableHeadProps) {
-  const createSortHandler = (property: string) => (event: React.MouseEvent<unknown>) => {
+  const createSortHandler = (property: string) => (event: MouseEvent<unknown>) => {
     onRequestSort(event, property);
   };
 

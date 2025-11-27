@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { Box, TextField, MenuItem, Paper, Typography, InputAdornment, Chip } from '@mui/material';
+import { Box, TextField, MenuItem, Paper, Typography, InputAdornment } from '@mui/material';
 import { 
   Topic as TopicIcon,
   Public as PublicIcon,
@@ -12,6 +11,7 @@ import {
 } from '@mui/icons-material';
 import { IFieldData, ICategory } from '../../../reducers/appSettings';
 import { alpha } from '@mui/material/styles';
+import { ChangeEvent } from 'react';
 
 interface BlogFormFieldsProps {
   formData: {
@@ -31,7 +31,7 @@ interface BlogFormFieldsProps {
   };
   isEditMode: boolean;
   disabled?: boolean;
-  onFormDataChange: (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onFormDataChange: (field: string) => (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function BlogFormFields({ formData, appSettings, isEditMode, disabled = false, onFormDataChange }: BlogFormFieldsProps) {

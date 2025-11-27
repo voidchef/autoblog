@@ -1,18 +1,17 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
-import { Button, MenuItem, Typography, Container, Paper, Divider, Alert, CircularProgress, useTheme } from '@mui/material';
+import { Button, MenuItem, Typography, Container, Divider, Alert, CircularProgress, useTheme } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import SendIcon from '@mui/icons-material/Send';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { useCreateContactMutation } from '../../services/contactApi';
 import { useAppSelector, useAppDispatch } from '../../utils/reduxHooks';
 import { showSuccess, showError } from '../../reducers/alert';
+import { useState, ChangeEvent, FormEvent } from 'react';
 
 export default function ContactUs() {
   const theme = useTheme();
@@ -21,7 +20,7 @@ export default function ContactUs() {
   const [createContact, { isLoading, isSuccess, isError, error }] = useCreateContactMutation();
   
   // Form state
-  const [formData, setFormData] = React.useState({
+  const [formData, setFormData] = useState({
     name: '',
     email: '',
     queryType: '',
@@ -29,7 +28,7 @@ export default function ContactUs() {
   });
   
   // Validation errors
-  const [errors, setErrors] = React.useState({
+  const [errors, setErrors] = useState({
     name: '',
     email: '',
     queryType: '',
@@ -37,7 +36,7 @@ export default function ContactUs() {
   });
   
   // Handle input changes
-  const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (field: string) => (event: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [field]: event.target.value });
     // Clear error when user starts typing
     if (errors[field as keyof typeof errors]) {
@@ -82,7 +81,7 @@ export default function ContactUs() {
   };
   
   // Handle form submission
-  const handleSubmit = async (event: React.FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     
     if (!validateForm()) {

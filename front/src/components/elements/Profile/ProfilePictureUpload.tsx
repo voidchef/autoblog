@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef, DragEvent, ChangeEvent, FC } from 'react';
 import {
   Box,
   Button,
@@ -23,7 +23,7 @@ interface ProfilePictureUploadProps {
   onUploadSuccess?: (url: string) => void;
 }
 
-export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
+export const ProfilePictureUpload: FC<ProfilePictureUploadProps> = ({
   userId,
   currentPicture,
   userName,
@@ -35,7 +35,7 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleDrag = (e: React.DragEvent) => {
+  const handleDrag = (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === 'dragenter' || e.type === 'dragover') {
@@ -45,7 +45,7 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     }
   };
 
-  const handleDrop = async (e: React.DragEvent) => {
+  const handleDrop = async (e: DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
@@ -55,7 +55,7 @@ export const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
     }
   };
 
-  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = async (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (e.target.files && e.target.files[0]) {
       await handleFile(e.target.files[0]);

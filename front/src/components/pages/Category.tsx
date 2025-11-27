@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import NavBar from '../elements/Common/NavBar';
 import Posts from '../elements/Category/Posts';
@@ -8,6 +7,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useAppSelector } from '../../utils/reduxHooks';
 import { ROUTES } from '../../utils/routing/routes';
 import { ICategory } from '../../reducers/appSettings';
+import { useEffect } from 'react';
 
 export default function Category() {
   const { categoryName } = useParams();
@@ -19,7 +19,7 @@ export default function Category() {
     (cat: ICategory) => cat.categoryName.toLocaleLowerCase() === categoryName?.toLocaleLowerCase(),
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!category) {
       navigate(ROUTES.ROOT);
     }

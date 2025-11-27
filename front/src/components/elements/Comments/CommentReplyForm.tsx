@@ -1,5 +1,5 @@
-import React from 'react';
 import { Box, TextField, Button, Fade } from '@mui/material';
+import { FC } from 'react';
 
 interface CommentReplyFormProps {
   content: string;
@@ -8,7 +8,7 @@ interface CommentReplyFormProps {
   onCancel: () => void;
 }
 
-const CommentReplyForm: React.FC<CommentReplyFormProps> = ({ content, onContentChange, onSubmit, onCancel }) => {
+const CommentReplyForm: FC<CommentReplyFormProps> = ({ content, onContentChange, onSubmit, onCancel }) => {
   return (
     <Fade in timeout={300}>
       <Box sx={{ mb: 2, p: 2, bgcolor: 'action.hover', borderRadius: 2 }}>

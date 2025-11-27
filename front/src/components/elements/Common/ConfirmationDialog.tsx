@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -7,6 +6,7 @@ import {
   DialogActions,
   Button,
 } from '@mui/material';
+import { FC } from 'react';
 
 interface ConfirmationDialogProps {
   open: boolean;
@@ -19,7 +19,7 @@ interface ConfirmationDialogProps {
   confirmColor?: 'primary' | 'secondary' | 'error' | 'warning' | 'info' | 'success';
 }
 
-const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
+const ConfirmationDialog: FC<ConfirmationDialogProps> = ({
   open,
   title,
   message,

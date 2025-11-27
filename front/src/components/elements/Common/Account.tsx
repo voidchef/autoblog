@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
@@ -24,12 +23,12 @@ import { logoutUser } from '../../../reducers/auth';
 import { useAppDispatch } from '../../../utils/reduxHooks';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '../../../utils/routing/routes';
-import { AWS_BASEURL } from '../../../utils/consts';
 import { useAuth } from '../../../utils/hooks';
 import { stringAvatar } from '../../../utils/utils';
+import { useState, MouseEvent, Fragment } from 'react';
 
 export default function AccountMenu() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -44,7 +43,7 @@ export default function AccountMenu() {
     return null;
   }
 
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   
@@ -370,7 +369,7 @@ export default function AccountMenu() {
   );
 
   return (
-    <React.Fragment>
+    <Fragment>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
         <Tooltip title="Account settings">
           <IconButton
@@ -461,6 +460,6 @@ export default function AccountMenu() {
           <MobileBottomSheetContent />
         </Drawer>
       )}
-    </React.Fragment>
+    </Fragment>
   );
 }

@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Box, Card, CardContent, Typography, alpha, Skeleton, useTheme } from '@mui/material';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { BarChart } from '@mui/x-charts/BarChart';

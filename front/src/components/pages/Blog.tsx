@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Box from '@mui/material/Box';
 import NavBar from '../elements/Common/NavBar';
 import Footer from '../elements/Common/Footer';
@@ -6,7 +5,6 @@ import {
   Typography,
   Paper,
   Divider,
-  Button,
   CircularProgress,
   IconButton,
   Tooltip,
@@ -32,8 +30,9 @@ import AudioPlayer from '../elements/Blog/AudioPlayer';
 import { ROUTES } from '../../utils/routing/routes';
 import * as analytics from '../../utils/analytics';
 import { useAuth } from '../../utils/hooks';
-import { showSuccess, showError, showInfo } from '../../reducers/alert';
+import { showSuccess, showError } from '../../reducers/alert';
 import { stringAvatar } from '../../utils/utils';
+import { useEffect, useRef, useState } from 'react';
 
 export default function Blog() {
   const theme = useTheme();
@@ -55,7 +54,7 @@ export default function Blog() {
   const previewBlogData = useAppSelector((state) => state.blog.blogData);
 
   // State to control polling based on audio generation status
-  const [shouldPoll, setShouldPoll] = React.useState(false);
+  const [shouldPoll, setShouldPoll] = useState(false);
 
   const {
     data: blogData,
@@ -73,20 +72,20 @@ export default function Blog() {
   const [toggleFeatured] = useToggleFeaturedMutation();
 
   // Update polling state based on audio generation status
-  React.useEffect(() => {
+  useEffect(() => {
     setShouldPoll(currentBlogData?.audioGenerationStatus === 'processing');
   }, [currentBlogData?.audioGenerationStatus]);
 
   // Track blog view when blog loads (only for non-preview mode)
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isPreviewMode && currentBlogData && analytics.isGAInitialized()) {
       analytics.trackBlogView(currentBlogData.id, currentBlogData.title, currentBlogData.category);
     }
   }, [isPreviewMode, currentBlogData?.id]);
 
   // Track audio generation completion
-  const prevAudioStatusRef = React.useRef<string | undefined>(undefined);
-  React.useEffect(() => {
+  const prevAudioStatusRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
     const prevStatus = prevAudioStatusRef.current;
     const currentStatus = currentBlogData?.audioGenerationStatus;
 

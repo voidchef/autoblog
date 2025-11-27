@@ -1,15 +1,15 @@
-import * as React from 'react';
 import {
   Box,
   LinearProgress,
   Typography,
 } from '@mui/material';
+import { FC } from 'react';
 
 interface PasswordStrengthProps {
   password: string;
 }
 
-const PasswordStrength: React.FC<PasswordStrengthProps> = ({ password }) => {
+const PasswordStrength: FC<PasswordStrengthProps> = ({ password }) => {
   const getPasswordStrength = (password: string) => {
     let score = 0;
     let feedback: string[] = [];

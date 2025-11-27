@@ -1,14 +1,11 @@
-import * as React from 'react';
-import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
-import { styled, useTheme } from '@mui/material/styles';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { styled } from '@mui/material/styles';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { useAppDispatch, useAppSelector } from '../../../utils/reduxHooks';
 import { setThemeMode } from '../../../reducers/appSettings';
+import { useMemo } from 'react';
 
 const StyledToggleButton = styled(Box)(({ theme }) => ({
   position: 'relative',
@@ -58,7 +55,7 @@ export default function DarkMode() {
   const dispatch = useAppDispatch();
   const themeMode = useAppSelector((state) => state.appSettings.themeMode);
 
-  const colorMode = React.useMemo(
+  const colorMode = useMemo(
     () => ({
       toggleColorMode: () => {
         const newMode = themeMode === 'light' ? 'dark' : 'light';

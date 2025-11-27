@@ -1,4 +1,3 @@
-import * as React from 'react';
 import {
   Box,
   Card,
@@ -19,12 +18,13 @@ import {
   TrendingDown as TrendingDownIcon,
   Remove as RemoveIcon,
 } from '@mui/icons-material';
+import { ReactNode, FC } from 'react';
 
 interface AnalyticsMetric {
   label: string;
   value: number;
   change?: number; // percentage change from previous period
-  icon: React.ReactNode;
+  icon: ReactNode;
   color: string;
   gradient: string;
   description?: string;
@@ -50,7 +50,7 @@ interface AnalyticsOverviewProps {
   timeRange?: string;
 }
 
-const AnalyticsOverview: React.FC<AnalyticsOverviewProps> = ({
+const AnalyticsOverview: FC<AnalyticsOverviewProps> = ({
   data,
   isLoading,
   error,

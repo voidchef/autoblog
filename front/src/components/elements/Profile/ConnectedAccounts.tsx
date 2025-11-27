@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Card,
@@ -24,8 +23,9 @@ import {
 import OAuthLinkButtons from './OAuthLinkButtons';
 import { useAppDispatch } from '../../../utils/reduxHooks';
 import { showSuccess, showError } from '../../../reducers/alert';
+import { FC } from 'react';
 
-const ConnectedAccounts: React.FC = () => {
+const ConnectedAccounts: FC = () => {
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const { data, isLoading, error } = useGetOAuthConnectionsQuery();

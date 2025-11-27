@@ -1,9 +1,9 @@
-import React from 'react';
 import { Box, Button, Stack, Typography, Alert, useTheme } from '@mui/material';
 import { Google as GoogleIcon, Apple as AppleIcon } from '@mui/icons-material';
 import { useGetOAuthConnectionsQuery } from '../../../services/authApi';
+import { FC } from 'react';
 
-const OAuthLinkButtons: React.FC = () => {
+const OAuthLinkButtons: FC = () => {
   const { data, isLoading } = useGetOAuthConnectionsQuery();
   const theme = useTheme();
 
